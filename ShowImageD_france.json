@@ -1,0 +1,25 @@
+[{
+  "type": "showimage_france",
+  "message0": "ImageUrl %1 ImageWidth %2 ImageHeight %3",
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "ImageUrl",
+      "check": "String"
+    },
+    {
+      "type": "input_value",
+      "name": "ImageWidth",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "ImageHeight",
+      "check": "Number"
+    }
+  ],
+  "output": null,
+  "colour": 180,
+  "tooltip": "Hello World",
+  "helpUrl": ""
+}]
