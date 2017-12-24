@@ -6,7 +6,7 @@
     "blockly2/javascript.js"
   ],
     "dependencies": [
-    "Text-blockly.js"
+    "Text-blockly2.js"
   ],
   "msg": "blockly2/msg",
   "blocksMsg": "blockly2/msg/blocks",
