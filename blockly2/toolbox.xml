@@ -1,7 +1,7 @@
 <category id="catPlus">
     <block type="iframe2_fustyles">
-        <value name="string_"></value>
-        
+        <value name="string_">
+        </value>
         <value name="Url">
           <block type="text">
             <field name="PageUrl"></field>
@@ -17,6 +17,5 @@
             <field name="PageHeight">300</field>
           </block>
         </value>
-        
     </block>
 </category>
