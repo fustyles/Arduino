@@ -1,10 +1,6 @@
 {
   "type": "iframe2_fustyles",
-  "previousStatement": null,
-  "nextStatement": null,
-  "colour": 180,
-  "tooltip": "Hello World",
-  "helpUrl": "",
+  "category": "catPlus",
   "scripts": [
     "blockly2/blocks.js",
     "blockly2/javascript.js"
