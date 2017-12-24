@@ -1,22 +1,21 @@
 <category id="catToolText">
     <block type="iframe2_fustyles">
         <value name="string_">
+            <value name="PageUrl">
+              <block type="text">
+                <field name="TEXT"></field>
+              </block>
+            </value>
+            <value name="PageWidth">
+              <block type="math_number">
+                <field name="NUM">400</field>
+              </block>
+            </value>
+            <value name="PagHeight">
+              <block type="math_number">
+                <field name="NUM">300</field>
+              </block>
+            </value>  
         </value>
-
-        <value name="PageUrl">
-          <block type="text">
-            <field name="TEXT"></field>
-          </block>
-        </value>
-        <value name="PageWidth">
-          <block type="math_number">
-            <field name="NUM">400</field>
-          </block>
-        </value>
-        <value name="PagHeight">
-          <block type="math_number">
-            <field name="NUM">300</field>
-          </block>
-        </value>  
     </block>
 </category>
