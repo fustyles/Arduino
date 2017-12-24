@@ -1,1 +1,1 @@
-Blockly.Msg.TEXT_SHOW = "顯示";
+Blockly.Msg.TEXT_SHOW = "顯示網頁";
