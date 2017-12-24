@@ -24,7 +24,6 @@
   "tooltip": "",
   "helpUrl": "",
   "scripts": [
-    "blockly2/blocks.js",
     "blockly2/javascript.js"
   ],
   "toolbox": "blockly/toolbox.xml"
