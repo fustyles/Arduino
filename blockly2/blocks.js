@@ -1,6 +1,6 @@
 Blockly.Blocks['iframe2_fustyles'] = {
   init: function() {
-  this.appendValueInput('string_')
+  this.appendValueInput('iframe2_fustyles')
       .setCheck('String')
       .appendField(Blockly.Msg.TEXT_MAIN);
   }
@@ -8,7 +8,7 @@ Blockly.Blocks['iframe2_fustyles'] = {
 
 Blockly.Blocks['PageUrl'] = {
   init: function() {
-  this.appendValueInput('string_')
+  this.appendValueInput('PageUrl')
       .setCheck('String')
       .appendField(Blockly.Msg.TEXT_URL);
   }
@@ -16,7 +16,7 @@ Blockly.Blocks['PageUrl'] = {
 
 Blockly.Blocks['PageWidth'] = {
   init: function() {
-  this.appendValueInput('string_')
+  this.appendValueInput('PageWidth')
       .setCheck('String')
       .appendField(Blockly.Msg.TEXT_WIDTH);
   }
@@ -24,7 +24,7 @@ Blockly.Blocks['PageWidth'] = {
 
 Blockly.Blocks['PageHeight'] = {
   init: function() {
-  this.appendValueInput('string_')
+  this.appendValueInput('PageHeight')
       .setCheck('String')
       .appendField(Blockly.Msg.TEXT_HEIGHT);
   }
