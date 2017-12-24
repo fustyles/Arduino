@@ -6,6 +6,6 @@ Blockly.Blocks['iframe2_fustyles'] = {
   this.setOutput(true, null);
   this.setTooltip('');
   this.setColour(Blockly.Blocks.colour.HUE);
-  this.setHelpUrl(mainUrl + 'basic/blockly/blockly-information.html' + utmUrl);
+  this.setHelpUrl('');
   }
 };
