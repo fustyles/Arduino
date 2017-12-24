@@ -2,19 +2,19 @@
     <block type="iframe2_fustyles">
         <value name="string_"></value>
         
-        <value name="ImageUrl">
+        <value name="Url">
           <block type="text">
-            <field name="TEXT"></field>
+            <field name="ImageUrl"></field>
           </block>
         </value>
-        <value name="ImageWidth">
+        <value name="Width">
           <block type="math_number">
-            <field name="NUM">400</field>
+            <field name="ImageWidth">400</field>
           </block>
         </value>
-        <value name="ImageHeight">
+        <value name="Height">
           <block type="math_number">
-            <field name="NUM">300</field>
+            <field name="ImageHeight">300</field>
           </block>
         </value>
         
