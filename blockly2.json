@@ -1,7 +1,6 @@
 {
   "types": ["iframe2_fustyles"],
   "category": "catPlus",
-  "output": null,
   "scripts": [
     "blockly2/blocks.js",
     "blockly2/javascript.js"
