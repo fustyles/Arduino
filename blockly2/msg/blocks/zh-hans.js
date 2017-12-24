@@ -1,0 +1,1 @@
+Blockly.Msg.TEXT_SHOW = "?¾ç¤º";

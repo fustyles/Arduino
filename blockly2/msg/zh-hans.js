@@ -1,0 +1,1 @@
+MSG.catToolText = "显示文字";
