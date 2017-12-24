@@ -2,7 +2,7 @@
     <block type="iframe2_fustyles">
         <value name="Url">
           <block type="text">
-            <field name="PageUrl">400</field>
+            <field name="PageUrl"></field>
           </block>
         </value>
         <value name="Width">
