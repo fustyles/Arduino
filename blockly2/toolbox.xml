@@ -1,6 +1,6 @@
 <category id="catToolText">
     <block type="iframe2_fustyles">
-     
+        <value name="string_">
             <value name="PageUrl">
               <block type="text">
                 <field name="TEXT"></field>
@@ -16,6 +16,6 @@
                 <field name="NUM">300</field>
               </block>
             </value>  
-
+        </value>
     </block>
 </category>
