@@ -2,39 +2,26 @@
     <block type="iframe2_fustyles">
         <value name="string_">
             
-             <value name="Url">
-          <block type="text">
-            <field name="PageUrl"></field>
-              
-              
-              
-                      <value name="Width">
-          <block type="text">
-            <field name="PageWidth">400</field>
-              
-              
-                  <value name="Height">
-          <block type="text">
-            <field name="PageHeight">300</field>
-          </block>
-        </value>
-              
-              
-              
-          </block>
-        </value>
-    
-              
-              
-              
-          </block>
-        </value>
+            <value name="Url">
+              <block type="text">
+                <field name="PageUrl"></field>
 
-            
-            
-            
-            
-            
+                     <value name="Width">
+                      <block type="text">
+                        <field name="PageWidth">400</field>
+
+                                <value name="Height">
+                                  <block type="text">
+                                    <field name="PageHeight">300</field>
+                                  </block>
+                                </value>
+
+                      </block>
+                    </value>
+
+              </block>
+            </value>
+
         </value>
        
     </block>
