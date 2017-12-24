@@ -1,5 +1,6 @@
 {
   "type": "iframe2_fustyles",
+  "category": "catPlus",  
   "message0": "PageUrl %1 PageWidth %2 PageHeight %3",
   "args0": [
     {
@@ -23,7 +24,6 @@
   "colour": 180,
   "tooltip": "Hello World",
   "helpUrl": "",
-  "category": "catPlus",
   "scripts": [
     "blockly2/blocks.js",
     "blockly2/javascript.js"
