@@ -1,6 +1,6 @@
 Blockly.Blocks['iframe2_fustyles'] = {
   init: function() {
-  this.appendValueInput('string_')
+  this.appendValueInput('Main')
       .setCheck('String')
       .appendField(Blockly.Msg.TEXT_MAIN);
   }
