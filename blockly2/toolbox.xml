@@ -1,7 +1,7 @@
 <category id="catToolText">
     <block type="factory_base" id="6vR59)wUhbj[eQQEOs!_" deletable="false" movable="false" x="0" y="0">
     <mutation connections="LEFT"></mutation>
-    <field name="NAME">ShowImage_france</field>
+    <field name="NAME">iframe2_fustyles</field>
     <field name="INLINE">AUTO</field>
     <field name="CONNECTIONS">LEFT</field>
     <statement name="INPUTS">
