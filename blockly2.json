@@ -1,5 +1,23 @@
 {
   "types": ["iframe2_fustyles"],
+    "message0": "PageUrl %1 PageWidth %2 PageHeight %3",
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "PageUrl",
+      "check": "String"
+    },
+    {
+      "type": "input_value",
+      "name": "PageWidth",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "PagHeight",
+      "check": "Number"
+    }
+  ],
   "category": "catPlus",
   "scripts": [
     "blockly2/blocks.js",
