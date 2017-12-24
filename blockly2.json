@@ -1,14 +1,14 @@
 {
-  "type": ["iframe2_fustyles"],
+  "types": ["iframe2_fustyles"],
   "category": "catPlus",
   "scripts": [
-    "blockly2/blocks.js",
-    "blockly2/javascript.js"
+    "blockly/blocks.js",
+    "blockly/javascript.js"
   ],
-    "dependencies": [
-    "Text-blockly2.js"
+  "dependencies": [
+    "Text-blockly.js"
   ],
-  "msg": "blockly2/msg",
-  "blocksMsg": "blockly2/msg/blocks",
-  "toolbox": "blockly2/toolbox.xml"
+  "msg": "blockly/msg",
+  "blocksMsg": "blockly/msg/blocks",
+  "toolbox": "blockly/toolbox.xml"
 }
