@@ -1,17 +1,17 @@
 <category id="catToolText">
     <block type="iframe2_fustyles">
         <value name="Url">
-          <block type="text">
+          <block type="input_value">
             <field name="PageUrl"></field>
           </block>
         </value>
         <value name="Width">
-          <block type="math_number">
+          <block type="input_value">
             <field name="PageWidth">400</field>
           </block>
         </value>
         <value name="Height">
-          <block type="math_number">
+          <block type="input_value">
             <field name="PageHeight">300</field>
           </block>
         </value>
