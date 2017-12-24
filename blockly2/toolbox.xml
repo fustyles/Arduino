@@ -3,6 +3,7 @@
     <block type="iframe2_fustyles">
         <value name="string_">
         </value>
+
         <value name="PageUrl">
           <block type="text">
             <field name="TEXT"></field>
@@ -17,7 +18,6 @@
           <block type="math_number">
             <field name="NUM">300</field>
           </block>
-        </value>
-  </block>
+        </value>  </block>
   
 </category>
