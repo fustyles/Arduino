@@ -1,21 +1,41 @@
 <category id="catToolText">
     <block type="iframe2_fustyles">
         <value name="string_">
-        </value>
-        <value name="Url">
+            
+             <value name="Url">
           <block type="text">
             <field name="PageUrl"></field>
-          </block>
-        </value>
-        <value name="Width">
+              
+              
+              
+                      <value name="Width">
           <block type="text">
             <field name="PageWidth">400</field>
-          </block>
-        </value>
-        <value name="Height">
+              
+              
+                  <value name="Height">
           <block type="text">
             <field name="PageHeight">300</field>
           </block>
         </value>
+              
+              
+              
+          </block>
+        </value>
+    
+              
+              
+              
+          </block>
+        </value>
+
+            
+            
+            
+            
+            
+        </value>
+       
     </block>
 </category>
