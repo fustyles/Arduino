@@ -2,17 +2,17 @@
     <block type="iframe2_fustyles">
         <value name="string_">
         </value>
-        <value name="Url">
+        <value name="PageUrl">
           <block type="text">
             <field name="PageUrl"></field>
           </block>
         </value>
-        <value name="Width">
+        <value name="PageWidth">
           <block type="math_number">
             <field name="PageWidth">400</field>
           </block>
         </value>
-        <value name="Height">
+        <value name="PageHeight">
           <block type="math_number">
             <field name="PageHeight">300</field>
           </block>
