@@ -3,6 +3,5 @@ Blockly.Blocks['iframe2_fustyles'] = {
   this.appendValueInput('string_')
       .setCheck('String')
       .appendField(Blockly.Msg.TEXT_SHOW);
-  this.setColour(Blockly.Blocks.colour.HUE);
   }
 };
