@@ -1,5 +1,4 @@
 <category id="catToolText">
-    
     <block type="iframe2_fustyles">
         <value name="string_">
         </value>
@@ -18,6 +17,6 @@
           <block type="math_number">
             <field name="NUM">300</field>
           </block>
-        </value>  </block>
-  
+        </value>  
+    </block>
 </category>
