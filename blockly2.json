@@ -1,5 +1,5 @@
 {
-  "type": "iframe2_fustyles",
+  "type": ["iframe2_fustyles"],
   "category": "catPlus",
   "scripts": [
     "blockly2/blocks.js",
