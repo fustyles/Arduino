@@ -1,5 +1,13 @@
 <category id="catToolText">
-      <block type="iframe2_fustyles">
+      <block type="PageUrl">
+        <value name="string_">
+        </value>
+      </block>
+      <block type="PageWidth">
+        <value name="string_">
+        </value>
+      </block>
+      <block type="PageHeight">
         <value name="string_">
         </value>
       </block>
