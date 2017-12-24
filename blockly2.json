@@ -1,23 +1,28 @@
 {
-  "types": ["iframe2_fustyles"],
-    "message0": "PageUrl %1 PageWidth %2 PageHeight %3",
+  "type": "iframe2_fustyles",
+  "message0": "ImageUrl %1 ImageWidth %2 ImageHeight %3",
   "args0": [
     {
       "type": "input_value",
-      "name": "PageUrl",
+      "name": "ImageUrl",
       "check": "String"
     },
     {
       "type": "input_value",
-      "name": "PageWidth",
+      "name": "ImageWidth",
       "check": "Number"
     },
     {
       "type": "input_value",
-      "name": "PagHeight",
+      "name": "ImageHeight",
       "check": "Number"
     }
   ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": 180,
+  "tooltip": "Hello World",
+  "helpUrl": ""
   "category": "catPlus",
   "scripts": [
     "blockly2/blocks.js",
