@@ -8,12 +8,12 @@
           </block>
         </value>
         <value name="PageWidth">
-          <block type="math_number">
+          <block type="text">
             <field name="PageWidth">400</field>
           </block>
         </value>
         <value name="PageHeight">
-          <block type="math_number">
+          <block type="text">
             <field name="PageHeight">300</field>
           </block>
         </value>
