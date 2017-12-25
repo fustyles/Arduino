@@ -1,1 +1,0 @@
-MSG.catToolText = "Display Page";
