@@ -6,8 +6,8 @@
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(4, 5); // Arduino RX:4, TX:5 
 
-String wifi_id = "id";
-String wifi_pwd = "pwd";
+String SSID = "id";
+String PWD = "pwd";
 
 void setup()
 {
@@ -26,7 +26,7 @@ void setup()
   mySerial.println("AT+CIPSERVER=1,80");
   mySerial.flush();
   waitreply(1000);
-  mySerial.println("AT+CWJAP=\""+wifi_id+"\",\""+wifi_pwd+"\"");
+  mySerial.println("AT+CWJAP=\""+SSID+"\",\""+PWD+"\"");
   mySerial.flush();
   waitreply(10000);
 }
