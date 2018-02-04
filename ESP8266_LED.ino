@@ -83,6 +83,14 @@ void loop()
   }
 }
 
+void SendData(String data,int waitlimit)
+{
+  mySerial.println(data);
+  mySerial.flush();
+  delay(20);
+  waitreply(waitlimit);
+}
+
 void feedback(String str,String response,int len)
 {
     String CID = String(str.charAt(str.indexOf("IPD,")+4));
@@ -102,14 +110,6 @@ void feedback(String str,String response,int len)
     SendData("AT+CIPSEND="+CID+",16",0);
     SendData("</body></html>",2000);
     SendData("AT+CIPCLOSE="+CID,2000);
-}
-
-void SendData(String data,int waitlimit)
-{
-  mySerial.println(data);
-  mySerial.flush();
-  delay(20);
-  waitreply(waitlimit);
 }
 
 void waitreply(int timelimit)
