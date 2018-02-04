@@ -32,37 +32,42 @@ void setup()
 }
 void loop() 
 {
-  String str="";
+  String str="", cmd="";
+  int getstate = 0;
   if (mySerial.available())
   {
     while (mySerial.available())
     {
       char c = mySerial.read();
-      str += char(toupper(c));
       Serial.print(c);
       delay(10);
-      if (str.indexOf("HTTP")!= -1) 
-      {
-        Serial.print("\n");
-        break;
-      }
+      str = str + char(toupper(c));
+      if (String(c).indexOf("?")!= -1) getstate=1;
+      if (String(c).indexOf(" ")!= -1) getstate=0;
+      if (getstate==1) cmd = cmd + char(toupper(c));
+      if ((str.indexOf("?")!= -1)&&(str.indexOf("HTTP")!= -1)) break;
     }  
   }
-
-  if (str.indexOf("?TURNON")!= -1)
+  if (str.indexOf("HTTP")!= -1)
   {
-    digitalWrite(pinLED,1);
-    feedback(str,"<font color=red>TURN ON</font>",32);
+    Serial.println("");
+    Serial.println("command: "+cmd);
+    
+    if (cmd=="?TURNON")
+    {
+      digitalWrite(pinLED,1);
+      feedback(str,"<font color=red>TURN ON</font>",32);
+    }
+    else if (cmd=="?TURNOFF")
+    {
+      digitalWrite(pinLED,0);  
+      feedback(str,"<font color=blue>TURN OFF</font>",34);
+    }
+    else if (str.indexOf("IPD,")!= -1)
+    {
+      feedback(str,"FAIL",6);
+    }  
   }
-  else if (str.indexOf("?TURNOFF")!= -1)
-  {
-    digitalWrite(pinLED,0);  
-    feedback(str,"<font color=blue>TURN OFF</font>",34);
-  }
-  else if (str.indexOf("IPD,")!= -1)
-  {
-    feedback(str,"FAIL",6);
-  }  
 }
 
 void waitreply(int timelimit)
