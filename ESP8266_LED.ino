@@ -6,8 +6,8 @@
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(4, 5); // Arduino RX:4, TX:5 
 
-String wifi_id = "3COM";
-String wifi_pwd = "godblessyou";
+String wifi_id = "id";
+String wifi_pwd = "pwd";
 
 void setup()
 {
@@ -44,7 +44,7 @@ void loop()
       str = str + char(toupper(c));
       if (String(c).indexOf("?")!= -1) getstate=1;
       if (String(c).indexOf(" ")!= -1) getstate=0;
-      if (getstate==1) cmd = cmd + String(c);
+      if ((getstate==1)&&(String(c).indexOf("?")== -1)) cmd = cmd + String(c);
       if ((str.indexOf("?")!= -1)&&(str.indexOf("HTTP")!= -1)) break;
     }  
   }
@@ -52,15 +52,15 @@ void loop()
   if ((str.indexOf("IPD")!= -1)&&(str.indexOf("HTTP")!= -1))
   {
     Serial.println("");
-    Serial.println("command: "+cmd);
+    Serial.println("command: " + cmd);
     
-    if (cmd=="?on")
+    if (cmd=="on")
     {
       pinMode(2,OUTPUT);
       digitalWrite(2,HIGH);
       feedback(str,"<font color=red>TURN ON</font>",32);
     }
-    else if (cmd=="?off")
+    else if (cmd=="off")
     {
       pinMode(2,OUTPUT);
       digitalWrite(2,LOW);  
