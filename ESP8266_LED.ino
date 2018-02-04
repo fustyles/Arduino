@@ -54,7 +54,7 @@ void loop()
   }
   else if (str.indexOf("IPD,")!= -1)
   {
-    feedback(str,"SORRY",7);
+    feedback(str,"FAIL",6);
   }  
 }
 
