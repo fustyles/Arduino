@@ -27,6 +27,7 @@ void setup()
   mySerial.flush();
   waitreply(10000);
 }
+
 void loop() 
 {
   String str="", cmd="";
