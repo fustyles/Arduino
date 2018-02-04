@@ -29,7 +29,6 @@ void setup()
   mySerial.flush();
   waitreply(10000);
 }
-
 void loop() 
 {
   String str="", cmd="";
@@ -49,7 +48,7 @@ void loop()
     }  
   }
   
-  if (str.indexOf("HTTP")!= -1)
+  if ((str.indexOf("IPD")!= -1)&&(str.indexOf("HTTP")!= -1))
   {
     Serial.println("");
     Serial.println("command: "+cmd);
