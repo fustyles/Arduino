@@ -61,13 +61,9 @@ void loop()
       feedback(str,"<font color=blue>TURN OFF</font>",34);
     }
     else if (cmd=="ip")
-    {
-      while (mySerial.available())
-      {
-        mySerial.read();
-      }  
+    { 
       mySerial.println("AT+CIFSR");
-      delay(1000);
+      delay(20);
       while (mySerial.available())
       {
         char c = mySerial.read();
