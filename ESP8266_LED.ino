@@ -86,7 +86,7 @@ void feedback(String str,String response,int len)
     SendData("AT+CIPSEND="+CID+",8",0);
     SendData("<body>",2000);
     SendData("AT+CIPSEND="+CID+","+String(len),0);
-    SendData(response,20000);
+    SendData(response,10000);
     SendData("AT+CIPSEND="+CID+",16",0);
     SendData("</body></html>",2000);
     SendData("AT+CIPCLOSE="+CID,2000);
