@@ -89,7 +89,7 @@ void feedback(String str,String response,int len)
     waitreply(2000);
 
     mySerial.println("AT+CIPSEND="+CID+",69");
-    delay(100);
+    delay(50);
     mySerial.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">");
     waitreply(10000);    
     
