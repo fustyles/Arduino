@@ -1,4 +1,6 @@
-//Author : ChungYi Fu
+// Author : ChungYi Fu
+// turn on : http://192.168.4.1/?turnon
+// turn off : http://192.168.4.1/?turnoff
 
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(4, 5); // Arduino RX:4, TX:5 
