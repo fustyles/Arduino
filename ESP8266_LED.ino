@@ -1,12 +1,12 @@
 // Author : ChungYi Fu
-// turn on : http://192.168.4.1/?turnon
-// turn off : http://192.168.4.1/?turnoff
+// turn on : http://192.168.4.1/?on
+// turn off : http://192.168.4.1/?off
 
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(4, 5); // Arduino RX:4, TX:5 
 
-String wifi_id = "id";
-String wifi_pwd = "pwd";
+String wifi_id = "3COM";
+String wifi_pwd = "godblessyou";
 
 void setup()
 {
@@ -43,7 +43,7 @@ void loop()
       str = str + char(toupper(c));
       if (String(c).indexOf("?")!= -1) getstate=1;
       if (String(c).indexOf(" ")!= -1) getstate=0;
-      if (getstate==1) cmd = cmd + char(toupper(c));
+      if (getstate==1) cmd = cmd + String(c);
       if ((str.indexOf("?")!= -1)&&(str.indexOf("HTTP")!= -1)) break;
     }  
   }
@@ -53,13 +53,13 @@ void loop()
     Serial.println("");
     Serial.println("command: "+cmd);
     
-    if (cmd=="?TURNON")
+    if (cmd=="?on")
     {
       pinMode(2,OUTPUT);
       digitalWrite(2,HIGH);
       feedback(str,"<font color=red>TURN ON</font>",32);
     }
-    else if (cmd=="?TURNOFF")
+    else if (cmd=="?off")
     {
       pinMode(2,OUTPUT);
       digitalWrite(2,LOW);  
