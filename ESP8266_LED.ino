@@ -60,6 +60,22 @@ void loop()
       digitalWrite(2,LOW);  
       feedback(str,"<font color=blue>TURN OFF</font>",34);
     }
+    else if (cmd=="ip")
+    {
+      while (mySerial.available())
+      {
+        mySerial.read();
+      }  
+      mySerial.println("AT+CIFSR");
+      delay(1000);
+      while (mySerial.available())
+      {
+        char c = mySerial.read();
+        delay(10);
+        Serial.print(c);
+      }
+      feedback(str,"",2);
+    }    
     else if (cmd=="your command")
     {
         //you can do anything
