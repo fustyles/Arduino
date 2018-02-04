@@ -38,12 +38,12 @@ void loop()
       if (String(c).indexOf("?")!= -1) getstate=1;
       if (String(c).indexOf(" ")!= -1) getstate=0;
       if ((getstate==1)&&(String(c).indexOf("?")== -1)) cmd = cmd + String(c);
-      if ((str.indexOf("?")!= -1)&&(str.indexOf("HTTP")!= -1)) break;
+      if (str.indexOf(" HTTP")!= -1) break;
     }  
     Serial.println(str);
   }
   
-  if ((str.indexOf("IPD")!= -1)&&(str.indexOf("HTTP")!= -1)&&(cmd!=""))
+  if (str.indexOf(" HTTP")!= -1)
   {
     Serial.println("");
     Serial.println("command: " + cmd);
