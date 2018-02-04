@@ -87,35 +87,35 @@ void feedback(String str,String response,int len)
     
     mySerial.println("AT+CIPSEND="+CID+",8");
     mySerial.flush();
-    delay(50);
+    delay(100);
     mySerial.println("<html>");
     mySerial.flush();
     waitreply(2000);
 
     mySerial.println("AT+CIPSEND="+CID+",8");
     mySerial.flush();
-    delay(50);
+    delay(100);
     mySerial.println("<head>");
     mySerial.flush();
     waitreply(2000);
 
     mySerial.println("AT+CIPSEND="+CID+",69");
     mySerial.flush();
-    delay(50);
+    delay(100);
     mySerial.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">");
     mySerial.flush();
     waitreply(10000);    
     
     mySerial.println("AT+CIPSEND="+CID+",9");
     mySerial.flush();
-    delay(50);
+    delay(100);
     mySerial.println("</head>");
     mySerial.flush();
     waitreply(2000);
     
     mySerial.println("AT+CIPSEND="+CID+",8");
     mySerial.flush();
-    delay(50);
+    delay(100);
     mySerial.println("<body>");
     mySerial.flush();
     waitreply(2000);    
@@ -129,11 +129,12 @@ void feedback(String str,String response,int len)
     
     mySerial.println("AT+CIPSEND="+CID+",16");
     mySerial.flush();
-    delay(50);
+    delay(100);
     mySerial.println("</body></html>");
     mySerial.flush();
     waitreply(2000);
+    
     mySerial.println("AT+CIPCLOSE="+CID);
     mySerial.flush();
-    delay(50);
-}   
+    delay(100);
+}
