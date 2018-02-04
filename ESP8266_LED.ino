@@ -62,7 +62,7 @@ void loop()
       digitalWrite(2,LOW);  
       feedback(str,"<font color=blue>TURN OFF</font>",34);
     }
-    else if (str.indexOf("IPD,")!= -1)
+    else 
     {
       feedback(str,"FAIL",6);
     }  
