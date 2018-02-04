@@ -43,7 +43,11 @@ void loop()
       str += char(toupper(c));
       Serial.print(c);
       delay(10);
-      if (str.indexOf("HTTP")!= -1) break;
+      if (str.indexOf("HTTP")!= -1) 
+      {
+        Serial.print("\n");
+        break;
+      }
     }  
   }
 
@@ -120,10 +124,10 @@ void feedback(String str,String response,int len)
     
     mySerial.println("AT+CIPSEND="+CID+","+String(len));
     mySerial.flush();
-    delay(50);
+    delay(200);
     mySerial.println(response);
     mySerial.flush();
-    waitreply(10000);
+    waitreply(20000);
     
     mySerial.println("AT+CIPSEND="+CID+",16");
     mySerial.flush();
@@ -133,5 +137,5 @@ void feedback(String str,String response,int len)
     waitreply(2000);
     mySerial.println("AT+CIPCLOSE="+CID);
     mySerial.flush();
-    waitreply(2000);
+    delay(50);
 }   
