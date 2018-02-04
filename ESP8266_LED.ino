@@ -40,7 +40,6 @@ void loop()
       if (String(c).indexOf("?")!= -1) getstate=1;
       if (String(c).indexOf(" ")!= -1) getstate=0;
       if ((getstate==1)&&(String(c).indexOf("?")== -1)) cmd = cmd + String(c);
-      if (str.indexOf(" HTTP")!= -1) break;
     }  
     Serial.println(str);
   }
