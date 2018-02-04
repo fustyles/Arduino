@@ -109,7 +109,7 @@ void waitreply(int timelimit)
         while(mySerial.available())
         {
             char c = mySerial.read();
-            delay(20);
+            delay(10);
             //Serial.print(c);
             st=1;
         }
