@@ -93,7 +93,7 @@ void SendData(String data,int waitlimit)
 {
   mySerial.println(data);
   mySerial.flush();
-  delay(100);
+  delay(20);
   waitreply(waitlimit);
 }
 
