@@ -1,7 +1,11 @@
 // Author : ChungYi Fu (Taiwan)
-// ESP8266 Server IP : http://192.168.4.1
+// ESP8266 
+// Server static IP: 192.168.4.1
 // Turn On : http://192.168.4.1/?on
 // Turn Off : http://192.168.4.1/?off
+// Client dynammic IP: 
+// Turn On : http://192.168.xxx.xxx/?on
+// Turn Off : http://192.168.xxx.xxx/?off
 
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(4, 5); // Arduino RX:4, TX:5 
