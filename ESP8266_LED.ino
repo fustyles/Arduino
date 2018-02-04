@@ -89,12 +89,12 @@ void loop()
   }
 }
 
-void SendData(String data,int waitlimit)
+void SendData(String data,int timelimit)
 {
   mySerial.println(data);
   mySerial.flush();
   delay(20);
-  waitreply(waitlimit);
+  waitreply(timelimit);
 }
 
 void feedback(String str,String response,int len)
