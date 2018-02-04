@@ -3,14 +3,11 @@
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(4, 5); // Arduino RX:4, TX:5 
 
-int pinLED = 2;
 String wifi_id = "id";
 String wifi_pwd = "pwd";
 
 void setup()
 {
-  pinMode(pinLED,OUTPUT);
-  
   Serial.begin(9600);
   mySerial.begin(9600);
 
@@ -55,12 +52,14 @@ void loop()
     
     if (cmd=="?TURNON")
     {
-      digitalWrite(pinLED,1);
+      pinMode(2,OUTPUT);
+      digitalWrite(2,HIGH);
       feedback(str,"<font color=red>TURN ON</font>",32);
     }
     else if (cmd=="?TURNOFF")
     {
-      digitalWrite(pinLED,0);  
+      pinMode(2,OUTPUT);
+      digitalWrite(2,LOW);  
       feedback(str,"<font color=blue>TURN OFF</font>",34);
     }
     else if (str.indexOf("IPD,")!= -1)
