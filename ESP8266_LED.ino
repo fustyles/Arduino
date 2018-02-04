@@ -18,21 +18,11 @@ void setup()
   Serial.begin(9600);
   mySerial.begin(9600);
 
-  mySerial.println("AT+RST");
-  mySerial.flush();
-  waitreply(2000);
-  mySerial.println("AT+CWMODE=3");
-  mySerial.flush();
-  waitreply(2000);
-  mySerial.println("AT+CIPMUX=1");
-  mySerial.flush();
-  waitreply(2000);
-  mySerial.println("AT+CIPSERVER=1,80");
-  mySerial.flush();
-  waitreply(2000);
-  mySerial.println("AT+CWJAP=\""+SSID+"\",\""+PWD+"\"");
-  mySerial.flush();
-  waitreply(2000);
+  SendData("AT+RST",2000);
+  SendData("AT+CWMODE=3",2000);
+  SendData("AT+CIPMUX=1",2000);
+  SendData("AT+CIPSERVER=1,80",2000);
+  SendData("AT+CWJAP=\""+SSID+"\",\""+PWD+"\"",10000);
 }
 void loop() 
 {
@@ -70,15 +60,9 @@ void loop()
       digitalWrite(2,LOW);  
       feedback(str,"<font color=blue>TURN OFF</font>",34);
     }
-    else if (cmd=="ip")
+    else if (cmd=="your command")
     {
-        mySerial.println("AT+CIFSR");
-        mySerial.flush();
-        delay(2000);
-        String CID = String(str.charAt(str.indexOf("IPD,")+4));
-        mySerial.println("AT+CIPCLOSE="+CID);
-        mySerial.flush();
-        delay(20);
+        //you can do anything
     }
     else 
     {
@@ -91,57 +75,29 @@ void feedback(String str,String response,int len)
 {
     String CID = String(str.charAt(str.indexOf("IPD,")+4));
     
-    mySerial.println("AT+CIPSEND="+CID+",8");
-    mySerial.flush();
-    delay(20);
-    mySerial.println("<html>");
-    mySerial.flush();
-    waitreply(2000);
+    SendData("AT+CIPSEND="+CID+",8",0);
+    SendData("<html>",2000);
+    SendData("AT+CIPSEND="+CID+",8",0);
+    SendData("<head>",2000);
+    SendData("AT+CIPSEND="+CID+",69",0);
+    SendData("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">",10000);
+    SendData("AT+CIPSEND="+CID+",9",0);
+    SendData("</head>",2000);
+    SendData("AT+CIPSEND="+CID+",8",0);
+    SendData("<body>",2000);
+    SendData("AT+CIPSEND="+CID+","+String(len),0);
+    SendData(response,20000);
+    SendData("AT+CIPSEND="+CID+",16",0);
+    SendData("</body></html>",2000);
+    SendData("AT+CIPCLOSE="+CID,2000);
+}
 
-    mySerial.println("AT+CIPSEND="+CID+",8");
-    mySerial.flush();
-    delay(20);
-    mySerial.println("<head>");
-    mySerial.flush();
-    waitreply(2000);
-
-    mySerial.println("AT+CIPSEND="+CID+",69");
-    mySerial.flush();
-    delay(20);
-    mySerial.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">");
-    mySerial.flush();
-    waitreply(10000);    
-    
-    mySerial.println("AT+CIPSEND="+CID+",9");
-    mySerial.flush();
-    delay(20);
-    mySerial.println("</head>");
-    mySerial.flush();
-    waitreply(2000);
-    
-    mySerial.println("AT+CIPSEND="+CID+",8");
-    mySerial.flush();
-    delay(20);
-    mySerial.println("<body>");
-    mySerial.flush();
-    waitreply(2000);    
-    
-    mySerial.println("AT+CIPSEND="+CID+","+String(len));
-    mySerial.flush();
-    delay(20);
-    mySerial.println(response);
-    mySerial.flush();
-    waitreply(20000);
-    
-    mySerial.println("AT+CIPSEND="+CID+",16");
-    mySerial.flush();
-    delay(20);
-    mySerial.println("</body></html>");
-    mySerial.flush();
-    waitreply(2000);
-    
-    mySerial.println("AT+CIPCLOSE="+CID);
-    mySerial.flush();
+void SendData(String data,int waitlimit)
+{
+  mySerial.println(data);
+  mySerial.flush();
+  delay(20);
+  waitreply(waitlimit);
 }
 
 void waitreply(int timelimit)
@@ -153,7 +109,7 @@ void waitreply(int timelimit)
         while(mySerial.available())
         {
             char c = mySerial.read();
-            delay(10);
+            delay(20);
             //Serial.print(c);
             st=1;
         }
