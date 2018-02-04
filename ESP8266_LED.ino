@@ -1,7 +1,7 @@
 // Author : ChungYi Fu
-// Server IP : http://192.168.4.1
-// turn on : http://192.168.4.1/?on
-// turn off : http://192.168.4.1/?off
+// ESP8266 Server IP : http://192.168.4.1
+// Turn On : http://192.168.4.1/?on
+// Turn Off : http://192.168.4.1/?off
 
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(4, 5); // Arduino RX:4, TX:5 
