@@ -22,6 +22,7 @@ void setup()
   SendData("AT+CWMODE=3",2000);
   SendData("AT+CIPMUX=1",2000);
   SendData("AT+CIPSERVER=1,80",2000);
+  //SendData("AT+CIPSTA=\"192.168.0.3\"",2000);  
   SendData("AT+CWJAP=\""+SSID+"\",\""+PWD+"\"",10000);
 }
 
