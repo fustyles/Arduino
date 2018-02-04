@@ -4,6 +4,8 @@
 SoftwareSerial mySerial(4, 5); // Arduino RX:4, TX:5 
 
 int pinLED = 2;
+String wifi_id = "id";
+String wifi_pwd = "pwd";
 
 void setup()
 {
@@ -22,7 +24,7 @@ void setup()
   waitreply(1000);
   mySerial.println("AT+CIPSERVER=1,80");
   waitreply(1000);
-  mySerial.println("AT+CWJAP=\"id\",\"pwd\"");
+  mySerial.println("AT+CWJAP=\""+wifi_id+"\",\""+wifi_pwd+"\"");
   waitreply(10000);
 }
 void loop() 
