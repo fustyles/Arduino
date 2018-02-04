@@ -1,4 +1,5 @@
 // Author : ChungYi Fu
+// Server IP : http://192.168.4.1
 // turn on : http://192.168.4.1/?on
 // turn off : http://192.168.4.1/?off
 
