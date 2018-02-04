@@ -10,8 +10,8 @@
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
-String SSID = "id";
-String PWD = "pwd";
+String SSID = "3COM";
+String PWD = "godblessyou";
 
 void setup()
 {
@@ -49,7 +49,11 @@ void loop()
   {
     Serial.println("");
     Serial.println("command: " + cmd);
-
+    while (mySerial.available())
+    {
+      mySerial.read();
+    }
+    
     if (cmd=="on")
     {
       pinMode(2,OUTPUT);
@@ -64,10 +68,6 @@ void loop()
     }
     else if (cmd=="ip")
     {
-      while (mySerial.available())
-      {
-        mySerial.read();
-      }
       mySerial.println("AT+CIFSR");
       mySerial.flush();
       delay(100);
