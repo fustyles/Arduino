@@ -18,7 +18,7 @@ void setup()
   Serial.begin(9600);
   mySerial.begin(9600);
 
-  SendData("AT+RST",2000);
+  SendData("AT+RST",10000);
   SendData("AT+CWMODE=3",2000);
   SendData("AT+CIPMUX=1",2000);
   SendData("AT+CIPSERVER=1,80",2000);
