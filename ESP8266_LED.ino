@@ -8,7 +8,7 @@
 // Turn Off : http://192.168.xxx.xxx/?off
 
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(4, 5); // Arduino RX:4, TX:5 
+SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
 String SSID = "id";
 String PWD = "pwd";
@@ -48,7 +48,7 @@ void loop()
   {
     Serial.println("");
     Serial.println("command: " + cmd);
-    
+
     if (cmd=="on")
     {
       pinMode(2,OUTPUT);
@@ -60,7 +60,23 @@ void loop()
       pinMode(2,OUTPUT);
       digitalWrite(2,LOW);  
       feedback(str,"<font color=blue>TURN OFF</font>",34);
-    }  
+    }
+    else if (cmd=="ip")
+    {
+      while (mySerial.available())
+      {
+        mySerial.read();
+      }
+      mySerial.println("AT+CIFSR");
+      mySerial.flush();
+      delay(100);
+      while (mySerial.available())
+      {
+        char cip = mySerial.read();
+        Serial.print(cip);
+      }
+      feedback(str,"",2);
+    }    
     else if (cmd=="your command")
     {
         //you can do anything
@@ -76,7 +92,7 @@ void SendData(String data,int waitlimit)
 {
   mySerial.println(data);
   mySerial.flush();
-  delay(20);
+  delay(100);
   waitreply(waitlimit);
 }
 
