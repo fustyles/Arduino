@@ -69,22 +69,6 @@ void loop()
   }
 }
 
-void waitreply(int timelimit)
-{
-    int st = 0;
-    long int starttime = millis();
-    while( (starttime + timelimit) > millis())
-    {
-        while(mySerial.available())
-        {
-            char c = mySerial.read(); 
-            delay(10);
-            st=1;
-        }
-        if (st==1) return;
-    } 
-}
-
 void feedback(String str,String response,int len)
 {
     String CID = String(str.charAt(str.indexOf("IPD,")+4));
@@ -140,4 +124,20 @@ void feedback(String str,String response,int len)
     
     mySerial.println("AT+CIPCLOSE="+CID);
     mySerial.flush();
+}
+
+void waitreply(int timelimit)
+{
+    int st = 0;
+    long int starttime = millis();
+    while( (starttime + timelimit) > millis())
+    {
+        while(mySerial.available())
+        {
+            char c = mySerial.read(); 
+            delay(10);
+            st=1;
+        }
+        if (st==1) return;
+    } 
 }
