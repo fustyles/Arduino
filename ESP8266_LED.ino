@@ -17,14 +17,19 @@ void setup()
   mySerial.begin(9600);
 
   mySerial.println("AT+RST");
+  mySerial.flush();
   waitreply(10000);
   mySerial.println("AT+CWMODE=3");
+  mySerial.flush();
   waitreply(1000);
   mySerial.println("AT+CIPMUX=1");
+  mySerial.flush();
   waitreply(1000);
   mySerial.println("AT+CIPSERVER=1,80");
+  mySerial.flush();
   waitreply(1000);
   mySerial.println("AT+CWJAP=\""+wifi_id+"\",\""+wifi_pwd+"\"");
+  mySerial.flush();
   waitreply(10000);
 }
 void loop() 
@@ -79,38 +84,54 @@ void feedback(String str,String response,int len)
     String CID = String(str.charAt(str.indexOf("IPD,")+4));
     
     mySerial.println("AT+CIPSEND="+CID+",8");
+    mySerial.flush();
     delay(50);
     mySerial.println("<html>");
+    mySerial.flush();
     waitreply(2000);
 
     mySerial.println("AT+CIPSEND="+CID+",8");
+    mySerial.flush();
     delay(50);
     mySerial.println("<head>");
+    mySerial.flush();
     waitreply(2000);
 
     mySerial.println("AT+CIPSEND="+CID+",69");
+    mySerial.flush();
     delay(50);
     mySerial.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">");
+    mySerial.flush();
     waitreply(10000);    
     
     mySerial.println("AT+CIPSEND="+CID+",9");
+    mySerial.flush();
     delay(50);
     mySerial.println("</head>");
+    mySerial.flush();
     waitreply(2000);
     
     mySerial.println("AT+CIPSEND="+CID+",8");
+    mySerial.flush();
     delay(50);
     mySerial.println("<body>");
+    mySerial.flush();
     waitreply(2000);    
     
     mySerial.println("AT+CIPSEND="+CID+","+String(len));
+    mySerial.flush();
     delay(50);
     mySerial.println(response);
+    mySerial.flush();
     waitreply(10000);
     
     mySerial.println("AT+CIPSEND="+CID+",16");
+    mySerial.flush();
     delay(50);
     mySerial.println("</body></html>");
+    mySerial.flush();
     waitreply(2000);
     mySerial.println("AT+CIPCLOSE="+CID);
-}
+    mySerial.flush();
+    waitreply(2000);
+}   
