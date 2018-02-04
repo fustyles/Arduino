@@ -15,7 +15,7 @@ void setup()
   mySerial.begin(9600);
 
   mySerial.println("AT+RST");
-  waitreply(1000);
+  waitreply(10000);
   mySerial.println("AT+CWMODE=3");
   waitreply(1000);
   mySerial.println("AT+CIPMUX=1");
