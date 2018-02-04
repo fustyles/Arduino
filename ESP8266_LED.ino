@@ -12,8 +12,6 @@ void setup()
   pinMode(pinLED,OUTPUT);
   
   Serial.begin(9600);
-  while (!Serial) {}
-  
   mySerial.begin(9600);
 
   mySerial.println("AT+RST");
