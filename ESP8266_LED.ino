@@ -1,4 +1,4 @@
-// Author : ChungYi Fu
+// Author : ChungYi Fu (Taiwan)
 // ESP8266 Server IP : http://192.168.4.1
 // Turn On : http://192.168.4.1/?on
 // Turn Off : http://192.168.4.1/?off
