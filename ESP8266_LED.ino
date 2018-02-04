@@ -104,7 +104,7 @@ void feedback(String str,String response,int len)
     mySerial.println("AT+CIPSEND="+CID+","+String(len));
     delay(50);
     mySerial.println(response);
-    waitreply(2000);
+    waitreply(10000);
     
     mySerial.println("AT+CIPSEND="+CID+",16");
     delay(50);
