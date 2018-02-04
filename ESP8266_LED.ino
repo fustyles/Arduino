@@ -24,6 +24,7 @@ void setup()
   SendData("AT+CIPSERVER=1,80",2000);
   SendData("AT+CWJAP=\""+SSID+"\",\""+PWD+"\"",10000);
 }
+
 void loop() 
 {
   String str="", cmd="";
