@@ -136,5 +136,4 @@ void feedback(String str,String response,int len)
     
     mySerial.println("AT+CIPCLOSE="+CID);
     mySerial.flush();
-    delay(100);
 }
