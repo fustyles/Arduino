@@ -76,7 +76,7 @@ void loop()
         char cip = mySerial.read();
         Serial.print(cip);
       }
-      feedback(str,"",2);
+      feedback(str,"IP",4);
     }    
     else if (cmd=="your command")
     {
