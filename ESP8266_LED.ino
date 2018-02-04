@@ -46,6 +46,7 @@ void loop()
       if ((str.indexOf("?")!= -1)&&(str.indexOf("HTTP")!= -1)) break;
     }  
   }
+  
   if (str.indexOf("HTTP")!= -1)
   {
     Serial.println("");
