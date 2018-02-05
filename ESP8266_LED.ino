@@ -106,16 +106,8 @@ void SendData(String data,int TimeLimit)
 
 void Feedback(String CID,String Response,int len)
 {
-    SendData("AT+CIPSEND="+CID+",8",0);
-    SendData("<html>",2000);
-    SendData("AT+CIPSEND="+CID+",8",0);
-    SendData("<head>",2000);
-    SendData("AT+CIPSEND="+CID+",69",0);
-    SendData("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">",10000);
-    SendData("AT+CIPSEND="+CID+",9",0);
-    SendData("</head>",2000);
-    SendData("AT+CIPSEND="+CID+",8",0);
-    SendData("<body>",2000);
+    SendData("AT+CIPSEND="+CID+",94",0);
+    SendData("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body>",10000);
     SendData("AT+CIPSEND="+CID+","+String(len),0);
     SendData(Response,10000);
     SendData("AT+CIPSEND="+CID+",16",0);
