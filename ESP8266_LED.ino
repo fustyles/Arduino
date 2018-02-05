@@ -31,80 +31,80 @@ void setup()
 
 void loop() 
 {
-  String str="", cmd="";
-  int getstate = 0;
+  String ReceiveData="", Cmd="";
+  byte ReceiveState = 0;
   if (mySerial.available())
   {
     while (mySerial.available())
     {
       char c = mySerial.read();
       delay(10);
-      str = str + String(c);
-      if (String(c).indexOf("?")!= -1) getstate=1;
-      if (String(c).indexOf(" ")!= -1) getstate=0;
-      if ((getstate==1)&&(String(c).indexOf("?")== -1)) cmd = cmd + String(c);
+      ReceiveData = ReceiveData + String(c);
+      if (String(c).indexOf("?")!= -1) ReceiveState=1;
+      if (String(c).indexOf(" ")!= -1) ReceiveState=0;
+      if ((ReceiveState==1)&&(String(c).indexOf("?")== -1)) Cmd = Cmd + String(c);
     }  
-    Serial.println(str);
+    Serial.println(ReceiveData);
   }
   
-  if (str.indexOf(" HTTP")!= -1)
+  if (ReceiveData.indexOf(" HTTP")!= -1)
   {
     Serial.println("");
-    Serial.println("command: " + cmd);
+    Serial.println("command: " + Cmd);
     
-    String CID = String(str.charAt(str.indexOf("IPD,")+4));
+    String CID = String(ReceiveData.charAt(ReceiveData.indexOf("IPD,")+4));
     
     while (mySerial.available())
     {
       mySerial.read();
     }
     
-    if (cmd=="on")
+    if (Cmd=="on")
     {
       pinMode(2,OUTPUT);
       digitalWrite(2,HIGH);
-      feedback(CID,"<font color=red>TURN ON</font>",32);
+      Feedback(CID,"<font color=red>TURN ON</font>",32);
     }
-    else if (cmd=="off")
+    else if (Cmd=="off")
     {
       pinMode(2,OUTPUT);
       digitalWrite(2,LOW);  
-      feedback(CID,"<font color=blue>TURN OFF</font>",34);
+      Feedback(CID,"<font color=blue>TURN OFF</font>",34);
     }
-    else if (cmd=="ip")
+    else if (Cmd=="ip")
     {
       mySerial.println("AT+CIFSR");
       mySerial.flush();
       delay(10);  //you can try to change number to get complete data 
-      String response = "";
+      ReceiveData = "";
       while (mySerial.available())
       {
-          response = response + char(mySerial.read());
+          ReceiveData = ReceiveData + char(mySerial.read());
       }
-      feedback(CID,response,(response.length()+2));
+      Feedback(CID,ReceiveData,(ReceiveData.length()+2));
     }    
-    else if (cmd=="your command")
+    else if (Cmd=="your command")
     {
       // you can do anything
-      // String response = "Hello World";
-      // feedback(CID,response,(response.length()+2));
+      // String Response = "Hello World";
+      // Feedback(CID,Response,(Response.length()+2));
     }
     else 
     {
-      feedback(CID,"FAIL",6);
+      Feedback(CID,"FAIL",6);
     }  
   }
 }
 
-void SendData(String data,int timelimit)
+void SendData(String data,int TimeLimit)
 {
   mySerial.println(data);
   mySerial.flush();
   delay(20);
-  waitreply(timelimit);
+  WaitReply(TimeLimit);
 }
 
-void feedback(String CID,String response,int len)
+void Feedback(String CID,String Response,int len)
 {
     SendData("AT+CIPSEND="+CID+",8",0);
     SendData("<html>",2000);
@@ -117,26 +117,26 @@ void feedback(String CID,String response,int len)
     SendData("AT+CIPSEND="+CID+",8",0);
     SendData("<body>",2000);
     SendData("AT+CIPSEND="+CID+","+String(len),0);
-    SendData(response,10000);
+    SendData(Response,10000);
     SendData("AT+CIPSEND="+CID+",16",0);
     SendData("</body></html>",2000);
     SendData("AT+CIPCLOSE="+CID,2000);
 }
 
-String waitreply(int timelimit)
+String WaitReply(int TimeLimit)
 {
-  String str = "";
-  int readstate = 0;
-  long int starttime = millis();
-  while( (starttime + timelimit) > millis())
+  String ReceiveData = "";
+  byte ReceiveState = 0;
+  long int StartTime = millis();
+  while( (StartTime + TimeLimit) > millis())
   {
       while(mySerial.available())
       {
-          str = str + char(mySerial.read());
+          ReceiveData = ReceiveData + char(mySerial.read());
           delay(10);
-          readstate=1;
+          ReceiveState=1;
       }
-      if (readstate==1) return str;
+      if (ReceiveState==1) return ReceiveData;
   } 
-  return str;
+  return ReceiveData;
 }
