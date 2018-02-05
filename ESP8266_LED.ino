@@ -76,18 +76,18 @@ void loop()
       mySerial.println("AT+CIFSR");
       mySerial.flush();
       delay(10);  //you can try to change number to get complete data 
-      String myfeedback = "";
+      String response = "";
       while (mySerial.available())
       {
-          myfeedback = myfeedback + char(mySerial.read());
+          response = response + char(mySerial.read());
       }
-      feedback(CID,myfeedback,(myfeedback.length()+2));
+      feedback(CID,response,(response.length()+2));
     }    
     else if (cmd=="your command")
     {
       // you can do anything
-      // String yourfeedback = "Hello World";
-      // feedback(CID,yourfeedback,(yourfeedback.length()+2));
+      // String response = "Hello World";
+      // feedback(CID,response,(response.length()+2));
     }
     else 
     {
