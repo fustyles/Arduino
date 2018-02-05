@@ -1,5 +1,5 @@
 // Author : ChungYi Fu (Taiwan)  2018-2-5 23:20
-// ESP8266 
+// ESP8266 ESP-01 
 // AP Static IP: 192.168.4.1
 // Turn Off : http://192.168.4.1/?ip
 // Turn On : http://192.168.4.1/?on
