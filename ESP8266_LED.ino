@@ -1,4 +1,4 @@
-// Author : ChungYi Fu (Taiwan)  2018-2-5 22:40
+// Author : ChungYi Fu (Taiwan)  2018-2-5 23:10
 // ESP8266 
 // AP Static IP: 192.168.4.1
 // Turn Off : http://192.168.4.1/?ip
@@ -31,7 +31,7 @@ void setup()
 
 void loop() 
 {
-  String ReceiveData="", Cmd="";
+  String ReceiveData="", command="";
   byte ReceiveState=0;
   if (mySerial.available())
   {
@@ -39,10 +39,10 @@ void loop()
     {
       char c=mySerial.read();
       delay(10);
-      ReceiveData=ReceiveData + String(c);
+      ReceiveData=ReceiveData+String(c);
       if (String(c).indexOf("?")!=-1) ReceiveState=1;
       if (String(c).indexOf(" ")!=-1) ReceiveState=0;
-      if ((ReceiveState==1)&&(String(c).indexOf("?")==-1)) Cmd=Cmd + String(c);
+      if ((ReceiveState==1)&&(String(c).indexOf("?")==-1)) command=command+String(c);
     }  
     Serial.println(ReceiveData);
   }
@@ -50,7 +50,7 @@ void loop()
   if (ReceiveData.indexOf(" HTTP")!=-1)
   {
     Serial.println("");
-    Serial.println("command: " + Cmd);
+    Serial.println("command: "+command);
     
     String CID=String(ReceiveData.charAt(ReceiveData.indexOf("IPD,")+4));
     
@@ -59,19 +59,19 @@ void loop()
       mySerial.read();
     }
     
-    if (Cmd=="on")
+    if (command=="on")
     {
       pinMode(2,OUTPUT);
       digitalWrite(2,HIGH);
       Feedback(CID,"<font color=red>TURN ON</font>",32);
     }
-    else if (Cmd=="off")
+    else if (command=="off")
     {
       pinMode(2,OUTPUT);
       digitalWrite(2,LOW);  
       Feedback(CID,"<font color=blue>TURN OFF</font>",34);
     }
-    else if (Cmd=="ip")
+    else if (command=="ip")
     {
       mySerial.println("AT+CIFSR");
       mySerial.flush();
@@ -79,11 +79,11 @@ void loop()
       ReceiveData="";
       while (mySerial.available())
       {
-          ReceiveData=ReceiveData + char(mySerial.read());
+          ReceiveData=ReceiveData+char(mySerial.read());
       }
       Feedback(CID,ReceiveData,(ReceiveData.length()+2));
     }    
-    else if (Cmd=="your command")
+    else if (command=="your command")
     {
       // you can do anything
       // String Response="Hello World";
@@ -128,11 +128,11 @@ String WaitReply(int TimeLimit)
   String ReceiveData="";
   byte ReceiveState=0;
   long int StartTime=millis();
-  while( (StartTime + TimeLimit) > millis())
+  while( (StartTime+TimeLimit) > millis())
   {
       while(mySerial.available())
       {
-          ReceiveData=ReceiveData + char(mySerial.read());
+          ReceiveData=ReceiveData+char(mySerial.read());
           delay(10);
           ReceiveState=1;
       }
