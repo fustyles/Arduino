@@ -67,6 +67,7 @@ void loop()
     }
     else if (cmd=="ip")
     {
+      // This function is not available now
       mySerial.println("AT+CIFSR");
       mySerial.flush();
       delay(100);
