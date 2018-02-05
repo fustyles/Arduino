@@ -1,4 +1,4 @@
-// Author : ChungYi Fu (Taiwan)
+// Author : ChungYi Fu (Taiwan)  20180205
 // ESP8266 
 // Server static IP: 192.168.4.1
 // Turn On : http://192.168.4.1/?on
@@ -49,6 +49,8 @@ void loop()
     Serial.println("");
     Serial.println("command: " + cmd);
     
+    String CID = String(str.charAt(str.indexOf("IPD,")+4));
+    
     while (mySerial.available())
     {
       mySerial.read();
@@ -58,13 +60,13 @@ void loop()
     {
       pinMode(2,OUTPUT);
       digitalWrite(2,HIGH);
-      feedback(str,"<font color=red>TURN ON</font>",32);
+      feedback(CID,"<font color=red>TURN ON</font>",32);
     }
     else if (cmd=="off")
     {
       pinMode(2,OUTPUT);
       digitalWrite(2,LOW);  
-      feedback(str,"<font color=blue>TURN OFF</font>",34);
+      feedback(CID,"<font color=blue>TURN OFF</font>",34);
     }
     else if (cmd=="ip")
     {
@@ -77,18 +79,17 @@ void loop()
         char cip = mySerial.read();
         Serial.print(cip);
       }
-      feedback(str,"IP",4);
+      feedback(CID,"IP",4);
     }    
     else if (cmd=="your command")
     {
       // you can do anything
-      
       // String yourfeedback = "Hello World";
-      // feedback(str,yourfeedback,(yourfeedback.length()+2));
+      // feedback(CID,yourfeedback,(yourfeedback.length()+2));
     }
     else 
     {
-      feedback(str,"FAIL",6);
+      feedback(CID,"FAIL",6);
     }  
   }
 }
@@ -101,10 +102,8 @@ void SendData(String data,int timelimit)
   waitreply(timelimit);
 }
 
-void feedback(String str,String response,int len)
+void feedback(String CID,String response,int len)
 {
-    String CID = String(str.charAt(str.indexOf("IPD,")+4));
-    
     SendData("AT+CIPSEND="+CID+",8",0);
     SendData("<html>",2000);
     SendData("AT+CIPSEND="+CID+",8",0);
@@ -122,19 +121,22 @@ void feedback(String str,String response,int len)
     SendData("AT+CIPCLOSE="+CID,2000);
 }
 
-void waitreply(int timelimit)
+String waitreply(int timelimit)
 {
-    int st = 0;
-    long int starttime = millis();
-    while( (starttime + timelimit) > millis())
-    {
-        while(mySerial.available())
-        {
-            char c = mySerial.read();
-            delay(10);
-            //Serial.print(c);
-            st=1;
-        }
-        if (st==1) return;
-    } 
+  String str = "";
+  int readstate = 0;
+  long int starttime = millis();
+  while( (starttime + timelimit) > millis())
+  {
+      while(mySerial.available())
+      {
+          char c = mySerial.read();
+          str = str + String(c);
+          delay(10);
+          //Serial.print(c);
+          readstate=1;
+      }
+      if (readstate==1) return str;
+  } 
+  return str;
 }
