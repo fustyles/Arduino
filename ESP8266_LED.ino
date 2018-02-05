@@ -70,16 +70,15 @@ void loop()
     }
     else if (cmd=="ip")
     {
-      // This function is not available now
       mySerial.println("AT+CIFSR");
       mySerial.flush();
-      delay(100);
+      delay(5);
+      String strIP = "";
       while (mySerial.available())
       {
-        char cip = mySerial.read();
-        Serial.print(cip);
+          strIP = strIP + char(mySerial.read());
       }
-      feedback(CID,"IP",4);
+      feedback(CID,strIP,(strIP.length()+2));
     }    
     else if (cmd=="your command")
     {
@@ -130,10 +129,8 @@ String waitreply(int timelimit)
   {
       while(mySerial.available())
       {
-          char c = mySerial.read();
-          str = str + String(c);
+          str = str + char(mySerial.read());
           delay(10);
-          //Serial.print(c);
           readstate=1;
       }
       if (readstate==1) return str;
