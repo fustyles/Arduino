@@ -1,4 +1,4 @@
-// Author : ChungYi Fu (Taiwan)  2018-2-5 23:10
+// Author : ChungYi Fu (Taiwan)  2018-2-5 23:20
 // ESP8266 
 // AP Static IP: 192.168.4.1
 // Turn Off : http://192.168.4.1/?ip
@@ -126,7 +126,6 @@ void Feedback(String CID,String Response,int len)
 String WaitReply(int TimeLimit)
 {
   String ReceiveData="";
-  byte ReceiveState=0;
   long int StartTime=millis();
   while( (StartTime+TimeLimit) > millis())
   {
@@ -134,9 +133,8 @@ String WaitReply(int TimeLimit)
       {
           ReceiveData=ReceiveData+char(mySerial.read());
           delay(10);
-          ReceiveState=1;
       }
-      if (ReceiveState==1) return ReceiveData;
+      if (ReceiveData!="") return ReceiveData;
   } 
   return ReceiveData;
 }
