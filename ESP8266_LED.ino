@@ -1,11 +1,9 @@
 // Author : ChungYi Fu (Taiwan)  2018-2-5
-
 // ESP8266 
 // AP static IP: 192.168.4.1
 // Turn Off : http://192.168.4.1/?ip
 // Turn On : http://192.168.4.1/?on
 // Turn Off : http://192.168.4.1/?off
-
 // STA dynammic IP: 
 // Turn Off : http://192.168.xxx.xxx/?ip
 // Turn On : http://192.168.xxx.xxx/?on
