@@ -72,7 +72,7 @@ void loop()
     {
       mySerial.println("AT+CIFSR");
       mySerial.flush();
-      delay(5);
+      delay(10);
       String strIP = "";
       while (mySerial.available())
       {
