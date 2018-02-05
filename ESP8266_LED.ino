@@ -48,6 +48,7 @@ void loop()
   {
     Serial.println("");
     Serial.println("command: " + cmd);
+    
     while (mySerial.available())
     {
       mySerial.read();
@@ -81,6 +82,7 @@ void loop()
     else if (cmd=="your command")
     {
       // you can do anything
+      
       // String yourfeedback = "Hello World";
       // feedback(str,yourfeedback,(yourfeedback.length()+2));
     }
