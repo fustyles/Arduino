@@ -79,7 +79,8 @@ void loop()
     }    
     else if (cmd=="your command")
     {
-        //you can do anything
+      // you can do anything
+      // feedback(str,yourfeedback,(yourfeedback.length()+2));
     }
     else 
     {
