@@ -80,6 +80,7 @@ void loop()
     else if (cmd=="your command")
     {
       // you can do anything
+      // String yourfeedback = "Hello World";
       // feedback(str,yourfeedback,(yourfeedback.length()+2));
     }
     else 
