@@ -13,8 +13,8 @@
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
-String SSID = "id";
-String PWD = "pwd";
+String SSID="id";
+String PWD="pwd";
 
 void setup()
 {
@@ -32,27 +32,27 @@ void setup()
 void loop() 
 {
   String ReceiveData="", Cmd="";
-  byte ReceiveState = 0;
+  byte ReceiveState=0;
   if (mySerial.available())
   {
     while (mySerial.available())
     {
-      char c = mySerial.read();
+      char c=mySerial.read();
       delay(10);
-      ReceiveData = ReceiveData + String(c);
-      if (String(c).indexOf("?")!= -1) ReceiveState=1;
-      if (String(c).indexOf(" ")!= -1) ReceiveState=0;
-      if ((ReceiveState==1)&&(String(c).indexOf("?")== -1)) Cmd = Cmd + String(c);
+      ReceiveData=ReceiveData + String(c);
+      if (String(c).indexOf("?")!=-1) ReceiveState=1;
+      if (String(c).indexOf(" ")!=-1) ReceiveState=0;
+      if ((ReceiveState==1)&&(String(c).indexOf("?")==-1)) Cmd=Cmd + String(c);
     }  
     Serial.println(ReceiveData);
   }
   
-  if (ReceiveData.indexOf(" HTTP")!= -1)
+  if (ReceiveData.indexOf(" HTTP")!=-1)
   {
     Serial.println("");
     Serial.println("command: " + Cmd);
     
-    String CID = String(ReceiveData.charAt(ReceiveData.indexOf("IPD,")+4));
+    String CID=String(ReceiveData.charAt(ReceiveData.indexOf("IPD,")+4));
     
     while (mySerial.available())
     {
@@ -76,17 +76,17 @@ void loop()
       mySerial.println("AT+CIFSR");
       mySerial.flush();
       delay(10);  //you can try to change number to get complete data 
-      ReceiveData = "";
+      ReceiveData="";
       while (mySerial.available())
       {
-          ReceiveData = ReceiveData + char(mySerial.read());
+          ReceiveData=ReceiveData + char(mySerial.read());
       }
       Feedback(CID,ReceiveData,(ReceiveData.length()+2));
     }    
     else if (Cmd=="your command")
     {
       // you can do anything
-      // String Response = "Hello World";
+      // String Response="Hello World";
       // Feedback(CID,Response,(Response.length()+2));
     }
     else 
@@ -125,14 +125,14 @@ void Feedback(String CID,String Response,int len)
 
 String WaitReply(int TimeLimit)
 {
-  String ReceiveData = "";
-  byte ReceiveState = 0;
-  long int StartTime = millis();
+  String ReceiveData="";
+  byte ReceiveState=0;
+  long int StartTime=millis();
   while( (StartTime + TimeLimit) > millis())
   {
       while(mySerial.available())
       {
-          ReceiveData = ReceiveData + char(mySerial.read());
+          ReceiveData=ReceiveData + char(mySerial.read());
           delay(10);
           ReceiveState=1;
       }
