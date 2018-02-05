@@ -75,7 +75,7 @@ void loop()
     {
       mySerial.println("AT+CIFSR");
       mySerial.flush();
-      delay(10);  //you can try to change number to get complete data 
+      delay(5);  //you can try to change number to get complete data 
       ReceiveData="";
       while (mySerial.available())
       {
