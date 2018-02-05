@@ -106,9 +106,9 @@ void SendData(String data,int TimeLimit)
 
 void Feedback(String CID,String Response)
 {
-  String str="<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body>"+Response+"</body></html>";
-  SendData("AT+CIPSEND="+CID+","+(str.length()+2),2000);
-  SendData(str,10000);
+  Response="<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body>"+Response+"</body></html>";
+  SendData("AT+CIPSEND="+CID+","+(Response.length()+2),2000);
+  SendData(Response,10000);
   SendData("AT+CIPCLOSE="+CID,2000);
 }
 
