@@ -1,4 +1,4 @@
-// Author : ChungYi Fu (Taiwan)  2018-2-5 23:20
+// Author : ChungYi Fu (Taiwan)  2018-2-5 23:59
 // ESP8266 ESP-01 
 // AP Static IP: 192.168.4.1
 // Query IP : http://192.168.4.1/?ip
@@ -63,13 +63,13 @@ void loop()
     {
       pinMode(2,OUTPUT);
       digitalWrite(2,HIGH);
-      Feedback(CID,"<font color=red>TURN ON</font>",32);
+      Feedback(CID,"<font color=red>TURN ON</font>");
     }
     else if (command=="off")
     {
       pinMode(2,OUTPUT);
       digitalWrite(2,LOW);  
-      Feedback(CID,"<font color=blue>TURN OFF</font>",34);
+      Feedback(CID,"<font color=blue>TURN OFF</font>");
     }
     else if (command=="ip")
     {
@@ -81,30 +81,19 @@ void loop()
       {
           ReceiveData=ReceiveData+char(mySerial.read());
       }
-      Feedback(CID,ReceiveData,(ReceiveData.length()+2));
+      Feedback(CID,ReceiveData);
     }    
     else if (command=="your command")
     {
       // you can do anything
       // String Response="Hello World";
-      // Feedback(CID,Response,(Response.length()+2));
+      // Feedback(CID,Response);
     }
     else 
     {
-      Feedback(CID,"FAIL",6);
+      Feedback(CID,"FAIL");
     }  
   }
-}
-
-void Feedback(String CID,String Response,int len)
-{
-    SendData("AT+CIPSEND="+CID+",94",0);
-    SendData("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body>",10000);
-    SendData("AT+CIPSEND="+CID+","+String(len),0);
-    SendData(Response,10000);
-    SendData("AT+CIPSEND="+CID+",16",0);
-    SendData("</body></html>",2000);
-    SendData("AT+CIPCLOSE="+CID,2000);
 }
 
 void SendData(String data,int TimeLimit)
@@ -113,6 +102,14 @@ void SendData(String data,int TimeLimit)
   mySerial.flush();
   delay(20);
   WaitReply(TimeLimit);
+}
+
+void Feedback(String CID,String Response)
+{
+  String str="<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body>"+Response+"</body></html>";
+  SendData("AT+CIPSEND="+CID+","+(str.length()+2),2000);
+  SendData(str,10000);
+  SendData("AT+CIPCLOSE="+CID,2000);
 }
 
 String WaitReply(int TimeLimit)
