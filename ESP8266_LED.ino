@@ -76,12 +76,12 @@ void loop()
       mySerial.println("AT+CIFSR");
       mySerial.flush();
       delay(10);  //you can try to change number to get complete data 
-      String strIP = "";
+      String myfeedback = "";
       while (mySerial.available())
       {
-          strIP = strIP + char(mySerial.read());
+          myfeedback = myfeedback + char(mySerial.read());
       }
-      feedback(CID,strIP,(strIP.length()+2));
+      feedback(CID,myfeedback,(myfeedback.length()+2));
     }    
     else if (cmd=="your command")
     {
