@@ -110,9 +110,9 @@ void SendData(String data,int TimeLimit)
 void Feedback(String CID,String Response,byte datatype)
 {
   SendData("HTTP/1.1 200 OK",2000);
-  SendData("Access-Control-Allow-Origin:*",2000);
-  SendData("Access-Control-Allow-Methods: POST, GET, OPTIONS, HEAD",2000);
-  SendData("Access-Control-Allow-Headers: Origin,content-type",2000);
+  SendData("Access-Control-Allow-Origin: *",2000);
+  SendData("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept",2000);
+  SendData("Transfer-Encoding: chunked",2000);
   
   if (datatype==0)
   {
