@@ -72,8 +72,8 @@ void loop()
       }
     }  
     Serial.println(ReceiveData);
-    Serial.println(pin);
-    Serial.println(val);
+    //Serial.println(pin);
+    //Serial.println(val);
   }
   
   if (ReceiveData.indexOf(" HTTP")!=-1)
