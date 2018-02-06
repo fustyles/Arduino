@@ -1,7 +1,7 @@
 // Author : ChungYi Fu (Taiwan)  2018-2-7 02:30
 // ESP8266 ESP-01 
-// command: ?cmd  ?cmd=num1  ?cmd=num1,num2
-// AP Static IP: 192.168.4.1
+// command : ?cmd  ?cmd=num1  ?cmd=num1,num2
+// AP Static IP : 192.168.4.1
 // Query IP : http://192.168.4.1/?ip
 // Turn On : http://192.168.4.1/?on
 // Turn Off : http://192.168.4.1/?off
