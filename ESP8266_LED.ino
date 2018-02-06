@@ -88,7 +88,16 @@ void loop()
       mySerial.read();
     }
     
-    if (command=="ip")
+    if (command=="your command")
+      {
+        // you can do anything
+        
+        //Feedback(CID,"<font color=\"red\">TURN ON</font>",0);  --> HTML
+        //Feedback(CID,"TURN ON",1);  --> XML
+        //Feedback(CID,"TURN ON",2);  --> JSON
+        //Feedback(CID,"<html>TURN ON</html>",-1);  --> Custom definition
+      }
+    else if (command=="ip")
       {
         mySerial.println("AT+CIFSR");
         mySerial.flush();
@@ -130,15 +139,6 @@ void loop()
         delay(100);
         Feedback(CID,"<html>"+String(analogRead(pin))+"</html>",-1);
       }           
-    else if (command=="your command")
-      {
-        // you can do anything
-        
-        //Feedback(CID,"<font color=\"red\">TURN ON</font>",0);  --> HTML
-        //Feedback(CID,"TURN ON",1);  --> XML
-        //Feedback(CID,"TURN ON",2);  --> JSON
-        //Feedback(CID,"<html>TURN ON</html>",-1);  --> Custom definition
-      }
     else 
       {
         Feedback(CID,"FAIL",0);
