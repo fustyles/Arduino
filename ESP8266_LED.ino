@@ -113,44 +113,44 @@ void loop()
         pinMode(pin, val);
         Feedback(CID,"<html>"+command+"</html>",-1);
       }        
-     else if (command.indexOf("digitalwrite=")!=-1)
-        {
-          pinMode(pin,OUTPUT);
-          digitalWrite(pin,val);
-          Feedback(CID,"<html>"+command+"</html>",-1);
-        }   
-      else if (command.indexOf("digitalread=")!=-1)
-        {
-          pinMode(pin,INPUT);
-          delay(100);
-          Feedback(CID,"<html>"+String(digitalRead(pin))+"</html>",-1);
-        }    
-      else if (command.indexOf("analogwrite=")!=-1)
-        {
-          pinMode(pin,OUTPUT);
-          analogWrite(pin,val);
-          Feedback(CID,"<html>"+command+"</html>",-1);
-        }       
-      else if (command.indexOf("analogread=")!=-1)
-        {
-          pinMode(pin,INPUT);
-          delay(100);
-          Feedback(CID,"<html>"+String(analogRead(pin))+"</html>",-1);
-        }           
-      else if (command=="your command")
-        {
-          // you can do anything
-          
-          //Feedback(CID,"<font color=\"red\">TURN ON</font>",0);  --> HTML
-          //Feedback(CID,"TURN ON",1);  --> XML
-          //Feedback(CID,"TURN ON",2);  --> JSON
-          //Feedback(CID,"<html>TURN ON</html>",-1);  --> Custom definition
-        }
-      else 
-        {
-          Feedback(CID,"FAIL",0);
-        }  
-    }
+   else if (command.indexOf("digitalwrite=")!=-1)
+      {
+        pinMode(pin,OUTPUT);
+        digitalWrite(pin,val);
+        Feedback(CID,"<html>"+command+"</html>",-1);
+      }   
+    else if (command.indexOf("digitalread=")!=-1)
+      {
+        pinMode(pin,INPUT);
+        delay(100);
+        Feedback(CID,"<html>"+String(digitalRead(pin))+"</html>",-1);
+      }    
+    else if (command.indexOf("analogwrite=")!=-1)
+      {
+        pinMode(pin,OUTPUT);
+        analogWrite(pin,val);
+        Feedback(CID,"<html>"+command+"</html>",-1);
+      }       
+    else if (command.indexOf("analogread=")!=-1)
+      {
+        pinMode(pin,INPUT);
+        delay(100);
+        Feedback(CID,"<html>"+String(analogRead(pin))+"</html>",-1);
+      }           
+    else if (command=="your command")
+      {
+        // you can do anything
+
+        //Feedback(CID,"<font color=\"red\">TURN ON</font>",0);  --> HTML
+        //Feedback(CID,"TURN ON",1);  --> XML
+        //Feedback(CID,"TURN ON",2);  --> JSON
+        //Feedback(CID,"<html>TURN ON</html>",-1);  --> Custom definition
+      }
+    else 
+      {
+        Feedback(CID,"FAIL",0);
+      }  
+   }
 }
 
 void SendData(String data,int TimeLimit)
