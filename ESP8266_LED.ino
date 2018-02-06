@@ -1,4 +1,4 @@
-// Author : ChungYi Fu (Taiwan)  2018-2-5 23:59
+// Author : ChungYi Fu (Taiwan)  2018-2-6 14:00
 // ESP8266 ESP-01 
 // AP Static IP: 192.168.4.1
 // Query IP : http://192.168.4.1/?ip
@@ -63,13 +63,15 @@ void loop()
     {
       pinMode(2,OUTPUT);
       digitalWrite(2,HIGH);
-      Feedback(CID,"<font color=red>TURN ON</font>");
+      Feedback(CID,"<font color=\"red\">TURN ON</font>",0);
+      //Feedback(CID,"TURN ON",1);
+      //Feedback(CID,"<html>TURN ON</html>",2);
     }
     else if (command=="off")
     {
       pinMode(2,OUTPUT);
       digitalWrite(2,LOW);  
-      Feedback(CID,"<font color=blue>TURN OFF</font>");
+      Feedback(CID,"<font color=\"blue\">TURN OFF</font>",0);
     }
     else if (command=="ip")
     {
@@ -81,17 +83,17 @@ void loop()
       {
           ReceiveData=ReceiveData+char(mySerial.read());
       }
-      Feedback(CID,ReceiveData);
+      Feedback(CID,ReceiveData,0);
     }    
     else if (command=="your command")
     {
       // you can do anything
       // String Response="Hello World";
-      // Feedback(CID,Response);
+      // Feedback(CID,Response,0);
     }
     else 
     {
-      Feedback(CID,"FAIL");
+      Feedback(CID,"FAIL",0);
     }  
   }
 }
@@ -104,15 +106,21 @@ void SendData(String data,int TimeLimit)
   WaitReply(TimeLimit);
 }
 
-void Feedback(String CID,String Response)
+void Feedback(String CID,String Response,byte datatype)
 {
-  Response="<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body>"+Response+"</body></html>";
+  if (datatype==0)
+    Response="<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body>"+Response+"</body></html>";
+  else if (datatype==1) 
+    Response="<?xml version=\"1.0\" encoding=\"UTF-8\"?><ESP8266><Data><TEXT>"+Response+"</TEXT></Data></ESP8266>";
+  else
+    Response=Response;
+    
   SendData("AT+CIPSEND="+CID+","+(Response.length()+2),2000);
   SendData(Response,10000);
   SendData("AT+CIPCLOSE="+CID,2000);
 }
 
-String WaitReply(int TimeLimit)
+String WaitReply(long int TimeLimit)
 {
   String ReceiveData="";
   byte ReceiveState=0;
