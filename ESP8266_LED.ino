@@ -15,8 +15,8 @@
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
-String SSID="3COM";
-String PWD="godblessyou";
+String SSID="id";
+String PWD="pwd";
 
 void setup()
 {
