@@ -112,7 +112,7 @@ void Feedback(String CID,String Response,byte datatype)
   SendData("HTTP/1.1 200 OK",2000);
   SendData("Access-Control-Allow-Origin:*",2000);
   SendData("Access-Control-Allow-Methods: POST, GET, OPTIONS, HEAD",2000);
-  SendData("Access-Control-Allow-Headers: X-Requested-With",2000);
+  SendData("Access-Control-Allow-Headers: x-requested-with,content-type",2000);
   
   if (datatype==0)
   {
