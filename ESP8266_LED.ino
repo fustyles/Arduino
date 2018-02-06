@@ -110,6 +110,7 @@ void SendData(String data,int TimeLimit)
 void Feedback(String CID,String Response,byte datatype)
 {
   SendData("Access-Control-Allow-Origin:*",2000);
+  SendData("Access-Control-Allow-Methods: GET, POST, PUT",2000);
   
   if (datatype==0)
   {
@@ -128,11 +129,10 @@ void Feedback(String CID,String Response,byte datatype)
   }
   else
     Response=Response;
-    
+  
   SendData("AT+CIPSEND="+CID+","+(Response.length()+2),2000);
   SendData(Response,10000);
   SendData("AT+CIPCLOSE="+CID,2000);
-}
 
 String WaitReply(long int TimeLimit)
 {
