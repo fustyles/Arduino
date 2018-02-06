@@ -1,14 +1,16 @@
 // Author : ChungYi Fu (Taiwan)  2018-2-7 02:30
 // ESP8266 ESP-01 
 // command : ?cmd  ?cmd=num1  ?cmd=num1,num2
-// AP Static IP : 192.168.4.1
-// Query IP : http://192.168.4.1/?ip
-// Turn On : http://192.168.4.1/?on
-// Turn Off : http://192.168.4.1/?off
-// STA Dynammic IP: 
-// Query IP : http://192.168.xxx.xxx/?ip
-// Turn On : http://192.168.xxx.xxx/?on
-// Turn Off : http://192.168.xxx.xxx/?off
+// AP IP： 192.168.4.1
+// http://192.168.4.1/?inputpullup=3
+// http://192.168.4.1/?pinmode=3,1
+// http://192.168.4.1/?digitalwrite=3,1
+// http://192.168.4.1/?analogwrite=3,200
+// http://192.168.4.1/?digitalread=3
+// http://192.168.4.1/?analogread=3
+// STA IP：
+// http://192.168.4.1/?ip
+
 
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
