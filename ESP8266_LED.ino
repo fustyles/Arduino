@@ -64,8 +64,6 @@ void loop()
       pinMode(2,OUTPUT);
       digitalWrite(2,HIGH);
       Feedback(CID,"<font color=\"red\">TURN ON</font>",0);
-      //Feedback(CID,"TURN ON",1);
-      //Feedback(CID,"<html>TURN ON</html>",2);
     }
     else if (command=="off")
     {
@@ -88,8 +86,10 @@ void loop()
     else if (command=="your command")
     {
       // you can do anything
-      // String Response="Hello World";
-      // Feedback(CID,Response,0);
+      
+      //Feedback(CID,"<font color=\"red\">TURN ON</font>",0);  --> HTML
+      //Feedback(CID,"TURN ON",1);  --> XML
+      //Feedback(CID,"<html>TURN ON</html>",2);  --> Custom definition
     }
     else 
     {
