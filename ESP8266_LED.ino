@@ -1,4 +1,4 @@
-// Author : ChungYi Fu (Taiwan)  2018-2-6 14:00
+// Author : ChungYi Fu (Taiwan)  2018-2-6 14:30
 // ESP8266 ESP-01 
 // AP Static IP: 192.168.4.1
 // Query IP : http://192.168.4.1/?ip
