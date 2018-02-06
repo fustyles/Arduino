@@ -9,7 +9,6 @@
 // Turn On : http://192.168.xxx.xxx/?on
 // Turn Off : http://192.168.xxx.xxx/?off
 
-
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
@@ -32,7 +31,10 @@ void setup()
 void loop() 
 {
   String ReceiveData="", command="";
+  int pin=-1,val=-1,tmp=0;
   byte ReceiveState=0;
+  byte pinState=0;
+  byte setvalueState=0;
   if (mySerial.available())
   {
     while (mySerial.available())
@@ -42,9 +44,39 @@ void loop()
       ReceiveData=ReceiveData+String(c);
       if (String(c).indexOf("?")!=-1) ReceiveState=1;
       if (String(c).indexOf(" ")!=-1) ReceiveState=0;
-      if ((ReceiveState==1)&&(String(c).indexOf("?")==-1)) command=command+String(c);
+      if ((ReceiveState==1)&&(String(c).indexOf("?")==-1)) 
+      {
+        command=command+String(c);
+
+        if ((String(c).indexOf("=")!=-1)&&(ReceiveState==1)) pinState=1;
+        if (((String(c).indexOf(",")!=-1)||(String(c).indexOf(" ")!=-1))&&(ReceiveState==1)) pinState=0;
+        if ((pinState==1)&&(String(c).indexOf("=")==-1))
+        {
+          if (pin==-1) 
+            pin=c-'0'; 
+          else
+          {
+            tmp=c-'0'; 
+            pin=pin*10+tmp; 
+          }
+        }
+        if ((String(c).indexOf(",")!=-1)&&(ReceiveState==1)) setvalueState=1;
+        if ((String(c).indexOf(" ")!=-1)&&(ReceiveState==1)) setvalueState=0;
+        if ((setvalueState==1)&&(String(c).indexOf(",")==-1))
+        {
+          if (val==-1) 
+            val=c-'0'; 
+          else
+          {
+            tmp=c-'0'; 
+            val=val*10+tmp;  
+          }
+        } 
+      }
     }  
     Serial.println(ReceiveData);
+    //Serial.println(pin);
+    //Serial.println(val);
   }
   
   if (ReceiveData.indexOf(" HTTP")!=-1)
@@ -59,43 +91,60 @@ void loop()
       mySerial.read();
     }
     
-    if (command=="on")
-    {
-      pinMode(2,OUTPUT);
-      digitalWrite(2,HIGH);
-      Feedback(CID,"<font color=\"red\">TURN ON</font>",0);
-    }
-    else if (command=="off")
-    {
-      pinMode(2,OUTPUT);
-      digitalWrite(2,LOW);  
-      Feedback(CID,"<font color=\"blue\">TURN OFF</font>",0);
-    }
-    else if (command=="ip")
-    {
-      mySerial.println("AT+CIFSR");
-      mySerial.flush();
-      delay(5);  //you can try to change number to get complete data 
-      ReceiveData="";
-      while (mySerial.available())
+    if (command=="ip")
       {
-          ReceiveData=ReceiveData+char(mySerial.read());
+        mySerial.println("AT+CIFSR");
+        mySerial.flush();
+        delay(5);  //you can try to change number to get complete data 
+        ReceiveData="";
+        while (mySerial.available())
+        {
+            ReceiveData=ReceiveData+char(mySerial.read());
+        }
+        Feedback(CID,ReceiveData,0);
       }
-      Feedback(CID,ReceiveData,0);
-    }    
+    else if (command.indexOf("inputpullup=")!=-1)
+      {
+        pinMode(pin, INPUT_PULLUP);
+        Feedback(CID,"<html>"+command+"</html>",-1);
+      }  
+   else if (command.indexOf("digitalwrite=")!=-1)
+      {
+        pinMode(pin,OUTPUT);
+        digitalWrite(pin,val);
+        Feedback(CID,"<html>"+command+"</html>",-1);
+      }   
+    else if (command.indexOf("digitalread=")!=-1)
+      {
+        pinMode(pin,INPUT);
+        delay(100);
+        Feedback(CID,"<html>"+String(digitalRead(pin))+"</html>",-1);
+      }    
+    else if (command.indexOf("analogwrite=")!=-1)
+      {
+        pinMode(pin,OUTPUT);
+        analogWrite(pin,val);
+        Feedback(CID,"<html>"+command+"</html>",-1);
+      }       
+    else if (command.indexOf("analogread=")!=-1)
+      {
+        pinMode(pin,INPUT);
+        delay(100);
+        Feedback(CID,"<html>"+String(analogRead(pin))+"</html>",-1);
+      }           
     else if (command=="your command")
-    {
-      // you can do anything
-      
-      //Feedback(CID,"<font color=\"red\">TURN ON</font>",0);  --> HTML
-      //Feedback(CID,"TURN ON",1);  --> XML
-      //Feedback(CID,"TURN ON",2);  --> JSON
-      //Feedback(CID,"<html>TURN ON</html>",-1);  --> Custom definition
-    }
+      {
+        // you can do anything
+        
+        //Feedback(CID,"<font color=\"red\">TURN ON</font>",0);  --> HTML
+        //Feedback(CID,"TURN ON",1);  --> XML
+        //Feedback(CID,"TURN ON",2);  --> JSON
+        //Feedback(CID,"<html>TURN ON</html>",-1);  --> Custom definition
+      }
     else 
-    {
-      Feedback(CID,"FAIL",0);
-    }  
+      {
+        Feedback(CID,"FAIL",0);
+      }  
   }
 }
 
@@ -125,7 +174,7 @@ void Feedback(String CID,String Response,byte datatype)
     Response=Response;
 
   SendData("AT+CIPSEND="+CID+","+(Response.length()+2),2000);
-  SendData(Response,10000);
+  SendData(Response,2000);
   SendData("AT+CIPCLOSE="+CID,2000);
 }
 
