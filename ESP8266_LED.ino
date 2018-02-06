@@ -1,4 +1,4 @@
-// Author : ChungYi Fu (Taiwan)  2018-2-7 02:30
+// Author : ChungYi Fu (Taiwan)  2018-2-7 03:00
 // ESP8266 ESP-01 
 // command format :  ?cmd  ?cmd=num1  ?cmd=num1,num2
 // AP IP： 192.168.4.1
@@ -15,8 +15,8 @@
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
-String SSID="id";
-String PWD="pwd";
+String SSID="3COM";
+String PWD="godblessyou";
 
 void setup()
 {
@@ -95,7 +95,7 @@ void loop()
         //Feedback(CID,"<font color=\"red\">TURN ON</font>",0);  --> HTML
         //Feedback(CID,"TURN ON",1);  --> XML
         //Feedback(CID,"TURN ON",2);  --> JSON
-        //Feedback(CID,"<html>TURN ON</html>",-1);  --> Custom definition
+        //Feedback(CID,"<html>TURN ON</html>",3);  --> Custom definition
       }
     else if (command=="ip")
       {
@@ -107,37 +107,37 @@ void loop()
         {
             ReceiveData=ReceiveData+char(mySerial.read());
         }
-        Feedback(CID,ReceiveData,0);
+        Feedback(CID,"<html>"+ReceiveData+"</html>",3);
       }
     else if (command.indexOf("inputpullup=")!=-1)
       {
         pinMode(pin, INPUT_PULLUP);
-        Feedback(CID,"<html>"+command+"</html>",-1);
+        Feedback(CID,"<html>"+command+"</html>",3);
       }  
     else if (command.indexOf("pinmode=")!=-1)
       {
         pinMode(pin, val);
-        Feedback(CID,"<html>"+command+"</html>",-1);
+        Feedback(CID,"<html>"+command+"</html>",3);
       }        
    else if (command.indexOf("digitalwrite=")!=-1)
       {
         digitalWrite(pin,val);
-        Feedback(CID,"<html>"+command+"</html>",-1);
+        Feedback(CID,"<html>"+command+"</html>",3);
       }   
     else if (command.indexOf("digitalread=")!=-1)
       {
         delay(100);
-        Feedback(CID,"<html>"+String(digitalRead(pin))+"</html>",-1);
+        Feedback(CID,"<html>"+String(digitalRead(pin))+"</html>",3);
       }    
     else if (command.indexOf("analogwrite=")!=-1)
       {
         analogWrite(pin,val);
-        Feedback(CID,"<html>"+command+"</html>",-1);
+        Feedback(CID,"<html>"+command+"</html>",3);
       }       
     else if (command.indexOf("analogread=")!=-1)
       {
         delay(100);
-        Feedback(CID,"<html>"+String(analogRead(pin))+"</html>",-1);
+        Feedback(CID,"<html>"+String(analogRead(pin))+"</html>",3);
       }           
     else 
       {
@@ -162,7 +162,7 @@ void Feedback(String CID,String Response,byte datatype)
   }
   else if (datatype==1) 
   {
-    Response="<?xml version=\"1.0\" encoding=\"UTF-8\"?><ESP8266><Data><TEXT>"+Response+"</TEXT></Data></ESP8266>";
+    Response="<?xml version=\"1.0\" encoding=\"UTF-8\"?><ESP8266><Data><Text>"+Response+"</Text></Data></ESP8266>";
   }  
   else if (datatype==2) 
   {
