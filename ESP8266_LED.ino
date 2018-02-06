@@ -132,6 +132,7 @@ void Feedback(String CID,String Response,byte datatype)
   else
     Response=Response;
   
+  SendData("",2000);
   SendData("AT+CIPSEND="+CID+","+(Response.length()+2),2000);
   SendData(Response,10000);
   SendData("AT+CIPCLOSE="+CID,2000);
