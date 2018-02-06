@@ -89,7 +89,8 @@ void loop()
       
       //Feedback(CID,"<font color=\"red\">TURN ON</font>",0);  --> HTML
       //Feedback(CID,"TURN ON",1);  --> XML
-      //Feedback(CID,"<html>TURN ON</html>",2);  --> Custom definition
+      //Feedback(CID,"TURN ON",2);  --> JSON
+      //Feedback(CID,"<html>TURN ON</html>",-1);  --> Custom definition
     }
     else 
     {
@@ -108,10 +109,23 @@ void SendData(String data,int TimeLimit)
 
 void Feedback(String CID,String Response,byte datatype)
 {
+  SendData("Access-Control-Allow-Origin:*",2000);
+  
   if (datatype==0)
-    Response="<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body>"+Response+"</body></html>";
+  {
+    SendData("Content-type: text/html",2000);
+    Response="<!DOCTYPE HTML><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body>"+Response+"</body></html>";
+  }
   else if (datatype==1) 
+  {
+    SendData("Content-type: application/xml",2000);
     Response="<?xml version=\"1.0\" encoding=\"UTF-8\"?><ESP8266><Data><TEXT>"+Response+"</TEXT></Data></ESP8266>";
+  }  
+  else if (datatype==2) 
+  {
+    SendData("Content-type: application/json",2000);
+    Response="[{\"ESP8266\":\""+Response+"\"}]";
+  }
   else
     Response=Response;
     
