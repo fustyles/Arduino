@@ -109,6 +109,7 @@ void SendData(String data,int TimeLimit)
 
 void Feedback(String CID,String Response,byte datatype)
 {
+  SendData("HTTP/1.1 200 OK",2000);
   SendData("Access-Control-Allow-Origin:*",2000);
   SendData("Access-Control-Allow-Methods: GET, POST, PUT",2000);
   
