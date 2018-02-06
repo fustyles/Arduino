@@ -111,26 +111,23 @@ void Feedback(String CID,String Response,byte datatype)
 {
   if (datatype==0)
   {
-    SendData("Content-type: text/html; charset=utf-8",2000);
     Response="<!DOCTYPE HTML><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body>"+Response+"</body></html>";
   }
   else if (datatype==1) 
   {
-    SendData("Content-type: application/xml; charset=utf-8",2000);
     Response="<?xml version=\"1.0\" encoding=\"UTF-8\"?><ESP8266><Data><TEXT>"+Response+"</TEXT></Data></ESP8266>";
   }  
   else if (datatype==2) 
   {
-    SendData("Content-Type: application/json; charset=utf-8",2000);
     Response="[{\"ESP8266\":\""+Response+"\"}]";
   }
   else
     Response=Response;
-  
-  SendData("",2000);
+
   SendData("AT+CIPSEND="+CID+","+(Response.length()+2),2000);
   SendData(Response,10000);
   SendData("AT+CIPCLOSE="+CID,2000);
+}
 
 String WaitReply(long int TimeLimit)
 {
