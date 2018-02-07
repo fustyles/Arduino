@@ -102,8 +102,8 @@ void loop()
   {
     Serial.println("");
     Serial.println("command: "+command);
-    Serial.println("num1: "+String(num1)+" , num2: "+String(num2));
-    Serial.println("str1: "+String(str1)+" , str2: "+String(str2));
+    Serial.println("num1= "+String(num1)+" ,num2= "+String(num2));
+    Serial.println("str1= "+String(str1)+" ,str2= "+String(str2));
     
     String CID=String(ReceiveData.charAt(ReceiveData.indexOf("IPD,")+4));
     
