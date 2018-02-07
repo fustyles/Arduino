@@ -61,6 +61,7 @@ void loop()
           else
             num1=num1*10+(c-'0'); 
         }
+        
         if ((String(c).indexOf(",")!=-1)&&(ReceiveState==1)) num2State=1;
         if ((String(c).indexOf(" ")!=-1)&&(ReceiveState==1)) num2State=0;
         if ((num2State==1)&&(String(c).indexOf(",")==-1))
