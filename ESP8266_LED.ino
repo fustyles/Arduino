@@ -1,8 +1,11 @@
-// Author : ChungYi Fu (Taiwan)  2018-2-7 12:00
-// ESP8266 ESP-01 
-// command format :  
+// ESP8266 ESP-01
+
+// Author : ChungYi Fu (Taiwan)  2018-2-7 12:00 
+
+// Command format :  
 // Number：  ?command  ?command=num1  ?command=num1,num2
 // String ： ?&command=str1  ?&command=str1,str2    
+
 // AP IP： 192.168.4.1
 // http://192.168.4.1/?inputpullup=3
 // http://192.168.4.1/?pinmode=3,1
@@ -10,8 +13,9 @@
 // http://192.168.4.1/?analogwrite=3,200
 // http://192.168.4.1/?digitalread=3
 // http://192.168.4.1/?analogread=3
+
 // STA IP：
-// query： http://192.168.4.1/?ip
+// Query： http://192.168.4.1/?ip
 
 
 #include <SoftwareSerial.h>
