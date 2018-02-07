@@ -1,6 +1,6 @@
 // ESP8266 ESP-01
 
-// Author : ChungYi Fu (Taiwan)  2018-2-7 20:00 
+// Author : ChungYi Fu (Taiwan)  2018-2-7 20:20 
 
 // Command format :  
 // Number：  ?cmd  ?cmd=num1  ?cmd=num1,num2
@@ -25,8 +25,8 @@
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
-String SSID="3COM";
-String PWD="godblessyou";
+String SSID="id";
+String PWD="pwd";
 
 void setup()
 {
@@ -103,9 +103,9 @@ void loop()
   {
     Serial.println("");
     Serial.println("command: "+command);
-    Serial.println("cmd: "+cmd);
+    Serial.println("cmd= "+cmd);
     Serial.println("num1= "+String(num1)+" ,num2= "+String(num2));
-    Serial.println("str1= "+String(str1)+" ,str2= "+String(str2));
+    Serial.println("str1= "+str1+" ,str2= "+str2);
     
     String CID=String(ReceiveData.charAt(ReceiveData.indexOf("IPD,")+4));
     
