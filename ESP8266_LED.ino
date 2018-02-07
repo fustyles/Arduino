@@ -1,6 +1,6 @@
 // ESP8266 ESP-01
 
-// Author : ChungYi Fu (Taiwan)  2018-2-7 15:00 
+// Author : ChungYi Fu (Taiwan)  2018-2-7 20:00 
 
 // Command format :  
 // Number：  ?command  ?command=num1  ?command=num1,num2
@@ -45,10 +45,8 @@ void loop()
 {
   String ReceiveData="", command="";
   long int num1=-1,num2=-1;
-  String str1="",str2="";
-  byte ReceiveState=0;
-  byte num1State=0;
-  byte num2State=0;
+  String cmd="",str1="",str2="";
+  byte ReceiveState=0,cmdState=1,num1State=0,num2State=0;
   
   if (mySerial.available())
   {
@@ -63,6 +61,9 @@ void loop()
       if ((ReceiveState==1)&&(String(c).indexOf("?")==-1)) 
       {
         command=command+String(c);
+
+        if ((String(c).indexOf("=")!=-1)&&(ReceiveState==1)) cmdState=0;
+        if (cmdState==1) cmd=cmd+String(c);
 
         if ((String(c).indexOf("=")!=-1)&&(ReceiveState==1)) num1State=1;
         if (((String(c).indexOf(",")!=-1)||(String(c).indexOf(" ")!=-1))&&(ReceiveState==1)) num1State=0;
@@ -102,6 +103,7 @@ void loop()
   {
     Serial.println("");
     Serial.println("command: "+command);
+    Serial.println("cmd: "+cmd);
     Serial.println("num1= "+String(num1)+" ,num2= "+String(num2));
     Serial.println("str1= "+String(str1)+" ,str2= "+String(str2));
     
