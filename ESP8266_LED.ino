@@ -167,7 +167,7 @@ void loop()
       }     
     else if (command.indexOf("+message=")==0)
       {
-        Feedback(CID,"<html>"+str1+","+num2+"</html>",3);
+        Feedback(CID,"<html>"+str1+","+String(num2)+"</html>",3);
       }                
     else 
       {
