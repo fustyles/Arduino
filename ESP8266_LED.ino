@@ -1,6 +1,8 @@
 // Author : ChungYi Fu (Taiwan)  2018-2-7 12:00
 // ESP8266 ESP-01 
-// command format :  ?command  ?command=num1  ?command=num1,num2
+// command format :  
+// ?command  ?command=num1  ?command=num1,num2
+// ?&command=str1  ?&command=str1,str2    
 // AP IP： 192.168.4.1
 // http://192.168.4.1/?inputpullup=3
 // http://192.168.4.1/?pinmode=3,1
@@ -15,8 +17,8 @@
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
-String SSID="id";
-String PWD="pwd";
+String SSID="3COM";
+String PWD="godblessyou";
 
 void setup()
 {
@@ -34,10 +36,11 @@ void setup()
 void loop() 
 {
   String ReceiveData="", command="";
-  int num1=-1,num2=-1;
+  long int num1=-1,num2=-1;
   byte ReceiveState=0;
   byte num1State=0;
   byte num2State=0;
+  String str1="",str2="";
   if (mySerial.available())
   {
     while (mySerial.available())
@@ -45,7 +48,6 @@ void loop()
       char c=mySerial.read();
       delay(10);
       ReceiveData=ReceiveData+String(c);
-      
       if (String(c).indexOf("?")!=-1) ReceiveState=1;
       if (String(c).indexOf(" ")!=-1) ReceiveState=0;
       if ((ReceiveState==1)&&(String(c).indexOf("?")==-1)) 
@@ -56,20 +58,29 @@ void loop()
         if (((String(c).indexOf(",")!=-1)||(String(c).indexOf(" ")!=-1))&&(ReceiveState==1)) num1State=0;
         if ((num1State==1)&&(String(c).indexOf("=")==-1))
         {
-          if (num1==-1) 
-            num1=c-'0'; 
+          if (ReceiveData.indexOf("?&")!=-1)
+            str1=str1+String(c);
           else
-            num1=num1*10+(c-'0'); 
+          {
+            if (num1==-1) 
+              num1=c-'0'; 
+            else
+              num1=num1*10+(c-'0'); 
+          }
         }
-        
         if ((String(c).indexOf(",")!=-1)&&(ReceiveState==1)) num2State=1;
         if ((String(c).indexOf(" ")!=-1)&&(ReceiveState==1)) num2State=0;
         if ((num2State==1)&&(String(c).indexOf(",")==-1))
         {
-          if (num2==-1) 
-            num2=c-'0'; 
+          if (ReceiveData.indexOf("?&")!=-1)
+            str2=str2+String(c);
           else
-            num2=num2*10+(c-'0'); 
+          {          
+            if (num2==-1) 
+              num2=c-'0'; 
+            else
+              num2=num2*10+(c-'0'); 
+          }
         } 
       }
     }  
@@ -81,6 +92,7 @@ void loop()
     Serial.println("");
     Serial.println("command: "+command);
     Serial.println(String(num1)+","+String(num2));
+    Serial.println(String(str1)+","+String(str2));
     
     String CID=String(ReceiveData.charAt(ReceiveData.indexOf("IPD,")+4));
     
