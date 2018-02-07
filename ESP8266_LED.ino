@@ -1,6 +1,6 @@
 // Author : ChungYi Fu (Taiwan)  2018-2-7 10:00
 // ESP8266 ESP-01 
-// command format :  ?command  ?command=pin  ?command=pin,val
+// command format :  ?command  ?command=number1  ?command=number1,number2   (number1 -> pin,number2 -> val)
 // AP IP： 192.168.4.1
 // http://192.168.4.1/?inputpullup=3
 // http://192.168.4.1/?pinmode=3,1
