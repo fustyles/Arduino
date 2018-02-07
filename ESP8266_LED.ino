@@ -34,7 +34,7 @@ void setup()
 void loop() 
 {
   String ReceiveData="", command="";
-  long int num1=-1,num2=-1;
+  int num1=-1,num2=-1;
   byte ReceiveState=0;
   byte num1State=0;
   byte num2State=0;
