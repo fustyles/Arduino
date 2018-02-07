@@ -1,6 +1,6 @@
-// Author : ChungYi Fu (Taiwan)  2018-2-7 03:00
+// Author : ChungYi Fu (Taiwan)  2018-2-7 10:00
 // ESP8266 ESP-01 
-// command format :  ?cmd  ?cmd=num1  ?cmd=num1,num2
+// command format :  ?command  ?command=pin  ?command=pin,val
 // AP IP： 192.168.4.1
 // http://192.168.4.1/?inputpullup=3
 // http://192.168.4.1/?pinmode=3,1
@@ -72,14 +72,13 @@ void loop()
       }
     }  
     Serial.println(ReceiveData);
-    //Serial.println(pin);
-    //Serial.println(val);
   }
   
   if (ReceiveData.indexOf(" HTTP")!=-1)
   {
     Serial.println("");
     Serial.println("command: "+command);
+    Serial.println(String(pin)+","+String(val));
     
     String CID=String(ReceiveData.charAt(ReceiveData.indexOf("IPD,")+4));
     
@@ -92,10 +91,10 @@ void loop()
       {
         // you can do anything
         
-        //Feedback(CID,"<font color=\"red\">TURN ON</font>",0);  --> HTML
-        //Feedback(CID,"TURN ON",1);  --> XML
-        //Feedback(CID,"TURN ON",2);  --> JSON
-        //Feedback(CID,"<html>TURN ON</html>",3);  --> Custom definition
+        //Feedback(CID,"<font color=\"red\">Hello World</font>",0);  --> HTML
+        //Feedback(CID,"Hello World",1);  --> XML
+        //Feedback(CID,"Hello World",2);  --> JSON
+        //Feedback(CID,"<html>Hello World</html>",3);  --> Custom definition
       }
     else if (command=="ip")
       {
@@ -109,32 +108,32 @@ void loop()
         }
         Feedback(CID,"<html>"+ReceiveData+"</html>",3);
       }
-    else if (command.indexOf("inputpullup=")!=-1)
+    else if (command.indexOf("inputpullup=")==0)
       {
         pinMode(pin, INPUT_PULLUP);
         Feedback(CID,"<html>"+command+"</html>",3);
       }  
-    else if (command.indexOf("pinmode=")!=-1)
+    else if (command.indexOf("pinmode=")==0)
       {
         pinMode(pin, val);
         Feedback(CID,"<html>"+command+"</html>",3);
       }        
-   else if (command.indexOf("digitalwrite=")!=-1)
+   else if (command.indexOf("digitalwrite=")==0)
       {
         digitalWrite(pin,val);
         Feedback(CID,"<html>"+command+"</html>",3);
       }   
-    else if (command.indexOf("digitalread=")!=-1)
+    else if (command.indexOf("digitalread=")==0)
       {
         delay(100);
         Feedback(CID,"<html>"+String(digitalRead(pin))+"</html>",3);
       }    
-    else if (command.indexOf("analogwrite=")!=-1)
+    else if (command.indexOf("analogwrite=")==0)
       {
         analogWrite(pin,val);
         Feedback(CID,"<html>"+command+"</html>",3);
       }       
-    else if (command.indexOf("analogread=")!=-1)
+    else if (command.indexOf("analogread=")==0)
       {
         delay(100);
         Feedback(CID,"<html>"+String(analogRead(pin))+"</html>",3);
