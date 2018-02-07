@@ -1,6 +1,6 @@
 // ESP8266 ESP-01
 
-// Author : ChungYi Fu (Taiwan)  2018-2-7 14:00 
+// Author : ChungYi Fu (Taiwan)  2018-2-7 15:00 
 
 // Command format :  
 // Number：  ?command  ?command=num1  ?command=num1,num2
@@ -102,8 +102,8 @@ void loop()
   {
     Serial.println("");
     Serial.println("command: "+command);
-    Serial.println(String(num1)+","+String(num2));
-    Serial.println(String(str1)+","+String(str2));
+    Serial.println("num1="+String(num1)+" , num2="+String(num2));
+    Serial.println("str1="+String(str1)+" , str2="+String(str2));
     
     String CID=String(ReceiveData.charAt(ReceiveData.indexOf("IPD,")+4));
     
