@@ -1,6 +1,6 @@
 // ESP8266 ESP-01
 
-// Author : ChungYi Fu (Taiwan)  2018-2-7 12:00 
+// Author : ChungYi Fu (Taiwan)  2018-2-7 14:00 
 
 // Command format :  
 // Number：  ?command  ?command=num1  ?command=num1,num2
@@ -160,7 +160,15 @@ void loop()
     else if (command.indexOf("analogread=")==0)
       {
         Feedback(CID,"<html>"+String(analogRead(num1))+"</html>",3);
-      }           
+      }    
+    else if (command.indexOf("&message=")==0)
+      {
+        Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
+      }     
+    else if (command.indexOf("+message=")==0)
+      {
+        Feedback(CID,"<html>"+str1+","+num2+"</html>",3);
+      }                
     else 
       {
         Feedback(CID,"FAIL",0);
