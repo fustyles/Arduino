@@ -1,6 +1,6 @@
-// Author : ChungYi Fu (Taiwan)  2018-2-7 10:00
+// Author : ChungYi Fu (Taiwan)  2018-2-7 12:00
 // ESP8266 ESP-01 
-// command format :  ?command  ?command=number1  ?command=number1,number2   (number1 -> pin, number2 -> val)
+// command format :  ?command  ?command=num1  ?command=num1,num2
 // AP IP： 192.168.4.1
 // http://192.168.4.1/?inputpullup=3
 // http://192.168.4.1/?pinmode=3,1
@@ -34,10 +34,10 @@ void setup()
 void loop() 
 {
   String ReceiveData="", command="";
-  int pin=-1,val=-1;
+  int num1=-1,num2=-1;
   byte ReceiveState=0;
-  byte pinState=0;
-  byte setvalueState=0;
+  byte num1State=0;
+  byte num2State=0;
   if (mySerial.available())
   {
     while (mySerial.available())
@@ -51,23 +51,23 @@ void loop()
       {
         command=command+String(c);
 
-        if ((String(c).indexOf("=")!=-1)&&(ReceiveState==1)) pinState=1;
-        if (((String(c).indexOf(",")!=-1)||(String(c).indexOf(" ")!=-1))&&(ReceiveState==1)) pinState=0;
-        if ((pinState==1)&&(String(c).indexOf("=")==-1))
+        if ((String(c).indexOf("=")!=-1)&&(ReceiveState==1)) num1State=1;
+        if (((String(c).indexOf(",")!=-1)||(String(c).indexOf(" ")!=-1))&&(ReceiveState==1)) num1State=0;
+        if ((num1State==1)&&(String(c).indexOf("=")==-1))
         {
-          if (pin==-1) 
-            pin=c-'0'; 
+          if (num1==-1) 
+            num1=c-'0'; 
           else
-            pin=pin*10+(c-'0'); 
+            num1=num1*10+(c-'0'); 
         }
-        if ((String(c).indexOf(",")!=-1)&&(ReceiveState==1)) setvalueState=1;
-        if ((String(c).indexOf(" ")!=-1)&&(ReceiveState==1)) setvalueState=0;
-        if ((setvalueState==1)&&(String(c).indexOf(",")==-1))
+        if ((String(c).indexOf(",")!=-1)&&(ReceiveState==1)) num2State=1;
+        if ((String(c).indexOf(" ")!=-1)&&(ReceiveState==1)) num2State=0;
+        if ((num2State==1)&&(String(c).indexOf(",")==-1))
         {
-          if (val==-1) 
-            val=c-'0'; 
+          if (num2==-1) 
+            num2=c-'0'; 
           else
-            val=val*10+(c-'0'); 
+            num2=num2*10+(c-'0'); 
         } 
       }
     }  
@@ -78,7 +78,7 @@ void loop()
   {
     Serial.println("");
     Serial.println("command: "+command);
-    Serial.println(String(pin)+","+String(val));
+    Serial.println(String(num1)+","+String(num2));
     
     String CID=String(ReceiveData.charAt(ReceiveData.indexOf("IPD,")+4));
     
@@ -110,33 +110,31 @@ void loop()
       }
     else if (command.indexOf("inputpullup=")==0)
       {
-        pinMode(pin, INPUT_PULLUP);
+        pinMode(num1, INPUT_PULLUP);
         Feedback(CID,"<html>"+command+"</html>",3);
       }  
     else if (command.indexOf("pinmode=")==0)
       {
-        pinMode(pin, val);
+        pinMode(num1, num2);
         Feedback(CID,"<html>"+command+"</html>",3);
       }        
    else if (command.indexOf("digitalwrite=")==0)
       {
-        digitalWrite(pin,val);
+        digitalWrite(num1,num2);
         Feedback(CID,"<html>"+command+"</html>",3);
       }   
     else if (command.indexOf("digitalread=")==0)
       {
-        delay(100);
-        Feedback(CID,"<html>"+String(digitalRead(pin))+"</html>",3);
+        Feedback(CID,"<html>"+String(digitalRead(num1))+"</html>",3);
       }    
     else if (command.indexOf("analogwrite=")==0)
       {
-        analogWrite(pin,val);
+        analogWrite(num1,num2);
         Feedback(CID,"<html>"+command+"</html>",3);
       }       
     else if (command.indexOf("analogread=")==0)
       {
-        delay(100);
-        Feedback(CID,"<html>"+String(analogRead(pin))+"</html>",3);
+        Feedback(CID,"<html>"+String(analogRead(num1))+"</html>",3);
       }           
     else 
       {
