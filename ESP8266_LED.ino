@@ -1,11 +1,11 @@
 // ESP8266 ESP-01
 
-// Author : ChungYi Fu (Taiwan)  2018-2-7 20:00 
+// Author : ChungYi Fu (Taiwan)  2018-2-7 20:20 
 
 // Command format :  
-// Number：  ?command  ?command=num1  ?command=num1,num2
-// String ： ?&command=str1  ?&command=str1,str2 
-// String+Number ： ?+command=str1,num2   
+// Number：  ?cmd  ?cmd=num1  ?cmd=num1,num2
+// String ： ?&cmd=str1  ?&cmd=str1,str2 
+// String+Number ： ?+cmd=str1,num2   
 
 // AP IP： 192.168.4.1
 // http://192.168.4.1/?inputpullup=3
@@ -103,7 +103,7 @@ void loop()
   {
     Serial.println("");
     Serial.println("command: "+command);
-    Serial.println("cmd= "+cmd);
+    Serial.println("cmd: "+cmd);
     Serial.println("num1= "+String(num1)+" ,num2= "+String(num2));
     Serial.println("str1= "+String(str1)+" ,str2= "+String(str2));
     
@@ -114,7 +114,7 @@ void loop()
       mySerial.read();
     }
     
-    if (command=="your command")
+    if (cmd=="your command")
       {
         // you can do anything
         
@@ -123,7 +123,7 @@ void loop()
         //Feedback(CID,"Hello World",2);  --> JSON
         //Feedback(CID,"<html>Hello World</html>",3);  --> Custom definition
       }
-    else if (command=="ip")
+    else if (cmd=="ip")
       {
         mySerial.println("AT+CIFSR");
         mySerial.flush();
@@ -135,39 +135,39 @@ void loop()
         }
         Feedback(CID,"<html>"+ReceiveData+"</html>",3);
       }
-    else if (command.indexOf("inputpullup=")==0)
+    else if (cmd=="inputpullup")
       {
         pinMode(num1, INPUT_PULLUP);
         Feedback(CID,"<html>"+command+"</html>",3);
       }  
-    else if (command.indexOf("pinmode=")==0)
+    else if (cmd=="pinmode")
       {
         pinMode(num1, num2);
         Feedback(CID,"<html>"+command+"</html>",3);
       }        
-   else if (command.indexOf("digitalwrite=")==0)
+   else if (cmd=="digitalwrite")
       {
         digitalWrite(num1,num2);
         Feedback(CID,"<html>"+command+"</html>",3);
       }   
-    else if (command.indexOf("digitalread=")==0)
+    else if (cmd=="digitalread")
       {
         Feedback(CID,"<html>"+String(digitalRead(num1))+"</html>",3);
       }    
-    else if (command.indexOf("analogwrite=")==0)
+    else if (cmd=="analogwrite")
       {
         analogWrite(num1,num2);
         Feedback(CID,"<html>"+command+"</html>",3);
       }       
-    else if (command.indexOf("analogread=")==0)
+    else if (cmd=="analogread")
       {
         Feedback(CID,"<html>"+String(analogRead(num1))+"</html>",3);
       }    
-    else if (command.indexOf("&message=")==0)
+    else if (cmd=="&message")
       {
         Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
       }     
-    else if (command.indexOf("+message=")==0)
+    else if (cmd=="+message")
       {
         Feedback(CID,"<html>"+str1+","+String(num2)+"</html>",3);
       }                
