@@ -4,7 +4,8 @@
 
 // Command format :  
 // Number：  ?command  ?command=num1  ?command=num1,num2
-// String ： ?&command=str1  ?&command=str1,str2    
+// String ： ?&command=str1  ?&command=str1,str2 
+// String+Number ： ?+command=str1,num2   
 
 // AP IP： 192.168.4.1
 // http://192.168.4.1/?inputpullup=3
@@ -15,6 +16,7 @@
 // http://192.168.4.1/?analogread=3
 // http://192.168.4.1/?&message=Hello
 // http://192.168.4.1/?&message=Hello,World
+// http://192.168.4.1/?+message=Hello,100
 
 // STA IP：
 // Query： http://192.168.4.1/?ip
@@ -43,10 +45,11 @@ void loop()
 {
   String ReceiveData="", command="";
   long int num1=-1,num2=-1;
+  String str1="",str2="";
   byte ReceiveState=0;
   byte num1State=0;
   byte num2State=0;
-  String str1="",str2="";
+  
   if (mySerial.available())
   {
     while (mySerial.available())
@@ -54,6 +57,7 @@ void loop()
       char c=mySerial.read();
       delay(10);
       ReceiveData=ReceiveData+String(c);
+      
       if (String(c).indexOf("?")!=-1) ReceiveState=1;
       if (String(c).indexOf(" ")!=-1) ReceiveState=0;
       if ((ReceiveState==1)&&(String(c).indexOf("?")==-1)) 
@@ -64,7 +68,7 @@ void loop()
         if (((String(c).indexOf(",")!=-1)||(String(c).indexOf(" ")!=-1))&&(ReceiveState==1)) num1State=0;
         if ((num1State==1)&&(String(c).indexOf("=")==-1))
         {
-          if (ReceiveData.indexOf("?&")!=-1)
+          if ((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1))
             str1=str1+String(c);
           else
           {
@@ -74,6 +78,7 @@ void loop()
               num1=num1*10+(c-'0'); 
           }
         }
+        
         if ((String(c).indexOf(",")!=-1)&&(ReceiveState==1)) num2State=1;
         if ((String(c).indexOf(" ")!=-1)&&(ReceiveState==1)) num2State=0;
         if ((num2State==1)&&(String(c).indexOf(",")==-1))
