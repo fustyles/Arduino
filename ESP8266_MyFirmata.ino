@@ -8,13 +8,14 @@
 // String+Number ： ?+cmd=str1,num2   
 
 // AP IP： 192.168.4.1
+// http://192.168.4.1/?resetwifi=id,pwd
+// http://192.168.4.1/?ip
 // http://192.168.4.1/?inputpullup=3
 // http://192.168.4.1/?pinmode=3,1
 // http://192.168.4.1/?digitalwrite=3,1
 // http://192.168.4.1/?analogwrite=3,200
 // http://192.168.4.1/?digitalread=3
 // http://192.168.4.1/?analogread=3
-// http://192.168.4.1/?resetwifi=id,pwd
 // http://192.168.4.1/?&message=Hello
 // http://192.168.4.1/?&message=Hello,World
 // http://192.168.4.1/?+message=Hello,100
