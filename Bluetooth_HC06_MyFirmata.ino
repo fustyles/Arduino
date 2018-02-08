@@ -3,7 +3,8 @@
 // Author : ChungYi Fu (Taiwan)  2018-2-8 00:00 
 
 // Command format :  
-// Number：  ?cmd  ?cmd=num1  ?cmd=num1,num2
+// ?cmd
+// Number：  ?cmd=num1  ?cmd=num1,num2
 // String ： ?&cmd=str1  ?&cmd=str1,str2 
 // String+Number ： ?+cmd=str1,num2   
 
