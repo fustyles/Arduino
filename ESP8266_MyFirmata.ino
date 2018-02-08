@@ -166,9 +166,9 @@ void loop()
       }    
     else if (cmd=="&resetwifi")
       {
+        Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
         SendData("AT+CWJAP=\""+str1+"\",\""+str2+"\"",5000);
         mySerial.flush();
-        //Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
       }       
     else if (cmd=="&message")
       {
