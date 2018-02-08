@@ -1,6 +1,6 @@
 // Bluetooth HC05&HC06
 
-// Author : ChungYi Fu (Taiwan)  2018-2-8 21:00 
+// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-8 21:00 
 
 // Command format :  
 // ?cmd  
