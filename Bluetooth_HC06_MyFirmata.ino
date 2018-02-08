@@ -1,6 +1,6 @@
 // Bluetooth HC05&HC06
 
-// Author : ChungYi Fu (Taiwan)  2018-2-8 00:00 
+// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-8 00:00 
 
 // Command format :  
 // ?cmd
@@ -25,7 +25,7 @@ SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11
 void setup()
 {
   Serial.begin(9600);
-  mySerial.begin(9600);
+  mySerial.begin(9600);   //Check your bluetooth baud rate
 }
 
 void loop() 
