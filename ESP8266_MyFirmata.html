@@ -1,0 +1,58 @@
+﻿<!doctype html>
+<head>
+    <meta charset="utf-8">
+    <meta name=”viewport” content=”width=device-width, initial-scale=1.0″>
+</head>
+<script>
+function SendCommand()
+{
+var ip=document.getElementById("ip").value;
+if (document.getElementById("choice1").checked)
+    var cmd=document.getElementById("cmd1").value;
+else
+    var cmd=document.getElementById("cmd2").value;
+var num1=document.getElementById("num1").value;
+var num2=document.getElementById("num2").value;
+var url=ip+"?"+cmd+"="+num1+","+num2;
+document.getElementById("ShowUrl").innerHTML=url;
+document.getElementById("MyFirmata").src=url;
+}
+</script>
+<body>
+<form>
+<table>
+<tr><td>IP</td><td colspan="3"><input type="text" name="ip" id="ip" size="35" value="http://192.168.4.1"></td></tr>
+<tr><th></th><th>Command</th><th>Variable1</th><th>Variable2</th></tr>
+<tr>
+<td><input type="radio" name="choice" id="choice1" checked></td>
+<td>
+<select name="cmd1" id="cmd1">
+<option value="ip">ip</option>
+<option value="&resetwifi">&resetwifi</option>
+<option value="inputpullup">inputpullup</option>
+<option value="pinmode">pinmode</option>
+<option value="digitalwrite">digitalwrite</option>
+<option value="analogwrite">analogwrite</option>
+<option value="digitalread">digitalread</option>
+<option value="analogread">analogread</option>
+<option value="&message">&message</option>
+<option value="+message">+message</option>
+</select>
+</td>
+<td rowspan="2" colspan="2"><input type="text" name="num1" id="num1" size="8">&nbsp;&nbsp;<input type="text" name="num2" id="num2" size="8"></td>
+</tr>
+<tr>
+<td><input type="radio" name="choice" id="choice2"></td>
+<td><input type="text" name="cmd2" id="cmd2" size="8"></td>
+</tr>
+<tr>
+<td colspan="4" align="right"><input type="reset" value="clear">&nbsp;&nbsp;<input type="button" value="Send" onclick="SendCommand();"></td>
+</tr>
+<tr>
+<td>URL：</td><td colspan="3"><div id="ShowUrl"></div></td>
+</tr>
+</table>
+</form>
+<iframe id="MyFirmata" width="340" height="300"></iframe>
+</body>
+</html>
