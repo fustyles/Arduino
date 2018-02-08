@@ -1,4 +1,4 @@
-// Bluetooth HC06
+// Bluetooth HC05&HC06
 
 // Author : ChungYi Fu (Taiwan)  2018-2-8 00:00 
 
