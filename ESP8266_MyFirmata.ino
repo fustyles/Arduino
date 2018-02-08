@@ -1,6 +1,6 @@
 // ESP8266 ESP-01
 
-// Author : ChungYi Fu (Taiwan)  2018-2-8 12:00 
+// Author : ChungYi Fu (Taiwan)  2018-2-8 12:20 
 
 // Command format :  
 // Number：  ?cmd  ?cmd=num1  ?cmd=num1,num2
@@ -99,6 +99,17 @@ void loop()
       }
     }  
     Serial.println(ReceiveData);
+    if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
+    {
+      pinMode(13,OUTPUT);
+      for (int i=0;i<10;i++)
+      {
+        digitalWrite(13, HIGH);   
+        delay(200);              
+        digitalWrite(13, LOW);    
+        delay(200);              
+      }
+    }
   }
   
   if (ReceiveData.indexOf(" HTTP")!=-1)
