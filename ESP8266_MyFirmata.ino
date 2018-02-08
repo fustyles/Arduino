@@ -100,8 +100,8 @@ void loop()
     }  
     Serial.println(ReceiveData);
     
-    if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
-    {
+    //if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
+    //{
       //pinMode(13,OUTPUT);
       //for (int i=0;i<10;i++)
       //{
@@ -110,7 +110,7 @@ void loop()
         //digitalWrite(13, LOW);    
         //delay(100);              
       //}
-    }
+    //}
   }
   
   if (ReceiveData.indexOf(" HTTP")!=-1)
