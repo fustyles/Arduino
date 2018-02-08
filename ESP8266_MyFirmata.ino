@@ -1,10 +1,9 @@
 // ESP8266 ESP-01
 
-// Author : ChungYi Fu (Taiwan)  2018-2-7 20:20 
+// Author : ChungYi Fu (Taiwan)  2018-2-8 12:00 
 
 // Command format :  
-// ?cmd
-// Number：  ?cmd=num1  ?cmd=num1,num2
+// Number：  ?cmd  ?cmd=num1  ?cmd=num1,num2
 // String ： ?&cmd=str1  ?&cmd=str1,str2 
 // String+Number ： ?+cmd=str1,num2   
 
@@ -15,6 +14,7 @@
 // http://192.168.4.1/?analogwrite=3,200
 // http://192.168.4.1/?digitalread=3
 // http://192.168.4.1/?analogread=3
+// http://192.168.4.1/?resetwifi=id,pwd
 // http://192.168.4.1/?&message=Hello
 // http://192.168.4.1/?&message=Hello,World
 // http://192.168.4.1/?+message=Hello,100
@@ -26,20 +26,20 @@
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
-String SSID="wifi_id";
-String PWD="wifi_pwd";
+String SSID="id";
+String PWD="pwd";
 
 void setup()
 {
   Serial.begin(9600);
   mySerial.begin(9600);
 
-  SendData("AT+RST",10000);
+  SendData("AT+RST",5000);
   SendData("AT+CWMODE=3",2000);
   SendData("AT+CIPMUX=1",2000);
   SendData("AT+CIPSERVER=1,80",2000);
   //SendData("AT+CIPSTA=\"192.168.0.3\",\"192.168.0.1\",\"255.255.255.0\"",2000);
-  SendData("AT+CWJAP=\""+SSID+"\",\""+PWD+"\"",10000);
+  SendData("AT+CWJAP=\""+SSID+"\",\""+PWD+"\"",5000);
 }
 
 void loop() 
@@ -104,9 +104,9 @@ void loop()
   {
     Serial.println("");
     Serial.println("command: "+command);
-    Serial.println("cmd= "+cmd);
+    Serial.println("cmd: "+cmd);
     Serial.println("num1= "+String(num1)+" ,num2= "+String(num2));
-    Serial.println("str1= "+str1+" ,str2= "+str2);
+    Serial.println("str1= "+String(str1)+" ,str2= "+String(str2));
     
     String CID=String(ReceiveData.charAt(ReceiveData.indexOf("IPD,")+4));
     
@@ -164,6 +164,12 @@ void loop()
       {
         Feedback(CID,"<html>"+String(analogRead(num1))+"</html>",3);
       }    
+    else if (cmd=="&resetwifi")
+      {
+        SendData("AT+CWJAP=\""+str1+"\",\""+str2+"\"",5000);
+        mySerial.flush();
+        //Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
+      }       
     else if (cmd=="&message")
       {
         Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
