@@ -1,10 +1,9 @@
 // Bluetooth HC05&HC06
 
-// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-8 00:00 
+// Author : ChungYi Fu (Taiwan)  2018-2-8 21:00 
 
 // Command format :  
-// ?cmd
-// Number：  ?cmd=num1  ?cmd=num1,num2
+// Number：  ?cmd  ?cmd=num1  ?cmd=num1,num2
 // String ： ?&cmd=str1  ?&cmd=str1,str2 
 // String+Number ： ?+cmd=str1,num2   
 
@@ -25,14 +24,15 @@ SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11
 void setup()
 {
   Serial.begin(9600);
-  mySerial.begin(9600);   //Check your bluetooth baud rate
+  mySerial.begin(57600);
+  Serial.println("Hello World");
 }
 
 void loop() 
 {
   String ReceiveData="", command="";
-  String cmd="",str1="",str2="";
   long int num1=-1,num2=-1;
+  String cmd="",str1="",str2="";
   byte ReceiveState=0,cmdState=1,num1State=0,num2State=0;
   
   if (mySerial.available())
@@ -93,58 +93,58 @@ void loop()
     Serial.println("cmd: "+cmd);
     Serial.println("num1= "+String(num1)+" ,num2= "+String(num2));
     Serial.println("str1= "+String(str1)+" ,str2= "+String(str2));
-  }
 
-  while (mySerial.available())
-  {
-    mySerial.read();
-  }
-  
-  if (cmd=="your command")
+    while (mySerial.available())
     {
-      // you can do anything
-      //SendData("Hello World");
+      mySerial.read();
     }
-  else if (cmd=="inputpullup")
-    {
-      pinMode(num1, INPUT_PULLUP);
-      SendData(command);
-    }  
-  else if (cmd=="pinmode")
-    {
-      pinMode(num1, num2);
-      SendData(command);
-    }        
- else if (cmd=="digitalwrite")
-    {
-      digitalWrite(num1,num2);
-      SendData(command);
-    }   
-  else if (cmd=="digitalread")
-    {
-      SendData(String(digitalRead(num1)));
-    }    
-  else if (cmd=="analogwrite")
-    {
-      analogWrite(num1,num2);
-      SendData(command);
-    }       
-  else if (cmd=="analogread")
-    {
-      SendData(String(analogRead(num1)));
-    }    
-  else if (cmd=="&message")
-    {
-      SendData(str1+","+str2);
-    }     
-  else if (cmd=="+message")
-    {
-      SendData(str1+","+String(num2));
-    }                
-  else 
-    {
-      SendData("FAIL");
-    }  
+    
+    if (cmd=="your command")
+      {
+        // you can do anything
+        //SendData("Hello World");
+      }
+    else if (cmd=="inputpullup")
+      {
+        pinMode(num1, INPUT_PULLUP);
+        SendData(command);
+      }  
+    else if (cmd=="pinmode")
+      {
+        pinMode(num1, num2);
+        SendData(command);
+      }        
+    else if (cmd=="digitalwrite")
+      {
+        digitalWrite(num1,num2);
+        SendData(command);
+      }   
+    else if (cmd=="digitalread")
+      {
+        SendData(String(digitalRead(num1)));
+      }    
+    else if (cmd=="analogwrite")
+      {
+        analogWrite(num1,num2);
+        SendData(command);
+      }       
+    else if (cmd=="analogread")
+      {
+        SendData(String(analogRead(num1)));
+      }    
+    else if (cmd=="&message")
+      {
+        SendData(str1+","+str2);
+      }     
+    else if (cmd=="+message")
+      {
+        SendData(str1+","+String(num2));
+      }                
+    else 
+      {
+        SendData("FAIL");
+      }  
+  }
 }
 
 void SendData(String data)
