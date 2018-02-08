@@ -31,8 +31,8 @@ void setup()
 void loop() 
 {
   String ReceiveData="", command="";
-  long int num1=-1,num2=-1;
   String cmd="",str1="",str2="";
+  long int num1=-1,num2=-1;
   byte ReceiveState=0,cmdState=1,num1State=0,num2State=0;
   
   if (mySerial.available())
