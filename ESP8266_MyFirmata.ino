@@ -3,7 +3,8 @@
 // Author : ChungYi Fu (Taiwan)  2018-2-7 20:20 
 
 // Command format :  
-// Number：  ?cmd  ?cmd=num1  ?cmd=num1,num2
+// ?cmd
+// Number：  ?cmd=num1  ?cmd=num1,num2
 // String ： ?&cmd=str1  ?&cmd=str1,str2 
 // String+Number ： ?+cmd=str1,num2   
 
@@ -25,8 +26,8 @@
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
-String SSID="id";
-String PWD="pwd";
+String SSID="wifi_id";
+String PWD="wifi_pwd";
 
 void setup()
 {
