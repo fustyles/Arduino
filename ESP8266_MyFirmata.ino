@@ -1,6 +1,6 @@
 // ESP8266 ESP-01
 
-// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-8 20:20 
+// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-8 20:30 
 
 // Command format :
 // ?cmd  
@@ -114,7 +114,7 @@ void loop()
     //}
   }
   
-  if (ReceiveData.indexOf(" HTTP")!=-1)
+  if ((ReceiveData.indexOf(" HTTP")!=-1)&&(ReceiveData.indexOf("?")!=-1))
   {
     Serial.println("");
     Serial.println("command: "+command);
