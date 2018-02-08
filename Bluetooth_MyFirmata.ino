@@ -143,7 +143,7 @@ void loop()
       }                
     else 
       {
-        SendData("FAIL");
+        SendData("Command is not defined");
       }  
   }
 }
