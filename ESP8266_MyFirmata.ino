@@ -28,8 +28,8 @@
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
-String SSID="id";
-String PWD="pwd";
+String SSID="wifi_id";
+String PWD="wifi_pwd";
 
 void setup()
 {
