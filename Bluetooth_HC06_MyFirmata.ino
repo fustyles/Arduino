@@ -86,7 +86,7 @@ void loop()
     Serial.println(ReceiveData);
   }
 
-  if (ReceiveData!="")
+  if (ReceiveData.indexOf("?")!=-1)
   {
     Serial.println("");
     Serial.println("command: "+command);
