@@ -99,16 +99,17 @@ void loop()
       }
     }  
     Serial.println(ReceiveData);
+    
     if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
     {
-      pinMode(13,OUTPUT);
-      for (int i=0;i<10;i++)
-      {
-        digitalWrite(13, HIGH);   
-        delay(200);              
-        digitalWrite(13, LOW);    
-        delay(200);              
-      }
+      //pinMode(13,OUTPUT);
+      //for (int i=0;i<10;i++)
+      //{
+        //digitalWrite(13, HIGH);   
+        //delay(100);              
+        //digitalWrite(13, LOW);    
+        //delay(100);              
+      //}
     }
   }
   
