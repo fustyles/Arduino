@@ -194,7 +194,7 @@ void loop()
       }                
     else 
       {
-        Feedback(CID,"Command is not defined!",0);
+        Feedback(CID,"Command is not defined",0);
       }  
   }
 }
