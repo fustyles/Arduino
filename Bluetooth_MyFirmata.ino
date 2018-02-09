@@ -1,6 +1,6 @@
 // Bluetooth HC05&HC06
 
-// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-9 14:00
+// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-10 00:30
 
 // Command format :  
 // ?cmd  
@@ -150,5 +150,5 @@ void loop()
 
 void SendData(String data)
 {
-  //Let me think about it
+  mySerial.print(data);
 }
