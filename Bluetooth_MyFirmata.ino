@@ -222,7 +222,7 @@ void loop()
       }                
     else 
       {
-        Feedback(CID,"Command is not defined",0);
+        Feedback(CID,"<html>Command is not defined</html>",3);
       }  
   }
 }
