@@ -140,8 +140,6 @@ void loop()
               }
               if (t.indexOf("\n")!=-1) readstate=0;
               if (readstate==1) ClientIP=ClientIP+t;
-
-              
         } 
         //Serial.println(ClientIP);
     }
