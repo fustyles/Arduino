@@ -1,6 +1,6 @@
 // ESP8266 ESP-01
 
-// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-10 16:30 
+// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 00:00
 
 // Command format :
 // ?cmd  
@@ -31,6 +31,7 @@ SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11
 
 String SSID="wifi_id";
 String PWD="wifi_pwd";
+String ClientIP="";
 
 void setup()
 {
@@ -102,17 +103,48 @@ void loop()
     }  
     Serial.println(ReceiveData);
     
-    //if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
-    //{
-      //pinMode(13,OUTPUT);
-      //for (int i=0;i<10;i++)
-      //{
-        //digitalWrite(13, HIGH);   
-        //delay(100);              
-        //digitalWrite(13, LOW);    
-        //delay(100);              
-      //}
-    //}
+    if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
+    { 
+        pinMode(13,1);
+        for (int i=0;i<20;i++)
+        {
+          digitalWrite(13,1);
+          delay(50);
+          digitalWrite(13,0);
+          delay(50);
+        }
+        long int StartTime=millis();
+        while( (StartTime+4000) > millis())
+        {
+            while(mySerial.available())
+            {
+                mySerial.read();
+            }
+        } 
+  
+        int readstate=0,j=0;
+        mySerial.println("AT+CIFSR");
+        mySerial.flush();
+        delay(5);
+        while(mySerial.available())
+        {
+              char c=mySerial.read();
+              String t=String(c);
+              //Serial.print(t);
+              
+              if (t.indexOf("S")!=-1) j++;
+              if (j==5) 
+              {
+                readstate=1;
+                j++;
+              }
+              if (t.indexOf("\n")!=-1) readstate=0;
+              if (readstate==1) ClientIP=ClientIP+t;
+
+              
+        } 
+        //Serial.println(ClientIP);
+    }
   }
   
   if ((ReceiveData.indexOf(" HTTP")!=-1)&&(ReceiveData.indexOf("?")!=-1))
@@ -141,15 +173,7 @@ void loop()
       }
     else if (cmd=="ip")
       {
-        mySerial.println("AT+CIFSR");
-        mySerial.flush();
-        delay(5);  //you can try to change number to get complete data 
-        ReceiveData="";
-        while (mySerial.available())
-        {
-            ReceiveData=ReceiveData+char(mySerial.read());
-        }
-        Feedback(CID,"<html>"+ReceiveData+"</html>",3);
+        Feedback(CID,"<html>"+ClientIP+"</html>",3);
       }
     else if (cmd=="&at")
       {
@@ -157,7 +181,7 @@ void loop()
         mySerial.flush();
         delay(5);
         Feedback(CID,"<html>"+command+"</html>",3);
-      }    
+      }
     else if (cmd=="inputpullup")
       {
         pinMode(num1, INPUT_PULLUP);
@@ -252,5 +276,5 @@ String WaitReply(long int TimeLimit)
       }
       if (ReceiveState==1) return ReceiveData;
   } 
-  return ReceiveData;
+  return "";
 }
