@@ -1,6 +1,6 @@
 // ESP8266 ESP-01
 
-// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-8 20:30 
+// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-10 16:30 
 
 // Command format :
 // ?cmd  
@@ -11,6 +11,7 @@
 // AP IP： 192.168.4.1
 // http://192.168.4.1/?&resetwifi=id,pwd
 // http://192.168.4.1/?ip
+// http://192.168.4.1/?&at=AT+CWLAP
 // http://192.168.4.1/?inputpullup=3
 // http://192.168.4.1/?pinmode=3,1
 // http://192.168.4.1/?digitalwrite=3,1
@@ -150,6 +151,13 @@ void loop()
         }
         Feedback(CID,"<html>"+ReceiveData+"</html>",3);
       }
+    else if (cmd=="&at")
+      {
+        mySerial.println(str1);
+        mySerial.flush();
+        delay(5);
+        Feedback(CID,"<html>"+command+"</html>",3);
+      }    
     else if (cmd=="inputpullup")
       {
         pinMode(num1, INPUT_PULLUP);
