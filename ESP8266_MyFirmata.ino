@@ -1,6 +1,6 @@
 // ESP8266 ESP-01
 
-// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 00:00
+// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 00:40
 
 // Command format :
 // ?cmd  
@@ -114,14 +114,15 @@ void loop()
           delay(50);
         }
         long int StartTime=millis();
-        while( (StartTime+4000) > millis())
+        while( (StartTime+3000) > millis())
         {
             while(mySerial.available())
             {
                 mySerial.read();
             }
         } 
-  
+
+        ClientIP="";
         int readstate=0,j=0;
         mySerial.println("AT+CIFSR");
         mySerial.flush();
@@ -132,16 +133,14 @@ void loop()
               String t=String(c);
               //Serial.print(t);
               
-              if (t.indexOf("S")!=-1) j++;
+              if (t.indexOf("\"")!=-1) j++;
               if (j==5) 
-              {
                 readstate=1;
-                j++;
-              }
-              if (t.indexOf("\n")!=-1) readstate=0;
-              if (readstate==1) ClientIP=ClientIP+t;
+              else if (j==6)
+                readstate=0;
+              if ((readstate==1)&&(t.indexOf("\"")==-1)) ClientIP=ClientIP+t;
         } 
-        //Serial.println(ClientIP);
+        Serial.println(ClientIP);
     }
   }
   
@@ -171,7 +170,7 @@ void loop()
       }
     else if (cmd=="ip")
       {
-        Feedback(CID,"<html>"+ClientIP+"</html>",3);
+        Feedback(CID,"<html>STAIP:"+ClientIP+"</html>",3);
       }
     else if (cmd=="&at")
       {
@@ -224,7 +223,7 @@ void loop()
       }                
     else 
       {
-        Feedback(CID,"Command is not defined",0);
+        Feedback(CID,"<html>Command is not defined</html>",3);
       }  
   }
 }
