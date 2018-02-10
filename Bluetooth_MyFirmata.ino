@@ -1,6 +1,6 @@
 // ESP8266 ESP-01
 
-// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 00:40
+// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 00:50
 
 // Command format :
 // ?cmd  
@@ -122,6 +122,7 @@ void loop()
             }
         } 
   
+        ClientIP="";
         int readstate=0,j=0;
         mySerial.println("AT+CIFSR");
         mySerial.flush();
