@@ -25,7 +25,7 @@ SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11
 void setup()
 {
   Serial.begin(9600);
-  mySerial.begin(57600);    //Check your bluetooth baud rate
+  mySerial.begin(9600);    //Check your bluetooth baud rate
   Serial.println("Hello World");
 }
 
