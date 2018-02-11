@@ -29,7 +29,6 @@ void setup()
 {
   Serial.begin(9600);
   mySerial.begin(9600);    //Check your bluetooth baud rate
-  Serial.println("Hello World");
 }
 
 void loop() 
