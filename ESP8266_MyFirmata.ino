@@ -1,28 +1,30 @@
-// ESP8266 ESP-01
+/* 
+ESP8266 ESP-01
 
-// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 16:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 15:00
 
-// Command format :
-// ?cmd  
-// Number： ?cmd=num1  ?cmd=num1,num2
-// String ： ?&cmd=str1  ?&cmd=str1,str2 
-// Number+String ： ?+cmd=num1,str2   
+Command format :
+?cmd  
+Number： ?cmd=num1  ?cmd=num1,num2
+String ： ?&cmd=str1  ?&cmd=str1,str2 
+Number+String ： ?+cmd=num1,str2   
 
-// AP IP： 192.168.4.1
-// http://192.168.4.1/?&resetwifi=id,pwd
-// http://192.168.4.1/?ip
-// http://192.168.4.1/?&at=AT+Command
-// http://192.168.4.1/?inputpullup=3
-// http://192.168.4.1/?pinmode=3,1
-// http://192.168.4.1/?digitalwrite=3,1
-// http://192.168.4.1/?analogwrite=3,200
-// http://192.168.4.1/?digitalread=3
-// http://192.168.4.1/?analogread=3
-// http://192.168.4.1/?&yourcmd=Hello,World
-// http://192.168.4.1/?+yourcmd=100,Hello
+AP IP： 192.168.4.1
+http://192.168.4.1/?&resetwifi=id,pwd
+http://192.168.4.1/?ip
+http://192.168.4.1/?&at=AT+Command
+http://192.168.4.1/?inputpullup=3
+http://192.168.4.1/?pinmode=3,1
+http://192.168.4.1/?digitalwrite=3,1
+http://192.168.4.1/?analogwrite=3,200
+http://192.168.4.1/?digitalread=3
+http://192.168.4.1/?analogread=3
+http://192.168.4.1/?&yourcmd=Hello,World
+http://192.168.4.1/?+yourcmd=100,Hello
 
-// STA IP：
-// Query： http://192.168.4.1/?ip
+STA IP：
+Query： http://192.168.4.1/?ip
+*/
 
 
 #include <SoftwareSerial.h>
