@@ -18,8 +18,8 @@
 // http://192.168.4.1/?analogwrite=3,200
 // http://192.168.4.1/?digitalread=3
 // http://192.168.4.1/?analogread=3
-// http://192.168.4.1/?&cmd=Hello,World
-// http://192.168.4.1/?+cmd=100,Hello
+// http://192.168.4.1/?&yourcmd=Hello,World
+// http://192.168.4.1/?+yourcmd=100,Hello
 
 // STA IP：
 // Query： http://192.168.4.1/?ip
