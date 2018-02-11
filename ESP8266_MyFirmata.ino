@@ -164,20 +164,22 @@ void loop()
     
     if (cmd=="yourcmd")
       {
-        // you can do anything
+        //you can do anything
         
-        //Feedback(CID,"<font color=\"red\">Hello World</font>",0);  --> HTML
-        //Feedback(CID,"Hello World",1);  --> XML
-        //Feedback(CID,"Hello World",2);  --> JSON
-        //Feedback(CID,"<html>Hello World</html>",3);  --> Custom definition
+        //Feedback(CID,"<font color=\"red\">"+cmd+"</font>",0);  --> HTML
+        //Feedback(CID,cmd,1);  --> XML
+        //Feedback(CID,cmd,2);  --> JSON
+        //Feedback(CID,"<html>"+cmd+"</html>",3);  --> Custom definition
       }
     else if (cmd=="&yourcmd")
       {
-         //Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
+         //you can do anything
+         //Feedback(CID,"<html>"+cmd+"="+str1+","+str2+"</html>",3);
       }
     else if (cmd=="+yourcmd")
       {
-        //Feedback(CID,"<html>"+String(num1)+","+str2+"</html>",3);
+         //you can do anything
+        //Feedback(CID,"<html>"+cmd+"="+String(num1)+","+str2+"</html>",3);
       }    
     else if (cmd=="ip")
       {
