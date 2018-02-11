@@ -71,10 +71,10 @@ void loop()
       {
         //you can do anything
         
-        //Feedback(CID,"<font color=\"red\">"+cmd+"</font>",0);  --> HTML
-        //Feedback(CID,cmd,1);  --> XML
-        //Feedback(CID,cmd,2);  --> JSON
-        //Feedback(CID,"<html>"+cmd+"</html>",3);  --> Custom definition
+        //Feedback(CID,"<font color=\"red\">"+cmd+"="+num1+","+num2+"</font>",0);  --> HTML
+        //Feedback(CID,cmd+"="+num1+","+num2,1);  --> XML
+        //Feedback(CID,cmd+"="+num1+","+num2,2);  --> JSON
+        //Feedback(CID,"<html>"+cmd+"="+num1+","+num2+"</html>",3);  --> Custom definition
       }
     else if (cmd=="&yourcmd")
       {
