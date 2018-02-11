@@ -179,7 +179,7 @@ void loop()
     else if (cmd=="+yourcmd")
       {
          //you can do anything
-        //Feedback(CID,"<html>"+cmd+"="+String(num1)+","+str2+"</html>",3);
+         //Feedback(CID,"<html>"+cmd+"="+String(num1)+","+str2+"</html>",3);
       }    
     else if (cmd=="ip")
       {
