@@ -106,15 +106,16 @@ void loop()
     if (cmd=="yourcmd")
       {
         // you can do anything
-        
         //SendData(cmd);
       }
     else if (cmd=="&yourcmd")
       {
-         //SendData(cmd+"="+str1+","+str2);
+        // you can do anything
+        //SendData(cmd+"="+str1+","+str2);
       }
     else if (cmd=="+yourcmd")
       {
+        // you can do anything
         //SendData(cmd+"="+String(num1)+","+str2);
       }   
     else if (cmd=="inputpullup")
