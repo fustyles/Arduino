@@ -1,6 +1,6 @@
 // ESP8266 ESP-01
 
-// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 15:30
+// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 16:00
 
 // Command format :
 // ?cmd  
@@ -88,7 +88,7 @@ void loop()
       }    
     else if (cmd=="ip")
       {
-        Feedback(CID,"<html>STAIP:"+STAIP+"</html>",3);
+        Feedback(CID,"<html>APIP: "+APIP+"<br>STAIP: "+STAIP+"</html>",3);
       }
     else if (cmd=="&at")
       {
@@ -264,25 +264,36 @@ void getVariable()
             }
         } 
 
-        STAIP="";
-        int readstate=0,j=0;
+        APIP="";STAIP="";
+        int apreadstate=0,stareadstate=0,j=0,k=0;
         mySerial.println("AT+CIFSR");
         mySerial.flush();
         delay(5);
         while(mySerial.available())
         {
-              char c=mySerial.read();
-              String t=String(c);
-              //Serial.print(t);
-              
-              if (t.indexOf("\"")!=-1) j++;
-              if (j==5) 
-                readstate=1;
-              else if (j==6)
-                readstate=0;
-              if ((readstate==1)&&(t.indexOf("\"")==-1)) STAIP=STAIP+t;
+          char c=mySerial.read();
+          String t=String(c);
+          //Serial.print(t);
+          
+          if (t.indexOf("\"")!=-1) j++;
+          if (j==1) 
+            apreadstate=1;
+          else if (j==2)
+            apreadstate=0;
+          if ((apreadstate==1)&&(t.indexOf("\"")==-1)) APIP=APIP+t;
+          
+          if (t.indexOf("\"")!=-1) k++;
+          if (k==5) 
+            stareadstate=1;
+          else if (k==6)
+            stareadstate=0;
+          if ((stareadstate==1)&&(t.indexOf("\"")==-1)) STAIP=STAIP+t;
         } 
-        Serial.println("STAIP: "+STAIP);
+        while(mySerial.available())
+        {
+          char c=mySerial.read();
+        }
+        Serial.println("APIP: "+APIP+"\nSTAIP: "+STAIP);
     }
   }
 }
