@@ -14,7 +14,6 @@
 // ?analogwrite=3,200
 // ?digitalread=3
 // ?analogread=3
-// ?&message=Hello
 // ?&message=Hello,World
 // ?+message=100,Hello
 
