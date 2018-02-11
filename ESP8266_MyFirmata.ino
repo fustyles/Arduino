@@ -91,7 +91,7 @@ void loop()
       }
     else if (cmd=="&at")
       {
-        mySerial.println(str2);
+        mySerial.println(str1);
         mySerial.flush();
         delay(20);
         Feedback(CID,"<html>"+command+"</html>",3);
