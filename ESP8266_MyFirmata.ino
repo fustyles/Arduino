@@ -6,7 +6,7 @@
 // ?cmd  
 // Number： ?cmd=num1  ?cmd=num1,num2
 // String ： ?&cmd=str1  ?&cmd=str1,str2 
-// String+Number ： ?+cmd=num1,str2   
+// Number+String ： ?+cmd=num1,str2   
 
 // AP IP： 192.168.4.1
 // http://192.168.4.1/?&resetwifi=id,pwd
@@ -18,9 +18,8 @@
 // http://192.168.4.1/?analogwrite=3,200
 // http://192.168.4.1/?digitalread=3
 // http://192.168.4.1/?analogread=3
-// http://192.168.4.1/?&message=Hello
-// http://192.168.4.1/?&message=Hello,World
-// http://192.168.4.1/?+message=100,Hello
+// http://192.168.4.1/?&command=Hello,World
+// http://192.168.4.1/?+command=100,Hello
 
 // STA IP：
 // Query： http://192.168.4.1/?ip
@@ -180,7 +179,7 @@ void loop()
       {
         mySerial.println(str2);
         mySerial.flush();
-        delay(5);
+        delay(20);
         Feedback(CID,"<html>"+command+"</html>",3);
       }
     else if (cmd=="inputpullup")
