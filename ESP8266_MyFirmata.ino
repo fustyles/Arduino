@@ -30,7 +30,10 @@ SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11
 
 String SSID="wifi_id";
 String PWD="wifi_pwd";
-String ClientIP="";
+
+String APIP="",STAIP="";
+String ReceiveData="", command="",cmd="",str1="",str2="";
+long int num1=-1,num2=-1;
 
 void setup()
 {
@@ -47,105 +50,7 @@ void setup()
 
 void loop() 
 {
-  String ReceiveData="", command="";
-  String cmd="",str1="",str2="";
-  long int num1=-1,num2=-1;
-  byte ReceiveState=0,cmdState=1,num1State=0,num2State=0,commastate=0;
-  
-  if (mySerial.available())
-  {
-    while (mySerial.available())
-    {
-      char c=mySerial.read();
-      delay(10);
-      ReceiveData=ReceiveData+String(c);
-      
-      if (String(c).indexOf("?")!=-1) ReceiveState=1;
-      if (String(c).indexOf(" ")!=-1) ReceiveState=0;
-      if ((ReceiveState==1)&&(String(c).indexOf("?")==-1)) 
-      {
-        command=command+String(c);
-
-        if ((String(c).indexOf("=")!=-1)&&(ReceiveState==1)) cmdState=0;
-        if (cmdState==1) cmd=cmd+String(c);
-
-        if ((String(c).indexOf("=")!=-1)&&(ReceiveState==1)) num1State=1;
-        if (((String(c).indexOf(",")!=-1)||(String(c).indexOf(" ")!=-1))&&(ReceiveState==1)) num1State=0;
-        if ((num1State==1)&&(String(c).indexOf("=")==-1))
-        {
-          if (ReceiveData.indexOf("?&")!=-1)
-            str1=str1+String(c);
-          else
-          {
-            if (num1==-1) 
-              num1=c-'0'; 
-            else
-              num1=num1*10+(c-'0'); 
-          }
-        }
-        
-        if ((String(c).indexOf(",")!=-1)&&(ReceiveState==1)) num2State=1;
-        if ((String(c).indexOf(" ")!=-1)&&(ReceiveState==1)) num2State=0;
-        if ((num2State==1)&&(String(c).indexOf(",")==-1))
-        {
-          if ((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1))
-            str2=str2+String(c);
-          else
-          {          
-            if (num2==-1) 
-              num2=c-'0'; 
-            else
-              num2=num2*10+(c-'0'); 
-          }
-        }
-        else if ((num2State==1)&&(String(c).indexOf(",")!=-1)&&(commastate==1)&&((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1)))
-          str2=str2+String(c); 
-        else if (num2State==1)
-          commastate=1;
-      }
-    }  
-    Serial.println(ReceiveData);
-    
-    if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
-    { 
-        pinMode(13,1);
-        for (int i=0;i<20;i++)
-        {
-          digitalWrite(13,1);
-          delay(50);
-          digitalWrite(13,0);
-          delay(50);
-        }
-        long int StartTime=millis();
-        while( (StartTime+3000) > millis())
-        {
-            while(mySerial.available())
-            {
-                mySerial.read();
-            }
-        } 
-
-        ClientIP="";
-        int readstate=0,j=0;
-        mySerial.println("AT+CIFSR");
-        mySerial.flush();
-        delay(5);
-        while(mySerial.available())
-        {
-              char c=mySerial.read();
-              String t=String(c);
-              //Serial.print(t);
-              
-              if (t.indexOf("\"")!=-1) j++;
-              if (j==5) 
-                readstate=1;
-              else if (j==6)
-                readstate=0;
-              if ((readstate==1)&&(t.indexOf("\"")==-1)) ClientIP=ClientIP+t;
-        } 
-        Serial.println(ClientIP);
-    }
-  }
+  getVariable();
   
   if ((ReceiveData.indexOf("?")!=-1)&&(ReceiveData.indexOf(" H")!=-1))
   {
@@ -183,7 +88,7 @@ void loop()
       }    
     else if (cmd=="ip")
       {
-        Feedback(CID,"<html>STAIP:"+ClientIP+"</html>",3);
+        Feedback(CID,"<html>STAIP:"+STAIP+"</html>",3);
       }
     else if (cmd=="&at")
       {
@@ -279,4 +184,105 @@ String WaitReply(long int TimeLimit)
       if (ReceiveState==1) return ReceiveData;
   } 
   return "";
+}
+
+void getVariable()
+{
+  ReceiveData="";command="";cmd="";str1="";str2="";num1=-1;num2=-1;
+  byte ReceiveState=0,cmdState=1,num1State=0,num2State=0,commastate=0;
+  
+  if (mySerial.available())
+  {
+    while (mySerial.available())
+    {
+      char c=mySerial.read();
+      delay(10);
+      ReceiveData=ReceiveData+String(c);
+      
+      if (String(c).indexOf("?")!=-1) ReceiveState=1;
+      if (String(c).indexOf(" ")!=-1) ReceiveState=0;
+      if ((ReceiveState==1)&&(String(c).indexOf("?")==-1)) 
+      {
+        command=command+String(c);
+
+        if ((String(c).indexOf("=")!=-1)&&(ReceiveState==1)) cmdState=0;
+        if (cmdState==1) cmd=cmd+String(c);
+
+        if ((String(c).indexOf("=")!=-1)&&(ReceiveState==1)) num1State=1;
+        if (((String(c).indexOf(",")!=-1)||(String(c).indexOf(" ")!=-1))&&(ReceiveState==1)) num1State=0;
+        if ((num1State==1)&&(String(c).indexOf("=")==-1))
+        {
+          if (ReceiveData.indexOf("?&")!=-1)
+            str1=str1+String(c);
+          else
+          {
+            if (num1==-1) 
+              num1=c-'0'; 
+            else
+              num1=num1*10+(c-'0'); 
+          }
+        }
+        
+        if ((String(c).indexOf(",")!=-1)&&(ReceiveState==1)) num2State=1;
+        if ((String(c).indexOf(" ")!=-1)&&(ReceiveState==1)) num2State=0;
+        if ((num2State==1)&&(String(c).indexOf(",")==-1))
+        {
+          if ((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1))
+            str2=str2+String(c);
+          else
+          {          
+            if (num2==-1) 
+              num2=c-'0'; 
+            else
+              num2=num2*10+(c-'0'); 
+          }
+        }
+        else if ((num2State==1)&&(String(c).indexOf(",")!=-1)&&(commastate==1)&&((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1)))
+          str2=str2+String(c); 
+        else if (num2State==1)
+          commastate=1;
+      }
+    }  
+    Serial.println(ReceiveData);
+    
+    if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
+    { 
+        pinMode(13,1);
+        for (int i=0;i<20;i++)
+        {
+          digitalWrite(13,1);
+          delay(50);
+          digitalWrite(13,0);
+          delay(50);
+        }
+        long int StartTime=millis();
+        while( (StartTime+3000) > millis())
+        {
+            while(mySerial.available())
+            {
+                mySerial.read();
+            }
+        } 
+
+        STAIP="";
+        int readstate=0,j=0;
+        mySerial.println("AT+CIFSR");
+        mySerial.flush();
+        delay(5);
+        while(mySerial.available())
+        {
+              char c=mySerial.read();
+              String t=String(c);
+              //Serial.print(t);
+              
+              if (t.indexOf("\"")!=-1) j++;
+              if (j==5) 
+                readstate=1;
+              else if (j==6)
+                readstate=0;
+              if ((readstate==1)&&(t.indexOf("\"")==-1)) STAIP=STAIP+t;
+        } 
+        Serial.println("STAIP: "+STAIP);
+    }
+  }
 }
