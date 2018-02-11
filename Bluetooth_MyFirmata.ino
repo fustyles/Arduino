@@ -1,12 +1,12 @@
 // Bluetooth HC05&HC06
 
-// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-10 00:30 
+// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 10:30 
 
 // Command format :  
 // ?cmd  
 // Number：  ?cmd=num1  ?cmd=num1,num2
 // String ： ?&cmd=str1  ?&cmd=str1,str2 
-// String+Number ： ?+cmd=str1,num2   
+// String+Number ： ?+cmd=num1,str2   
 
 // ?inputpullup=3
 // ?pinmode=3,1
@@ -16,7 +16,7 @@
 // ?analogread=3
 // ?&message=Hello
 // ?&message=Hello,World
-// ?+message=Hello,100
+// ?+message=100,Hello
 
 
 #include <SoftwareSerial.h>
@@ -34,7 +34,7 @@ void loop()
   String ReceiveData="", command="";
   long int num1=-1,num2=-1;
   String cmd="",str1="",str2="";
-  byte ReceiveState=0,cmdState=1,num1State=0,num2State=0;
+  byte ReceiveState=0,cmdState=1,num1State=0,num2State=0,commastate=0;
   
   if (mySerial.available())
   {
@@ -57,7 +57,7 @@ void loop()
         if (((String(c).indexOf(",")!=-1)||(String(c).indexOf(" ")!=-1))&&(ReceiveState==1)) num1State=0;
         if ((num1State==1)&&(String(c).indexOf("=")==-1))
         {
-          if ((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1))
+          if (ReceiveData.indexOf("?&")!=-1)
             str1=str1+String(c);
           else
           {
@@ -72,7 +72,7 @@ void loop()
         if ((String(c).indexOf(" ")!=-1)&&(ReceiveState==1)) num2State=0;
         if ((num2State==1)&&(String(c).indexOf(",")==-1))
         {
-          if (ReceiveData.indexOf("?&")!=-1)
+          if ((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1))
             str2=str2+String(c);
           else
           {          
@@ -81,7 +81,11 @@ void loop()
             else
               num2=num2*10+(c-'0'); 
           }
-        } 
+        }
+        else if ((num2State==1)&&(String(c).indexOf(",")!=-1)&&(commastate==1)&&((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1)))
+          str2=str2+String(c); 
+        else if (num2State==1)
+          commastate=1;
       }
     }  
     Serial.println(ReceiveData);
@@ -139,7 +143,7 @@ void loop()
       }     
     else if (cmd=="+message")
       {
-        SendData(str1+","+String(num2));
+        SendData(String(num1)+","+str2);
       }                
     else 
       {
