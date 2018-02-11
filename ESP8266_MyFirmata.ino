@@ -18,8 +18,8 @@
 // http://192.168.4.1/?analogwrite=3,200
 // http://192.168.4.1/?digitalread=3
 // http://192.168.4.1/?analogread=3
-// http://192.168.4.1/?&command=Hello,World
-// http://192.168.4.1/?+command=100,Hello
+// http://192.168.4.1/?&cmd=Hello,World
+// http://192.168.4.1/?+cmd=100,Hello
 
 // STA IP：
 // Query： http://192.168.4.1/?ip
@@ -215,15 +215,7 @@ void loop()
         Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
         SendData("AT+CWJAP=\""+str1+"\",\""+str2+"\"",5000);
         mySerial.flush();
-      }       
-    else if (cmd=="&message")
-      {
-        Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
-      }     
-    else if (cmd=="+message")
-      {
-        Feedback(CID,"<html>"+String(num1)+","+str2+"</html>",3);
-      }                
+      }           
     else 
       {
         Feedback(CID,"<html>Command is not defined</html>",3);
