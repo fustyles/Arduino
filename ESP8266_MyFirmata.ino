@@ -44,7 +44,12 @@ void setup()
   Serial.begin(9600);
   mySerial.begin(9600);
   
-  initial();
+  SendData("AT+RST",5000);
+  SendData("AT+CWMODE=3",2000);
+  SendData("AT+CIPMUX=1",2000);
+  SendData("AT+CIPSERVER=1,80",2000);
+  //SendData("AT+CIPSTA=\"192.168.0.3\",\"192.168.0.1\",\"255.255.255.0\"",2000);
+  SendData("AT+CWJAP=\""+SSID+"\",\""+PWD+"\"",5000); 
 }
 
 void loop() 
@@ -93,7 +98,7 @@ void loop()
       {
         mySerial.println(str1);
         mySerial.flush();
-        delay(20);
+        delay(10);
         Feedback(CID,"<html>"+command+"</html>",3);
       }
     else if (cmd=="inputpullup")
@@ -137,22 +142,11 @@ void loop()
   }
 }
 
-void initial()
-{
-  SendData("AT+RST",5000);
-  SendData("AT+CWMODE=3",2000);
-  SendData("AT+CIPMUX=1",2000);
-  SendData("AT+CIPSERVER=1,80",2000);
-  //SendData("AT+CIPSTA=\"192.168.0.3\",\"192.168.0.1\",\"255.255.255.0\"",2000);
-  SendData("AT+CWJAP=\""+SSID+"\",\""+PWD+"\"",5000); 
-  
-}
-
 void SendData(String data,int TimeLimit)
 {
   mySerial.println(data);
   mySerial.flush();
-  delay(20);
+  delay(10);
   WaitReply(TimeLimit);
 }
 
@@ -270,7 +264,7 @@ void getVariable()
         int apreadstate=0,stareadstate=0,j=0,k=0;
         mySerial.println("AT+CIFSR");
         mySerial.flush();
-        delay(5);
+        delay(10);
         while(mySerial.available())
         {
           char c=mySerial.read();
