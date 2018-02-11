@@ -1,6 +1,6 @@
 // Bluetooth HC05&HC06
 
-// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 10:30 
+// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 15:30 
 
 // Command format :  
 // ?cmd  
@@ -21,6 +21,9 @@
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
+String ReceiveData="", command="",cmd="",str1="",str2="";
+long int num1=-1,num2=-1;
+
 void setup()
 {
   Serial.begin(9600);
@@ -30,9 +33,80 @@ void setup()
 
 void loop() 
 {
-  String ReceiveData="", command="";
-  long int num1=-1,num2=-1;
-  String cmd="",str1="",str2="";
+  getVariable();
+
+  if (ReceiveData.indexOf("?")==0)
+  {
+    Serial.println("");
+    Serial.println("command: "+command);
+    Serial.println("cmd: "+cmd);
+    Serial.println("num1= "+String(num1)+" ,num2= "+String(num2));
+    Serial.println("str1= "+String(str1)+" ,str2= "+String(str2));
+
+    while (mySerial.available())
+    {
+      mySerial.read();
+    }
+    
+    if (cmd=="yourcmd")
+      {
+        //you can do anything
+        //SendData(cmd+"="+num1+","+num2);
+      }
+    else if (cmd=="&yourcmd")
+      {
+        //you can do anything
+        //SendData(cmd+"="+str1+","+str2);
+      }
+    else if (cmd=="+yourcmd")
+      {
+        //you can do anything
+        //SendData(cmd+"="+String(num1)+","+str2);
+      }   
+    else if (cmd=="inputpullup")
+      {
+        pinMode(num1, INPUT_PULLUP);
+        SendData(command);
+      }  
+    else if (cmd=="pinmode")
+      {
+        pinMode(num1, num2);
+        SendData(command);
+      }        
+    else if (cmd=="digitalwrite")
+      {
+        digitalWrite(num1,num2);
+        SendData(command);
+      }   
+    else if (cmd=="digitalread")
+      {
+        SendData(String(digitalRead(num1)));
+      }    
+    else if (cmd=="analogwrite")
+      {
+        analogWrite(num1,num2);
+        SendData(command);
+      }       
+    else if (cmd=="analogread")
+      {
+        SendData(String(analogRead(num1)));
+      }      
+    else 
+      {
+        SendData("Command is not defined");
+      }  
+  }
+}
+
+void SendData(String data)
+{
+  mySerial.print(data);
+}
+
+void getVariable()
+{
+  ReceiveData="";command="";cmd="";str1="";str2="";
+  num1=-1,num2=-1;
   byte ReceiveState=0,cmdState=1,num1State=0,num2State=0,commastate=0;
   
   if (mySerial.available())
@@ -89,71 +163,4 @@ void loop()
     }  
     Serial.println(ReceiveData);
   }
-
-  if (ReceiveData.indexOf("?")==0)
-  {
-    Serial.println("");
-    Serial.println("command: "+command);
-    Serial.println("cmd: "+cmd);
-    Serial.println("num1= "+String(num1)+" ,num2= "+String(num2));
-    Serial.println("str1= "+String(str1)+" ,str2= "+String(str2));
-
-    while (mySerial.available())
-    {
-      mySerial.read();
-    }
-    
-    if (cmd=="yourcmd")
-      {
-        //you can do anything
-        //SendData(cmd);
-      }
-    else if (cmd=="&yourcmd")
-      {
-        //you can do anything
-        //SendData(cmd+"="+str1+","+str2);
-      }
-    else if (cmd=="+yourcmd")
-      {
-        //you can do anything
-        //SendData(cmd+"="+String(num1)+","+str2);
-      }   
-    else if (cmd=="inputpullup")
-      {
-        pinMode(num1, INPUT_PULLUP);
-        SendData(command);
-      }  
-    else if (cmd=="pinmode")
-      {
-        pinMode(num1, num2);
-        SendData(command);
-      }        
-    else if (cmd=="digitalwrite")
-      {
-        digitalWrite(num1,num2);
-        SendData(command);
-      }   
-    else if (cmd=="digitalread")
-      {
-        SendData(String(digitalRead(num1)));
-      }    
-    else if (cmd=="analogwrite")
-      {
-        analogWrite(num1,num2);
-        SendData(command);
-      }       
-    else if (cmd=="analogread")
-      {
-        SendData(String(analogRead(num1)));
-      }      
-    else 
-      {
-        SendData("Command is not defined");
-      }  
-  }
-}
-
-void SendData(String data)
-{
-  mySerial.print(data);
 }
