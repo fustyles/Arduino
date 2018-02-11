@@ -147,7 +147,7 @@ void loop()
     }
   }
   
-  if ((ReceiveData.indexOf(" H")!=-1)&&(ReceiveData.indexOf("?")!=-1))
+  if ((ReceiveData.indexOf("?")!=-1)&&(ReceiveData.indexOf(" H")!=-1))
   {
     Serial.println("");
     Serial.println("command: "+command);
