@@ -1,12 +1,12 @@
 // ESP8266 ESP-01
 
-// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 00:40
+// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 10:30
 
 // Command format :
 // ?cmd  
 // Number： ?cmd=num1  ?cmd=num1,num2
 // String ： ?&cmd=str1  ?&cmd=str1,str2 
-// String+Number ： ?+cmd=str1,num2   
+// String+Number ： ?+cmd=num1,str2   
 
 // AP IP： 192.168.4.1
 // http://192.168.4.1/?&resetwifi=id,pwd
@@ -20,7 +20,7 @@
 // http://192.168.4.1/?analogread=3
 // http://192.168.4.1/?&message=Hello
 // http://192.168.4.1/?&message=Hello,World
-// http://192.168.4.1/?+message=Hello,100
+// http://192.168.4.1/?+message=100,Hello
 
 // STA IP：
 // Query： http://192.168.4.1/?ip
@@ -51,7 +51,7 @@ void loop()
   String ReceiveData="", command="";
   String cmd="",str1="",str2="";
   long int num1=-1,num2=-1;
-  byte ReceiveState=0,cmdState=1,num1State=0,num2State=0;
+  byte ReceiveState=0,cmdState=1,num1State=0,num2State=0,commastate=0;
   
   if (mySerial.available())
   {
@@ -74,7 +74,7 @@ void loop()
         if (((String(c).indexOf(",")!=-1)||(String(c).indexOf(" ")!=-1))&&(ReceiveState==1)) num1State=0;
         if ((num1State==1)&&(String(c).indexOf("=")==-1))
         {
-          if ((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1))
+          if (ReceiveData.indexOf("?&")!=-1)
             str1=str1+String(c);
           else
           {
@@ -89,7 +89,7 @@ void loop()
         if ((String(c).indexOf(" ")!=-1)&&(ReceiveState==1)) num2State=0;
         if ((num2State==1)&&(String(c).indexOf(",")==-1))
         {
-          if (ReceiveData.indexOf("?&")!=-1)
+          if ((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1))
             str2=str2+String(c);
           else
           {          
@@ -98,7 +98,11 @@ void loop()
             else
               num2=num2*10+(c-'0'); 
           }
-        } 
+        }
+        else if ((num2State==1)&&(String(c).indexOf(",")!=-1)&&(commastate==1)&&((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1)))
+          str2=str2+String(c); 
+        else if (num2State==1)
+          commastate=1;
       }
     }  
     Serial.println(ReceiveData);
@@ -144,7 +148,7 @@ void loop()
     }
   }
   
-  if ((ReceiveData.indexOf(" HTTP")!=-1)&&(ReceiveData.indexOf("?")!=-1))
+  if ((ReceiveData.indexOf(" H")!=-1)&&(ReceiveData.indexOf("?")!=-1))
   {
     Serial.println("");
     Serial.println("command: "+command);
@@ -174,7 +178,7 @@ void loop()
       }
     else if (cmd=="&at")
       {
-        mySerial.println(str1);
+        mySerial.println(str2);
         mySerial.flush();
         delay(5);
         Feedback(CID,"<html>"+command+"</html>",3);
@@ -219,7 +223,7 @@ void loop()
       }     
     else if (cmd=="+message")
       {
-        Feedback(CID,"<html>"+str1+","+String(num2)+"</html>",3);
+        Feedback(CID,"<html>"+String(num1)+","+str2+"</html>",3);
       }                
     else 
       {
