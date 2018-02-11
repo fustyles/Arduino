@@ -1,6 +1,6 @@
 // ESP8266 ESP-01
 
-// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 15:00
+// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 15:30
 
 // Command format :
 // ?cmd  
