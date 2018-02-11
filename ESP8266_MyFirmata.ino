@@ -1,7 +1,8 @@
 /* 
+
 ESP8266 ESP-01
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 15:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-12 01:30
 
 Command format :
 ?cmd  
@@ -24,6 +25,7 @@ http://192.168.4.1/?+yourcmd=100,Hello
 
 STA IP：
 Query： http://192.168.4.1/?ip
+
 */
 
 
@@ -41,13 +43,8 @@ void setup()
 {
   Serial.begin(9600);
   mySerial.begin(9600);
-
-  SendData("AT+RST",5000);
-  SendData("AT+CWMODE=3",2000);
-  SendData("AT+CIPMUX=1",2000);
-  SendData("AT+CIPSERVER=1,80",2000);
-  //SendData("AT+CIPSTA=\"192.168.0.3\",\"192.168.0.1\",\"255.255.255.0\"",2000);
-  SendData("AT+CWJAP=\""+SSID+"\",\""+PWD+"\"",5000);
+  
+  initial();
 }
 
 void loop() 
@@ -138,6 +135,18 @@ void loop()
         Feedback(CID,"<html>Command is not defined</html>",3);
       }  
   }
+}
+
+void initial()
+{
+  SendData("AT+RST",5000);
+  SendData("AT+CWMODE=3",2000);
+  SendData("AT+CIPMUX=1",2000);
+  SendData("AT+CIPSERVER=1,80",2000);
+  SendData("AT+CWDHCP=2,0",2000);  
+  //SendData("AT+CIPSTA=\"192.168.0.3\",\"192.168.0.1\",\"255.255.255.0\"",2000);
+  SendData("AT+CWJAP=\""+SSID+"\",\""+PWD+"\"",5000); 
+  
 }
 
 void SendData(String data,int TimeLimit)
@@ -249,16 +258,8 @@ void getVariable()
     
     if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
     { 
-        pinMode(13,1);
-        for (int i=0;i<20;i++)
-        {
-          digitalWrite(13,1);
-          delay(50);
-          digitalWrite(13,0);
-          delay(50);
-        }
         long int StartTime=millis();
-        while( (StartTime+3000) > millis())
+        while( (StartTime+4000) > millis())
         {
             while(mySerial.available())
             {
@@ -296,6 +297,14 @@ void getVariable()
           char c=mySerial.read();
         }
         Serial.println("APIP: "+APIP+"\nSTAIP: "+STAIP);
+        pinMode(13,1);
+        for (int i=0;i<20;i++)
+        {
+          digitalWrite(13,1);
+          delay(50);
+          digitalWrite(13,0);
+          delay(50);
+        }
     }
   }
 }
