@@ -1,22 +1,23 @@
-// Bluetooth HC05&HC06
+/*
+Bluetooth HC05&HC06
 
-// Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 15:30 
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 15:30 
 
-// Command format :  
-// ?cmd  
-// Number：  ?cmd=num1  ?cmd=num1,num2
-// String ： ?&cmd=str1  ?&cmd=str1,str2 
-// Number+String ： ?+cmd=num1,str2   
+Command format :  
+?cmd  
+Number：  ?cmd=num1  ?cmd=num1,num2
+String ： ?&cmd=str1  ?&cmd=str1,str2 
+Number+String ： ?+cmd=num1,str2   
 
-// ?inputpullup=3
-// ?pinmode=3,1
-// ?digitalwrite=3,1
-// ?analogwrite=3,200
-// ?digitalread=3
-// ?analogread=3
-// ?&yourcmd=Hello,World
-// ?+yourcmd=100,Hello
-
+?inputpullup=3
+?pinmode=3,1
+?digitalwrite=3,1
+?analogwrite=3,200
+?digitalread=3
+?analogread=3
+?&yourcmd=Hello,World
+?+yourcmd=100,Hello
+*/
 
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
