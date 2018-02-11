@@ -107,7 +107,7 @@ void loop()
         pinMode(num1, num2);
         Feedback(CID,"<html>"+command+"</html>",3);
       }        
-   else if (cmd=="digitalwrite")
+    else if (cmd=="digitalwrite")
       {
         digitalWrite(num1,num2);
         Feedback(CID,"<html>"+command+"</html>",3);
