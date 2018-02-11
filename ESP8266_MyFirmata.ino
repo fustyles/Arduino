@@ -162,7 +162,7 @@ void loop()
       mySerial.read();
     }
     
-    if (cmd=="your command")
+    if (cmd=="yourcmd")
       {
         // you can do anything
         
@@ -171,6 +171,14 @@ void loop()
         //Feedback(CID,"Hello World",2);  --> JSON
         //Feedback(CID,"<html>Hello World</html>",3);  --> Custom definition
       }
+    else if (cmd=="&yourcmd")
+      {
+         //Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
+      }
+    else if (cmd=="+yourcmd")
+      {
+        //Feedback(CID,"<html>"+String(num1)+","+str2+"</html>",3);
+      }    
     else if (cmd=="ip")
       {
         Feedback(CID,"<html>STAIP:"+ClientIP+"</html>",3);
