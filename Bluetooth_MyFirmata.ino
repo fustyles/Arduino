@@ -28,7 +28,7 @@ long int num1=-1,num2=-1;
 void setup()
 {
   Serial.begin(9600);
-  mySerial.begin(9600);    //Check your bluetooth baud rate
+  mySerial.begin(9600);    //Change your bluetooth baud rate by "AT+UART=9600,0,0"
 }
 
 void loop() 
