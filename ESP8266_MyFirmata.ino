@@ -57,7 +57,7 @@ void setup()
   SendData("AT+CIPMUX=1",2000);
   SendData("AT+CIPSERVER=1,80",2000);
   SendData("AT+CIPSTO=5",2000);  
-  SendData("AT+CIPSTA_CUR=\""+STA_ip+"\",\""+STA_gateway+"\",\""+STA_netmask+"\"",2000);
+  //SendData("AT+CIPSTA_CUR=\""+STA_ip+"\",\""+STA_gateway+"\",\""+STA_netmask+"\"",2000);
   SendData("AT+CWJAP_CUR=\""+SSID+"\",\""+PWD+"\"",5000); 
 }
 
