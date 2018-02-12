@@ -46,9 +46,9 @@ void setup()
 {
   Serial.begin(9600);
   
-  //You must change ESP8266 UART baud rate to 9600 by "AT+UART_DEF=9600,8,1,0,0"
-  mySerial.begin(115200);
-  SendData("AT+UART_DEF=9600,8,1,0,0",2000);
+  //You must change ESP8266 uart baud rate to 9600 by "AT+UART_DEF=9600,8,1,0,0"
+  mySerial.begin(115200);   //Default uart baud rate
+  SendData("AT+UART_DEF=9600,8,1,0,0",2000);   //Change uart baud rate
   
   mySerial.begin(9600);
   
