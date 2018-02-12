@@ -39,7 +39,6 @@ String STA_ip="192.168.0.100";
 String STA_gateway="192.168.0.1";
 String STA_netmask="255.255.255.0";
 
-
 String APIP="",STAIP="";
 String ReceiveData="", command="",cmd="",str1="",str2="";
 long int num1=-1,num2=-1;
