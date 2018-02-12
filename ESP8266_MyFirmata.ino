@@ -47,9 +47,9 @@ void setup()
   SendData("AT+RST",5000);
   SendData("AT+UART_DEF=9600,8,1,0,0",2000);
   SendData("AT+CWMODE_CUR=3",2000);
-  SendData("AT+CIPSERVER=1,80",2000);
   SendData("AT+CIPMUX=1",2000);
-  SendData("AT+CIPSTO=5",2000);
+  SendData("AT+CIPSERVER=1,80",2000);
+  SendData("AT+CIPSTO=5",2000);  
   
   // Check your Wi-Fi Router's Settings
   SendData("AT+CIPSTA_CUR=\"192.168.0.100\",\"192.168.0.1\",\"255.255.255.0\"",2000);
