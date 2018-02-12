@@ -100,7 +100,7 @@ void loop()
       {
         Feedback(CID,"<html>APIP: "+APIP+"<br>STAIP: "+STAIP+"</html>",3);
       }
-    else if (cmd=="&at")
+    else if (cmd=="&at")      //  ?&cmd=,str2 -> ?&at=,AT+RST
       {
         mySerial.println(str2);
         mySerial.flush();
