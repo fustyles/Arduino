@@ -54,7 +54,7 @@ void setup()
   // Check your Wi-Fi Router's Settings
   SendData("AT+CIPSTA_CUR=\"192.168.0.100\",\"192.168.0.1\",\"255.255.255.0\"",2000);
   
-  SendData("AT+CWJAP=\""+SSID+"\",\""+PWD+"\"",5000); 
+  SendData("AT+CWJAP_CUR=\""+SSID+"\",\""+PWD+"\"",5000); 
 }
 
 void loop() 
