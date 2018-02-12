@@ -34,9 +34,6 @@ SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11
 // Check your Wi-Fi Router's Settings
 String SSID="yourwifi_id";
 String PWD="yourwifi_pwd";
-String STA_ip="192.168.0.100";
-String STA_gateway="192.168.0.1";
-String STA_netmask="255.255.255.0";
 
 String APIP="",STAIP="";
 String ReceiveData="", command="",cmd="",str1="",str2="";
@@ -57,6 +54,9 @@ void setup()
   SendData("AT+CIPMUX=1",2000);
   SendData("AT+CIPSERVER=1,80",2000);
   SendData("AT+CIPSTO=5",2000);  
+  String STA_ip="192.168.0.100";
+  //String STA_gateway="192.168.0.1";
+  //String STA_netmask="255.255.255.0";
   //SendData("AT+CIPSTA_CUR=\""+STA_ip+"\",\""+STA_gateway+"\",\""+STA_netmask+"\"",2000);
   SendData("AT+CWJAP_CUR=\""+SSID+"\",\""+PWD+"\"",5000); 
 }
