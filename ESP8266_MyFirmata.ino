@@ -2,7 +2,7 @@
 
 ESP8266 ESP-01
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-12 01:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-12 11:00
 
 Command format :
 ?cmd  
@@ -96,7 +96,7 @@ void loop()
       }
     else if (cmd=="&at")
       {
-        mySerial.println(str1);
+        mySerial.println(str2);
         mySerial.flush();
         delay(10);
         Feedback(CID,"<html>"+command+"</html>",3);
