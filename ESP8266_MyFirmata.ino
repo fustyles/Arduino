@@ -190,9 +190,11 @@ String WaitReply(long int TimeLimit)
   {
       while(mySerial.available())
       {
-          ReceiveData=ReceiveData+char(mySerial.read());
-          delay(10);
-          ReceiveState=1;
+        char c=mySerial.read();
+        ReceiveData=ReceiveData+String(c);
+        //Serial.print(c);
+        delay(10);
+        ReceiveState=1;
       }
       if (ReceiveState==1) return ReceiveData;
   } 
