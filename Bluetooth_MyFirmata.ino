@@ -5,9 +5,9 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 15:30
 
 Command format :  
 ?cmd  
-Number：  ?cmd=num1  ?cmd=num1,num2
-String ： ?&cmd=str1  ?&cmd=str1,str2 
-Number+String ： ?+cmd=num1,str2   
+Number：  ?cmd=num1  ?cmd=num1,num2   (?)
+String ： ?&cmd=str1  ?&cmd=str1,str2   (?&)
+Number+String ： ?+cmd=num1,str2   (?+)
 
 ?inputpullup=3
 ?pinmode=3,1
