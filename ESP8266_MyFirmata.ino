@@ -42,7 +42,7 @@ long int num1=-1,num2=-1;
 void setup()
 {
   Serial.begin(9600);
-  mySerial.begin(9600);
+  mySerial.begin(9600);     //Please update v0.9.2.2 AT Firmware
   
   SendData("AT+RST",5000);
   SendData("AT+CWMODE=3",2000);
