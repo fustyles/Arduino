@@ -46,7 +46,7 @@ void setup()
   
   SendData("AT+RST",5000);
   SendData("AT+UART_DEF=9600,8,1,0,0",2000);
-  SendData("AT+CWMODE=3",2000);
+  SendData("AT+CWMODE_CUR=3",2000);
   SendData("AT+CIPMUX=1",2000);
   SendData("AT+CIPSERVER=1,80",2000);
   SendData("AT+CIPSTO=5",2000);
