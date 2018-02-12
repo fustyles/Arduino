@@ -42,7 +42,7 @@ long int num1=-1,num2=-1;
 void setup()
 {
   Serial.begin(9600);
-  mySerial.begin(9600);   //Change your ESP8266 baud rate to 9600
+  mySerial.begin(9600);   //Change your ESP8266 baud rate to 9600  (AT+IPR=9600)
   
   SendData("AT+RST",5000);
   SendData("AT+CWMODE=3",2000);
