@@ -2,7 +2,7 @@
 
 ESP8266 ESP-01
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-12 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-12 22:30
 
 Command format :
 ?cmd  
@@ -32,8 +32,12 @@ Query： http://192.168.4.1/?ip
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
-String SSID="wifi_id";
-String PWD="wifi_pwd";
+String SSID="yourwifi_id";
+String PWD="yourwifi_pwd";
+String STA_ip="192.168.0.100";
+String STA_gateway="192.168.0.1";
+String STA_netmask="255.255.255.0";
+
 
 String APIP="",STAIP="";
 String ReceiveData="", command="",cmd="",str1="",str2="";
@@ -52,7 +56,7 @@ void setup()
   SendData("AT+CIPSTO=5",2000);  
   
   // Check your Wi-Fi Router's Settings
-  SendData("AT+CIPSTA_CUR=\"192.168.0.100\",\"192.168.0.1\",\"255.255.255.0\"",2000);
+  SendData("AT+CIPSTA_CUR=\""+STA_ip+"\",\""+STA_gateway+"\",\""+STA_netmask+"\"",2000);
   
   SendData("AT+CWJAP_CUR=\""+SSID+"\",\""+PWD+"\"",5000); 
 }
