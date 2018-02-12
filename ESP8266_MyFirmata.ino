@@ -46,10 +46,9 @@ long int num1=-1,num2=-1;
 void setup()
 {
   Serial.begin(9600);
-  mySerial.begin(9600);          //You must change ESP8266 UART baud rate to 9600 by "AT+UART_CUR=9600,8,1,0,0"
+  mySerial.begin(9600);          //You must change ESP8266 UART baud rate to 9600 by "AT+UART_DEF=9600,8,1,0,0"
   
   SendData("AT+RST",5000);
-  SendData("AT+UART_CUR=9600,8,1,0,0",2000);
   SendData("AT+CWMODE_CUR=3",2000);
   SendData("AT+CIPMUX=1",2000);
   SendData("AT+CIPSERVER=1,80",2000);
