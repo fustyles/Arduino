@@ -28,7 +28,6 @@ Query： http://192.168.4.1/?ip
 
 */
 
-
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
