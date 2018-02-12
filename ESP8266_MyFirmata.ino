@@ -42,13 +42,16 @@ long int num1=-1,num2=-1;
 void setup()
 {
   Serial.begin(9600);
-  mySerial.begin(9600);          //You must change baud rate to 9600 by "AT+UART_DEF=9600,8,1,0,0"
+  mySerial.begin(9600);          //You must change ESP8266 UART baud rate to 9600 by "AT+UART_DEF=9600,8,1,0,0"
   
   SendData("AT+RST",5000);
   SendData("AT+CWMODE=3",2000);
   SendData("AT+CIPMUX=1",2000);
   SendData("AT+CIPSERVER=1,80",2000);
-  //SendData("AT+CIPSTA=\"192.168.0.100\",\"192.168.0.1\",\"255.255.255.0\"",2000);
+  
+  // Check your Wi-Fi Router's Settings
+  SendData("AT+CIPSTA=\"192.168.0.100\",\"192.168.0.1\",\"255.255.255.0\"",2000);
+  
   SendData("AT+CWJAP=\""+SSID+"\",\""+PWD+"\"",5000); 
 }
 
