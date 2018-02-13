@@ -226,12 +226,12 @@ void getVariable()
       
       if (String(c).indexOf("?")!=-1) ReceiveState=1;
       if (String(c).indexOf(" ")!=-1) ReceiveState=0;
-      if ((ReceiveState==1)&&(String(c).indexOf("?")==-1)) 
+      if (ReceiveState==1)
       {
         command=command+String(c);
 
         if ((String(c).indexOf("=")!=-1)&&(ReceiveState==1)) cmdState=0;
-        if (cmdState==1) cmd=cmd+String(c);
+        if ((cmdState==1)&&(String(c).indexOf("?")==-1)) cmd=cmd+String(c);
 
         if ((String(c).indexOf("=")!=-1)&&(ReceiveState==1)) num1State=1;
         if (((String(c).indexOf(",")!=-1)||(String(c).indexOf(" ")!=-1))&&(ReceiveState==1)) num1State=0;
