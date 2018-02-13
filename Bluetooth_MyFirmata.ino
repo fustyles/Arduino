@@ -32,7 +32,7 @@ long int num1=-1,num2=-1;
 void setup()
 {
   Serial.begin(9600);
-  mySerial.begin(9600);    //You must change uart baud rate to 9600 by "AT+UART=9600,0,0"
+  mySerial.begin(9600);    //You must change uart baud rate to 9600 by "AT+UART=9600,0,0" "AT+BAUD4"
 }
 
 void loop() 
