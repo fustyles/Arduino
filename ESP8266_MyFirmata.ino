@@ -34,9 +34,9 @@ SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11
 String WIFI_SSID="yourwifi_id";
 String WIFI_PWD="yourwifi_pwd";
 
-String APIP="",STAIP="";
 String ReceiveData="", command="",cmd="",str1="",str2="";
 long int num1=-1,num2=-1;
+String APIP="",STAIP="";
 
 void setup()
 {
