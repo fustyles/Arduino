@@ -1,6 +1,6 @@
 /* 
 ESP8266 ESP-01
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-13 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-14 00:00
 Command format :
 ?cmd  
 Number： ?cmd=num1  ?cmd=num1,num2   (?)
@@ -89,7 +89,7 @@ void loop()
         mySerial.println(str2);
         mySerial.flush();
         delay(10);
-        Feedback(CID,"<html>"+command+"</html>",3);
+        Feedback(CID,"<html>"+command+"<br>"+WaitReply(3000)+"</html>",3);
       }
     else if (cmd=="inputpullup")
       {
