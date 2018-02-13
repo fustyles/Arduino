@@ -1,6 +1,6 @@
 /* 
 ESP8266 ESP-01
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-13 20:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-13 19:00
 Command format :
 ?cmd  
 Number： ?cmd=num1  ?cmd=num1,num2   (?)
@@ -277,24 +277,27 @@ void getVariable()
     if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
     { 
         long int StartTime=millis();
-        while( (StartTime+5000) > millis())
+        String ok="";
+        while( (StartTime+20000) > millis())
         {
+            ok="";
             while(mySerial.available())
             {
-                mySerial.read();
+                ok=ok+String(char(mySerial.read()));
             }
+            if (ok.indexOf("OK")!=-1) break;
         } 
 
         APIP="";STAIP="";
         int apreadstate=0,stareadstate=0,j=0,k=0;
         mySerial.println("AT+CIFSR");
         mySerial.flush();
-        delay(10);
+        delay(6);
+        
         while(mySerial.available())
         {
           char c=mySerial.read();
           String t=String(c);
-          //Serial.print(t);
           
           if (t.indexOf("\"")!=-1) j++;
           if (j==1) 
@@ -310,10 +313,7 @@ void getVariable()
             stareadstate=0;
           if ((stareadstate==1)&&(t.indexOf("\"")==-1)) STAIP=STAIP+t;
         } 
-        while(mySerial.available())
-        {
-          char c=mySerial.read();
-        }
+
         Serial.println("APIP: "+APIP+"\nSTAIP: "+STAIP);
       
         pinMode(13,1);
