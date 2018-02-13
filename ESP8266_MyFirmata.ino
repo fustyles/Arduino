@@ -1,15 +1,11 @@
 /* 
-
 ESP8266 ESP-01
-
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-13 10:30
-
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-13 11:00
 Command format :
 ?cmd  
 Number： ?cmd=num1  ?cmd=num1,num2   (?)
 String ： ?&cmd=str1  ?&cmd=str1,str2   (?&)
 Number+String ： ?+cmd=num1,str2   (?+)
-
 AP IP： 192.168.4.1
 http://192.168.4.1/?&resetwifi=id,pwd
 http://192.168.4.1/?ip
@@ -20,14 +16,11 @@ http://192.168.4.1/?digitalwrite=3,1
 http://192.168.4.1/?analogwrite=3,200
 http://192.168.4.1/?digitalread=3
 http://192.168.4.1/?analogread=3
-
 http://192.168.4.1/?yourcmd=1,180
 http://192.168.4.1/?&yourcmd=Hello,World
 http://192.168.4.1/?+yourcmd=100,Hello
-
 STA IP：
 Query： http://192.168.4.1/?ip
-
 */
 
 #include <SoftwareSerial.h>
@@ -50,17 +43,7 @@ void setup()
   SendData("AT+UART_DEF=9600,8,1,0,0",2000);   //Change uart baud rate to 9600
   
   mySerial.begin(9600);
-  
-  SendData("AT+RST",5000);
-  SendData("AT+CWMODE_CUR=3",2000);
-  SendData("AT+CIPMUX=1",2000);
-  SendData("AT+CIPSERVER=1,80",2000);
-  SendData("AT+CIPSTO=5",2000);  
-  //String STA_ip="192.168.0.100";
-  //String STA_gateway="192.168.0.1";
-  //String STA_netmask="255.255.255.0";
-  //SendData("AT+CIPSTA_CUR=\""+STA_ip+"\",\""+STA_gateway+"\",\""+STA_netmask+"\"",2000);
-  SendData("AT+CWJAP_CUR=\""+SSID+"\",\""+PWD+"\"",5000); 
+  initial();
 }
 
 void loop() 
@@ -143,14 +126,29 @@ void loop()
     else if (cmd=="&resetwifi")
       {
         Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
-        SendData("AT+CWJAP=\""+str1+"\",\""+str2+"\"",5000);
-        mySerial.flush();
+        SSID=str1;
+        PWD=str2;
+        initial();
       }           
     else 
       {
         Feedback(CID,"<html>Command is not defined</html>",3);
       }  
   }
+}
+
+void initial()
+{
+  SendData("AT+RST",5000);
+  SendData("AT+CWMODE_CUR=3",2000);
+  SendData("AT+CIPMUX=1",2000);
+  SendData("AT+CIPSERVER=1,80",2000);
+  SendData("AT+CIPSTO=3",2000);  
+  //String STA_ip="192.168.0.100";
+  //String STA_gateway="192.168.0.1";
+  //String STA_netmask="255.255.255.0";
+  //SendData("AT+CIPSTA_CUR=\""+STA_ip+"\",\""+STA_gateway+"\",\""+STA_netmask+"\"",2000);
+  SendData("AT+CWJAP_CUR=\""+SSID+"\",\""+PWD+"\"",5000);   
 }
 
 void SendData(String data,int TimeLimit)
@@ -264,12 +262,12 @@ void getVariable()
     
     if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
     { 
-        long int StartTime=millis();
-        while( (StartTime+4000) > millis())
+        ReceiveData="";
+        while (ReceiveData.indexOf("OK")==-1)
         {
             while(mySerial.available())
             {
-                mySerial.read();
+                ReceiveData=ReceiveData+String(char(mySerial.read()));
             }
         } 
 
@@ -280,8 +278,8 @@ void getVariable()
         delay(10);
         while(mySerial.available())
         {
-          char c=mySerial.read();
-          String t=String(c);
+          char c= mySerial.read();
+          String t= String(c);
           //Serial.print(t);
           
           if (t.indexOf("\"")!=-1) j++;
@@ -298,10 +296,7 @@ void getVariable()
             stareadstate=0;
           if ((stareadstate==1)&&(t.indexOf("\"")==-1)) STAIP=STAIP+t;
         } 
-        while(mySerial.available())
-        {
-          char c=mySerial.read();
-        }
+        
         Serial.println("APIP: "+APIP+"\nSTAIP: "+STAIP);
       
         pinMode(13,1);
