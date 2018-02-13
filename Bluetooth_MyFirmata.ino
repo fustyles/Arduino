@@ -1,4 +1,5 @@
 /*
+
 Bluetooth HC05&HC06
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 15:30 
@@ -15,8 +16,11 @@ Number+String ： ?+cmd=num1,str2   (?+)
 ?analogwrite=3,200
 ?digitalread=3
 ?analogread=3
+
+?yourcmd=3,180
 ?&yourcmd=Hello,World
 ?+yourcmd=100,Hello
+
 */
 
 #include <SoftwareSerial.h>
@@ -28,7 +32,7 @@ long int num1=-1,num2=-1;
 void setup()
 {
   Serial.begin(9600);
-  mySerial.begin(9600);    //You must change UART baud rate to 9600 by "AT+UART=9600,0,0"
+  mySerial.begin(9600);    //You must change uart baud rate to 9600 by "AT+UART=9600,0,0"
 }
 
 void loop() 
