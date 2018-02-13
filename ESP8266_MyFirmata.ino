@@ -52,7 +52,7 @@ void loop()
 {
   getVariable();
   
-  if ((ReceiveData.indexOf("?")!=-1)&&(ReceiveData.indexOf(" H")!=-1))
+  if ((ReceiveData.indexOf("?")!=-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
   {
     Serial.println("");
     Serial.println("command: "+command);
@@ -132,7 +132,7 @@ void loop()
         Feedback(CID,"<html>Command is not defined</html>",3);
       }  
   }
-  else if ((ReceiveData.indexOf("?")!=-1)&&(ReceiveData.indexOf(" H")==-1))
+  else if ((ReceiveData.indexOf("?")!=-1)&&(ReceiveData.indexOf(" HTTP")==-1))
   {
     if(ReceiveData.indexOf("IPD,")!=-1)
     {
@@ -140,7 +140,7 @@ void loop()
       Feedback(CID,"<html>FAIL</html>",3);
     }
   }
-  else if ((ReceiveData.indexOf("?")==-1)&&(ReceiveData.indexOf(" H")!=-1))
+  else if ((ReceiveData.indexOf("?")==-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
   {
     String CID=String(ReceiveData.charAt(ReceiveData.indexOf("IPD,")+4));
     Feedback(CID,"<html>Hello World</html>",3);
