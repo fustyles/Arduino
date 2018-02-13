@@ -6,6 +6,7 @@ Command format :
 Number： ?cmd=num1  ?cmd=num1,num2   (?)
 String ： ?&cmd=str1  ?&cmd=str1,str2   (?&)
 Number+String ： ?+cmd=num1,str2   (?+)
+
 AP IP： 192.168.4.1
 http://192.168.4.1/?&resetwifi=id,pwd
 http://192.168.4.1/?ip
@@ -19,6 +20,7 @@ http://192.168.4.1/?analogread=3
 http://192.168.4.1/?yourcmd=1,180
 http://192.168.4.1/?&yourcmd=Hello,World
 http://192.168.4.1/?+yourcmd=100,Hello
+
 STA IP：
 Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?&resetwifi=id,pwd
