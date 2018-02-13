@@ -128,7 +128,7 @@ void loop()
         Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
         SSID=str1;
         PWD=str2;
-        initial();
+        SendData("AT+CWJAP_CUR=\""+SSID+"\",\""+PWD+"\"",5000);
       }           
     else 
       {
