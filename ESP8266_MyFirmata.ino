@@ -27,8 +27,8 @@ Query： http://192.168.4.1/?ip
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
 // Check your Wi-Fi Router's Settings
-String SSID="yourwifi_id";
-String PWD="yourwifi_pwd";
+String WIFI_SSID="yourwifi_id";
+String WIFI_PWD="yourwifi_pwd";
 
 String APIP="",STAIP="";
 String ReceiveData="", command="",cmd="",str1="",str2="";
@@ -126,9 +126,9 @@ void loop()
     else if (cmd=="&resetwifi")
       {
         Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
-        SSID=str1;
-        PWD=str2;
-        SendData("AT+CWJAP_CUR=\""+SSID+"\",\""+PWD+"\"",5000);
+        WIFI_SSID=str1;
+        WIFI_PWD=str2;
+        SendData("AT+CWJAP_CUR=\""+WIFI_SSID+"\",\""+WIFI_PWD+"\"",5000);
       }           
     else 
       {
@@ -156,7 +156,7 @@ void initial()
   //String STA_gateway="192.168.0.1";
   //String STA_netmask="255.255.255.0";
   //SendData("AT+CIPSTA_CUR=\""+STA_ip+"\",\""+STA_gateway+"\",\""+STA_netmask+"\"",2000);
-  SendData("AT+CWJAP_CUR=\""+SSID+"\",\""+PWD+"\"",5000);   
+  SendData("AT+CWJAP_CUR=\""+WIFI_SSID+"\",\""+WIFI_PWD+"\"",5000);   
 }
 
 void SendData(String data,int TimeLimit)
