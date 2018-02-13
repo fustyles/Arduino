@@ -45,8 +45,8 @@ void setup()
   //You must change ESP-01 uart baud rate to 9600 by "AT+UART_DEF=9600,8,1,0,0"
   mySerial.begin(115200);   //Default uart baud rate -> 19200,38400,57600,74880,115200
   SendData("AT+UART_DEF=9600,8,1,0,0",2000);   //Change uart baud rate to 9600
-  
   mySerial.begin(9600);
+  
   initial();
 }
 
