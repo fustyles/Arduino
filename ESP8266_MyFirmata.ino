@@ -135,6 +135,14 @@ void loop()
         Feedback(CID,"<html>Command is not defined</html>",3);
       }  
   }
+  else if ((ReceiveData.indexOf("?")!=-1)&&(ReceiveData.indexOf(" H")==-1))
+  {
+    if(ReceiveData.indexOf("IPD,")!=-1)
+    {
+      String CID=String(ReceiveData.charAt(ReceiveData.indexOf("IPD,")+4));
+      Feedback(CID,"<html>FAIL</html>",3);
+    }
+  }
 }
 
 void initial()
@@ -263,7 +271,7 @@ void getVariable()
     if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
     { 
         long int StartTime=millis();
-        while( (StartTime+4000) > millis())
+        while( (StartTime+5000) > millis())
         {
             while(mySerial.available())
             {
