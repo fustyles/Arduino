@@ -1,6 +1,6 @@
 /* 
 ESP8266 ESP-01
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-13 19:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-13 20:00
 Command format :
 ?cmd  
 Number： ?cmd=num1  ?cmd=num1,num2   (?)
@@ -127,6 +127,7 @@ void loop()
     else if (cmd=="&resetwifi")
       {
         Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
+        delay(3000);
         WIFI_SSID=str1;
         WIFI_PWD=str2;
         SendData("AT+CWJAP_CUR=\""+WIFI_SSID+"\",\""+WIFI_PWD+"\"",5000);
