@@ -21,6 +21,8 @@ http://192.168.4.1/?&yourcmd=Hello,World
 http://192.168.4.1/?+yourcmd=100,Hello
 STA IP：
 Query： http://192.168.4.1/?ip
+Link：http://192.168.4.1/?&resetwifi=id,pwd
+
 */
 
 #include <SoftwareSerial.h>
