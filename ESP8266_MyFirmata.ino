@@ -275,7 +275,6 @@ void getVariable()
         String ok="";
         while( (StartTime+20000) > millis())
         {
-            ok="";
             while(mySerial.available())
             {
                 ok=ok+String(char(mySerial.read()));
