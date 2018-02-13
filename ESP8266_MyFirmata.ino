@@ -1,12 +1,11 @@
 /* 
 ESP8266 ESP-01
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-13 14:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-13 19:00
 Command format :
 ?cmd  
 Number： ?cmd=num1  ?cmd=num1,num2   (?)
 String ： ?&cmd=str1  ?&cmd=str1,str2   (?&)
 Number+String ： ?+cmd=num1,str2   (?+)
-
 AP IP： 192.168.4.1
 http://192.168.4.1/?&resetwifi=id,pwd
 http://192.168.4.1/?ip
@@ -20,11 +19,9 @@ http://192.168.4.1/?analogread=3
 http://192.168.4.1/?yourcmd=1,180
 http://192.168.4.1/?&yourcmd=Hello,World
 http://192.168.4.1/?+yourcmd=100,Hello
-
 STA IP：
 Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?&resetwifi=id,pwd
-
 */
 
 // Check your Wi-Fi Router's Settings
@@ -147,6 +144,11 @@ void loop()
       Feedback(CID,"<html>FAIL</html>",3);
     }
   }
+  else if ((ReceiveData.indexOf("?")==-1)&&(ReceiveData.indexOf(" H")!=-1))
+  {
+    String CID=String(ReceiveData.charAt(ReceiveData.indexOf("IPD,")+4));
+    Feedback(CID,"<html>Hello World</html>",3);
+  }
 }
 
 void initial()
@@ -154,7 +156,7 @@ void initial()
   SendData("AT+CWMODE_CUR=3",2000);
   SendData("AT+CIPMUX=1",2000);
   SendData("AT+CIPSERVER=1,80",2000);
-  SendData("AT+CIPSTO=5",2000);  
+  SendData("AT+CIPSTO=3",2000);  //timeout= 3 seconds
   //String STA_ip="192.168.0.100";
   //String STA_gateway="192.168.0.1";
   //String STA_netmask="255.255.255.0";
