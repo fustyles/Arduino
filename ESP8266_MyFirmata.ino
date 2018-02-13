@@ -27,12 +27,12 @@ Link：http://192.168.4.1/?&resetwifi=id,pwd
 
 */
 
-#include <SoftwareSerial.h>
-SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
-
 // Check your Wi-Fi Router's Settings
 String WIFI_SSID="yourwifi_id";
 String WIFI_PWD="yourwifi_pwd";
+
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
 String ReceiveData="", command="",cmd="",str1="",str2="";
 long int num1=-1,num2=-1;
