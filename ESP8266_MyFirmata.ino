@@ -1,6 +1,6 @@
 /* 
 ESP8266 ESP-01
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-13 13:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-13 14:30
 Command format :
 ?cmd  
 Number： ?cmd=num1  ?cmd=num1,num2   (?)
@@ -44,7 +44,7 @@ void setup()
   
   //You must change uart baud rate of ESP-01 to 9600.
   mySerial.begin(115200);   //Default uart baud rate -> 19200,38400,57600,74880,115200
-  SendData("AT+UART_DEF=9600,8,1,0,0",2000);   //Change uart baud rate of ESP-01 to 9600
+  SendData("AT+UART_CUR=9600,8,1,0,0",2000);   //Change uart baud rate of ESP-01 to 9600
   mySerial.begin(9600);  // If 9600 ,you can get more stable data.
   
   initial();
@@ -151,7 +151,6 @@ void loop()
 
 void initial()
 {
-  SendData("AT+RST",5000);
   SendData("AT+CWMODE_CUR=3",2000);
   SendData("AT+CIPMUX=1",2000);
   SendData("AT+CIPSERVER=1,80",2000);
