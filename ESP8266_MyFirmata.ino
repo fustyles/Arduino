@@ -20,6 +20,8 @@ http://192.168.4.1/?digitalwrite=3,1
 http://192.168.4.1/?analogwrite=3,200
 http://192.168.4.1/?digitalread=3
 http://192.168.4.1/?analogread=3
+
+http://192.168.4.1/?yourcmd=1,180
 http://192.168.4.1/?&yourcmd=Hello,World
 http://192.168.4.1/?+yourcmd=100,Hello
 
