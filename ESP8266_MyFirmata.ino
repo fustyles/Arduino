@@ -262,12 +262,12 @@ void getVariable()
     
     if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
     { 
-        ReceiveData="";
-        while (ReceiveData.indexOf("OK")==-1)
+        long int StartTime=millis();
+        while( (StartTime+4000) > millis())
         {
             while(mySerial.available())
             {
-                ReceiveData=ReceiveData+String(char(mySerial.read()));
+                mySerial.read();
             }
         } 
 
@@ -278,8 +278,8 @@ void getVariable()
         delay(10);
         while(mySerial.available())
         {
-          char c= mySerial.read();
-          String t= String(c);
+          char c=mySerial.read();
+          String t=String(c);
           //Serial.print(t);
           
           if (t.indexOf("\"")!=-1) j++;
@@ -296,7 +296,10 @@ void getVariable()
             stareadstate=0;
           if ((stareadstate==1)&&(t.indexOf("\"")==-1)) STAIP=STAIP+t;
         } 
-        
+        while(mySerial.available())
+        {
+          char c=mySerial.read();
+        }
         Serial.println("APIP: "+APIP+"\nSTAIP: "+STAIP);
       
         pinMode(13,1);
