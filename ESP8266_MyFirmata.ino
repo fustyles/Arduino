@@ -1,6 +1,6 @@
 /* 
 ESP8266 ESP-01
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-14 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-13 20:00
 Command format :
 ?cmd  
 Number： ?cmd=num1  ?cmd=num1,num2   (?)
@@ -88,8 +88,7 @@ void loop()
       {
         mySerial.println(str2);
         mySerial.flush();
-        delay(10);
-        Feedback(CID,"<html>"+command+"<br>"+WaitReply(3000)+"</html>",3);
+        Feedback(CID,"<html>"+WaitReply(5000)+"</html>",3);
       }
     else if (cmd=="inputpullup")
       {
@@ -126,7 +125,7 @@ void loop()
         WIFI_SSID=str1;
         WIFI_PWD=str2;
         SendData("AT+CWJAP_CUR=\""+WIFI_SSID+"\",\""+WIFI_PWD+"\"",5000);
-      }           
+      }
     else 
       {
         Feedback(CID,"<html>Command is not defined</html>",3);
@@ -151,8 +150,8 @@ void initial()
 {
   SendData("AT+CWMODE_CUR=3",2000);
   SendData("AT+CIPMUX=1",2000);
-  SendData("AT+CIPSERVER=1,80",2000);
-  SendData("AT+CIPSTO=3",2000);  //timeout= 3 seconds
+  SendData("AT+CIPSERVER=1,80",2000);   //port=80
+  SendData("AT+CIPSTO=5",2000);  //timeout= 5 seconds
   //String STA_ip="192.168.0.100";
   //String STA_gateway="192.168.0.1";
   //String STA_netmask="255.255.255.0";
@@ -197,15 +196,16 @@ String WaitReply(long int TimeLimit)
   long int StartTime=millis();
   while( (StartTime+TimeLimit) > millis())
   {
+    if (mySerial.available())
+    {
+      delay(4);
       while(mySerial.available())
       {
-        char c=mySerial.read();
-        ReceiveData=ReceiveData+String(c);
-        //Serial.print(c);
-        delay(10);
+        ReceiveData=ReceiveData+String(char(mySerial.read()));
         ReceiveState=1;
       }
       if (ReceiveState==1) return ReceiveData;
+    }
   } 
   return ReceiveData;
 }
@@ -273,7 +273,7 @@ void getVariable()
     { 
         long int StartTime=millis();
         String ok="";
-        while( (StartTime+20000) > millis())
+        while( (StartTime+10000) > millis())
         {
             while(mySerial.available())
             {
@@ -287,7 +287,7 @@ void getVariable()
         mySerial.println("AT+CIFSR");
         mySerial.flush();
         delay(6);
-        
+
         while(mySerial.available())
         {
           char c=mySerial.read();
