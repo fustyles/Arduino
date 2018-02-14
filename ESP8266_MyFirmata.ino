@@ -153,6 +153,7 @@ void initial()
   SendData("AT+CIPMUX=1",2000);
   SendData("AT+CIPSERVER=1,80",2000);   //port=80
   SendData("AT+CIPSTO=5",2000);  //timeout= 5 seconds
+  //SendData("AT+CWSAP_CUR=\"AP_id\",\"AP_pwd\",3,4",2000);
   //String STA_ip="192.168.0.100";
   //String STA_gateway="192.168.0.1";
   //String STA_netmask="255.255.255.0";
