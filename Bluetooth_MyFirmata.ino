@@ -1,27 +1,23 @@
 /*
-
+ * 
 Bluetooth HC05&HC06
-
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-11 15:30 
-
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-14 13:00 
 Command format :  
 ?cmd  
-Number：  ?cmd=num1  ?cmd=num1,num2   (?)
-String ： ?&cmd=str1  ?&cmd=str1,str2   (?&)
-Number+String ： ?+cmd=num1,str2   (?+)
-
+Number：  ?cmd=num1  ?cmd=num1,num2
+String ： ?&cmd=str1  ?&cmd=str1,str2 
+Number+String ： ?+cmd=num1,str2   
 ?inputpullup=3
 ?pinmode=3,1
 ?digitalwrite=3,1
 ?analogwrite=3,200
 ?digitalread=3
 ?analogread=3
-
-?yourcmd=3,180
 ?&yourcmd=Hello,World
 ?+yourcmd=100,Hello
 
 */
+
 
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
@@ -32,7 +28,7 @@ long int num1=-1,num2=-1;
 void setup()
 {
   Serial.begin(9600);
-  mySerial.begin(9600);    //You must change uart baud rate to 9600 by "AT+UART=9600,0,0" "AT+BAUD4"
+  mySerial.begin(9600);    //Check your bluetooth baud rate
 }
 
 void loop() 
@@ -118,19 +114,18 @@ void getVariable()
     while (mySerial.available())
     {
       char c=mySerial.read();
-      delay(10);
       ReceiveData=ReceiveData+String(c);
       
       if (String(c).indexOf("?")!=-1) ReceiveState=1;
       if (String(c).indexOf(" ")!=-1) ReceiveState=0;
-      if ((ReceiveState==1)&&(String(c).indexOf("?")==-1)) 
+      if (ReceiveState==1)
       {
         command=command+String(c);
 
         if ((String(c).indexOf("=")!=-1)&&(ReceiveState==1)) cmdState=0;
-        if (cmdState==1) cmd=cmd+String(c);
+        if ((cmdState==1)&&(String(c).indexOf("?")==-1)) cmd=cmd+String(c);
 
-        if ((String(c).indexOf("=")!=-1)&&(ReceiveState==1)) num1State=1;
+        if ((String(c).indexOf("=")!=-1)&&(ReceiveState==1)&&(num2State==0)) num1State=1;
         if (((String(c).indexOf(",")!=-1)||(String(c).indexOf(" ")!=-1))&&(ReceiveState==1)) num1State=0;
         if ((num1State==1)&&(String(c).indexOf("=")==-1))
         {
