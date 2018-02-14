@@ -1,6 +1,6 @@
 /* 
 ESP8266 ESP-01
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-14 02:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-14 09:30
 Command format :
 ?cmd  
 Number： ?cmd=num1  ?cmd=num1,num2   (?)
@@ -221,7 +221,6 @@ void getVariable()
     while (mySerial.available())
     {
       char c=mySerial.read();
-      delay(10);
       ReceiveData=ReceiveData+String(c);
       
       if (String(c).indexOf("?")!=-1) ReceiveState=1;
