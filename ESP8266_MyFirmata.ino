@@ -1,6 +1,6 @@
 /* 
 ESP8266 ESP-01
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-14 09:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-14 02:00
 Command format :
 ?cmd  
 Number： ?cmd=num1  ?cmd=num1,num2   (?)
@@ -60,7 +60,7 @@ void loop()
     Serial.println("num1= "+String(num1)+" ,num2= "+String(num2));
     Serial.println("str1= "+String(str1)+" ,str2= "+String(str2));
     
-    String CID=String(ReceiveData.charAt(ReceiveData.indexOf("IPD,")+4));
+    String CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
     
     if (cmd=="yourcmd")
       {
@@ -136,13 +136,13 @@ void loop()
   {
     if(ReceiveData.indexOf("IPD,")!=-1)
     {
-      String CID=String(ReceiveData.charAt(ReceiveData.indexOf("IPD,")+4));
+      String CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
       Feedback(CID,"<html>FAIL</html>",3);
     }
   }
   else if ((ReceiveData.indexOf("?")==-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
   {
-    String CID=String(ReceiveData.charAt(ReceiveData.indexOf("IPD,")+4));
+    String CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
     Feedback(CID,"<html>Hello World</html>",3);
   }
 }
