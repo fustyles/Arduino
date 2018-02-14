@@ -99,7 +99,6 @@ void loop()
         SendData("AT+CIPSEND=0,"+String(getcommand.length()+2),2000);
         SendData(getcommand,2000);
         Feedback("0","<html>"+WaitReply(10000)+"</html>",3);
-        SendData("AT+CIPCLOSE=0",2000);
       }      
     else if (cmd=="inputpullup")
       {
