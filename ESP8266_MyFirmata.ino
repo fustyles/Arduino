@@ -100,7 +100,7 @@ void loop()
         SendData(getcommand,2000);
         Feedback("0","<html>"+WaitReply(10000)+"</html>",3);
         SendData("AT+CIPCLOSE=0",2000);
-      }          
+      }      
     else if (cmd=="inputpullup")
       {
         pinMode(num1, INPUT_PULLUP);
@@ -162,7 +162,7 @@ void initial()
   SendData("AT+CWMODE_CUR=3",2000);
   SendData("AT+CIPMUX=1",2000);
   SendData("AT+CIPSERVER=1,80",2000);   //port=80
-  SendData("AT+CIPSTO=5",2000);  //TCP server timeout= 5 seconds
+  SendData("AT+CIPSTO=5",2000);  //timeout= 5 seconds
   //SendData("AT+CWSAP_CUR=\"AP_id\",\"AP_pwd\",3,4",2000);
   //String STA_ip="192.168.0.100";
   //String STA_gateway="192.168.0.1";
@@ -243,7 +243,7 @@ void getVariable()
         if ((String(c).indexOf("=")!=-1)&&(ReceiveState==1)) cmdState=0;
         if ((cmdState==1)&&(String(c).indexOf("?")==-1)) cmd=cmd+String(c);
 
-        if ((String(c).indexOf("=")!=-1)&&(ReceiveState==1)) num1State=1;
+        if ((String(c).indexOf("=")!=-1)&&(ReceiveState==1)&&(num2State==0)) num1State=1;
         if (((String(c).indexOf(",")!=-1)||(String(c).indexOf(" ")!=-1))&&(ReceiveState==1)) num1State=0;
         if ((num1State==1)&&(String(c).indexOf("=")==-1))
         {
