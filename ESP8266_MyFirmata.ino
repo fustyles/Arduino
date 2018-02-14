@@ -91,9 +91,8 @@ void loop()
         mySerial.flush();
         Feedback(CID,"<html>"+WaitReply(5000)+"</html>",3);
       }
-    else if (cmd=="&tcp")      //  ?&cmd=str1,str2 -> ?&tcp=www.google.com.tw,?getcmd
+    else if (cmd=="&tcp")      //  ?&cmd=str1,str2 -> ?&tcp=www.google.com.tw,parameter
       {
-        // I am not sure that the code is correct!
         String getcommand="GET /"+str2;
         SendData("AT+CIPSTART=0,\"TCP\",\""+str1+"\",80",2000);
         SendData("AT+CIPSEND=0,"+String(getcommand.length()+2),2000);
