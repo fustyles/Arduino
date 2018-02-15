@@ -1,6 +1,6 @@
 /* 
 Arduino Uno + ESP8266 ESP-01
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-15 10:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-16 00:30
 Command format :
 ?cmd  
 Number： ?cmd=num1  ?cmd=num1,num2   (?)
@@ -43,7 +43,7 @@ void setup()
   SendData("AT+RST",5000);
   //You must change uart baud rate of ESP-01 to 9600.
   mySerial.begin(115200);   //Default uart baud rate -> 19200,38400,57600,74880,115200
-  SendData("AT+UART_CUR=9600,8,1,0,0",2000);   //Change uart baud rate of ESP-01 to 9600
+  SendData("AT+UART_CUR=9600,8,1,0,3",2000);   //Change uart baud rate of ESP-01 to 9600
   mySerial.begin(9600);  // 9600 ,you will get more stable data.
   
   initial();
