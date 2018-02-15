@@ -1,6 +1,6 @@
 /* 
 ESP8266 ESP-01
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-14 11:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-15 10:00
 Command format :
 ?cmd  
 Number： ?cmd=num1  ?cmd=num1,num2   (?)
@@ -91,10 +91,10 @@ void loop()
         mySerial.flush();
         Feedback(CID,"<html>"+WaitReply(5000)+"</html>",3);
       }
-    else if (cmd=="&tcp")      //  ?&cmd=str1,str2 -> ?&tcp=www.google.com.tw,parameter
+    else if (cmd=="&tcp")      //  ?&cmd=str1,str2 -> ?&tcp=parameter,www.google.com.tw,80
       {
-        String getcommand="GET /"+str2;
-        SendData("AT+CIPSTART=0,\"TCP\",\""+str1+"\",80",2000);
+        String getcommand="GET /"+str1;
+        SendData("AT+CIPSTART=0,\"TCP\",\""+str2+"\"",2000);
         SendData("AT+CIPSEND=0,"+String(getcommand.length()+2),2000);
         SendData(getcommand,2000);
         Feedback("0","<html>"+WaitReply(10000)+"</html>",3);
