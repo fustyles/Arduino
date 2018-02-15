@@ -19,6 +19,7 @@ http://192.168.4.1/?analogread=3
 http://192.168.4.1/?yourcmd=1,180
 http://192.168.4.1/?&yourcmd=Hello,World
 http://192.168.4.1/?+yourcmd=100,Hello
+http://192.168.4.1/?&tcp=parameter,ip,port
 STA IP：
 Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?&resetwifi=id,pwd
@@ -91,7 +92,7 @@ void loop()
         mySerial.flush();
         Feedback(CID,"<html>"+WaitReply(5000)+"</html>",3);
       }
-    else if (cmd=="&tcp")      //  ?&cmd=str1,str2 -> ?&tcp=parameter,www.google.com.tw,80
+    else if (cmd=="&tcp")      // ?&tcp=parameter,www.google.com,80
       {
         String getcommand="GET /"+str1;
         SendData("AT+CIPSTART=0,\"TCP\",\""+str2+"\"",2000);
