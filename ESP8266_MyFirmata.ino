@@ -1,5 +1,5 @@
 /* 
-ESP8266 ESP-01
+Arduino Uno + ESP8266 ESP-01
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-15 10:00
 Command format :
 ?cmd  
