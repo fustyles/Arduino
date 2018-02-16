@@ -1,12 +1,13 @@
 /*
- * 
 Bluetooth
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-16 13:30 
+
 Command format :  
 ?cmd  
 Number：  ?cmd=num1  ?cmd=num1,num2
 String ： ?&cmd=str1  ?&cmd=str1,str2 
 Number+String ： ?+cmd=num1,str2   
+
 ?inputpullup=3
 ?pinmode=3,1
 ?digitalwrite=3,1
@@ -15,7 +16,6 @@ Number+String ： ?+cmd=num1,str2
 ?analogread=3
 ?&yourcmd=Hello,World
 ?+yourcmd=100,Hello
-
 */
 
 
