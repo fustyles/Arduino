@@ -1,6 +1,6 @@
 /* 
 Arduino Uno + ESP8266 ESP-01
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-16 00:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-16 11:30
 Command format :
 ?cmd  
 Number： ?cmd=num1  ?cmd=num1,num2   (?)
@@ -133,8 +133,9 @@ void loop()
         Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
         delay(3000);
         WIFI_SSID=str1;
-        WIFI_PWD=str2;
-        SendData("AT+CWJAP_CUR=\""+WIFI_SSID+"\",\""+WIFI_PWD+"\"",5000);
+        WIFI_PWD=str2;        
+        SendData("AT+RST",5000);
+        initial();
       }
     else 
       {
@@ -233,18 +234,18 @@ void getVariable()
       char c=mySerial.read();
       ReceiveData=ReceiveData+String(c);
       
-      if (String(c).indexOf("?")!=-1) ReceiveState=1;
-      if (String(c).indexOf(" ")!=-1) ReceiveState=0;
+      if (c=='?') ReceiveState=1;
+      if (c==' ') ReceiveState=0;
       if (ReceiveState==1)
       {
         command=command+String(c);
 
-        if ((String(c).indexOf("=")!=-1)&&(ReceiveState==1)) cmdState=0;
-        if ((cmdState==1)&&(String(c).indexOf("?")==-1)) cmd=cmd+String(c);
+        if ((c=='=')&&(ReceiveState==1)) cmdState=0;
+        if ((cmdState==1)&&(c!='?')) cmd=cmd+String(c);
 
-        if ((String(c).indexOf("=")!=-1)&&(ReceiveState==1)&&(num2State==0)) num1State=1;
-        if (((String(c).indexOf(",")!=-1)||(String(c).indexOf(" ")!=-1))&&(ReceiveState==1)) num1State=0;
-        if ((num1State==1)&&(String(c).indexOf("=")==-1))
+        if ((c=='=')&&(ReceiveState==1)&&(num2State==0)) num1State=1;
+        if (((c==',')||(c==' '))&&(ReceiveState==1)) num1State=0;
+        if ((num1State==1)&&(c!='='))
         {
           if (ReceiveData.indexOf("?&")!=-1)
             str1=str1+String(c);
@@ -257,9 +258,9 @@ void getVariable()
           }
         }
         
-        if ((String(c).indexOf(",")!=-1)&&(ReceiveState==1)) num2State=1;
-        if ((String(c).indexOf(" ")!=-1)&&(ReceiveState==1)) num2State=0;
-        if ((num2State==1)&&(String(c).indexOf(",")==-1))
+        if ((c==',')&&(ReceiveState==1)) num2State=1;
+        if ((c==' ')&&(ReceiveState==1)) num2State=0;
+        if ((num2State==1)&&(c!=','))
         {
           if ((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1))
             str2=str2+String(c);
@@ -271,7 +272,7 @@ void getVariable()
               num2=num2*10+(c-'0'); 
           }
         }
-        else if ((num2State==1)&&(String(c).indexOf(",")!=-1)&&(commastate==1)&&((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1)))
+        else if ((num2State==1)&&(c==',')&&(commastate==1)&&((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1)))
           str2=str2+String(c); 
         else if (num2State==1)
           commastate=1;
@@ -281,44 +282,45 @@ void getVariable()
     
     if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
     { 
-        long int StartTime=millis();
-        String ok="";
-        while( (StartTime+10000) > millis())
-        {
-            while(mySerial.available())
-            {
-                ok=ok+String(char(mySerial.read()));
-            }
-            if (ok.indexOf("OK")!=-1) break;
-        } 
-
-        APIP="";STAIP="";
-        int apreadstate=0,stareadstate=0,j=0,k=0;
-        mySerial.println("AT+CIFSR");
-        mySerial.flush();
-        delay(6);
-
+      long int StartTime=millis();
+      String ok="";
+      while( (StartTime+10000) > millis())
+      {
         while(mySerial.available())
         {
-          char c=mySerial.read();
-          String t=String(c);
-          
-          if (t.indexOf("\"")!=-1) j++;
-          if (j==1) 
-            apreadstate=1;
-          else if (j==2)
-            apreadstate=0;
-          if ((apreadstate==1)&&(t.indexOf("\"")==-1)) APIP=APIP+t;
-          
-          if (t.indexOf("\"")!=-1) k++;
-          if (k==5) 
-            stareadstate=1;
-          else if (k==6)
-            stareadstate=0;
-          if ((stareadstate==1)&&(t.indexOf("\"")==-1)) STAIP=STAIP+t;
-        } 
+            ok=ok+String(char(mySerial.read()));
+        }
+        if (ok.indexOf("OK")!=-1) break;
+      } 
 
-        Serial.println("APIP: "+APIP+"\nSTAIP: "+STAIP);
+      APIP="";STAIP="";
+      int apreadstate=0,stareadstate=0,j=0;
+      mySerial.println("AT+CIFSR");
+      mySerial.flush();
+      delay(6);
+      
+      while(mySerial.available())
+      {
+        char c=mySerial.read();
+        String t=String(c);
+        
+        if (t.indexOf("\"")!=-1) j++;
+        
+        if (j==1) 
+          apreadstate=1;
+        else if (j==2)
+          apreadstate=0;
+        if ((apreadstate==1)&&(t.indexOf("\"")==-1)) APIP=APIP+t;
+        
+        if (j==5) 
+          stareadstate=1;
+        else if (j==6)
+          stareadstate=0;
+        if ((stareadstate==1)&&(t.indexOf("\"")==-1)) STAIP=STAIP+t;
+      } 
+
+      Serial.println("APIP: "+APIP+"\nSTAIP: "+STAIP);
+    
       
         pinMode(13,1);
         for (int i=0;i<20;i++)
