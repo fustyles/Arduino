@@ -132,10 +132,7 @@ void loop()
       {
         Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
         delay(3000);
-        WIFI_SSID=str1;
-        WIFI_PWD=str2;        
-        SendData("AT+RST",5000);
-        initial();
+        SendData("AT+CWJAP_CUR=\""+str1+"\",\""+str2+"\"",5000);
       }
     else 
       {
