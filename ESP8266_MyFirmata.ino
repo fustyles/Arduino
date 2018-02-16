@@ -1,6 +1,6 @@
 /* 
 Arduino Uno + ESP8266 ESP-01
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-16 11:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-16 12:00
 Command format :
 ?cmd  
 Number： ?cmd=num1  ?cmd=num1,num2   (?)
@@ -132,6 +132,7 @@ void loop()
       {
         Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
         delay(3000);
+        SendData("AT+CWQAP",2000);
         SendData("AT+CWJAP_CUR=\""+str1+"\",\""+str2+"\"",5000);
       }
     else 
