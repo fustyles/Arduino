@@ -26,7 +26,6 @@ function wait()
 }
 </script>
 <body>
-<div id="ShowUrl"></div>
 <form onreset="document.getElementById('MyFirmata').src='about:blank';">
 <table>
 <tr><td>ESP8266</td><td colspan="3">IP：<input type="text" name="ip" id="ip" size="28" value="http://192.168.4.1"></td></tr>
@@ -64,6 +63,11 @@ function wait()
 </tr>    
 <tr>
 <td colspan="4">
+</td>
+</tr>
+</table>
+</form>
+<div id="ShowUrl"></div><br>
 Command format：<br>
 ?cmd<br>
 Number format：<br>
@@ -72,9 +76,6 @@ String format：<br>
 ?&cmd=str1&nbsp;&nbsp;?&cmd=str1,str2<br>
 String+Number format：<br>
 ?+cmd=num1,str2
-</td>
-</tr>
-</table>
-</form>
+
 </body>
 </html>
