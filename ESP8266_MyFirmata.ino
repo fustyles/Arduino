@@ -1,11 +1,13 @@
 /* 
 Arduino Uno + ESP8266 ESP-01
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-16 12:00
+
 Command format :
 ?cmd  
 Number： ?cmd=num1  ?cmd=num1,num2   (?)
 String ： ?&cmd=str1  ?&cmd=str1,str2   (?&)
 Number+String ： ?+cmd=num1,str2   (?+)
+
 AP IP： 192.168.4.1
 http://192.168.4.1/?&resetwifi=id,pwd
 http://192.168.4.1/?ip
