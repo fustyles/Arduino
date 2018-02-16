@@ -223,7 +223,7 @@ String WaitReply(long int TimeLimit)
 void getVariable()
 {
   ReceiveData="";command="";cmd="";str1="";str2="";num1=-1;num2=-1;
-  byte ReceiveState=0,cmdState=1,num1State=0,num2State=0,commastate=0;
+  byte ReceiveState=0,cmdState=1,num1State=0,num2State=0,commastate=0,equalstate=0;
   
   if (mySerial.available())
   {
@@ -270,10 +270,13 @@ void getVariable()
               num2=num2*10+(c-'0'); 
           }
         }
+        else if ((num1State==1)&&(c=='=')&&(equalstate==1)&&((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1)))
+          str1=str1+String(c); 
         else if ((num2State==1)&&(c==',')&&(commastate==1)&&((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1)))
           str2=str2+String(c); 
-        else if (num2State==1)
-          commastate=1;
+          
+        if (num1State==1) equalstate=1;
+        if (num2State==1) commastate=1;
       }
     }  
     Serial.println(ReceiveData);
@@ -321,7 +324,7 @@ void getVariable()
     
       
         pinMode(13,1);
-        for (int i=0;i<20;i++)
+        for (int i=0;i<10;i++)
         {
           digitalWrite(13,1);
           delay(50);
