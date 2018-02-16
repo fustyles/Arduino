@@ -15,7 +15,7 @@ else
     var cmd=document.getElementById("cmd2").value;
 var num1=document.getElementById("num1").value;
 var num2=document.getElementById("num2").value;
-var url="<font color=red>"+ip+"?"+cmd+"="+num1+","+num2+"</font><br>";
+var url=ip+"?"+cmd+"="+num1+","+num2;
 document.getElementById("ShowUrl").innerHTML=url;
 document.getElementById("MyFirmata").src=url;
 setTimeout(wait,1000);
