@@ -1,7 +1,7 @@
 /*
  * 
-Bluetooth HC05&HC06
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-14 13:00 
+Bluetooth
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-16 13:30 
 Command format :  
 ?cmd  
 Number：  ?cmd=num1  ?cmd=num1,num2
@@ -102,7 +102,7 @@ void getVariable()
 {
   ReceiveData="";command="";cmd="";str1="";str2="";
   num1=-1,num2=-1;
-  byte ReceiveState=0,cmdState=1,num1State=0,num2State=0,commastate=0;
+  byte ReceiveState=0,cmdState=1,num1State=0,num2State=0,commastate=0,equalstate=0;
   
   if (mySerial.available())
   {
@@ -149,10 +149,13 @@ void getVariable()
               num2=num2*10+(c-'0'); 
           }
         }
-        else if ((num2State==1)&&(String(c).indexOf(",")!=-1)&&(commastate==1)&&((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1)))
+        else if ((num1State==1)&&(c=='=')&&(equalstate==1)&&((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1)))
+          str1=str1+String(c); 
+        else if ((num2State==1)&&(c==',')&&(commastate==1)&&((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1)))
           str2=str2+String(c); 
-        else if (num2State==1)
-          commastate=1;
+          
+        if (num1State==1) equalstate=1;
+        if (num2State==1) commastate=1;
       }
     }  
     Serial.println(ReceiveData);
