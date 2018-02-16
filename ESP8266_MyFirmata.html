@@ -26,6 +26,7 @@ function wait()
 }
 </script>
 <body>
+<div id="ShowUrl"></div>
 <form onreset="document.getElementById('MyFirmata').src='about:blank';">
 <table>
 <tr><td>ESP8266</td><td colspan="3">IP：<input type="text" name="ip" id="ip" size="28" value="http://192.168.4.1"></td></tr>
@@ -56,7 +57,7 @@ function wait()
 <td colspan="4" align="right"><input type="reset" value="Clear">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" id="Send" value="Send" onclick="SendCommand();">&nbsp;&nbsp;&nbsp;</td>
 </tr>
 <tr>
-<td>URL：</td><td colspan="3"><div id="ShowUrl"></div></td>
+<td>URL：</td><td colspan="3"></td>
 </tr>
 <tr>
 <td colspan="4"><iframe id="MyFirmata" width="340" height="140"></iframe></td>
