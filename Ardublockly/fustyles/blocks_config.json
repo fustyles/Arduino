@@ -1,6 +1,6 @@
 {
     "categoryName": "fustyles",
-    "description": "Fustyles first blockly.",
+    "description": "Hello World",
     "languages": ["en", "zh-hant"],
     "toolboxName": "fustyles",
     "toolbox": [
