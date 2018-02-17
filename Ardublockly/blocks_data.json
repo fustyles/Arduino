@@ -2,7 +2,7 @@
     "categories": {
         "fustyles": {
             "categoryName": "Fustyles",
-            "description": "Test blocks to demonstrate this feature.",
+            "description": "Hello World",
             "languages": ["en", "zh-hant"],
             "toolboxName": "fustyles",
             "toolbox": [
