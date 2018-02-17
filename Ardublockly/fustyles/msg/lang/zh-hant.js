@@ -1,7 +1,7 @@
-ÔªøBlockly.Msg.BLOCKS_FUSTYLES_TITLE = 'È°ûÊØîËº∏Âá∫ ';
-Blockly.Msg.BLOCKS_FUSTYLES_RED_TITLE = 'Á¥Ö';
-Blockly.Msg.BLOCKS_FUSTYLES_GREEN_TITLE = 'Á∂†';
-Blockly.Msg.BLOCKS_FUSTYLES_BLUE_TITLE = 'Ëóç';
-Blockly.Msg.BLOCKS_FUSTYLES_RED_VALUE = '   Á¥Ö';
-Blockly.Msg.BLOCKS_FUSTYLES_GREEN_VALUE = '   Á∂†';
-Blockly.Msg.BLOCKS_FUSTYLES_BLUE_VALUE = '   Ëóç';
+Blockly.Msg.BLOCKS_FUSTYLES_TITLE = '√˛§ÒøÈ•X ';
+Blockly.Msg.BLOCKS_FUSTYLES_RED_TITLE = '¨ı';
+Blockly.Msg.BLOCKS_FUSTYLES_GREEN_TITLE = '∫Ò';
+Blockly.Msg.BLOCKS_FUSTYLES_BLUE_TITLE = '¬≈';
+Blockly.Msg.BLOCKS_FUSTYLES_RED_VALUE = '   ¨ı';
+Blockly.Msg.BLOCKS_FUSTYLES_GREEN_VALUE = '   ∫Ò';
+Blockly.Msg.BLOCKS_FUSTYLES_BLUE_VALUE = '   ¬≈';
