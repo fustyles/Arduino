@@ -1,4 +1,4 @@
-Blockly.Msg.BLOCKS_FUSTYLES_TITLE = 'Ãþ¤ñ¿é¥X ';
+Blockly.Msg.BLOCKS_FUSTYLES_TITLE = 'RGB LED ';
 Blockly.Msg.BLOCKS_FUSTYLES_RED_TITLE = '¬õ';
 Blockly.Msg.BLOCKS_FUSTYLES_GREEN_TITLE = 'ºñ';
 Blockly.Msg.BLOCKS_FUSTYLES_BLUE_TITLE = 'ÂÅ';
