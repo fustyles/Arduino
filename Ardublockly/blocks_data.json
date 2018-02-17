@@ -44,7 +44,7 @@
         "fustyles": {
             "categoryName": "Fustyles",
             "description": "Test blocks to demonstrate this feature.",
-            "languages": ["en", "es"],
+            "languages": ["en", "zh-hant"],
             "toolboxName": "fustyles",
             "toolbox": [
                 "<category>",
