@@ -16,20 +16,20 @@ Ardublockly.TOOLBOX_XML =
   	  '<block type="fustyles_test">' +
     	    '<field name="value_red">3</field>' +
     	    '<value name="pin_red">' +
-				'<block type="math_number">' +
-					'<field name="NUM">0</field>' +
-				'</block>' +
+		'<block type="math_number">' +
+			'<field name="NUM">0</field>' +
+		'</block>' +
     	    '</value>' +
     	    '<field name="value_green">5</field>' +
     	    '<value name="pin_green">' +
       	        '<block type="math_number">' +
-        			'<field name="NUM">0</field>' +
+        		'<field name="NUM">0</field>' +
       	        '</block>' +
     	    '</value>' +
     	    '<field name="value_blue">6</field>' +
     	    '<value name="pin_blue">' +
       	        '<block type="math_number">' +
-        			'<field name="NUM">0</field>' +
+        		'<field name="NUM">0</field>' +
       	        '</block>' +
     	    '</value>' +
   	  '</block>' +
