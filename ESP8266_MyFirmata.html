@@ -13,8 +13,8 @@ if (document.getElementById("choice1").checked)
     var cmd=document.getElementById("cmd1").value;
 else
     var cmd=document.getElementById("cmd2").value;
-var num1=document.getElementById("str1").value;
-var num2=document.getElementById("str2").value;
+var str1=document.getElementById("str1").value;
+var str2=document.getElementById("str2").value;
 var url=ip+"?"+cmd+"="+str1+","+str2;
 document.getElementById("ShowUrl").innerHTML="<font color=red>URL："+url+"</font>";
 document.getElementById("MyFirmata").src=url;
