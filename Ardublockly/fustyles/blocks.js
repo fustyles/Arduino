@@ -21,18 +21,18 @@ Blockly.Blocks['fustyles_test'] = {
 		.appendField(Blockly.Msg.BLOCKS_FUSTYLES_TITLE)
         .appendField(Blockly.Msg.BLOCKS_FUSTYLES_RED_TITLE)
         .appendField(new Blockly.FieldDropdown([["3","3"], ["5","5"], ["6","6"], ["9","9"], ["10","10"], ["11","11"]]), "value_red")
-        .appendField(Blockly.Msg.BLOCKS_FUSTYLES_GREEN_TITLE)
-        .appendField(new Blockly.FieldDropdown([["3","3"], ["5","5"], ["6","6"], ["9","9"], ["10","10"], ["11","11"]]), "value_green")
-        .appendField(Blockly.Msg.BLOCKS_FUSTYLES_BLUE_TITLE)
-        .appendField(new Blockly.FieldDropdown([["3","3"], ["5","5"], ["6","6"], ["9","9"], ["10","10"], ["11","11"]]), "value_blue")
-		.appendField(Blockly.Msg.BLOCKS_FUSTYLES_RED_VALUE);
+        .appendField(Blockly.Msg.BLOCKS_FUSTYLES_RED_VALUE);
     this.appendValueInput("pin_green")
         .setCheck("Number")
 		.setAlign(Blockly.ALIGN_RIGHT)
-		.appendField(Blockly.Msg.BLOCKS_FUSTYLES_GREEN_VALUE);
+		.appendField(Blockly.Msg.BLOCKS_FUSTYLES_GREEN_TITLE)
+        .appendField(new Blockly.FieldDropdown([["3","3"], ["5","5"], ["6","6"], ["9","9"], ["10","10"], ["11","11"]]), "value_green")
+        .appendField(Blockly.Msg.BLOCKS_FUSTYLES_GREEN_VALUE);
     this.appendValueInput("pin_blue")
         .setCheck("Number")
 		.setAlign(Blockly.ALIGN_RIGHT)
+		.appendField(Blockly.Msg.BLOCKS_FUSTYLES_BLUE_TITLE)
+        .appendField(new Blockly.FieldDropdown([["3","3"], ["5","5"], ["6","6"], ["9","9"], ["10","10"], ["11","11"]]), "value_blue")
 		.appendField(Blockly.Msg.BLOCKS_FUSTYLES_BLUE_VALUE);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
