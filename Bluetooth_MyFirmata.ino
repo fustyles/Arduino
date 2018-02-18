@@ -1,12 +1,9 @@
 /*
 Bluetooth
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-16 13:30 
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-19 01:30 
 
 Command format :  
-?cmd  
-Number：  ?cmd=num1  ?cmd=num1,num2
-String ： ?&cmd=str1  ?&cmd=str1,str2 
-Number+String ： ?+cmd=num1,str2   
+?cmd = str1 ,str2   
 
 ?inputpullup=3
 ?pinmode=3,1
@@ -14,8 +11,6 @@ Number+String ： ?+cmd=num1,str2
 ?analogwrite=3,200
 ?digitalread=3
 ?analogread=3
-?&yourcmd=Hello,World
-?+yourcmd=100,Hello
 */
 
 
@@ -23,7 +18,6 @@ Number+String ： ?+cmd=num1,str2
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
 String ReceiveData="", command="",cmd="",str1="",str2="";
-long int num1=-1,num2=-1;
 
 void setup()
 {
@@ -40,51 +34,40 @@ void loop()
     Serial.println("");
     Serial.println("command: "+command);
     Serial.println("cmd: "+cmd);
-    Serial.println("num1= "+String(num1)+" ,num2= "+String(num2));
     Serial.println("str1= "+String(str1)+" ,str2= "+String(str2));
     
     if (cmd=="yourcmd")
       {
         //you can do anything
-        //SendData(cmd+"="+num1+","+num2);
-      }
-    else if (cmd=="&yourcmd")
-      {
-        //you can do anything
         //SendData(cmd+"="+str1+","+str2);
-      }
-    else if (cmd=="+yourcmd")
-      {
-        //you can do anything
-        //SendData(cmd+"="+String(num1)+","+str2);
-      }   
+      } 
     else if (cmd=="inputpullup")
       {
-        pinMode(num1, INPUT_PULLUP);
+        pinMode(str1.toInt(), INPUT_PULLUP);
         SendData(command);
       }  
     else if (cmd=="pinmode")
       {
-        pinMode(num1, num2);
+        pinMode(str1.toInt(), str2.toInt());
         SendData(command);
       }        
     else if (cmd=="digitalwrite")
       {
-        digitalWrite(num1,num2);
+        digitalWrite(str1.toInt(),str2.toInt());
         SendData(command);
       }   
     else if (cmd=="digitalread")
       {
-        SendData(String(digitalRead(num1)));
+        SendData(String(digitalRead(str1.toInt())));
       }    
     else if (cmd=="analogwrite")
       {
-        analogWrite(num1,num2);
+        analogWrite(str1.toInt(),str2.toInt());
         SendData(command);
       }       
     else if (cmd=="analogread")
       {
-        SendData(String(analogRead(num1)));
+        SendData(String(analogRead(str1.toInt())));
       }      
     else 
       {
@@ -101,7 +84,6 @@ void SendData(String data)
 void getVariable()
 {
   ReceiveData="";command="";cmd="";str1="";str2="";
-  num1=-1,num2=-1;
   byte ReceiveState=0,cmdState=1,num1State=0,num2State=0,commastate=0,equalstate=0;
   
   if (mySerial.available())
@@ -123,35 +105,15 @@ void getVariable()
         if ((String(c).indexOf("=")!=-1)&&(ReceiveState==1)&&(num2State==0)) num1State=1;
         if (((String(c).indexOf(",")!=-1)||(String(c).indexOf(" ")!=-1))&&(ReceiveState==1)) num1State=0;
         if ((num1State==1)&&(String(c).indexOf("=")==-1))
-        {
-          if (ReceiveData.indexOf("?&")!=-1)
             str1=str1+String(c);
-          else
-          {
-            if (num1==-1) 
-              num1=c-'0'; 
-            else
-              num1=num1*10+(c-'0'); 
-          }
-        }
         
         if ((String(c).indexOf(",")!=-1)&&(ReceiveState==1)) num2State=1;
         if ((String(c).indexOf(" ")!=-1)&&(ReceiveState==1)) num2State=0;
         if ((num2State==1)&&(String(c).indexOf(",")==-1))
-        {
-          if ((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1))
             str2=str2+String(c);
-          else
-          {          
-            if (num2==-1) 
-              num2=c-'0'; 
-            else
-              num2=num2*10+(c-'0'); 
-          }
-        }
-        else if ((num1State==1)&&(c=='=')&&(equalstate==1)&&((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1)))
+        else if ((num1State==1)&&(c=='=')&&(equalstate==1))
           str1=str1+String(c); 
-        else if ((num2State==1)&&(c==',')&&(commastate==1)&&((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1)))
+        else if ((num2State==1)&&(c==',')&&(commastate==1))
           str2=str2+String(c); 
           
         if (num1State==1) equalstate=1;
