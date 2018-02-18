@@ -1,10 +1,8 @@
 /*
 Bluetooth
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-19 01:30 
-
 Command format :  
 ?cmd = str1 ,str2   
-
 ?inputpullup=3
 ?pinmode=3,1
 ?digitalwrite=3,1
