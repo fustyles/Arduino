@@ -1,18 +1,15 @@
 /* 
 Arduino Uno + ESP8266 ESP-01
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-16 12:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-19 01:30
 
 Command format :
-?cmd  
-Number： ?cmd=num1  ?cmd=num1,num2   (?)
-String ： ?&cmd=str1  ?&cmd=str1,str2   (?&)
-Number+String ： ?+cmd=num1,str2   (?+)
+?cmd = str1 ,str2
 
 AP IP： 192.168.4.1
-http://192.168.4.1/?&resetwifi=id,pwd
+http://192.168.4.1/?resetwifi=id,pwd
 http://192.168.4.1/?ip
-http://192.168.4.1/?&at=AT+Command
-http://192.168.4.1/?&tcp=parameter,ip,port
+http://192.168.4.1/?at=AT+Command
+http://192.168.4.1/?tcp=parameter,ip,port
 http://192.168.4.1/?inputpullup=3
 http://192.168.4.1/?pinmode=3,1
 http://192.168.4.1/?digitalwrite=3,1
@@ -20,11 +17,10 @@ http://192.168.4.1/?analogwrite=3,200
 http://192.168.4.1/?digitalread=3
 http://192.168.4.1/?analogread=3
 http://192.168.4.1/?yourcmd=1,180
-http://192.168.4.1/?&yourcmd=Hello,World
-http://192.168.4.1/?+yourcmd=100,Hello
+
 STA IP：
 Query： http://192.168.4.1/?ip
-Link：http://192.168.4.1/?&resetwifi=id,pwd
+Link：http://192.168.4.1/?resetwifi=id,pwd
 */
 
 // Check your Wi-Fi Router's Settings
@@ -35,7 +31,6 @@ String WIFI_PWD="yourwifi_pwd";
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
 String ReceiveData="", command="",cmd="",str1="",str2="";
-long int num1=-1,num2=-1;
 String APIP="",STAIP="";
 
 void setup()
@@ -60,7 +55,6 @@ void loop()
     Serial.println("");
     Serial.println("command: "+command);
     Serial.println("cmd= "+cmd);
-    Serial.println("num1= "+String(num1)+" ,num2= "+String(num2));
     Serial.println("str1= "+String(str1)+" ,str2= "+String(str2));
     
     String CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
@@ -70,31 +64,21 @@ void loop()
         //you can do anything
         
         //Feedback(CID,"<font color=\"red\">"+cmd+"="+num1+","+num2+"</font>",0);  --> HTML
-        //Feedback(CID,cmd+"="+num1+","+num2,1);  --> XML
-        //Feedback(CID,cmd+"="+num1+","+num2,2);  --> JSON
-        //Feedback(CID,"<html>"+cmd+"="+num1+","+num2+"</html>",3);  --> Custom definition
-      }
-    else if (cmd=="&yourcmd")
-      {
-         //you can do anything
-         //Feedback(CID,"<html>"+cmd+"="+str1+","+str2+"</html>",3);
-      }
-    else if (cmd=="+yourcmd")
-      {
-         //you can do anything
-         //Feedback(CID,"<html>"+cmd+"="+String(num1)+","+str2+"</html>",3);
-      }    
+        //Feedback(CID,cmd+"="+str1+","+str2,1);  --> XML
+        //Feedback(CID,cmd+"="+str1+","+str2,2);  --> JSON
+        //Feedback(CID,"<html>"+cmd+"="+str1+","+str2+"</html>",3);  --> Custom definition
+      } 
     else if (cmd=="ip")
       {
         Feedback(CID,"<html>APIP: "+APIP+"<br>STAIP: "+STAIP+"</html>",3);
       }
-    else if (cmd=="&at")      //  ?&cmd=,str2 -> ?&at=,AT+RST
+    else if (cmd=="at")      //  ?cmd=,str2 -> ?at=,AT+RST
       {
         mySerial.println(str2);
         mySerial.flush();
         Feedback(CID,"<html>"+WaitReply(5000)+"</html>",3);
       }
-    else if (cmd=="&tcp")      // ?&tcp=parameter,www.google.com,80
+    else if (cmd=="tcp")      // ?&tcp=parameter,www.google.com,80
       {
         String getcommand="GET /"+str1;
         SendData("AT+CIPSTART=0,\"TCP\",\""+str2+"\"",2000);
@@ -104,33 +88,33 @@ void loop()
       }      
     else if (cmd=="inputpullup")
       {
-        pinMode(num1, INPUT_PULLUP);
+        pinMode(str1.toInt(), INPUT_PULLUP);
         Feedback(CID,"<html>"+command+"</html>",3);
       }  
     else if (cmd=="pinmode")
       {
-        pinMode(num1, num2);
+        pinMode(str1.toInt(), str2.toInt());
         Feedback(CID,"<html>"+command+"</html>",3);
       }        
     else if (cmd=="digitalwrite")
       {
-        digitalWrite(num1,num2);
+        digitalWrite(str1.toInt(),str2.toInt());
         Feedback(CID,"<html>"+command+"</html>",3);
       }   
     else if (cmd=="digitalread")
       {
-        Feedback(CID,"<html>"+String(digitalRead(num1))+"</html>",3);
+        Feedback(CID,"<html>"+String(digitalRead(str1.toInt()))+"</html>",3);
       }    
     else if (cmd=="analogwrite")
       {
-        analogWrite(num1,num2);
+        analogWrite(str1.toInt(),str2.toInt());
         Feedback(CID,"<html>"+command+"</html>",3);
       }       
     else if (cmd=="analogread")
       {
-        Feedback(CID,"<html>"+String(analogRead(num1))+"</html>",3);
+        Feedback(CID,"<html>"+String(analogRead(str1.toInt()))+"</html>",3);
       }    
-    else if (cmd=="&resetwifi")
+    else if (cmd=="resetwifi")
       {
         Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
         delay(3000);
@@ -224,7 +208,7 @@ String WaitReply(long int TimeLimit)
 
 void getVariable()
 {
-  ReceiveData="";command="";cmd="";str1="";str2="";num1=-1;num2=-1;
+  ReceiveData="";command="";cmd="";str1="";str2="";
   byte ReceiveState=0,cmdState=1,num1State=0,num2State=0,commastate=0,equalstate=0;
   
   if (mySerial.available())
@@ -242,39 +226,17 @@ void getVariable()
 
         if ((c=='=')&&(ReceiveState==1)) cmdState=0;
         if ((cmdState==1)&&(c!='?')) cmd=cmd+String(c);
-
         if ((c=='=')&&(ReceiveState==1)&&(num2State==0)) num1State=1;
         if (((c==',')||(c==' '))&&(ReceiveState==1)) num1State=0;
         if ((num1State==1)&&(c!='='))
-        {
-          if (ReceiveData.indexOf("?&")!=-1)
             str1=str1+String(c);
-          else
-          {
-            if (num1==-1) 
-              num1=c-'0'; 
-            else
-              num1=num1*10+(c-'0'); 
-          }
-        }
-        
         if ((c==',')&&(ReceiveState==1)) num2State=1;
         if ((c==' ')&&(ReceiveState==1)) num2State=0;
         if ((num2State==1)&&(c!=','))
-        {
-          if ((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1))
             str2=str2+String(c);
-          else
-          {          
-            if (num2==-1) 
-              num2=c-'0'; 
-            else
-              num2=num2*10+(c-'0'); 
-          }
-        }
-        else if ((num1State==1)&&(c=='=')&&(equalstate==1)&&((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1)))
+        else if ((num1State==1)&&(c=='=')&&(equalstate==1))
           str1=str1+String(c); 
-        else if ((num2State==1)&&(c==',')&&(commastate==1)&&((ReceiveData.indexOf("?&")!=-1)||(ReceiveData.indexOf("?+")!=-1)))
+        else if ((num2State==1)&&(c==',')&&(commastate==1))
           str2=str2+String(c); 
           
         if (num1State==1) equalstate=1;
@@ -285,16 +247,7 @@ void getVariable()
     
     if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
     { 
-      long int StartTime=millis();
-      String ok="";
-      while( (StartTime+10000) > millis())
-      {
-        while(mySerial.available())
-        {
-            ok=ok+String(char(mySerial.read()));
-        }
-        if (ok.indexOf("OK")!=-1) break;
-      } 
+      while(!mySerial.find('OK')){} 
 
       APIP="";STAIP="";
       int apreadstate=0,stareadstate=0,j=0;
@@ -324,15 +277,14 @@ void getVariable()
 
       Serial.println("APIP: "+APIP+"\nSTAIP: "+STAIP);
     
-      
-        pinMode(13,1);
-        for (int i=0;i<20;i++)
-        {
-          digitalWrite(13,1);
-          delay(50);
-          digitalWrite(13,0);
-          delay(50);
-        }
+      pinMode(13,1);
+      for (int i=0;i<20;i++)
+      {
+        digitalWrite(13,1);
+        delay(50);
+        digitalWrite(13,0);
+        delay(50);
+      }
     }
   }
 }
