@@ -92,7 +92,7 @@ void getVariable()
       ReceiveData=ReceiveData+String(c);
       
       if (c=='?') ReceiveState=1;
-      if ((c==' ')||(c=='\n')) ReceiveState=0;
+      if ((c==' ')||(c=='\r')) ReceiveState=0;
       if (ReceiveState==1)
       {
         command=command+String(c);
