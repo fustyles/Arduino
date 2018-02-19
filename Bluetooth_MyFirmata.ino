@@ -1,7 +1,7 @@
 /*
 Bluetooth
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-20 00:00 
-Command format :  ?cmd = str1;str2   
+Command format :  ?cmd = str1;str2;str3
 ?inputpullup=3
 ?pinmode=3;1
 ?digitalwrite=3;1
