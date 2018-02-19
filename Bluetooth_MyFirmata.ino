@@ -30,7 +30,7 @@ void loop()
   if (ReceiveData.indexOf("?")==0)
   {
     Serial.println("");
-    Serial.println("command: "+command);
+    Serial.println("semicolonnd: "+semicolonnd);
     Serial.println("cmd: "+cmd);
     Serial.println("str1= "+String(str1)+" ,str2= "+String(str2));
     
@@ -42,17 +42,17 @@ void loop()
     else if (cmd=="inputpullup")
       {
         pinMode(str1.toInt(), INPUT_PULLUP);
-        SendData(command);
+        SendData(semicolonnd);
       }  
     else if (cmd=="pinmode")
       {
         pinMode(str1.toInt(), str2.toInt());
-        SendData(command);
+        SendData(semicolonnd);
       }        
     else if (cmd=="digitalwrite")
       {
         digitalWrite(str1.toInt(),str2.toInt());
-        SendData(command);
+        SendData(semicolonnd);
       }   
     else if (cmd=="digitalread")
       {
@@ -61,7 +61,7 @@ void loop()
     else if (cmd=="analogwrite")
       {
         analogWrite(str1.toInt(),str2.toInt());
-        SendData(command);
+        SendData(semicolonnd);
       }       
     else if (cmd=="analogread")
       {
@@ -69,7 +69,7 @@ void loop()
       }      
     else 
       {
-        SendData("Command is not defined");
+        SendData("semicolonnd is not defined");
       }  
   }
 }
@@ -81,8 +81,8 @@ void SendData(String data)
 
 void getVariable()
 {
-  ReceiveData="";command="";cmd="";str1="";str2="";
-  byte ReceiveState=0,cmdState=1,str1State=0,str2State=0,commastate=0,equalstate=0;
+  ReceiveData="";semicolonnd="";cmd="";str1="";str2="";
+  byte ReceiveState=0,cmdState=1,str1State=0,str2State=0,semicolonstate=0,equalstate=0;
   
   if (mySerial.available())
   {
@@ -95,7 +95,7 @@ void getVariable()
       if ((c==' ')||(c=='\n')) ReceiveState=0;
       if (ReceiveState==1)
       {
-        command=command+String(c);
+        semicolonnd=semicolonnd+String(c);
 
         if ((c=='=')&&(ReceiveState==1)) cmdState=0;
         if ((cmdState==1)&&(c!='?')) cmd=cmd+String(c);
@@ -111,11 +111,11 @@ void getVariable()
             str2=str2+String(c);
         else if ((str1State==1)&&(c=='=')&&(equalstate==1))
           str1=str1+String(c); 
-        else if ((str2State==1)&&(c==';')&&(commastate==1))
+        else if ((str2State==1)&&(c==';')&&(semicolonstate==1))
           str2=str2+String(c); 
           
         if (str1State==1) equalstate=1;
-        if (str2State==1) commastate=1;
+        if (str2State==1) semicolonstate=1;
       }
     }  
     Serial.println(ReceiveData);
