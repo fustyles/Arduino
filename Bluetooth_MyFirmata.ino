@@ -99,7 +99,7 @@ void getVariable()
         
         if ((c=='=')&&(str1State==0)&&(str2State==0)&&(str3State==0))
         {
-          cmdState=0;str1State=1;
+          cmdState=0;str1State=1;str2State=0;str3State=0;
         }
         else if ((c==';')&&(str1State==1)&&(str2State==0)&&(str3State==0)) 
         {
