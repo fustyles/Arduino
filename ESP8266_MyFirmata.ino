@@ -1,6 +1,6 @@
 /* 
 Arduino Uno + ESP8266 ESP-01
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-20 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-20 01:30
 
 Command format :  ?cmd = str1;str2
 
@@ -52,7 +52,7 @@ void loop()
     Serial.println("");
     Serial.println("command: "+command);
     Serial.println("cmd= "+cmd);
-    Serial.println("str1= "+String(str1)+" ,str2= "+String(str2)+" ,str3= "+String(str3));
+    Serial.println("str1= "+str1+" ,str2= "+str2+" ,str3= "+str3);
     
     String CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
     
@@ -144,7 +144,7 @@ void initial()
   SendData("AT+CWMODE_CUR=3",2000);
   SendData("AT+CIPMUX=1",2000);
   SendData("AT+CIPSERVER=1,80",2000);   //port=80
-  SendData("AT+CIPSTO=5",2000);  //timeout= 5 seconds
+  SendData("AT+CIPSTO=3",2000);  //timeout= 3 seconds
   //SendData("AT+CWSAP_CUR=\"AP_id\",\"AP_pwd\",3,4",2000);
   //String STA_ip="192.168.0.100";
   //String STA_gateway="192.168.0.1";
@@ -225,7 +225,7 @@ void getVariable()
         
         if ((c=='=')&&(str1State==0)&&(str2State==0)&&(str3State==0))
         {
-          cmdState=0;str1State=1;
+          cmdState=0;str1State=1;str2State=0;str3State=0;
         }
         else if ((c==';')&&(str1State==1)&&(str2State==0)&&(str3State==0)) 
         {
@@ -234,7 +234,7 @@ void getVariable()
         else if ((c==';')&&(str1State==0)&&(str2State==1)&&(str3State==0)) 
         {
           cmdState=0;str1State=0;str2State=0;str3State=1;
-        }       
+        }  
         else if (c==' ')
         {
           cmdState=0;str1State=0;str2State=0;str3State=0;
@@ -247,6 +247,14 @@ void getVariable()
         
         if (str1State==1) equalstate=1;
         if (str3State==1) semicolonstate=1;
+      }
+      
+      if (ReceiveData.indexOf(" HTTP")!=-1)
+      {
+         while (mySerial.available())
+        {
+          mySerial.read();
+        }
       }
     }  
     Serial.println(ReceiveData);
