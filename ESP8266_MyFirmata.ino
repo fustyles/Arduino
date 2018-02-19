@@ -1,30 +1,29 @@
 /* 
 Arduino Uno + ESP8266 ESP-01
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-19 01:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-19 16:30
 
-Command format :  ?cmd = str1 ,str2
+Command format :  ?cmd = str1;str2
 
 AP IP： 192.168.4.1
-http://192.168.4.1/?resetwifi=id,pwd
+http://192.168.4.1/?resetwifi=id;pwd
 http://192.168.4.1/?ip
 http://192.168.4.1/?at=AT+Command
-http://192.168.4.1/?tcp=parameter,ip,port
+http://192.168.4.1/?tcp=ip,port;parameter
 http://192.168.4.1/?inputpullup=3
-http://192.168.4.1/?pinmode=3,1
-http://192.168.4.1/?digitalwrite=3,1
-http://192.168.4.1/?analogwrite=3,200
+http://192.168.4.1/?pinmode=3;1
+http://192.168.4.1/?digitalwrite=3;1
+http://192.168.4.1/?analogwrite=3;200
 http://192.168.4.1/?digitalread=3
 http://192.168.4.1/?analogread=3
-http://192.168.4.1/?yourcmd=1,180
 
 STA IP：
 Query： http://192.168.4.1/?ip
-Link：http://192.168.4.1/?resetwifi=id,pwd
+Link：http://192.168.4.1/?resetwifi=id;pwd
 */
 
 // Check your Wi-Fi Router's Settings
-String WIFI_SSID="yourwifi_id";
-String WIFI_PWD="yourwifi_pwd";
+String WIFI_SSID="3COM";
+String WIFI_PWD="godblessyou";
 
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
@@ -35,7 +34,8 @@ String APIP="",STAIP="";
 void setup()
 {
   Serial.begin(9600);
-  
+
+  //SendData("AT+RESTORE",5000);
   SendData("AT+RST",5000);
   //You must change uart baud rate of ESP-01 to 9600.
   mySerial.begin(115200);   //Default uart baud rate -> 19200,38400,57600,74880,115200
@@ -62,25 +62,25 @@ void loop()
       {
         //you can do anything
         
-        //Feedback(CID,"<font color=\"red\">"+cmd+"="+num1+","+num2+"</font>",0);  --> HTML
-        //Feedback(CID,cmd+"="+str1+","+str2,1);  --> XML
-        //Feedback(CID,cmd+"="+str1+","+str2,2);  --> JSON
-        //Feedback(CID,"<html>"+cmd+"="+str1+","+str2+"</html>",3);  --> Custom definition
+        //Feedback(CID,"<font color=\"red\">"+cmd+"="+str1+";"+str2+"</font>",0);  --> HTML
+        //Feedback(CID,cmd+"="+str1+";"+str2,1);  --> XML
+        //Feedback(CID,cmd+"="+str1+";"+str2,2);  --> JSON
+        //Feedback(CID,"<html>"+cmd+"="+str1+";"+str2+"</html>",3);  --> Custom definition
       } 
     else if (cmd=="ip")
       {
         Feedback(CID,"<html>APIP: "+APIP+"<br>STAIP: "+STAIP+"</html>",3);
       }
-    else if (cmd=="at")      //  ?cmd=,str2 -> ?at=,AT+RST
+    else if (cmd=="at")      //  ?cmd=str1 -> ?at=AT+RST
       {
-        mySerial.println(str2);
+        mySerial.println(str1);
         mySerial.flush();
         Feedback(CID,"<html>"+WaitReply(5000)+"</html>",3);
       }
-    else if (cmd=="tcp")      // ?&tcp=parameter,www.google.com,80
+    else if (cmd=="tcp")      // ?tcp=url,port;parameter
       {
-        String getcommand="GET /"+str1;
-        SendData("AT+CIPSTART=0,\"TCP\",\""+str2+"\"",2000);
+        String getcommand="GET /"+str2;
+        SendData("AT+CIPSTART=0,\"TCP\",\""+str1+"\"",2000);
         SendData("AT+CIPSEND=0,"+String(getcommand.length()+2),2000);
         SendData(getcommand,2000);
         Feedback("0","<html>"+WaitReply(10000)+"</html>",3);
@@ -208,7 +208,7 @@ String WaitReply(long int TimeLimit)
 void getVariable()
 {
   ReceiveData="";command="";cmd="";str1="";str2="";
-  byte ReceiveState=0,cmdState=1,num1State=0,num2State=0,commastate=0,equalstate=0;
+  byte ReceiveState=0,cmdState=1,str1State=0,str2State=0,semicolonstate=0,equalstate=0;
   
   if (mySerial.available())
   {
@@ -218,35 +218,38 @@ void getVariable()
       ReceiveData=ReceiveData+String(c);
       
       if (c=='?') ReceiveState=1;
-      if (c==' ') ReceiveState=0;
+      if ((c==' ')||(c=='\n')) ReceiveState=0;
       if (ReceiveState==1)
       {
         command=command+String(c);
 
         if ((c=='=')&&(ReceiveState==1)) cmdState=0;
         if ((cmdState==1)&&(c!='?')) cmd=cmd+String(c);
-        if ((c=='=')&&(ReceiveState==1)&&(num2State==0)) num1State=1;
-        if (((c==',')||(c==' '))&&(ReceiveState==1)) num1State=0;
-        if ((num1State==1)&&(c!='='))
+        
+        if ((c=='=')&&(ReceiveState==1)&&(str2State==0)) str1State=1;
+        if (((c==';')||(c==' '))&&(ReceiveState==1)) str1State=0;
+        if ((str1State==1)&&(c!='='))
             str1=str1+String(c);
-        if ((c==',')&&(ReceiveState==1)) num2State=1;
-        if ((c==' ')&&(ReceiveState==1)) num2State=0;
-        if ((num2State==1)&&(c!=','))
+            
+        if ((c==';')&&(ReceiveState==1)) str2State=1;
+        if ((c==' ')&&(ReceiveState==1)) str2State=0;
+        if ((str2State==1)&&(c!=';'))
             str2=str2+String(c);
-        else if ((num1State==1)&&(c=='=')&&(equalstate==1))
-          str1=str1+String(c); 
-        else if ((num2State==1)&&(c==',')&&(commastate==1))
-          str2=str2+String(c); 
+        else if ((str1State==1)&&(c=='=')&&(equalstate==1))
+            str1=str1+String(c); 
+        else if ((str2State==1)&&(c==';')&&(semicolonstate==1))
+            str2=str2+String(c); 
           
-        if (num1State==1) equalstate=1;
-        if (num2State==1) commastate=1;
+        if (str1State==1) equalstate=1;
+        if (str2State==1) semicolonstate=1;
       }
     }  
-    Serial.println(ReceiveData);
+    if (ReceiveData.indexOf("IP")!=-1) Serial.println(ReceiveData);
     
     if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
     { 
       while(!mySerial.find('OK')){} 
+      delay(1000);
 
       APIP="";STAIP="";
       int apreadstate=0,stareadstate=0,j=0;
