@@ -249,7 +249,7 @@ void getVariable()
         if (str3State==1) semicolonstate=1;
       }
     }  
-    if (ReceiveData.indexOf("?")!=-1) Serial.println(ReceiveData);
+    Serial.println(ReceiveData);
     
     if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
     { 
