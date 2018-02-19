@@ -15,7 +15,8 @@ else
     var cmd=document.getElementById("cmd2").value;
 var str1=document.getElementById("str1").value;
 var str2=document.getElementById("str2").value;
-var url=ip+"?"+cmd+"="+str1+";"+str2;
+var str3=document.getElementById("str3").value;
+var url=ip+"?"+cmd+"="+str1+";"+str2+";"+str3;
 document.getElementById("ShowUrl").innerHTML="<font color=red>URL："+url+"</font>";
 document.getElementById("MyFirmata").src=url;
 setTimeout(wait,1000);
@@ -28,11 +29,11 @@ function wait()
 <body>
 <form onreset="document.getElementById('MyFirmata').src='about:blank';">
 <table>
-<tr><td>ESP8266</td><td colspan="3">IP：<input type="text" name="ip" id="ip" size="28" value="http://192.168.4.1"></td></tr>
-<tr><th></th><th>Command</th><th>Parameter1</th><th>Parameter2</th></tr>
+<tr><td>ESP8266IP：<input type="text" name="ip" id="ip" size="28" value="http://192.168.4.1"></td></tr>
+<tr align="center"><th>Command</th>></tr>
 <tr>
-<td><input type="radio" name="choice" id="choice1" checked></td>
 <td>
+<input type="radio" name="choice" id="choice1" checked>
 <select name="cmd1" id="cmd1">
 <option value="ip">ip</option>
 <option value="resetwifi">resetwifi</option>
@@ -45,23 +46,29 @@ function wait()
 <option value="digitalread">digitalread</option>
 <option value="analogread">analogread</option>
 </select>
+<input type="radio" name="choice" id="choice2">
+<input type="text" name="cmd2" id="cmd2" size="20">
 </td>
-<td rowspan="2" colspan="2"><input type="text" name="str1" id="str1" size="6" onclick="this.select()">&nbsp;&nbsp;<input type="text" name="str2" id="str2" size="6" onclick="this.select()"></td>
 </tr>
 <tr>
-<td><input type="radio" name="choice" id="choice2"></td>
-<td><input type="text" name="cmd2" id="cmd2" size="8"></td>
+<td>Parameter1：<input type="text" name="str1" id="str1" size="28" onclick="this.select()"></td>
 </tr>
 <tr>
-<td colspan="4" align="right"><input type="reset" value="Clear">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" id="Send" value="Send" onclick="SendCommand();">&nbsp;&nbsp;&nbsp;</td>
+<td>Parameter2：<input type="text" name="str2" id="str2" size="28" onclick="this.select()"></td>
 </tr>
 <tr>
-<td colspan="4"><iframe id="MyFirmata" width="340" height="140"></iframe></td>
+<td>Parameter3：<input type="text" name="str3" id="str3" size="28" onclick="this.select()"></td>
+</tr>
+<tr>
+<td align="right"><input type="reset" value="Clear" height="50">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" id="Send" value="Send" onclick="SendCommand();">&nbsp;&nbsp;&nbsp;</td>
+</tr>
+<tr>
+<td><iframe id="MyFirmata" width="340" height="140"></iframe></td>
 </tr>    
 </table>
 </form>
 <div id="ShowUrl"></div><br>
-Command format：   ?cmd=str1;str2
+Command format：   ?cmd=str1;str2;str3
 
 </body>
 </html>
