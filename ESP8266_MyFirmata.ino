@@ -63,8 +63,8 @@ void loop()
       } 
     else if (cmd=="ip")
       {
-        Feedback(CID,"<font color=\"red\">APIP: "+APIP+"<br>STAIP: "+STAIP+"</font>",0);
-        //Feedback(CID,"<html>APIP: "+APIP+"<br>STAIP: "+STAIP+"</html>",3);
+        //Feedback(CID,"<font color=\"red\">APIP: "+APIP+"<br>STAIP: "+STAIP+"</font>",0);
+        Feedback(CID,"<html>APIP: "+APIP+"<br>STAIP: "+STAIP+"</html>",3);
       }
     else if (cmd=="at")      //  ?cmd=str1 -> ?at=AT+RST
       {
