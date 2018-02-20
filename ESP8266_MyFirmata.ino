@@ -175,10 +175,6 @@ void Feedback(String CID,String Response,int datatype)
   else
     Response=Response;
 
-  while (mySerial.available())
-  {
-    mySerial.read();
-  }
   SendData("AT+CIPSEND="+CID+","+(Response.length()+2),2000);
   SendData(Response,2000);
   SendData("AT+CIPCLOSE="+CID,2000);
