@@ -50,9 +50,8 @@ void loop()
   if ((ReceiveData.indexOf("?")!=-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
   {
     Serial.println("");
-    Serial.println("command: "+command);
-    Serial.println("cmd= "+cmd);
-    Serial.println("str1= "+str1+" ,str2= "+str2+" ,str3= "+str3);
+    //Serial.println("command: "+command);
+    Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3);
     
     String CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
     
