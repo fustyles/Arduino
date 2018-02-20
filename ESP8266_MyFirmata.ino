@@ -1,6 +1,6 @@
 /* 
 Arduino Uno + ESP8266 ESP-01
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-20 20:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-20 21:30
 Command format :  ?cmd=str1;str2;str3
 AP IP： 192.168.4.1
 http://192.168.4.1/?resetwifi=id;pwd
@@ -26,7 +26,84 @@ String WIFI_PWD="yourwifi_pwd";
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
 String ReceiveData="", command="",cmd="",str1="",str2="",str3="";
-String APIP="",STAIP="";
+String APIP="",STAIP="",CID="";
+
+void executecommand()
+{
+  Serial.println("");
+  //Serial.println("command: "+command);
+  Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3);
+  
+  if (cmd=="yourcmd")
+    {
+      //you can do anything
+      
+      //Feedback(CID,"<font color=\"red\">"+cmd+"="+str1+";"+str2+";"+str3+"</font>",0);  --> HTML
+      //Feedback(CID,cmd+"="+str1+";"+str2+";"+str3,1);  --> XML
+      //Feedback(CID,cmd+"="+str1+";"+str2+";"+str3,2);  --> JSON
+      //Feedback(CID,"<html>"+cmd+"="+str1+";"+str2+";"+str3+"</html>",3);  --> Custom definition
+    } 
+  else if (cmd=="ip")
+    {
+      //Feedback(CID,"<font color=\"red\">APIP: "+APIP+"<br>STAIP: "+STAIP+"</font>",0);
+      Feedback(CID,"<html>APIP: "+APIP+"<br>STAIP: "+STAIP+"</html>",3);
+    }
+  else if (cmd=="at")      //  ?cmd=str1 -> ?at=AT+RST
+    {
+      Feedback(CID,"<html>"+WaitReply(3000)+"</html>",3);
+      delay(1000);
+      mySerial.println(str1);
+      mySerial.flush();
+    }
+  else if (cmd=="tcp")      // ?tcp=url,port;parameter
+    {
+      String getcommand="GET /"+str2;
+      SendData("AT+CIPSTART=0,\"TCP\",\""+str1+"\"",2000);
+      SendData("AT+CIPSEND=0,"+String(getcommand.length()+2),2000);
+      SendData(getcommand,2000);
+      delay(10);
+      Feedback("0","<html>"+WaitReply(10000)+"</html>",3);
+    }      
+  else if (cmd=="inputpullup")
+    {
+      pinMode(str1.toInt(), INPUT_PULLUP);
+      Feedback(CID,"<html>"+command+"</html>",3);
+    }  
+  else if (cmd=="pinmode")
+    {
+      pinMode(str1.toInt(), str2.toInt());
+      Feedback(CID,"<html>"+command+"</html>",3);
+    }        
+  else if (cmd=="digitalwrite")
+    {
+      digitalWrite(str1.toInt(),str2.toInt());
+      Feedback(CID,"<html>"+command+"</html>",3);
+    }   
+  else if (cmd=="digitalread")
+    {
+      Feedback(CID,"<html>"+String(digitalRead(str1.toInt()))+"</html>",3);
+    }    
+  else if (cmd=="analogwrite")
+    {
+      analogWrite(str1.toInt(),str2.toInt());
+      Feedback(CID,"<html>"+command+"</html>",3);
+    }       
+  else if (cmd=="analogread")
+    {
+      Feedback(CID,"<html>"+String(analogRead(str1.toInt()))+"</html>",3);
+    }    
+  else if (cmd=="resetwifi")
+    {
+      Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
+      delay(3000);
+      SendData("AT+CWQAP",2000);
+      SendData("AT+CWJAP_CUR=\""+str1+"\",\""+str2+"\"",5000);
+    }
+  else 
+    {
+      Feedback(CID,"<html>Command is not defined</html>",3);
+    }    
+}
 
 void setup()
 {
@@ -37,108 +114,6 @@ void setup()
   SendData("AT+UART_CUR=9600,8,1,0,0",2000);   //Change uart baud rate of ESP-01 to 9600
   mySerial.begin(9600);  // 9600 ,you will get more stable data.
   
-  initial();
-}
-
-void loop() 
-{
-  getVariable();
-  
-  if ((ReceiveData.indexOf("?")!=-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
-  {
-    Serial.println("");
-    //Serial.println("command: "+command);
-    Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3);
-    
-    String CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
-    
-    if (cmd=="yourcmd")
-      {
-        //you can do anything
-        
-        //Feedback(CID,"<font color=\"red\">"+cmd+"="+str1+";"+str2+";"+str3+"</font>",0);  --> HTML
-        //Feedback(CID,cmd+"="+str1+";"+str2+";"+str3,1);  --> XML
-        //Feedback(CID,cmd+"="+str1+";"+str2+";"+str3,2);  --> JSON
-        //Feedback(CID,"<html>"+cmd+"="+str1+";"+str2+";"+str3+"</html>",3);  --> Custom definition
-      } 
-    else if (cmd=="ip")
-      {
-        //Feedback(CID,"<font color=\"red\">APIP: "+APIP+"<br>STAIP: "+STAIP+"</font>",0);
-        Feedback(CID,"<html>APIP: "+APIP+"<br>STAIP: "+STAIP+"</html>",3);
-      }
-    else if (cmd=="at")      //  ?cmd=str1 -> ?at=AT+RST
-      {
-        Feedback(CID,"<html>"+WaitReply(3000)+"</html>",3);
-        delay(1000);
-        mySerial.println(str1);
-        mySerial.flush();
-      }
-    else if (cmd=="tcp")      // ?tcp=url,port;parameter
-      {
-        String getcommand="GET /"+str2;
-        SendData("AT+CIPSTART=0,\"TCP\",\""+str1+"\"",2000);
-        SendData("AT+CIPSEND=0,"+String(getcommand.length()+2),2000);
-        SendData(getcommand,2000);
-        delay(10);
-        Feedback("0","<html>"+WaitReply(10000)+"</html>",3);
-      }      
-    else if (cmd=="inputpullup")
-      {
-        pinMode(str1.toInt(), INPUT_PULLUP);
-        Feedback(CID,"<html>"+command+"</html>",3);
-      }  
-    else if (cmd=="pinmode")
-      {
-        pinMode(str1.toInt(), str2.toInt());
-        Feedback(CID,"<html>"+command+"</html>",3);
-      }        
-    else if (cmd=="digitalwrite")
-      {
-        digitalWrite(str1.toInt(),str2.toInt());
-        Feedback(CID,"<html>"+command+"</html>",3);
-      }   
-    else if (cmd=="digitalread")
-      {
-        Feedback(CID,"<html>"+String(digitalRead(str1.toInt()))+"</html>",3);
-      }    
-    else if (cmd=="analogwrite")
-      {
-        analogWrite(str1.toInt(),str2.toInt());
-        Feedback(CID,"<html>"+command+"</html>",3);
-      }       
-    else if (cmd=="analogread")
-      {
-        Feedback(CID,"<html>"+String(analogRead(str1.toInt()))+"</html>",3);
-      }    
-    else if (cmd=="resetwifi")
-      {
-        Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
-        delay(3000);
-        SendData("AT+CWQAP",2000);
-        SendData("AT+CWJAP_CUR=\""+str1+"\",\""+str2+"\"",5000);
-      }
-    else 
-      {
-        Feedback(CID,"<html>Command is not defined</html>",3);
-      }  
-  }
-  else if ((ReceiveData.indexOf("?")!=-1)&&(ReceiveData.indexOf(" HTTP")==-1))
-  {
-    if(ReceiveData.indexOf("IPD,")!=-1)
-    {
-      String CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
-      Feedback(CID,"<html>FAIL</html>",3);
-    }
-  }
-  else if ((ReceiveData.indexOf("?")==-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
-  {
-    String CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
-    Feedback(CID,"<html>Hello World</html>",3);
-  }
-}
-
-void initial()
-{
   SendData("AT+CWMODE_CUR=3",2000);
   SendData("AT+CIPMUX=1",2000);
   SendData("AT+CIPSERVER=1,80",2000);   //port=80
@@ -148,7 +123,31 @@ void initial()
   //String STA_gateway="192.168.0.1";
   //String STA_netmask="255.255.255.0";
   //SendData("AT+CIPSTA_CUR=\""+STA_ip+"\",\""+STA_gateway+"\",\""+STA_netmask+"\"",2000);
-  SendData("AT+CWJAP_CUR=\""+WIFI_SSID+"\",\""+WIFI_PWD+"\"",5000);   
+  SendData("AT+CWJAP_CUR=\""+WIFI_SSID+"\",\""+WIFI_PWD+"\"",5000);  
+}
+
+void loop() 
+{
+  getVariable();
+  
+  if ((ReceiveData.indexOf("?")!=-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
+  {
+    CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
+    executecommand();
+  }
+  else if ((ReceiveData.indexOf("?")!=-1)&&(ReceiveData.indexOf(" HTTP")==-1))
+  {
+    if(ReceiveData.indexOf("IPD,")!=-1)
+    {
+      CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
+      Feedback(CID,"<html>FAIL</html>",3);
+    }
+  }
+  else if ((ReceiveData.indexOf("?")==-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
+  {
+    CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
+    Feedback(CID,"<html>Hello World</html>",3);
+  }
 }
 
 void SendData(String data,int TimeLimit)
