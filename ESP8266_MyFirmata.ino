@@ -185,7 +185,6 @@ void Feedback(String CID,String Response,int datatype)
 String WaitReply(long int TimeLimit)
 {
   String ReceiveData="";
-  byte ReceiveState=0;
   long int StartTime=millis();
   while( (StartTime+TimeLimit) > millis())
   {
@@ -195,9 +194,8 @@ String WaitReply(long int TimeLimit)
       while(mySerial.available())
       {
         ReceiveData=ReceiveData+String(char(mySerial.read()));
-        ReceiveState=1;
       }
-      if (ReceiveState==1) return ReceiveData;
+      return ReceiveData;
     }
   } 
   return ReceiveData;
