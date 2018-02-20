@@ -1,6 +1,6 @@
 /* 
 Arduino Uno + ESP8266 ESP-01
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-20 01:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-20 20:30
 Command format :  ?cmd=str1;str2;str3
 AP IP： 192.168.4.1
 http://192.168.4.1/?resetwifi=id;pwd
@@ -63,6 +63,7 @@ void loop()
       } 
     else if (cmd=="ip")
       {
+        //Feedback(CID,"<font color=red>APIP: "+APIP+"<br>STAIP: "+STAIP+"</font>",0);
         Feedback(CID,"<html>APIP: "+APIP+"<br>STAIP: "+STAIP+"</html>",3);
       }
     else if (cmd=="at")      //  ?cmd=str1 -> ?at=AT+RST
@@ -141,7 +142,7 @@ void initial()
   SendData("AT+CWMODE_CUR=3",2000);
   SendData("AT+CIPMUX=1",2000);
   SendData("AT+CIPSERVER=1,80",2000);   //port=80
-  SendData("AT+CIPSTO=3",2000);  //timeout= 3 seconds
+  SendData("AT+CIPSTO=5",2000);  //timeout= 5 seconds
   //SendData("AT+CWSAP_CUR=\"AP_id\",\"AP_pwd\",3,4",2000);
   //String STA_ip="192.168.0.100";
   //String STA_gateway="192.168.0.1";
@@ -162,7 +163,7 @@ void Feedback(String CID,String Response,int datatype)
 {
   if (datatype==0)
   {
-    Response="<!DOCTYPE HTML><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body>"+Response+"</body></html>";
+    Response="<!DOCTYPE HTML><html><head><meta charset=\"UTF-8\"></head><body>"+Response+"</body></html>";
   }
   else if (datatype==1) 
   {
@@ -176,7 +177,7 @@ void Feedback(String CID,String Response,int datatype)
     Response=Response;
 
   SendData("AT+CIPSEND="+CID+","+(Response.length()+2),2000);
-  SendData(Response,10000);
+  SendData(Response,2000);
   SendData("AT+CIPCLOSE="+CID,2000);
 }
 
