@@ -1,9 +1,7 @@
 /* 
 Arduino Uno + ESP8266 ESP-01
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-20 01:30
-
-Command format :  ?cmd = str1;str2
-
+Command format :  ?cmd = str1;str2;str3
 AP IP： 192.168.4.1
 http://192.168.4.1/?resetwifi=id;pwd
 http://192.168.4.1/?ip
@@ -15,7 +13,6 @@ http://192.168.4.1/?digitalwrite=3;1
 http://192.168.4.1/?analogwrite=3;200
 http://192.168.4.1/?digitalread=3
 http://192.168.4.1/?analogread=3
-
 STA IP：
 Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=id;pwd
@@ -81,6 +78,7 @@ void loop()
         SendData("AT+CIPSTART=0,\"TCP\",\""+str1+"\"",2000);
         SendData("AT+CIPSEND=0,"+String(getcommand.length()+2),2000);
         SendData(getcommand,2000);
+        delay(10);
         Feedback("0","<html>"+WaitReply(10000)+"</html>",3);
       }      
     else if (cmd=="inputpullup")
@@ -194,6 +192,7 @@ String WaitReply(long int TimeLimit)
       while(mySerial.available())
       {
         ReceiveData=ReceiveData+String(char(mySerial.read()));
+        //ReceiveData=mySerial.readStringUntil('\r'); 
       }
       return ReceiveData;
     }
