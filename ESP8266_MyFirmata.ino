@@ -196,7 +196,7 @@ String WaitReply(long int TimeLimit)
       while(mySerial.available())
       {
         ReceiveData=ReceiveData+String(char(mySerial.read()));
-        //ReceiveData=mySerial.readStringUntil('\r'); 
+        //ReceiveData=ReceiveData+mySerial.readStringUntil('\r'); 
       }
       return ReceiveData;
     }
