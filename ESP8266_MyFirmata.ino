@@ -31,7 +31,7 @@ String APIP="",STAIP="",CID="";
 void executecommand()
 {
   Serial.println("");
-  //Serial.println("command: "+command);
+  Serial.println("command: "+command);
   Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3);
   
   if (cmd=="yourcmd")
