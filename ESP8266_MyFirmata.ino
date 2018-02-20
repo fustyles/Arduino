@@ -56,15 +56,15 @@ void loop()
       {
         //you can do anything
         
-        //Feedback(CID,"<font color=\"red\">"+cmd+"="+str1+";"+str2+"</font>",0);  --> HTML
-        //Feedback(CID,cmd+"="+str1+";"+str2,1);  --> XML
-        //Feedback(CID,cmd+"="+str1+";"+str2,2);  --> JSON
-        //Feedback(CID,"<html>"+cmd+"="+str1+";"+str2+"</html>",3);  --> Custom definition
+        //Feedback(CID,"<font color=\"red\">"+cmd+"="+str1+";"+str2+";"+str3+"</font>",0);  --> HTML
+        //Feedback(CID,cmd+"="+str1+";"+str2+";"+str3,1);  --> XML
+        //Feedback(CID,cmd+"="+str1+";"+str2+";"+str3,2);  --> JSON
+        //Feedback(CID,"<html>"+cmd+"="+str1+";"+str2+";"+str3+"</html>",3);  --> Custom definition
       } 
     else if (cmd=="ip")
       {
-        //Feedback(CID,"<font color=red>APIP: "+APIP+"<br>STAIP: "+STAIP+"</font>",0);
-        Feedback(CID,"<html>APIP: "+APIP+"<br>STAIP: "+STAIP+"</html>",3);
+        Feedback(CID,"<font color=\"red\">APIP: "+APIP+"<br>STAIP: "+STAIP+"</font>",0);
+        //Feedback(CID,"<html>APIP: "+APIP+"<br>STAIP: "+STAIP+"</html>",3);
       }
     else if (cmd=="at")      //  ?cmd=str1 -> ?at=AT+RST
       {
