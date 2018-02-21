@@ -1,10 +1,11 @@
 /* 
 Arduino Uno + ESP8266 ESP-01
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-21 17:00
-Command format :  ?cmd=str1;str2;str3,str4;str5;str6,str7;str8;str9
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-22 00:00
+Command format :  ?cmd=str1;str2;str3
 AP IP： 192.168.4.1
-http://192.168.4.1/?resetwifi=id;pwd
 http://192.168.4.1/?ip
+http://192.168.4.1/?resetwifi=id;pwd
+http://192.168.4.1/?restart
 http://192.168.4.1/?at=AT+Command
 http://192.168.4.1/?tcp=ip,port;parameter
 http://192.168.4.1/?inputpullup=3
@@ -31,7 +32,7 @@ String APIP="",STAIP="",CID="";
 void executecommand()
 {
   Serial.println("");
-  //Serial.println("command: "+command);
+  Serial.println("command: "+command);
   Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
   
   if (cmd=="yourcmd")
@@ -48,6 +49,18 @@ void executecommand()
       //Feedback(CID,"<font color=\"red\">APIP: "+APIP+"<br>STAIP: "+STAIP+"</font>",0);
       Feedback(CID,"<html>APIP: "+APIP+"<br>STAIP: "+STAIP+"</html>",3);
     }
+  else if (cmd=="resetwifi")
+    {
+      Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
+      delay(3000);
+      SendData("AT+CWQAP",2000);
+      SendData("AT+CWJAP_CUR=\""+str1+"\",\""+str2+"\"",5000);
+    }
+  else if (cmd=="restart")
+    {
+      Feedback(CID,"<html>"+command+"</html>",3);
+      initial();
+    }    
   else if (cmd=="at")      //  ?cmd=str1 -> ?at=AT+RST
     {
       Feedback(CID,"<html>"+WaitReply(3000)+"</html>",3);
@@ -92,13 +105,6 @@ void executecommand()
     {
       Feedback(CID,"<html>"+String(analogRead(str1.toInt()))+"</html>",3);
     }    
-  else if (cmd=="resetwifi")
-    {
-      Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
-      delay(3000);
-      SendData("AT+CWQAP",2000);
-      SendData("AT+CWJAP_CUR=\""+str1+"\",\""+str2+"\"",5000);
-    }
   else 
     {
       Feedback(CID,"<html>Command is not defined</html>",3);
@@ -114,6 +120,11 @@ void setup()
   SendData("AT+UART_CUR=9600,8,1,0,0",2000);   //Change uart baud rate of ESP-01 to 9600
   mySerial.begin(9600);  // 9600 ,you will get more stable data.
   
+  initial();
+}
+
+void initial()
+{
   SendData("AT+CWMODE_CUR=3",2000);
   SendData("AT+CIPMUX=1",2000);
   SendData("AT+CIPSERVER=1,80",2000);   //port=80
