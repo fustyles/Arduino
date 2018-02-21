@@ -29,8 +29,7 @@ void loop()
   if (ReceiveData.indexOf("?")==0)
   {
     Serial.println("");
-    Serial.println("command: "+command);
-    Serial.println("cmd: "+cmd);
+    //Serial.println("command: "+command);
     Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
     
     if (cmd=="yourcmd")
