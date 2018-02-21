@@ -1,78 +1,312 @@
-<!doctype html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<script>
-function SendCommand()
-{
-document.getElementById("Send").disabled=true;
-var ip=document.getElementById("ip").value;
-if (document.getElementById("choice1").checked)
-    var cmd=document.getElementById("cmd1").value;
-else
-    var cmd=document.getElementById("cmd2").value;
-var str1=document.getElementById("str1").value;
-var str2=document.getElementById("str2").value;
-var str3=document.getElementById("str3").value;
-var url=ip+"?"+cmd+"="+str1+";"+str2+";"+str3;
-document.getElementById("ShowUrl").innerHTML="<font color=red>URL："+url+"</font>";
-document.getElementById("MyFirmata").src=url;
-setTimeout(wait,1000);
-}
-function wait()
-{
-    document.getElementById("Send").disabled=false;
-}
-</script>
-<body>
-<div id="ShowUrl"></div>
-<form onreset="document.getElementById('MyFirmata').src='about:blank';">
-<table>
-<tr><td>ESP8266&nbsp;&nbsp;IP：<input type="text" name="ip" id="ip" size="26" value="http://192.168.4.1"></td></tr>
-<tr><td>Command</td></tr>
-<tr>
-<td>
-<input type="radio" name="choice" id="choice1" checked>
-<select name="cmd1" id="cmd1">
-<option value="ip">ip</option>
-<option value="resetwifi">resetwifi</option>
-<option value="restart">restart</option>
-<option value="at">at</option>
-<option value="tcp">tcp</option>
-<option value="inputpullup">inputpullup</option>
-<option value="pinmode">pinmode</option>
-<option value="digitalwrite">digitalwrite</option>
-<option value="analogwrite">analogwrite</option>
-<option value="digitalread">digitalread</option>
-<option value="analogread">analogread</option>
-</select>
-<input type="radio" name="choice" id="choice2">
-<input type="text" name="cmd2" id="cmd2" size="20">
-</td>
-</tr>
-<tr>
-<td>Parameter1：<input type="text" name="str1" id="str1" size="28" onclick="this.select()"></td>
-</tr>
-<tr>
-<td>Parameter2：<input type="text" name="str2" id="str2" size="28" onclick="this.select()"></td>
-</tr>
-<tr>
-<td>Parameter3：<input type="text" name="str3" id="str3" size="28" onclick="this.select()"></td>
-</tr>
-<tr>
-<td align="right"><input type="reset" value="Clear" height="50">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" id="Send" value="Send" onclick="SendCommand();">&nbsp;&nbsp;&nbsp;</td>
-</tr>
-<tr>
-<td></td>
-</tr> 
-<tr>
-<td><iframe id="MyFirmata" width="320" height="200"></iframe></td>
-</tr>    
-</table>
-</form>
-Command format：   ?cmd=str1;str2;str3
+/* 
+Arduino Uno + ESP8266 ESP-01
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-22 00:30
+Command format :  ?cmd=str1;str2;str3
+AP IP： 192.168.4.1
+http://192.168.4.1/?ip
+http://192.168.4.1/?resetwifi=id;pwd
+http://192.168.4.1/?restart
+http://192.168.4.1/?at=AT+Command
+http://192.168.4.1/?tcp=ip,port;parameter
+http://192.168.4.1/?inputpullup=3
+http://192.168.4.1/?pinmode=3;1
+http://192.168.4.1/?digitalwrite=3;1
+http://192.168.4.1/?analogwrite=3;200
+http://192.168.4.1/?digitalread=3
+http://192.168.4.1/?analogread=3
+STA IP：
+Query： http://192.168.4.1/?ip
+Link：http://192.168.4.1/?resetwifi=id;pwd
+*/
 
-</body>
-</html>
+// Check your Wi-Fi Router's Settings
+String WIFI_SSID="yourwifi_id";
+String WIFI_PWD="yourwifi_pwd";
+
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
+
+String ReceiveData="", command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
+String APIP="",STAIP="",APMAC="",STAMAC="",CID="";
+
+void executecommand()
+{
+  Serial.println("");
+  Serial.println("command: "+command);
+  Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
+  
+  if (cmd=="yourcmd")
+    {
+      //you can do anything
+      
+      //Feedback(CID,"<font color=\"red\">"+cmd+"="+str1+";"+str2+";"+str3+"</font>",0);  --> HTML
+      //Feedback(CID,cmd+"="+str1+";"+str2+";"+str3,1);  --> XML
+      //Feedback(CID,cmd+"="+str1+";"+str2+";"+str3,2);  --> JSON
+      //Feedback(CID,"<html>"+cmd+"="+str1+";"+str2+";"+str3+"</html>",3);  --> Custom definition
+    } 
+  else if (cmd=="ip")
+    {
+      //Feedback(CID,"<font color=\"red\">APIP: "+APIP+"<br>STAIP: "+STAIP+"</font>",0);
+      Feedback(CID,"<html>APIP: "+APIP+"<br>STAIP: "+STAIP+"<br>STAMAC: "+STAMAC+"</html>",3);
+    }
+  else if (cmd=="resetwifi")
+    {
+      Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
+      delay(3000);
+      SendData("AT+CWQAP",2000);
+      SendData("AT+CWJAP_CUR=\""+str1+"\",\""+str2+"\"",5000);
+    }
+  else if (cmd=="restart")
+    {
+      Feedback(CID,"<html>"+command+"</html>",3);
+      initial();
+    }    
+  else if (cmd=="at")      //  ?cmd=str1 -> ?at=AT+RST
+    {
+      Feedback(CID,"<html>"+WaitReply(3000)+"</html>",3);
+      delay(1000);
+      mySerial.println(str1);
+      mySerial.flush();
+    }
+  else if (cmd=="tcp")      // ?tcp=url,port;parameter
+    {
+      String getcommand="GET /"+str2;
+      SendData("AT+CIPSTART=0,\"TCP\",\""+str1+"\"",2000);
+      SendData("AT+CIPSEND=0,"+String(getcommand.length()+2),2000);
+      SendData(getcommand,2000);
+      delay(10);
+      Feedback("0","<html>"+WaitReply(10000)+"</html>",3);
+    }      
+  else if (cmd=="inputpullup")
+    {
+      pinMode(str1.toInt(), INPUT_PULLUP);
+      Feedback(CID,"<html>"+command+"</html>",3);
+    }  
+  else if (cmd=="pinmode")
+    {
+      pinMode(str1.toInt(), str2.toInt());
+      Feedback(CID,"<html>"+command+"</html>",3);
+    }        
+  else if (cmd=="digitalwrite")
+    {
+      digitalWrite(str1.toInt(),str2.toInt());
+      Feedback(CID,"<html>"+command+"</html>",3);
+    }   
+  else if (cmd=="digitalread")
+    {
+      Feedback(CID,"<html>"+String(digitalRead(str1.toInt()))+"</html>",3);
+    }    
+  else if (cmd=="analogwrite")
+    {
+      analogWrite(str1.toInt(),str2.toInt());
+      Feedback(CID,"<html>"+command+"</html>",3);
+    }       
+  else if (cmd=="analogread")
+    {
+      Feedback(CID,"<html>"+String(analogRead(str1.toInt()))+"</html>",3);
+    }    
+  else 
+    {
+      Feedback(CID,"<html>Command is not defined</html>",3);
+    }    
+}
+
+void setup()
+{
+  Serial.begin(9600);
+  
+  //You must change uart baud rate of ESP-01 to 9600.
+  mySerial.begin(115200);   //Default uart baud rate -> 19200,38400,57600,74880,115200
+  SendData("AT+UART_CUR=9600,8,1,0,0",2000);   //Change uart baud rate of ESP-01 to 9600
+  mySerial.begin(9600);  // 9600 ,you will get more stable data.
+  
+  initial();
+}
+
+void initial()
+{
+  SendData("AT+CWMODE_CUR=3",2000);
+  SendData("AT+CIPMUX=1",2000);
+  SendData("AT+CIPSERVER=1,80",2000);   //port=80
+  SendData("AT+CIPSTO=5",2000);  //timeout= 5 seconds
+  //SendData("AT+CWSAP_CUR=\"AP_id\",\"AP_pwd\",3,4",2000);
+  //String STA_ip="192.168.0.100";
+  //String STA_gateway="192.168.0.1";
+  //String STA_netmask="255.255.255.0";
+  //SendData("AT+CIPSTA_CUR=\""+STA_ip+"\",\""+STA_gateway+"\",\""+STA_netmask+"\"",2000);
+  SendData("AT+CWJAP_CUR=\""+WIFI_SSID+"\",\""+WIFI_PWD+"\"",5000);  
+}
+
+void loop() 
+{
+  getVariable();
+  
+  if ((ReceiveData.indexOf("?")!=-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
+  {
+    CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
+    executecommand();
+  }
+  else if ((ReceiveData.indexOf("?")!=-1)&&(ReceiveData.indexOf(" HTTP")==-1))
+  {
+    if(ReceiveData.indexOf("IPD,")!=-1)
+    {
+      CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
+      Feedback(CID,"<html>FAIL</html>",3);
+    }
+  }
+  else if ((ReceiveData.indexOf("?")==-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
+  {
+    CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
+    Feedback(CID,"<html>Hello World</html>",3);
+  }
+}
+
+void SendData(String data,int TimeLimit)
+{
+  mySerial.println(data);
+  mySerial.flush();
+  delay(10);
+  WaitReply(TimeLimit);
+}
+
+void Feedback(String CID,String Response,int datatype)
+{
+  if (datatype==0)
+  {
+    Response="<!DOCTYPE HTML><html><head><meta charset=\"UTF-8\"></head><body>"+Response+"</body></html>";
+  }
+  else if (datatype==1) 
+  {
+    Response="<?xml version=\"1.0\" encoding=\"UTF-8\"?><ESP8266><Data><Text>"+Response+"</Text></Data></ESP8266>";
+  }  
+  else if (datatype==2) 
+  {
+    Response="[{\"ESP8266\":\""+Response+"\"}]";
+  }
+  else
+    Response=Response;
+
+  SendData("AT+CIPSEND="+CID+","+(Response.length()+2),2000);
+  SendData(Response,2000);
+  SendData("AT+CIPCLOSE="+CID,2000);
+}
+
+String WaitReply(long int TimeLimit)
+{
+  String ReceiveData="";
+  long int StartTime=millis();
+  while( (StartTime+TimeLimit) > millis())
+  {
+    if (mySerial.available())
+    {
+      delay(4);
+      while(mySerial.available())
+      {
+        ReceiveData=ReceiveData+String(char(mySerial.read()));
+        //ReceiveData=ReceiveData+mySerial.readStringUntil('\r'); 
+      }
+      return ReceiveData;
+    }
+  } 
+  return ReceiveData;
+}
+
+void getVariable()
+{
+  ReceiveData="";command="";cmd="";str1="";str2="";str3="";str4="";str5="";str6="";str7="";str8="";str9="";
+  byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
+  
+  if (mySerial.available())
+  {
+    while (mySerial.available())
+    {
+      char c=mySerial.read();
+      ReceiveData=ReceiveData+String(c);
+      
+      if (c=='?') ReceiveState=1;
+      if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
+      
+      if (ReceiveState==1)
+      {
+        command=command+String(c);
+        
+        if (c=='=') cmdState=0;
+        if (c==';') strState++;
+
+        if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
+        if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) str1=str1+String(c);
+        if ((cmdState==0)&&(strState==2)&&(c!=';')) str2=str2+String(c);
+        if ((cmdState==0)&&(strState==3)&&(c!=';')) str3=str3+String(c);
+        if ((cmdState==0)&&(strState==4)&&(c!=';')) str4=str4+String(c);
+        if ((cmdState==0)&&(strState==5)&&(c!=';')) str5=str5+String(c);
+        if ((cmdState==0)&&(strState==6)&&(c!=';')) str6=str6+String(c);
+        if ((cmdState==0)&&(strState==7)&&(c!=';')) str7=str7+String(c);
+        if ((cmdState==0)&&(strState==8)&&(c!=';')) str8=str8+String(c);
+        if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) str9=str9+String(c);
+        
+        if (c=='?') questionstate=1;
+        if (c=='=') equalstate=1;
+        if ((strState>=9)&&(c==';')) semicolonstate=1;
+      }
+      
+      if (ReceiveData.indexOf(" HTTP")!=-1)
+      {
+         while (mySerial.available())
+        {
+          mySerial.read();
+        }
+      }
+    }  
+    Serial.println(ReceiveData);
+    
+    if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
+    { 
+      while(!mySerial.find('OK')){} 
+      delay(1000);
+
+      APIP="";STAIP="";
+      int apipreadstate=0,staipreadstate=0,apmacreadstate=0,stamacreadstate=0,j=0;
+      mySerial.println("AT+CIFSR");
+      mySerial.flush();
+      delay(6);
+      
+      while(mySerial.available())
+      {
+        char c=mySerial.read();
+        String t=String(c);
+        
+        if (t.indexOf("\"")!=-1) j++;
+        
+        if (j==1) 
+          apipreadstate=1;
+        else if (j==2)
+          apipreadstate=0;
+        if ((apipreadstate==1)&&(t.indexOf("\"")==-1)) APIP=APIP+t;
+        
+        if (j==5) 
+          staipreadstate=1;
+        else if (j==6)
+          staipreadstate=0;
+        if ((staipreadstate==1)&&(t.indexOf("\"")==-1)) STAIP=STAIP+t;
+
+        if (j==7) 
+          stamacreadstate=1;
+        else if (j==8)
+          stamacreadstate=0;
+        if ((stamacreadstate==1)&&(t.indexOf("\"")==-1)) STAMAC=STAMAC+t;
+      } 
+
+      Serial.println("APIP: "+APIP+"\nSTAIP: "+STAIP);
+      Serial.println("STAMAC: "+STAMAC);
+      
+      pinMode(13,1);
+      for (int i=0;i<20;i++)
+      {
+        digitalWrite(13,1);
+        delay(50);
+        digitalWrite(13,0);
+        delay(50);
+      }
+    }
+  }
+}
