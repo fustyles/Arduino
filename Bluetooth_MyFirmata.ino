@@ -35,7 +35,7 @@ void loop()
     if (cmd=="yourcmd")
       {
         //you can do anything
-        //SendData(cmd+"="+str1+";"+str2);
+        //SendData(cmd+"="+str1+";"+str2+";"+str3);
       } 
     else if (cmd=="inputpullup")
       {
