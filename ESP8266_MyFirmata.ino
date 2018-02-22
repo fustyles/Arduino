@@ -59,6 +59,7 @@ void executecommand()
   else if (cmd=="restart")
     {
       Feedback(CID,"<html>"+command+"</html>",3);
+      delay(1000);
       initial();
     }    
   else if (cmd=="at")      //  ?cmd=str1 -> ?at=AT+RST
