@@ -46,7 +46,7 @@ void executecommand()
     } 
   else if (cmd=="ip")
     {
-      //Feedback(CID,"<font color=\"red\">APIP: "+APIP+"<br>STAIP: "+STAIP+"</font>",0);
+      //Feedback(CID,"<font color=\"red\">APIP: "+APIP+"<br>STAIP: "+STAIP+"<br>STAMAC: "+STAMAC+"</font>",0);
       Feedback(CID,"<html>APIP: "+APIP+"<br>STAIP: "+STAIP+"<br>STAMAC: "+STAMAC+"</html>",3);
     }
   else if (cmd=="resetwifi")
