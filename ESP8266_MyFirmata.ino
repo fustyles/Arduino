@@ -1,7 +1,7 @@
 /* 
 Arduino Uno + ESP8266 ESP-01
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-22 00:00
-Command format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-22 00:30
+Command format :  ?cmd=str1;str2;str3,str4;str5;str6,str7;str8;str9
 AP IP： 192.168.4.1
 http://192.168.4.1/?ip
 http://192.168.4.1/?resetwifi=id;pwd
@@ -27,7 +27,7 @@ String WIFI_PWD="yourwifi_pwd";
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
 String ReceiveData="", command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
-String APIP="",STAIP="",CID="";
+String APIP="",STAIP="",STAMAC="",CID="";
 
 void executecommand()
 {
@@ -47,7 +47,7 @@ void executecommand()
   else if (cmd=="ip")
     {
       //Feedback(CID,"<font color=\"red\">APIP: "+APIP+"<br>STAIP: "+STAIP+"</font>",0);
-      Feedback(CID,"<html>APIP: "+APIP+"<br>STAIP: "+STAIP+"</html>",3);
+      Feedback(CID,"<html>APIP: "+APIP+"<br>STAIP: "+STAIP+"<br>STAMAC: "+STAMAC+"</html>",3);
     }
   else if (cmd=="resetwifi")
     {
@@ -59,7 +59,6 @@ void executecommand()
   else if (cmd=="restart")
     {
       Feedback(CID,"<html>"+command+"</html>",3);
-      delay(1000);
       initial();
     }    
   else if (cmd=="at")      //  ?cmd=str1 -> ?at=AT+RST
@@ -266,7 +265,7 @@ void getVariable()
       delay(1000);
 
       APIP="";STAIP="";
-      int apreadstate=0,stareadstate=0,j=0;
+      int apipreadstate=0,staipreadstate=0,apmacreadstate=0,stamacreadstate=0,j=0;
       mySerial.println("AT+CIFSR");
       mySerial.flush();
       delay(6);
@@ -279,20 +278,27 @@ void getVariable()
         if (t.indexOf("\"")!=-1) j++;
         
         if (j==1) 
-          apreadstate=1;
+          apipreadstate=1;
         else if (j==2)
-          apreadstate=0;
-        if ((apreadstate==1)&&(t.indexOf("\"")==-1)) APIP=APIP+t;
+          apipreadstate=0;
+        if ((apipreadstate==1)&&(t.indexOf("\"")==-1)) APIP=APIP+t;
         
         if (j==5) 
-          stareadstate=1;
+          staipreadstate=1;
         else if (j==6)
-          stareadstate=0;
-        if ((stareadstate==1)&&(t.indexOf("\"")==-1)) STAIP=STAIP+t;
+          staipreadstate=0;
+        if ((staipreadstate==1)&&(t.indexOf("\"")==-1)) STAIP=STAIP+t;
+
+        if (j==7) 
+          stamacreadstate=1;
+        else if (j==8)
+          stamacreadstate=0;
+        if ((stamacreadstate==1)&&(t.indexOf("\"")==-1)) STAMAC=STAMAC+t;
       } 
 
       Serial.println("APIP: "+APIP+"\nSTAIP: "+STAIP);
-    
+      Serial.println("STAMAC: "+STAMAC);
+      
       pinMode(13,1);
       for (int i=0;i<20;i++)
       {
