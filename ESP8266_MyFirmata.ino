@@ -1,7 +1,7 @@
 /* 
 Arduino Uno + ESP8266 ESP-01
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-22 00:00
-Command format :  ?cmd=str1;str2;str3
+Command format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 AP IP： 192.168.4.1
 http://192.168.4.1/?ip
 http://192.168.4.1/?resetwifi=id;pwd
