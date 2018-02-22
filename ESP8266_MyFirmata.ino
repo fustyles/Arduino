@@ -148,7 +148,7 @@ void loop()
   }
   else if ((ReceiveData.indexOf("?")!=-1)&&(ReceiveData.indexOf(" HTTP")==-1))
   {
-    if(ReceiveData.indexOf("IPD,")!=-1)
+    if(ReceiveData.indexOf("+IPD,")!=-1)
     {
       CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
       Feedback(CID,"<html>FAIL</html>",3);
