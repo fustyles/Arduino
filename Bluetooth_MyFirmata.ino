@@ -65,6 +65,44 @@ void loop()
       {
         SendData(String(analogRead(str1.toInt())));
       }   
+    else if (cmd=="car")    //?car=A-1A;A-1B;;B-1A;B-1B;motion;left_speed;right_speed
+      {
+        if (str5=="S")
+        {
+          analogWrite(str1.toInt(),0);
+          analogWrite(str2.toInt(),0);
+          analogWrite(str3.toInt(),0);
+          analogWrite(str4.toInt(),0);
+        }
+        else if  (str5=="F")
+        {
+          analogWrite(str1.toInt(),0);
+          analogWrite(str2.toInt(),str6.toInt());
+          analogWrite(str3.toInt(),str7.toInt());
+          analogWrite(str4.toInt(),0);          
+        }
+        else if  (str5=="B")
+        {
+          analogWrite(str1.toInt(),str6.toInt());
+          analogWrite(str2.toInt(),0);
+          analogWrite(str3.toInt(),0);
+          analogWrite(str4.toInt(),str7.toInt());          
+        }
+        else if  (str5=="L")
+        {
+          analogWrite(str1.toInt(),0);
+          analogWrite(str2.toInt(),str6.toInt());
+          analogWrite(str3.toInt(),0);
+          analogWrite(str4.toInt(),str7.toInt());  
+        }
+        else if  (str5=="R")
+        {
+          analogWrite(str1.toInt(),str6.toInt());
+          analogWrite(str2.toInt(),0);
+          analogWrite(str3.toInt(),str7.toInt());
+          analogWrite(str4.toInt(),0);    
+        }
+      }        
     else 
       {
         SendData("command is not defined");
