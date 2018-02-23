@@ -65,7 +65,7 @@ void loop()
       {
         SendData(String(analogRead(str1.toInt())));
       }   
-    else if (cmd=="car")    //?car=A-1A;A-1B;;B-1A;B-1B;motion;left_speed;right_speed
+    else if (cmd=="car")    //   ?car=pin_L1;pin_L2;pin_R1;pin_R2;status;left_speed;right_speed
       {
         if (str5=="S")
         {
@@ -102,7 +102,7 @@ void loop()
           analogWrite(str3.toInt(),str7.toInt());
           analogWrite(str4.toInt(),0);    
         }
-      }        
+      }    
     else 
       {
         SendData("command is not defined");
