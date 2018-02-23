@@ -102,7 +102,7 @@ void executecommand()
 void setup()
 {
   Serial.begin(9600);
-  mySerial.begin(9600);   
+  mySerial.begin(9600);   // Check uart baud rate of bluetooth device.
 }
 
 void loop() 
