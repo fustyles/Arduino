@@ -265,7 +265,7 @@ void getVariable()
       while(!mySerial.find('OK')){} 
       delay(1000);
 
-      APIP="";STAIP="";
+      APIP="";STAIP="",STAMAC="";
       int apipreadstate=0,staipreadstate=0,apmacreadstate=0,stamacreadstate=0,j=0;
       mySerial.println("AT+CIFSR");
       mySerial.flush();
