@@ -135,7 +135,6 @@ void initial()
   //String STA_gateway="192.168.0.1";
   //String STA_netmask="255.255.255.0";
   //SendData("AT+CIPSTA_CUR=\""+STA_ip+"\",\""+STA_gateway+"\",\""+STA_netmask+"\"",2000);
-  SendData("AT+CWQAP",2000);
   SendData("AT+CWJAP_CUR=\""+WIFI_SSID+"\",\""+WIFI_PWD+"\"",5000);  
 }
 
