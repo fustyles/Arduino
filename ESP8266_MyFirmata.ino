@@ -1,5 +1,5 @@
 /* 
-Arduino Uno + ESP8266 ESP-01 (latest AT firmware)
+Arduino Uno + ESP8266 ESP-01 (latest AT firmware：  v2.0 AT Firmware(ESP).bin)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-22 22:30
 Command format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 AP IP： 192.168.4.1
