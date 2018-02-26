@@ -1,7 +1,7 @@
 /* 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-26 10:00
 
-Arduino Uno + ESP8266 ESP-01(AT firmware： v2.0)、ESP-01S
+Arduino Uno + ESP8266 ESP-01、ESP-01S (AT firmware： v2.0)
 http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
 The uart baud rate of ESP-01 must be 9600
 
