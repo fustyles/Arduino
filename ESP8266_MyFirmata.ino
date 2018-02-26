@@ -105,7 +105,54 @@ void executecommand()
   else if (cmd=="analogread")
     {
       Feedback(CID,"<html>"+String(analogRead(str1.toInt()))+"</html>",3);
-    }    
+    }  
+  else if (cmd=="car")    //   ?car=pin_L1;pin_L2;pin_R1;pin_R2;state;left_speed;right_speed
+    {
+      if (str5=="S")
+        {
+          analogWrite(str1.toInt(),0);
+          analogWrite(str2.toInt(),0);
+          analogWrite(str3.toInt(),0);
+          analogWrite(str4.toInt(),0);
+          Feedback(CID,"<html>STOP</html>",3);
+        }
+      else if  (str5=="F")
+        {
+          analogWrite(str1.toInt(),0);
+          analogWrite(str2.toInt(),str6.toInt());
+          analogWrite(str3.toInt(),str7.toInt());
+          analogWrite(str4.toInt(),0);       
+          Feedback(CID,"<html>FORWARD</html>",3);
+        }
+      else if  (str5=="B")
+        {
+          analogWrite(str1.toInt(),str6.toInt());
+          analogWrite(str2.toInt(),0);
+          analogWrite(str3.toInt(),0);
+          analogWrite(str4.toInt(),str7.toInt()); 
+          Feedback(CID,"<html>BACKWARD</html>",3);         
+        }
+      else if  (str5=="L")
+        {
+          analogWrite(str1.toInt(),0);
+          analogWrite(str2.toInt(),str6.toInt());
+          analogWrite(str3.toInt(),0);
+          analogWrite(str4.toInt(),str7.toInt()); 
+          Feedback(CID,"<html>LEFT</html>",3); 
+        }
+      else if  (str5=="R")
+        {
+          analogWrite(str1.toInt(),str6.toInt());
+          analogWrite(str2.toInt(),0);
+          analogWrite(str3.toInt(),str7.toInt());
+          analogWrite(str4.toInt(),0); 
+          Feedback(CID,"<html>RIGHT</html>",3);   
+        }
+      else
+        {
+          Feedback(CID,"<html>Command is not defined</html>",3);
+        }
+    }     
   else 
     {
       //Feedback(CID,"<font color=\"red\">Command is not defined</font>",0);
