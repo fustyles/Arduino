@@ -150,7 +150,7 @@ void executecommand()
         }
       else
         {
-          Feedback(CID,"<html>Command is not defined</html>",3);
+          Feedback(CID,"<html>Parameter is not defined</html>",3);
         }
     }     
   else 
