@@ -1,13 +1,12 @@
 /* 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-26 10:00
-
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-26 23:00
 Arduino Uno + ESP8266 ESP-01、ESP-01S (AT firmware： v2.0)
 http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
 The uart baud rate of ESP-01 must be 9600
-
 Command format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 AP IP： 192.168.4.1
 http://192.168.4.1/?ip
+http://192.168.4.1/?mac
 http://192.168.4.1/?resetwifi=id;pwd
 http://192.168.4.1/?restart
 http://192.168.4.1/?at=AT+Command
@@ -31,7 +30,7 @@ String WIFI_PWD="yourwifi_pwd";
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
 String ReceiveData="", command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
-String APIP="",STAIP="",STAMAC="",CID="";
+String APIP="",APMAC="",STAIP="",STAMAC="",CID="";
 
 void executecommand()
 {
@@ -50,8 +49,12 @@ void executecommand()
     } 
   else if (cmd=="ip")
     {
-      Feedback(CID,"<html>APIP: "+APIP+"<br>STAIP: "+STAIP+"<br>STAMAC: "+STAMAC+"</html>",3);
+      Feedback(CID,"<html>APIP: "+APIP+"<br>STAIP: "+STAIP+"</html>",3);
     }
+  else if (cmd=="mac")
+    {
+      Feedback(CID,"<html>APMAC: "+APMAC+"<br>STAMAC: "+STAMAC+"</html>",3);
+    }    
   else if (cmd=="resetwifi")
     {
       Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
@@ -203,7 +206,7 @@ void loop()
     if(ReceiveData.indexOf("+IPD,")!=-1)
     {
       CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
-      Feedback(CID,"<html>It can't work！The length of command is too long!</html>",3);
+      Feedback(CID,"<html>It can't work！<br>The length of command is too long!</html>",3);
     }
   }
   else if ((ReceiveData.indexOf("?")==-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
@@ -316,7 +319,7 @@ void getVariable()
       while(!mySerial.find('OK')){} 
       delay(1000);
 
-      APIP="";STAIP="";STAMAC="";
+      APIP="";APMAC="";STAIP="";STAMAC="";
       int apipreadstate=0,staipreadstate=0,apmacreadstate=0,stamacreadstate=0,j=0;
       mySerial.println("AT+CIFSR");
       mySerial.flush();
@@ -327,29 +330,34 @@ void getVariable()
         char c=mySerial.read();
         String t=String(c);
         
-        if (t.indexOf("\"")!=-1) j++;
+        if (t=="\"") j++;
         
         if (j==1) 
           apipreadstate=1;
         else if (j==2)
           apipreadstate=0;
-        if ((apipreadstate==1)&&(t.indexOf("\"")==-1)) APIP=APIP+t;
+        if ((apipreadstate==1)&&(t!="\"")) APIP=APIP+t;
+
+        if (j==3) 
+          apmacreadstate=1;
+        else if (j==4)
+          apmacreadstate=0;
+        if ((apmacreadstate==1)&&(t!="\"")) APMAC=APMAC+t;
         
         if (j==5) 
           staipreadstate=1;
         else if (j==6)
           staipreadstate=0;
-        if ((staipreadstate==1)&&(t.indexOf("\"")==-1)) STAIP=STAIP+t;
+        if ((staipreadstate==1)&&(t!="\"")) STAIP=STAIP+t;
 
         if (j==7) 
           stamacreadstate=1;
         else if (j==8)
           stamacreadstate=0;
-        if ((stamacreadstate==1)&&(t.indexOf("\"")==-1)) STAMAC=STAMAC+t;
+        if ((stamacreadstate==1)&&(t!="\"")) STAMAC=STAMAC+t;
       } 
 
-      Serial.println("APIP: "+APIP+"\nSTAIP: "+STAIP);
-      Serial.println("STAMAC: "+STAMAC);
+      Serial.println("APIP: "+APIP+"\nAPMAC: "+APMAC+"\nSTAIP: "+STAIP+"\nSTAMAC: "+STAMAC);
       
       pinMode(13,1);
       for (int i=0;i<20;i++)
