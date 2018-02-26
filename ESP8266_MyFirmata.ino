@@ -223,7 +223,7 @@ void SendData(String data,int TimeLimit)
 
 void Feedback(String CID,String Response,int datatype)
 {
-  if (datatype==0)
+  if (datatype==0).  //If the length of response data is too long, it can't work.
   {
     Response="<!DOCTYPE HTML><html><head><meta charset=\"UTF-8\"></head><body>"+Response+"</body></html>";
   }
