@@ -1,11 +1,12 @@
 /* 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-27 11:00
 
-Arduino Uno + ESP8266 ESP-01、ESP-01S (AT firmware： v2.0)
+Arduino Uno + ESP8266 ESP-01(S) (AT firmware： v2.0)
 http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
-The uart baud rate of ESP-01 must be 9600
+The uart baud rate of ESP-01(S) must be 9600
 
-Command format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
+Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
+
 AP IP： 192.168.4.1
 http://192.168.4.1/?ip
 http://192.168.4.1/?mac
@@ -19,6 +20,7 @@ http://192.168.4.1/?digitalwrite=3;1
 http://192.168.4.1/?analogwrite=3;200
 http://192.168.4.1/?digitalread=3
 http://192.168.4.1/?analogread=3
+
 STA IP：
 Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=id;pwd
