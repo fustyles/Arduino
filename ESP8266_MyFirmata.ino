@@ -1,5 +1,5 @@
 /* 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-26 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-27 11:00
 
 Arduino Uno + ESP8266 ESP-01、ESP-01S (AT firmware： v2.0)
 http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
@@ -191,7 +191,10 @@ void initial()
   //String STA_gateway="192.168.0.1";
   //String STA_netmask="255.255.255.0";
   //SendData("AT+CIPSTA_CUR=\""+STA_ip+"\",\""+STA_gateway+"\",\""+STA_netmask+"\"",2000);
-  if (WIFI_SSID!="") SendData("AT+CWJAP_CUR=\""+WIFI_SSID+"\",\""+WIFI_PWD+"\"",5000);  
+  if (WIFI_SSID!="") 
+    SendData("AT+CWJAP_CUR=\""+WIFI_SSID+"\",\""+WIFI_PWD+"\"",5000);  
+  else
+    Serial.print("Please check wifi settings");  
 }
 
 void loop() 
