@@ -25,8 +25,8 @@ Link：http://192.168.4.1/?resetwifi=id;pwd
 */
 
 // Check your Wi-Fi Router's Settings
-String WIFI_SSID="yourwifi_id";
-String WIFI_PWD="yourwifi_pwd";
+String WIFI_SSID="";   //wifi id
+String WIFI_PWD="";    //wifi password
 
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
@@ -191,7 +191,7 @@ void initial()
   //String STA_gateway="192.168.0.1";
   //String STA_netmask="255.255.255.0";
   //SendData("AT+CIPSTA_CUR=\""+STA_ip+"\",\""+STA_gateway+"\",\""+STA_netmask+"\"",2000);
-  SendData("AT+CWJAP_CUR=\""+WIFI_SSID+"\",\""+WIFI_PWD+"\"",5000);  
+  if (WIFI_SSID!="") SendData("AT+CWJAP_CUR=\""+WIFI_SSID+"\",\""+WIFI_PWD+"\"",5000);  
 }
 
 void loop() 
