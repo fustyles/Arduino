@@ -25,8 +25,8 @@ Link：http://192.168.4.1/?resetwifi=id;pwd
 */
 
 // Check your Wi-Fi Router's Settings
-String WIFI_SSID="";   //wifi id
-String WIFI_PWD="";    //wifi password
+String WIFI_SSID="";   //your network SSID
+String WIFI_PWD="";    //your network password
 
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
