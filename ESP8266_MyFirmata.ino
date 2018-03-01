@@ -1,5 +1,5 @@
 /* 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-27 11:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-3-1 11:30
 
 Arduino Uno + ESP8266 ESP-01(S) (AT firmware： v2.0)
 http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
@@ -85,7 +85,7 @@ void executecommand()
       SendData("AT+CIPSTART=0,\"TCP\",\""+str1+"\"",2000);
       SendData("AT+CIPSEND=0,"+String(getcommand.length()+2),2000);
       SendData(getcommand,2000);
-      delay(10);
+      delay(1000);
       Feedback("0","<html>"+WaitReply(10000)+"</html>",3);
     }      
   else if (cmd=="inputpullup")
