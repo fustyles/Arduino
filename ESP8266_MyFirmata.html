@@ -17,7 +17,7 @@ var str1=document.getElementById("str1").value;
 var str2=document.getElementById("str2").value;
 var str3=document.getElementById("str3").value;
 var url=ip+"?"+cmd+"="+str1+";"+str2+";"+str3;
-document.getElementById("ShowUrl").innerHTML="<font color=red>URL："+url+"</font>";
+document.getElementById("ShowUrl").innerHTML="<font color=red>"+url+"</font>";
 document.getElementById("MyFirmata").src=url;
 setTimeout(wait,1000);
 }
