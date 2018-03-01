@@ -82,8 +82,8 @@ void executecommand()
   else if (cmd=="tcp")      // ?tcp=url,port;parameter
     {
       String getcommand="GET /"+str2;
-      SendData("AT+CIPSTART=0,\"TCP\",\""+str1+"\"",2000);
-      SendData("AT+CIPSEND=0,"+String(getcommand.length()+2),2000);
+      SendData("AT+CIPSTART=4,\"TCP\",\""+str1+"\"",2000);
+      SendData("AT+CIPSEND=4,"+String(getcommand.length()+2),2000);
       SendData(getcommand,2000);
       delay(1000);
       Feedback("0","<html>"+WaitReply(10000)+"</html>",3);
