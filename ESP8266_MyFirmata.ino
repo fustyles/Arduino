@@ -116,7 +116,7 @@ void executecommand()
     {
       Feedback(CID,"<html>"+String(analogRead(str1.toInt()))+"</html>",3);
     }  
-  else if (cmd=="car")    //   ?car=pin_L1;pin_L2;pin_R1;pin_R2;state;left_speed;right_speed
+  else if (cmd=="car")    //   ?car=left_pin1;left_pin2;right_pin1;right_pin2;state;left_speed;right_speed
     {
       if (str5=="S")
         {
