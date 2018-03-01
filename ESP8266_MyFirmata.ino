@@ -213,7 +213,7 @@ void loop()
     if(ReceiveData.indexOf("+IPD,")!=-1)
     {
       CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
-      Feedback(CID,"<html>It can't work！<br>Maybe the length of command is too long!</html>",3);
+      Feedback(CID,"<html>It can't work！Check the length of command!</html>",3);
     }
   }
   else if ((ReceiveData.indexOf("?")==-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
