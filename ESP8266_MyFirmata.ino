@@ -3,7 +3,6 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-3-1 11:30
 
 Arduino Uno (CH340G) + ESP8266 ESP-01(S) (v2.0 AT firmware)
 http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
-The uart baud rate of ESP-01(S) must be 9600 bps.
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
