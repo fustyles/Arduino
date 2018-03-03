@@ -82,11 +82,10 @@ void executecommand()
     {
       String getcommand="GET /"+str3;
       SendData("AT+CIPSTART=0,\"TCP\",\""+str1+"\","+str2,2000);
-      SendData("AT+CIPMODE=1",2000);
       SendData("AT+CIPSEND=0,"+String(getcommand.length()+2),2000);
       SendData(getcommand,5000);
-      SendData("AT+CIPMODE=0",2000);  
-      WaitReply(5000);
+      SendData("AT+CIPCLOSE=0",2000);
+      Feedback(CID,"<html>"+WaitReply(5000)+"</html>",3);
     }      
   else if (cmd=="inputpullup")
     {
