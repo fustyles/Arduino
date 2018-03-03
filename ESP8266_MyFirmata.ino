@@ -6,7 +6,7 @@ http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
-AP IP： 192.168.4.1
+APIP： 192.168.4.1
 http://192.168.4.1/?ip
 http://192.168.4.1/?mac
 http://192.168.4.1/?resetwifi=id;pwd
@@ -20,7 +20,7 @@ http://192.168.4.1/?analogwrite=3;200
 http://192.168.4.1/?digitalread=3
 http://192.168.4.1/?analogread=3
 
-STA IP：
+STAIP：
 Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=id;pwd
 */
