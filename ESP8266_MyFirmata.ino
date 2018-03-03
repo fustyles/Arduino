@@ -1,5 +1,5 @@
 /* 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-3-1 11:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-3-3 11:30
 
 Arduino Uno (CH340G) + ESP8266 ESP-01 (8Mbit Flash, v2.0 AT firmware)
 http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
@@ -187,7 +187,8 @@ void initial()
   SendData("AT+CIPMUX=1",2000);
   SendData("AT+CIPSERVER=1,80",2000);   //port=80
   SendData("AT+CIPSTO=5",2000);  //timeout= 5 seconds
-  //SendData("AT+CWSAP_CUR=\"AP_id\",\"AP_pwd\",3,4",2000);
+  SendData("AT+CIPAP_CUR=\"192.168.4.1\"",2000);
+  //SendData("AT+CWSAP_CUR=\""+AP_id+"\",\""+AP_pwd+"\",3,4",2000);
   //String STA_ip="192.168.0.100";
   //String STA_gateway="192.168.0.1";
   //String STA_netmask="255.255.255.0";
