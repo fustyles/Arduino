@@ -1,7 +1,7 @@
 /* 
 Author : ChungYi Fu (Taiwan)  2018-3-3 21:30
 
-Arduino Uno (CH340G) + ESP8266 ESP-01(S) (v2.0 AT firmware)
+Arduino Uno (CH340G) + ESP8266 ESP-01 (8Mbit flash, v2.0 AT firmware)
 http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
