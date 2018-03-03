@@ -1,8 +1,11 @@
 /* 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-3-3 21:30
+Author : ChungYi Fu (Taiwan)  2018-3-3 21:30
+
 Arduino Uno (CH340G) + ESP8266 ESP-01(S) (v2.0 AT firmware)
 http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
+
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
+
 AP IP： 192.168.4.1
 http://192.168.4.1/?ip
 http://192.168.4.1/?mac
@@ -16,14 +19,15 @@ http://192.168.4.1/?digitalwrite=3;1
 http://192.168.4.1/?analogwrite=3;200
 http://192.168.4.1/?digitalread=3
 http://192.168.4.1/?analogread=3
+
 STA IP：
 Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=id;pwd
 */
 
 // Check your Wi-Fi Router's Settings
-String WIFI_SSID="3COM";   //your network SSID
-String WIFI_PWD="godblessyou";    //your network password
+String WIFI_SSID="";   //your network SSID
+String WIFI_PWD="";    //your network password
 
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
