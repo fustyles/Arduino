@@ -252,14 +252,14 @@ void Feedback(String CID,String Response,int datatype)
     Response=Response;
 
   SendData("AT+CIPSEND="+CID+","+(Response.length()+2),2000);
-  SendData(Response,2000);
-  SendData("AT+CIPCLOSE="+CID,2000);
-  /*
-  SendData("AT+CIPSEND="+CID+","+(Response.length()+2),2000);
   for (int i=0;i<Response.length();i++) 
     mySerial.print(Response[i]);
   mySerial.println("");
   delay(1);
+  SendData("AT+CIPCLOSE="+CID,2000);
+  /*
+  SendData("AT+CIPSEND="+CID+","+(Response.length()+2),2000);
+  SendData(Response,2000);
   SendData("AT+CIPCLOSE="+CID,2000);
   */
 }
