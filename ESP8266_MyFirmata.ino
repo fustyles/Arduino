@@ -3,6 +3,7 @@ Author : ChungYi Fu (Taiwan)  2018-3-3 21:30
 
 Arduino Uno (CH340G) + ESP8266 ESP-01 (1MB Flash, V2.0_AT_Firmware)
 
+Update AT Firmware
 https://www.youtube.com/watch?v=QVhWVu8NnZc
 http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
 
