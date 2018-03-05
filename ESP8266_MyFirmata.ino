@@ -1,5 +1,5 @@
 /* 
-Author : ChungYi Fu (Taiwan)  2018-3-4 20:00
+Author : ChungYi Fu (Taiwan)  2018-3-5 19:00
 
 Arduino Uno (CH340G) + ESP8266 ESP-01 (1MB Flash, V2.0_AT_Firmware)
 
@@ -102,20 +102,24 @@ void executecommand()
     }        
   else if (cmd=="digitalwrite")
     {
+      pinMode(str1.toInt(), OUTPUT);
       digitalWrite(str1.toInt(),str2.toInt());
       Feedback(CID,"<html>"+command+"</html>",3);
     }   
   else if (cmd=="digitalread")
     {
+      pinMode(str1.toInt(), INPUT);
       Feedback(CID,"<html>"+String(digitalRead(str1.toInt()))+"</html>",3);
     }    
   else if (cmd=="analogwrite")
     {
+      pinMode(str1.toInt(), OUTPUT);
       analogWrite(str1.toInt(),str2.toInt());
       Feedback(CID,"<html>"+command+"</html>",3);
     }       
   else if (cmd=="analogread")
     {
+      pinMode(str1.toInt(), INPUT);
       Feedback(CID,"<html>"+String(analogRead(str1.toInt()))+"</html>",3);
     }  
   else if (cmd=="car")    //   ?car=left_pin1;left_pin2;right_pin1;right_pin2;state;left_speed;right_speed
