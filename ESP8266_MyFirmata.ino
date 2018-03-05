@@ -1,5 +1,5 @@
 /* 
-Author : ChungYi Fu (Taiwan)  2018-3-5 19:00
+Author : ChungYi Fu (Taiwan)  2018-3-5 21:30
 
 Arduino Uno (CH340G) + ESP8266 ESP-01 (1MB Flash, V2.0_AT_Firmware)
 
@@ -184,6 +184,7 @@ void setup()
   mySerial.begin(115200);   //Default uart baud rate -> 19200,38400,57600,74880,115200
   SendData("AT+UART_CUR=9600,8,1,0,0",2000);   //Change uart baud rate of ESP-01 to 9600
   mySerial.begin(9600);  // 9600 ,you will get more stable data.
+  mySerial.setTimeout(10);
   
   initial();
 }
