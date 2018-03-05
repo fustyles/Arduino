@@ -102,24 +102,24 @@ void executecommand()
     }        
   else if (cmd=="digitalwrite")
     {
-      pinMode(str1.toInt(), OUTPUT);
+      pinMode(str1.toInt(), 1);
       digitalWrite(str1.toInt(),str2.toInt());
       Feedback(CID,"<html>"+command+"</html>",3);
     }   
   else if (cmd=="digitalread")
     {
-      pinMode(str1.toInt(), INPUT);
+      pinMode(str1.toInt(), 0);
       Feedback(CID,"<html>"+String(digitalRead(str1.toInt()))+"</html>",3);
     }    
   else if (cmd=="analogwrite")
     {
-      pinMode(str1.toInt(), OUTPUT);
+      pinMode(str1.toInt(), 1);
       analogWrite(str1.toInt(),str2.toInt());
       Feedback(CID,"<html>"+command+"</html>",3);
     }       
   else if (cmd=="analogread")
     {
-      pinMode(str1.toInt(), INPUT);
+      pinMode(str1.toInt(), 0);
       Feedback(CID,"<html>"+String(analogRead(str1.toInt()))+"</html>",3);
     }  
   else if (cmd=="car")    //   ?car=left_pin1;left_pin2;right_pin1;right_pin2;state;left_speed;right_speed
