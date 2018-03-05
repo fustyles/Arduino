@@ -340,10 +340,7 @@ void getVariable()
     if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
     { 
       while(!mySerial.find('OK')){} 
-      while (mySerial.available())
-        {
-          mySerial.read();
-        }
+      delay(1000);
 
       APIP="";APMAC="";STAIP="";STAMAC="";
       int apipreadstate=0,staipreadstate=0,apmacreadstate=0,stamacreadstate=0,j=0;
