@@ -340,7 +340,10 @@ void getVariable()
     if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
     { 
       while(!mySerial.find('OK')){} 
-      delay(1000);
+      while (mySerial.available())
+        {
+          mySerial.read();
+        }
 
       APIP="";APMAC="";STAIP="";STAMAC="";
       int apipreadstate=0,staipreadstate=0,apmacreadstate=0,stamacreadstate=0,j=0;
@@ -380,8 +383,6 @@ void getVariable()
         if ((stamacreadstate==1)&&(t!="\"")) STAMAC=STAMAC+t;
       } 
       
-      Serial.println("APIP: "+APIP+"\nAPMAC: "+APMAC+"\nSTAIP: "+STAIP+"\nSTAMAC: "+STAMAC);
-      
       pinMode(13,1);
       for (int i=0;i<20;i++)
       {
@@ -390,6 +391,8 @@ void getVariable()
         digitalWrite(13,0);
         delay(50);
       }
+      
+      Serial.println("APIP: "+APIP+"\nAPMAC: "+APMAC+"\nSTAIP: "+STAIP+"\nSTAMAC: "+STAMAC);
     }
   }
 }
