@@ -17,7 +17,7 @@ var str1=document.getElementById("str1").value;
 var str2=document.getElementById("str2").value;
 var str3=document.getElementById("str3").value;
 var url=ip+"?"+cmd+"="+str1+";"+str2+";"+str3;
-document.getElementById("ShowUrl").innerHTML="<font color=red>"+url+"</font>";
+document.getElementById("ShowUrl").innerHTML="<font color=red>URL："+url+"</font>";
 document.getElementById("MyFirmata").src=url;
 setTimeout(wait,1000);
 }
@@ -54,6 +54,9 @@ function wait()
 </td>
 </tr>
 <tr>
+<td><font color="red">If command string is too long, it can't work.</font></td>
+</tr>
+<tr>
 <td>Parameter1：<input type="text" name="str1" id="str1" size="28" onclick="this.select()"></td>
 </tr>
 <tr>
@@ -73,8 +76,6 @@ function wait()
 </tr>    
 </table>
 </form>
-Command format：<br>
-?cmd=str1;str2;str3;~~~~~~;str7;str8;str9
-
+Format：?cmd=str1;str2;str3;~~~;str7;str8;str9<br>
 </body>
 </html>
