@@ -102,7 +102,7 @@ void executecommand()
     }        
   else if (cmd=="digitalwrite")
     {
-      pinMode(str1.toInt(), 1);
+      pinMode(str1.toInt(), OUTPUT);
       digitalWrite(str1.toInt(),str2.toInt());
       Feedback(CID,"<html>"+command+"</html>",3);
     }   
@@ -113,7 +113,7 @@ void executecommand()
     }    
   else if (cmd=="analogwrite")
     {
-      pinMode(str1.toInt(), 1);
+      pinMode(str1.toInt(), OUTPUT);
       analogWrite(str1.toInt(),str2.toInt());
       Feedback(CID,"<html>"+command+"</html>",3);
     }       
