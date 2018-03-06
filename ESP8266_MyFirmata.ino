@@ -1,5 +1,5 @@
 /* 
-Author : ChungYi Fu (Taiwan)  2018-3-6 21:00
+Author : ChungYi Fu (Taiwan)  2018-3-6 21:30
 
 Arduino Uno (CH340G) + ESP8266 ESP-01 (1MB Flash, V2.0_AT_Firmware)
 
@@ -72,6 +72,9 @@ void executecommand()
     {
       Feedback(CID,"<html>"+command+"</html>",3);
       delay(3000);
+      SendData("AT+RST",2000);
+      delay(2000);
+      setup();
       initial();
     }    
   else if (cmd=="at")      //  ?cmd=str1 -> ?at=AT+RST
