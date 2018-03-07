@@ -1,6 +1,6 @@
 /*
 Bluetooth
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-2-23 22:30 
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-3-7 22:30 
 Command format : ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 ?inputpullup=3
 ?pinmode=3;1
@@ -39,20 +39,24 @@ void executecommand()
     }        
   else if (cmd=="digitalwrite")
     {
+      pinMode(str1.toInt(), OUTPUT);
       digitalWrite(str1.toInt(),str2.toInt());
       SendData(command);
     }   
   else if (cmd=="digitalread")
     {
+      pinMode(str1.toInt(), INPUT_PULLUP);
       SendData(String(digitalRead(str1.toInt())));
     }    
   else if (cmd=="analogwrite")
     {
+      pinMode(str1.toInt(), OUTPUT);
       analogWrite(str1.toInt(),str2.toInt());
       SendData(command);
     }       
   else if (cmd=="analogread")
     {
+      pinMode(str1.toInt(), INPUT);
       SendData(String(analogRead(str1.toInt())));
     }  
   else if (cmd=="car")    //   ?car=pin_L1;pin_L2;pin_R1;pin_R2;state;left_speed;right_speed
