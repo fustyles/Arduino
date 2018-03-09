@@ -1,6 +1,8 @@
 /*
 Bluetooth
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-3-7 22:00 
+
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-3-9 19:00 
+
 Command format : ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 ?inputpullup=3
 ?pinmode=3;1
@@ -8,6 +10,7 @@ Command format : ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 ?analogwrite=3;200
 ?digitalread=3
 ?analogread=3
+?car=pinL1;pinL2;pinR1;pinR2;state;L_speed;R_speed;Delay
 */
 
 
@@ -57,7 +60,7 @@ void executecommand()
     {
       SendData(String(analogRead(str1.toInt())));
     }  
-  else if (cmd=="car")    //   ?car=pin_L1;pin_L2;pin_R1;pin_R2;state;left_speed;right_speed
+  else if (cmd=="car")    // ?car=pinL1;pinL2;pinR1;pinR2;state;L_speed;R_speed;Delay
     {
       pinMode(str1.toInt(), OUTPUT);
       pinMode(str2.toInt(), OUTPUT);
@@ -65,40 +68,72 @@ void executecommand()
       pinMode(str4.toInt(), OUTPUT);
     
       if (str5=="S")
+      {
+        analogWrite(str1.toInt(),0);
+        analogWrite(str2.toInt(),0);
+        analogWrite(str3.toInt(),0);
+        analogWrite(str4.toInt(),0);
+      }
+      else if  (str5=="F")
+      {
+        analogWrite(str1.toInt(),str6.toInt());
+        analogWrite(str2.toInt(),0);
+        analogWrite(str3.toInt(),0);
+        analogWrite(str4.toInt(),str7.toInt());       
+        if ((str8!="")&&(str8!="0"))
         {
+          delay(str8.toInt());
           analogWrite(str1.toInt(),0);
           analogWrite(str2.toInt(),0);
           analogWrite(str3.toInt(),0);
-          analogWrite(str4.toInt(),0);
-        }
-      else if  (str5=="F")
+          analogWrite(str4.toInt(),0);          
+        }     
+      }
+      else if  (str5=="B")
+      {
+        analogWrite(str1.toInt(),0);
+        analogWrite(str2.toInt(),str6.toInt());
+        analogWrite(str3.toInt(),str7.toInt());
+        analogWrite(str4.toInt(),0);  
+        if ((str8!="")&&(str8!="0"))
         {
+          delay(str8.toInt());
           analogWrite(str1.toInt(),0);
-          analogWrite(str2.toInt(),str6.toInt());
-          analogWrite(str3.toInt(),str7.toInt());
+          analogWrite(str2.toInt(),0);
+          analogWrite(str3.toInt(),0);
+          analogWrite(str4.toInt(),0);          
+        }     
+      }
+      else if  (str5=="L")
+      {
+        analogWrite(str1.toInt(),0);
+        analogWrite(str2.toInt(),str6.toInt());
+        analogWrite(str3.toInt(),0);
+        analogWrite(str4.toInt(),str7.toInt());         
+        if ((str8!="")&&(str8!="0"))
+        {
+          delay(str8.toInt());
+          analogWrite(str1.toInt(),0);
+          analogWrite(str2.toInt(),0);
+          analogWrite(str3.toInt(),0);
           analogWrite(str4.toInt(),0);          
         }
-      else if  (str5=="B")
-        {
-          analogWrite(str1.toInt(),str6.toInt());
-          analogWrite(str2.toInt(),0);
-          analogWrite(str3.toInt(),0);
-          analogWrite(str4.toInt(),str7.toInt());          
-        }
-      else if  (str5=="L")
-        {
-          analogWrite(str1.toInt(),0);
-          analogWrite(str2.toInt(),str6.toInt());
-          analogWrite(str3.toInt(),0);
-          analogWrite(str4.toInt(),str7.toInt());  
-        }
+      }
       else if  (str5=="R")
+      {
+        analogWrite(str1.toInt(),str6.toInt());
+        analogWrite(str2.toInt(),0);
+        analogWrite(str3.toInt(),str7.toInt());
+        analogWrite(str4.toInt(),0);
+        if ((str8!="")&&(str8!="0"))
         {
-          analogWrite(str1.toInt(),str6.toInt());
+          delay(str8.toInt());
+          analogWrite(str1.toInt(),0);
           analogWrite(str2.toInt(),0);
-          analogWrite(str3.toInt(),str7.toInt());
-          analogWrite(str4.toInt(),0);    
-        }
+          analogWrite(str3.toInt(),0);
+          analogWrite(str4.toInt(),0);          
+        }        
+      }
     }    
   else 
     {
@@ -109,7 +144,8 @@ void executecommand()
 void setup()
 {
   Serial.begin(9600);
-  mySerial.begin(9600);   // Check uart baud rate of bluetooth device.
+  mySerial.begin(9600);   
+  mySerial.setTimeout(10);
 }
 
 void loop() 
