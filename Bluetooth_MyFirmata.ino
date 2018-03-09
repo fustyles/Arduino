@@ -1,7 +1,7 @@
 /*
 Bluetooth
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-3-9 19:00 
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-3-9 22:30 
 
 Command format : ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -11,7 +11,7 @@ Command format : ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 ?analogwrite=3;200
 ?digitalread=3
 ?analogread=3
-?car=pinL1;pinL2;pinR1;pinR2;state;L_speed;R_speed;Delay
+?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 */
 
 
@@ -61,74 +61,74 @@ void executecommand()
     {
       SendData(String(analogRead(str1.toInt())));
     }  
-  else if (cmd=="car")    // ?car=pinL1;pinL2;pinR1;pinR2;state;L_speed;R_speed;Delay
+  else if (cmd=="car")    // ?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
     {
       pinMode(str1.toInt(), OUTPUT);
       pinMode(str2.toInt(), OUTPUT);
       pinMode(str3.toInt(), OUTPUT);
       pinMode(str4.toInt(), OUTPUT);
     
-      if (str5=="S")
+      if (str8=="S")
       {
         analogWrite(str1.toInt(),0);
         analogWrite(str2.toInt(),0);
         analogWrite(str3.toInt(),0);
         analogWrite(str4.toInt(),0);
       }
-      else if  (str5=="F")
+      else if  (str8=="F")
       {
-        analogWrite(str1.toInt(),str6.toInt());
+        analogWrite(str1.toInt(),str5.toInt());
         analogWrite(str2.toInt(),0);
         analogWrite(str3.toInt(),0);
-        analogWrite(str4.toInt(),str7.toInt());       
-        if ((str8!="")&&(str8!="0"))
+        analogWrite(str4.toInt(),str6.toInt());       
+        if ((str7!="")&&(str7!="0"))
         {
-          delay(str8.toInt());
+          delay(str7.toInt());
           analogWrite(str1.toInt(),0);
           analogWrite(str2.toInt(),0);
           analogWrite(str3.toInt(),0);
           analogWrite(str4.toInt(),0);          
         }     
       }
-      else if  (str5=="B")
+      else if  (str8=="B")
       {
         analogWrite(str1.toInt(),0);
-        analogWrite(str2.toInt(),str6.toInt());
-        analogWrite(str3.toInt(),str7.toInt());
+        analogWrite(str2.toInt(),str5.toInt());
+        analogWrite(str3.toInt(),str6.toInt());
         analogWrite(str4.toInt(),0);  
-        if ((str8!="")&&(str8!="0"))
+        if ((str7!="")&&(str7!="0"))
         {
-          delay(str8.toInt());
+          delay(str7.toInt());
           analogWrite(str1.toInt(),0);
           analogWrite(str2.toInt(),0);
           analogWrite(str3.toInt(),0);
           analogWrite(str4.toInt(),0);          
         }     
       }
-      else if  (str5=="L")
+      else if  (str8=="L")
       {
         analogWrite(str1.toInt(),0);
-        analogWrite(str2.toInt(),str6.toInt());
+        analogWrite(str2.toInt(),str5.toInt());
         analogWrite(str3.toInt(),0);
-        analogWrite(str4.toInt(),str7.toInt());         
-        if ((str8!="")&&(str8!="0"))
+        analogWrite(str4.toInt(),str6.toInt());         
+        if ((str7!="")&&(str7!="0"))
         {
-          delay(str8.toInt());
+          delay(str7.toInt());
           analogWrite(str1.toInt(),0);
           analogWrite(str2.toInt(),0);
           analogWrite(str3.toInt(),0);
           analogWrite(str4.toInt(),0);          
         }
       }
-      else if  (str5=="R")
+      else if  (str8=="R")
       {
-        analogWrite(str1.toInt(),str6.toInt());
+        analogWrite(str1.toInt(),str5.toInt());
         analogWrite(str2.toInt(),0);
-        analogWrite(str3.toInt(),str7.toInt());
+        analogWrite(str3.toInt(),str6.toInt());
         analogWrite(str4.toInt(),0);
-        if ((str8!="")&&(str8!="0"))
+        if ((str7!="")&&(str7!="0"))
         {
-          delay(str8.toInt());
+          delay(str7.toInt());
           analogWrite(str1.toInt(),0);
           analogWrite(str2.toInt(),0);
           analogWrite(str3.toInt(),0);
