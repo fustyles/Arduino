@@ -4,6 +4,7 @@ Bluetooth
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-3-9 19:00 
 
 Command format : ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
+
 ?inputpullup=3
 ?pinmode=3;1
 ?digitalwrite=3;1
