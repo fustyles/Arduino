@@ -59,6 +59,11 @@ void executecommand()
     }  
   else if (cmd=="car")    //   ?car=pin_L1;pin_L2;pin_R1;pin_R2;state;left_speed;right_speed
     {
+      pinMode(str1.toInt(), OUTPUT);
+      pinMode(str2.toInt(), OUTPUT);
+      pinMode(str3.toInt(), OUTPUT);
+      pinMode(str4.toInt(), OUTPUT);
+    
       if (str5=="S")
         {
           analogWrite(str1.toInt(),0);
