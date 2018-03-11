@@ -1,5 +1,5 @@
 /* 
-Author : ChungYi Fu (Taiwan)  2018-3-6 21:30
+Author : ChungYi Fu (Taiwan)  2018-3-11 3:30
 
 Arduino Uno (CH340G) + ESP8266 ESP-01 (1MB Flash, V2.0_AT_Firmware)
 
@@ -22,6 +22,7 @@ http://192.168.4.1/?digitalwrite=3;1
 http://192.168.4.1/?analogwrite=3;200
 http://192.168.4.1/?digitalread=3
 http://192.168.4.1/?analogread=3
+http://192.168.4.1/?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 
 STAIP：
 Query： http://192.168.4.1/?ip
@@ -123,53 +124,81 @@ void executecommand()
     {
       Feedback(CID,"<html>"+String(analogRead(str1.toInt()))+"</html>",3);
     }  
-  else if (cmd=="car")    //   ?car=left_pin1;left_pin2;right_pin1;right_pin2;state;left_speed;right_speed
+  else if (cmd=="car")    // ?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
     {
-      if (str5=="S")
+      pinMode(str1.toInt(), OUTPUT);
+      pinMode(str2.toInt(), OUTPUT);
+      pinMode(str3.toInt(), OUTPUT);
+      pinMode(str4.toInt(), OUTPUT);
+    
+      if (str8=="S")
+      {
+        analogWrite(str1.toInt(),0);
+        analogWrite(str2.toInt(),0);
+        analogWrite(str3.toInt(),0);
+        analogWrite(str4.toInt(),0);
+      }
+      else if  (str8=="F")
+      {
+        analogWrite(str1.toInt(),str5.toInt());
+        analogWrite(str2.toInt(),0);
+        analogWrite(str3.toInt(),0);
+        analogWrite(str4.toInt(),str6.toInt());       
+        if ((str7!="")&&(str7!="0"))
         {
+          delay(str7.toInt());
           analogWrite(str1.toInt(),0);
           analogWrite(str2.toInt(),0);
           analogWrite(str3.toInt(),0);
-          analogWrite(str4.toInt(),0);
-          Feedback(CID,"<html>STOP</html>",3);
-        }
-      else if  (str5=="F")
+          analogWrite(str4.toInt(),0);          
+        }     
+      }
+      else if  (str8=="B")
+      {
+        analogWrite(str1.toInt(),0);
+        analogWrite(str2.toInt(),str5.toInt());
+        analogWrite(str3.toInt(),str6.toInt());
+        analogWrite(str4.toInt(),0);  
+        if ((str7!="")&&(str7!="0"))
         {
+          delay(str7.toInt());
           analogWrite(str1.toInt(),0);
-          analogWrite(str2.toInt(),str6.toInt());
-          analogWrite(str3.toInt(),str7.toInt());
-          analogWrite(str4.toInt(),0);       
-          Feedback(CID,"<html>FORWARD</html>",3);
-        }
-      else if  (str5=="B")
-        {
-          analogWrite(str1.toInt(),str6.toInt());
           analogWrite(str2.toInt(),0);
           analogWrite(str3.toInt(),0);
-          analogWrite(str4.toInt(),str7.toInt()); 
-          Feedback(CID,"<html>BACKWARD</html>",3);         
-        }
-      else if  (str5=="L")
+          analogWrite(str4.toInt(),0);          
+        }     
+      }
+      else if  (str8=="L")
+      {
+        analogWrite(str1.toInt(),0);
+        analogWrite(str2.toInt(),str5.toInt());
+        analogWrite(str3.toInt(),0);
+        analogWrite(str4.toInt(),str6.toInt());         
+        if ((str7!="")&&(str7!="0"))
         {
+          delay(str7.toInt());
           analogWrite(str1.toInt(),0);
-          analogWrite(str2.toInt(),str6.toInt());
-          analogWrite(str3.toInt(),0);
-          analogWrite(str4.toInt(),str7.toInt()); 
-          Feedback(CID,"<html>LEFT</html>",3); 
-        }
-      else if  (str5=="R")
-        {
-          analogWrite(str1.toInt(),str6.toInt());
           analogWrite(str2.toInt(),0);
-          analogWrite(str3.toInt(),str7.toInt());
-          analogWrite(str4.toInt(),0); 
-          Feedback(CID,"<html>RIGHT</html>",3);   
+          analogWrite(str3.toInt(),0);
+          analogWrite(str4.toInt(),0);          
         }
-      else
+      }
+      else if  (str8=="R")
+      {
+        analogWrite(str1.toInt(),str5.toInt());
+        analogWrite(str2.toInt(),0);
+        analogWrite(str3.toInt(),str6.toInt());
+        analogWrite(str4.toInt(),0);
+        if ((str7!="")&&(str7!="0"))
         {
-          Feedback(CID,"<html>Parameter is not defined</html>",3);
-        }
-    }     
+          delay(str7.toInt());
+          analogWrite(str1.toInt(),0);
+          analogWrite(str2.toInt(),0);
+          analogWrite(str3.toInt(),0);
+          analogWrite(str4.toInt(),0);          
+        }        
+      }
+    }    
   else 
     {
       //Feedback(CID,"<font color=\"red\">Command is not defined</font>",0);
