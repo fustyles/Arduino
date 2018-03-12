@@ -1,7 +1,7 @@
 /*
 Bluetooth
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-3-9 22:30 
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-3-12 23:30 
 
 Command Format : ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -177,7 +177,7 @@ void getVariable()
       ReceiveData=ReceiveData+String(c);
       
       if (c=='?') ReceiveState=1;
-      if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
+      if ((c=='\r')||(c=='\n')) ReceiveState=0;
       
       if (ReceiveState==1)
       {
