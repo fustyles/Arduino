@@ -65,7 +65,7 @@ void loop() {
     myservo.write(0);         //Servo旋轉至解鎖位置       
   }
 
-  if ((s1==HIGH||s2==HIGH||s3==HIGH)&&(stateInitial==1||stateInitial==2))          //若偵測到密碼按鍵按下
+  if ((s1==HIGH||s2==HIGH||s3==HIGH)&&(stateInitial==1||stateInitial==2))          //若偵測到密碼按鈕按下
   {
       //綠燈閃爍一次
       analogWrite(ledR,0);
@@ -82,20 +82,20 @@ void loop() {
         n2=0;
         n3=0;
         t=0;
-        if (stateInitial==1)
+        if (stateInitial==1)     //初始化設定密碼狀態
         {
           if (s1==HIGH)  pwd1="1";
           if (s2==HIGH)  pwd1="2";
           if (s3==HIGH)  pwd1="3";
         }
-        else if (stateInitial==2)
+        else if (stateInitial==2)   //解鎖輸入密碼狀態
         {
           if (s1==HIGH)  inp1="1";
           if (s2==HIGH)  inp1="2";
           if (s3==HIGH)  inp1="3";
         }
       }
-      else if (n1==1&&n2==0&&t>=100&&t<=Timelimit)  //隔Timelimit時間內偵測到輸入第二個密碼
+      else if (n1==1&&n2==0&&t>=100&&t<=Timelimit)  //在Timelimit時間內偵測到輸入第二個密碼
       {
         n2=1;     //輸入第二個密碼狀態
         n3=0;
@@ -113,7 +113,7 @@ void loop() {
           if (s3==HIGH)  inp2="3";
         }
       }
-      else if (n2==1&&n3==0&&t>=100&&t<=Timelimit)  //隔Timelimit時間內偵測到輸入第三個密碼
+      else if (n2==1&&n3==0&&t>=100&&t<=Timelimit)  //在Timelimit時間內偵測到輸入第三個密碼
       {
         n3=1;     //輸入第三個密碼狀態
         t=0;
@@ -131,7 +131,7 @@ void loop() {
         }
       }
   }
-  if (t>Timelimit&&n3==1)   //時間範圍內偵測到輸入三個密碼
+  if (t>Timelimit&&n3==1)   //超過時間範圍且已輸入第三個密碼
   {
     if (stateInitial==1)
     {
