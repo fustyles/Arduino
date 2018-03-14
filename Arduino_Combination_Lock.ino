@@ -44,18 +44,19 @@ void setup() {
 }
 
 void loop() {
-  int s0 = digitalRead(btn0);      //讀取重設鍵電位訊號 HIGH=1(電位≥2.5V)，LOW=0(電位<2.5V)
+  int s0 = digitalRead(btn0);      //讀取重設鍵
   //Serial.println(s0);
-  int s1 = digitalRead(btn1);      //讀取密碼1電位訊號 HIGH=1(電位≥2.5V)，LOW=0(電位<2.5V)
+  int s1 = digitalRead(btn1);      //讀取密碼1
   //Serial.println(s1);
-  int s2 = digitalRead(btn2);      //讀取密碼2電位訊號 HIGH=1(電位≥2.5V)，LOW=0(電位<2.5V)
+  int s2 = digitalRead(btn2);      //讀取密碼2
   //Serial.println(s2);
-  int s3 = digitalRead(btn3);      //讀取密碼3電位訊號 HIGH=1(電位≥2.5V)，LOW=0(電位<2.5V)
+  int s3 = digitalRead(btn3);      //讀取密碼3
   //Serial.println(s3);
   
   if (s0==HIGH)             //重設鍵按下
   {
     n1=0;n2=0;n3=0;t=0;pwd1="";pwd2="";pwd3="";
+
     //亮藍燈
     analogWrite(ledR,0);
     analogWrite(ledG,0);
@@ -143,7 +144,7 @@ void loop() {
       analogWrite(ledG,0);
       analogWrite(ledB,0); 
 
-      stateInitial=2;
+      stateInitial=2;  //進入解鎖輸入密碼狀態
     }
     else if (stateInitial==2)
     {
@@ -162,7 +163,9 @@ void loop() {
         //密碼錯誤，亮紅燈
         analogWrite(ledR,255);
         analogWrite(ledG,0);
-        analogWrite(ledB,0);         
+        analogWrite(ledB,0);   
+
+        myservo.write(90);   //門鎖上鎖
 
         inp1="";inp2="";inp3="";
       }
@@ -186,6 +189,8 @@ void loop() {
       analogWrite(ledR,255);
       analogWrite(ledG,0);
       analogWrite(ledB,0); 
+
+      myservo.write(90);   //門鎖上鎖
 
       inp1="";inp2="";inp3="";      
     }
