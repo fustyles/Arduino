@@ -29,10 +29,10 @@ void setup() {
   myservo.write(0);         //寫入Servo角度位置         
   delay(2000);              //等待Servo旋轉至指定角度         
 
-  pinMode(btn0, INPUT_PULLUP);
-  pinMode(btn1, INPUT_PULLUP); 
-  pinMode(btn2, INPUT_PULLUP); 
-  pinMode(btn3, INPUT_PULLUP); 
+  pinMode(btn0, INPUT);
+  pinMode(btn1, INPUT); 
+  pinMode(btn2, INPUT); 
+  pinMode(btn3, INPUT); 
 
   pinMode(ledR, OUTPUT);    
   pinMode(ledG, OUTPUT);   
