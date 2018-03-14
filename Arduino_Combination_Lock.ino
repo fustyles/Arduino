@@ -9,7 +9,7 @@ int btn3=7;    //密碼數字3按鈕腳位
 int ledR=9;    //Red腳位
 int ledG=10;   //Green腳位
 int ledB=11;   //Blue腳位
-int stateInitial=0;   //設定密碼狀態
+int stateInitial=0;   //設定密碼狀態 1-初始化密碼設定狀態，2-開鎖輸入狀態
 int Timelimit=1000;  //兩次輸入密碼間隔時間上限(ms)
 String pwd1="";  //紀錄密碼第一個數字
 String pwd2="";  //紀錄密碼第二個數字
@@ -61,7 +61,7 @@ void loop() {
     analogWrite(ledR,0);
     analogWrite(ledG,0);
     analogWrite(ledB,255); 
-    stateInitial=1;   //1-密碼設定狀態，2-開鎖輸入狀態
+    stateInitial=1;   //1-初始化密碼設定狀態，2-開鎖輸入狀態
     pwd1="";pwd2="";pwd3="";
     myservo.write(0);         //寫入Servo角度位置         
     delay(2000);              //等待Servo旋轉至指定角度  
