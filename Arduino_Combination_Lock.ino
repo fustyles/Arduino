@@ -60,8 +60,9 @@ void loop() {
     analogWrite(ledR,0);
     analogWrite(ledG,0);
     analogWrite(ledB,255); 
+
     stateInitial=1;   //1-初始化密碼設定狀態，2-開鎖輸入狀態
-    myservo.write(0);         //寫入Servo角度位置         
+    myservo.write(0);         //Servo旋轉至解鎖位置         
     delay(1000);              //等待Servo旋轉至指定角度  
   }
 
