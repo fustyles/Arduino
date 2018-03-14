@@ -53,7 +53,7 @@ void loop() {
   int s3 = digitalRead(btn3);      //讀取密碼3按鈕
   //Serial.println(s3);
   
-  if (s0==HIGH)             //重設鍵按下
+  if (s0==HIGH)             //重設按鈕按下
   {
     n1=0;n2=0;n3=0;t=0;pwd1="";pwd2="";pwd3="";
 
