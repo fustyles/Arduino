@@ -55,16 +55,14 @@ void loop() {
   
   if (s0==HIGH)             //重設鍵按下
   {
-    n1=0;n2=0;n3=0;
-    t=0;
+    n1=0;n2=0;n3=0;t=0;pwd1="";pwd2="";pwd3="";
     //亮藍燈
     analogWrite(ledR,0);
     analogWrite(ledG,0);
     analogWrite(ledB,255); 
     stateInitial=1;   //1-初始化密碼設定狀態，2-開鎖輸入狀態
-    pwd1="";pwd2="";pwd3="";
     myservo.write(0);         //寫入Servo角度位置         
-    delay(2000);              //等待Servo旋轉至指定角度  
+    delay(1000);              //等待Servo旋轉至指定角度  
   }
 
   if ((s1==HIGH||s2==HIGH||s3==HIGH)&&(stateInitial==1||stateInitial==2))          //若偵測到密碼按鍵按下
