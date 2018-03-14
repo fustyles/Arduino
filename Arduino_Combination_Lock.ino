@@ -10,7 +10,7 @@ int ledR=9;    //指示燈Red腳位
 int ledG=10;   //指示燈Green腳位
 int ledB=11;   //指示燈Blue腳位
 double t;    //暫存連續輸入密碼間隔時間
-int stateInitial=0;   //輸入密碼狀態 1-初始化密碼設定狀態，2-解鎖輸入密碼狀態
+int stateInitial=0;   //輸入密碼狀態 1-初始化設定密碼狀態，2-解鎖輸入密碼狀態
 int Timelimit=1000;  //連續輸入密碼逾時時間(ms)
 int n1=0;    //第一個密碼正在輸入狀態
 int n2=0;    //第二個密碼正在輸入狀態
