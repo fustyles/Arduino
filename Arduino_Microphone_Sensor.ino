@@ -5,8 +5,8 @@
 
 int m1=A0;   //麥克風A0腳位
 int m2=12;    //麥克風D0腳位
-double t;    //紀錄擊掌間隔時間
-int timelimit=800;  //兩次擊掌逾時間隔時間
+double t;    //紀錄連續擊掌間隔時間
+int timelimit=800;  //連續擊掌逾時間隔時間
 int n1=0;    //第一次擊掌狀態
 int n2=0;    //第二次擊掌狀態
 int n3=0;    //第三次擊掌狀態
@@ -15,8 +15,7 @@ int bin2=0;    //紀錄第二次擊掌結果
 int bin3=0;    //紀錄第三次擊掌結果
 int lim1=520;  //產生聲音下限值
 int lim2=700;  //產生聲音大小聲區分值 
-int LED[]={2,3,4,5,6,7,8,9};
-int LEDs[]={10,11,12};
+int LED[]={2,3,4,5,6,7,8,9};  //8個LED燈腳位
 
 void setup() { 
   for (int i=0;i<sizeof(LED)/sizeof(LED[0]);i++)   
