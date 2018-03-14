@@ -154,8 +154,7 @@ void loop() {
         analogWrite(ledG,255);
         analogWrite(ledB,255); 
         //門鎖解鎖
-        myservo.write(0);         //寫入Servo角度位置         
-        delay(2000);              //等待Servo旋轉至指定角度  
+        myservo.write(0);         //寫入Servo角度位置        
       }
       else
       {
@@ -166,8 +165,7 @@ void loop() {
         inp1="";inp2="";inp3="";
       }
     }
-    n1=0;n2=0;n3=0;
-    t=0;
+    n1=0;n2=0;n3=0;t=0;
   }  
   else if (t>Timelimit&&n3==0)   //時間範圍內偵測密碼不足三位
   {
@@ -177,8 +175,8 @@ void loop() {
       analogWrite(ledR,0);
       analogWrite(ledG,0);
       analogWrite(ledB,255); 
-      pwd1="";pwd2="";pwd3="";
-      inp1="";inp2="";inp3="";
+
+      pwd1="";pwd2="";pwd3="";inp1="";inp2="";inp3="";
     }
     else if (stateInitial==2)
     {
@@ -188,8 +186,7 @@ void loop() {
       analogWrite(ledB,0); 
       inp1="";inp2="";inp3="";      
     }
-    n1=0;n2=0;n3=0;
-    t=0;
+    n1=0;n2=0;n3=0;t=0;
   }
 
   if (n1==1||n2==1)   //偵測到第一次或第二次輸入密碼後開始重新計時
