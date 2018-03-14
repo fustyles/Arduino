@@ -62,7 +62,7 @@ void loop() {
     analogWrite(ledG,0);
     analogWrite(ledB,255); 
 
-    stateInitial=1;   //1-初始化密碼設定狀態，2-開鎖輸入狀態
+    stateInitial=1;   //進入初始化密碼設定狀態
     myservo.write(0);         //Servo旋轉至解鎖位置       
   }
 
