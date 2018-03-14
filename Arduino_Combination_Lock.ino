@@ -133,8 +133,7 @@ void loop() {
   {
     if (stateInitial==1)
     {
-      //密碼已設定，門鎖上鎖
-      myservo.write(90);    
+      myservo.write(90);  //Servo旋轉至上鎖位置  
 
       //亮紅燈                
       analogWrite(ledR,255);
@@ -152,8 +151,7 @@ void loop() {
         analogWrite(ledG,255);
         analogWrite(ledB,255); 
 
-        //門鎖解鎖
-        myservo.write(0);       
+        myservo.write(0);   //Servo旋轉至解鎖位置
       }
       else
       {
@@ -162,7 +160,7 @@ void loop() {
         analogWrite(ledG,0);
         analogWrite(ledB,0);   
 
-        myservo.write(90);   //門鎖上鎖
+        myservo.write(90);   //Servo旋轉至上鎖位置
 
         inp1="";inp2="";inp3="";
       }
@@ -187,7 +185,7 @@ void loop() {
       analogWrite(ledG,0);
       analogWrite(ledB,0); 
 
-      myservo.write(90);   //門鎖上鎖
+      myservo.write(90);   //Servo旋轉至上鎖位置
 
       inp1="";inp2="";inp3="";      
     }
