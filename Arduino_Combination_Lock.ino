@@ -2,15 +2,15 @@
 Servo myservo;     //建立Servo物件控制門鎖
 int ServorPIN=3;   //Servo輸出腳位
 
-int btn0=4;    //重設鍵
-int btn1=5;    //密碼數字1
-int btn2=6;    //密碼數字2
-int btn3=7;    //密碼數字3
+int btn0=4;    //重設鍵腳位
+int btn1=5;    //密碼數字1腳位
+int btn2=6;    //密碼數字2腳位
+int btn3=7;    //密碼數字3腳位
 int ledR=9;  //Red   
 int ledG=10; //Green
 int ledB=11; //Blue
 int stateInitial=0;   //初設密碼狀態
-int stateInput=0;     //解密碼狀態
+int stateInput=0;     //輸入密碼狀態
 int Timelimit=1000;  //兩次輸入密碼間隔時間上限
 String pwd1="";  //密碼第一位數字
 String pwd2="";  //密碼第二位數字
