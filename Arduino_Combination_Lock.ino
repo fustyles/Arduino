@@ -186,6 +186,7 @@ void loop() {
       analogWrite(ledR,255);
       analogWrite(ledG,0);
       analogWrite(ledB,0); 
+
       inp1="";inp2="";inp3="";      
     }
     n1=0;n2=0;n3=0;t=0;
