@@ -11,16 +11,16 @@ int ledG=10;   //Green腳位
 int ledB=11;   //Blue腳位
 int stateInitial=0;   //初始化設定密碼狀態
 int stateInput=0;     //輸入密碼狀態
-int Timelimit=1000;  //兩次輸入密碼間隔時間上限
-String pwd1="";  //密碼第一個數字
-String pwd2="";  //密碼第二個數字
-String pwd3="";  //密碼第三個數字
-String inp1="";  //輸入密碼第一個數字
-String inp2="";  //輸入密碼第二個數字
-String inp3="";  //輸入密碼第三個數字
-int n1=0;    //第一次輸入狀態
-int n2=0;    //第二次輸入狀態
-int n3=0;    //第三次輸入狀態
+int Timelimit=1000;  //兩次輸入密碼間隔時間上限(ms)
+String pwd1="";  //紀錄密碼第一個數字
+String pwd2="";  //紀錄密碼第二個數字
+String pwd3="";  //紀錄密碼第三個數字
+String inp1="";  //紀錄輸入密碼第一個數字
+String inp2="";  //紀錄輸入密碼第二個數字
+String inp3="";  //紀錄輸入密碼第三個數字
+int n1=0;    //第一個密碼輸入狀態
+int n2=0;    //第二個密碼輸入狀態
+int n3=0;    //第三個密碼輸入狀態
 double t;    //紀錄輸入密碼間隔時間
 
 void setup() {
