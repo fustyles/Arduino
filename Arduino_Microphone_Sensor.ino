@@ -39,68 +39,53 @@ int s2=analogRead(m1);     //讀取A0類比訊號
       if (n1==0)   //尚未擊掌過
       {
         n1=1;      //第一次擊掌狀態
-        Serial.print("1->");
-        Serial.println(s2);
+        n2=0;n3=0;t=0;
         digitalWrite(LEDs[0],HIGH);
+        
         if (s2>=lim2)
           bin1=1;    //音量>=基準值，第一位數字設為1
         else
           bin1=0;    //音量<基準值，第一位數字設為0
-        n2=0;
-        n3=0;
-        t=0;
         delay(200); 
       }
       //隔一秒內偵測到第二次擊掌
       else if (n1==1&&n2==0&&t>=200&&t<=timelimit)  
       {
           n2=1;     //第二次擊掌狀態
-          Serial.print("2->");
-          Serial.println(s2);
+          n3=0;t=0;
           digitalWrite(LEDs[1],HIGH);
           if (s2>=lim2)
             bin2=1;
           else
             bin2=0;  
-          n3=0;
-          t=0;
           delay(200);
       }
       //隔一秒內偵測到第三次擊掌
       else if (n2==1&&n3==0&&t>=200&&t<=timelimit)  
       {
           n3=1;     //第三次擊掌狀態
-          Serial.print("3->");
-          Serial.println(s2);
+          t=0;
           digitalWrite(LEDs[2],HIGH);
           if (s2>=lim2)
             bin3=1;
           else
             bin3=0;  
-          t=0;
       }
     }
   }
-  if (t>timelimit)   //二進制數字轉成十進制數字顯示
+  if (t>timelimit)   //超過逾期時間
     {
-      if (n1==1&&n2==1&&n3==1)
-        ShowLED(bin1*4+bin2*2+bin3);  
+      if (n1==1&&n2==1&&n3==1)  
+        ShowLED(bin1*4+bin2*2+bin3);  //二進制數字轉成十進制數字顯示
       
-      n1=0;
-      n2=0;
-      n3=0;
-      t=0;
-      
-      bin1=0;
-      bin2=0;
-      bin3=0;
+      n1=0;n2=0;n3=0;t=0;bin1=0;bin2=0;bin3=0;
 
       digitalWrite(LEDs[0],LOW);
       digitalWrite(LEDs[1],LOW);
       digitalWrite(LEDs[2],LOW);
       delay(100);
     }   
-  if (n1==1||n2==1)   //偵測到第一次或第二次擊掌後開始重新計時
+  if (n1==1||n2==1)   //偵測到第一次或第二次擊掌後重新計時
   {
     delay(1);
     t=t+1;
