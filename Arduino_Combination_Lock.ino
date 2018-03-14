@@ -80,9 +80,7 @@ void loop() {
       if (n1==0)   //尚未輸入任何密碼
       {
         n1=1;      //輸入第一個密碼狀態
-        n2=0;
-        n3=0;
-        t=0;
+        n2=0;n3=0;t=0;
         if (stateInitial==1)     //初始化設定密碼狀態
         {
           if (s1==HIGH)  pwd1="1";
@@ -99,8 +97,7 @@ void loop() {
       else if (n1==1&&n2==0&&t>=100&&t<=Timelimit)  //在Timelimit時間內偵測到輸入第二個密碼
       {
         n2=1;     //輸入第二個密碼狀態
-        n3=0;
-        t=0;
+        n3=0;t=0;
         if (stateInitial==1)
         {
           if (s1==HIGH)  pwd2="1";
@@ -156,7 +153,7 @@ void loop() {
         analogWrite(ledB,255); 
 
         //門鎖解鎖
-        myservo.write(0);         //寫入Servo角度位置        
+        myservo.write(0);       
       }
       else
       {
