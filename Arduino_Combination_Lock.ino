@@ -77,7 +77,7 @@ void loop() {
       analogWrite(ledG,0);
       analogWrite(ledB,0); 
       
-      if (n1==0)   //產生第一次輸入開始紀錄密碼
+      if (n1==0)   //尚未輸入任何密碼
       {
         n1=1;      //第一次輸入狀態
         n2=0;
