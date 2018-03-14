@@ -26,8 +26,7 @@ void setup() {
   Serial.begin(9600);          //鮑率
   
   myservo.attach(ServorPIN);   //設定Servo輸出腳位
-  myservo.write(0);            //Servo旋轉至解鎖位置        
-  delay(2000);                 //等待Servo旋轉至指定角度         
+  myservo.write(0);            //Servo旋轉至解鎖位置             
 
   pinMode(btn0, INPUT);
   pinMode(btn1, INPUT); 
