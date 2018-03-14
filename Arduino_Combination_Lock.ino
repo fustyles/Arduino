@@ -44,13 +44,13 @@ void setup() {
 }
 
 void loop() {
-  int s0 = digitalRead(btn0);      //讀取重設鍵
+  int s0 = digitalRead(btn0);      //讀取重設按鈕
   //Serial.println(s0);
-  int s1 = digitalRead(btn1);      //讀取密碼1
+  int s1 = digitalRead(btn1);      //讀取密碼1按鈕
   //Serial.println(s1);
-  int s2 = digitalRead(btn2);      //讀取密碼2
+  int s2 = digitalRead(btn2);      //讀取密碼2按鈕
   //Serial.println(s2);
-  int s3 = digitalRead(btn3);      //讀取密碼3
+  int s3 = digitalRead(btn3);      //讀取密碼3按鈕
   //Serial.println(s3);
   
   if (s0==HIGH)             //重設鍵按下
