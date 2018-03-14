@@ -136,13 +136,13 @@ void loop() {
     if (stateInitial==1)
     {
       //密碼已設定，門鎖上鎖
-      myservo.write(90);                  
-      delay(2000);
+      myservo.write(90);    
 
       //亮紅燈                
       analogWrite(ledR,255);
       analogWrite(ledG,0);
       analogWrite(ledB,0); 
+
       stateInitial=2;
     }
     else if (stateInitial==2)
@@ -153,6 +153,7 @@ void loop() {
         analogWrite(ledR,255);
         analogWrite(ledG,255);
         analogWrite(ledB,255); 
+
         //門鎖解鎖
         myservo.write(0);         //寫入Servo角度位置        
       }
@@ -162,6 +163,7 @@ void loop() {
         analogWrite(ledR,255);
         analogWrite(ledG,0);
         analogWrite(ledB,0);         
+
         inp1="";inp2="";inp3="";
       }
     }
