@@ -62,8 +62,7 @@ void loop() {
     analogWrite(ledB,255); 
 
     stateInitial=1;   //1-初始化密碼設定狀態，2-開鎖輸入狀態
-    myservo.write(0);         //Servo旋轉至解鎖位置         
-    delay(1000);              //等待Servo旋轉至指定角度  
+    myservo.write(0);         //Servo旋轉至解鎖位置       
   }
 
   if ((s1==HIGH||s2==HIGH||s3==HIGH)&&(stateInitial==1||stateInitial==2))          //若偵測到密碼按鍵按下
