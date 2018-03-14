@@ -79,7 +79,7 @@ void loop() {
       
       if (n1==0)   //尚未輸入任何密碼
       {
-        n1=1;      //第一次輸入狀態
+        n1=1;      //輸入第一個密碼狀態
         n2=0;
         n3=0;
         t=0;
@@ -96,9 +96,9 @@ void loop() {
           if (s3==HIGH)  inp1="3";
         }
       }
-      else if (n1==1&&n2==0&&t>=100&&t<=Timelimit)  //隔Timelimit時間內偵測到第二次輸入密碼
+      else if (n1==1&&n2==0&&t>=100&&t<=Timelimit)  //隔Timelimit時間內偵測到輸入第二個密碼
       {
-        n2=1;     //第二次輸入狀態
+        n2=1;     //輸入第二個密碼狀態
         n3=0;
         t=0;
         if (stateInitial==1)
@@ -114,9 +114,9 @@ void loop() {
           if (s3==HIGH)  inp2="3";
         }
       }
-      else if (n2==1&&n3==0&&t>=100&&t<=Timelimit)  //隔Timelimit時間內偵測到第三次輸入密碼
+      else if (n2==1&&n3==0&&t>=100&&t<=Timelimit)  //隔Timelimit時間內偵測到輸入第三個密碼
       {
-        n3=1;     //第三次輸入狀態
+        n3=1;     //輸入第三個密碼狀態
         t=0;
         if (stateInitial==1)
         {
@@ -132,13 +132,14 @@ void loop() {
         }
       }
   }
-  if (t>Timelimit&&n3==1)   //時間範圍內偵測到三次輸入密碼
+  if (t>Timelimit&&n3==1)   //時間範圍內偵測到輸入三個密碼
   {
     if (stateInitial==1)
     {
       //密碼已設定，門鎖上鎖
       myservo.write(90);                  
       delay(2000);
+
       //亮紅燈                
       analogWrite(ledR,255);
       analogWrite(ledG,0);
