@@ -2,10 +2,10 @@
 Servo myservo;     //建立Servo物件控制門鎖
 int ServorPIN=3;   //Servo輸出腳位
 
-int btn0=4;    //重設鍵腳位
-int btn1=5;    //密碼數字1腳位
-int btn2=6;    //密碼數字2腳位
-int btn3=7;    //密碼數字3腳位
+int btn0=4;    //重設按鈕腳位
+int btn1=5;    //密碼數字1按鈕腳位
+int btn2=6;    //密碼數字2按鈕腳位
+int btn3=7;    //密碼數字3按鈕腳位
 int ledR=9;    //Red腳位
 int ledG=10;   //Green腳位
 int ledB=11;   //Blue腳位
