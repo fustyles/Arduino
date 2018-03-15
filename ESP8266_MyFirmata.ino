@@ -1,5 +1,5 @@
 /* 
-Author : ChungYi Fu (Taiwan)  2018-3-12 23:30
+Author : ChungYi Fu (Taiwan)  2018-3-15 17:30
 
 Arduino Uno (CH340G) + ESP8266 ESP-01 (1MB Flash, V2.0_AT_Firmware)
 
@@ -332,7 +332,7 @@ void getVariable()
       ReceiveData=ReceiveData+String(c);
       
       if (c=='?') ReceiveState=1;
-      if ((c=='\r')||(c=='\n')) ReceiveState=0;
+      if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
       
       if (ReceiveState==1)
       {
