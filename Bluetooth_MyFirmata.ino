@@ -177,7 +177,7 @@ void getVariable()
       ReceiveData=ReceiveData+String(c);
       
       if (c=='?') ReceiveState=1;
-      if ((c=='\r')||(c=='\n')) ReceiveState=0;
+      if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
       
       if (ReceiveState==1)
       {
