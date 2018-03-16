@@ -1,7 +1,10 @@
 /* 
 ESP32
+
 Author : ChungYi Fu (Taiwan)  2018-3-17 00:00
+
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
+
 http://192.168.x.x/?ip
 http://192.168.x.x/?mac
 http://192.168.x.x/?resetwifi=ssid;password
