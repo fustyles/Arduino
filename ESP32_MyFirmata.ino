@@ -5,7 +5,7 @@ Author : ChungYi Fu (Taiwan)  2018-3-17 01:00
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
-APIP： 192.168.4.1
+Default APIP： 192.168.4.1
 http://192.168.4.1/?ip
 http://192.168.4.1/?mac
 http://192.168.4.1/?resetwifi=id;pwd
@@ -29,7 +29,7 @@ https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 const char* ssid     = "";   //your network SSID
 const char* password = "";   //your network password
 
-const char* apssid = "ESP32";      //Default APIP: 192.168.4.1
+const char* apssid = "ESP32";
 const char* appassword = "12345678";
 
 WiFiServer server(80);
