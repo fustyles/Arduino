@@ -24,8 +24,8 @@ https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 const char* ssid     = "";   //your network SSID
 const char* password = "";   //your network password
 
-const char* assid = "ESP32";      //AP IP: 192.168.4.1
-const char* asecret = "12345678";
+const char* apssid = "ESP32";      //AP IP: 192.168.4.1
+const char* appassword = "12345678";
 
 WiFiServer server(80);
 
@@ -104,7 +104,7 @@ void setup()
     
     WiFi.mode(WIFI_AP_STA);
     
-    WiFi.softAP(assid, asecret);
+    WiFi.softAP(apssid, appassword);
     Serial.println("");
     Serial.println("APIP address: ");
     Serial.println(WiFi.softAPIP());    
