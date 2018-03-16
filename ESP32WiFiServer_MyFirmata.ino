@@ -53,10 +53,9 @@ void ExecuteCommand()
   {
     Feedback+="STA mac: "+WiFi.macAddress();
   }  
-  else if (cmd=="resetwifi")    //It can't work!
+  else if (cmd=="resetwifi")
   {
-    //WiFi.begin((char*)str1, (char*)str2);
-    WiFi.begin(ssid, password);
+    WiFi.begin(str1.c_str(), str2.c_str());
     long int StartTime=millis();
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
