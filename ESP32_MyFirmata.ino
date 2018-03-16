@@ -5,15 +5,20 @@ Author : ChungYi Fu (Taiwan)  2018-3-17 01:00
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
-http://192.168.x.x/?ip
-http://192.168.x.x/?mac
-http://192.168.x.x/?resetwifi=ssid;password
-http://192.168.x.x/?inputpullup=13
-http://192.168.x.x/?pinmode=13;1
-http://192.168.x.x/?digitalwrite=13;1
-http://192.168.x.x/?analogwrite=13;255
-http://192.168.x.x/?digitalread=13
-http://192.168.x.x/?analogread=13
+APIP： 192.168.4.1
+http://192.168.4.1/?ip
+http://192.168.4.1/?mac
+http://192.168.4.1/?resetwifi=id;pwd
+http://192.168.4.1/?inputpullup=13
+http://192.168.4.1/?pinmode=13;1
+http://192.168.4.1/?digitalwrite=13;1
+http://192.168.4.1/?analogwrite=13;200
+http://192.168.4.1/?digitalread=13
+http://192.168.4.1/?analogread=13
+
+STAIP：
+Query： http://192.168.4.1/?ip
+Link：http://192.168.4.1/?resetwifi=id;pwd
 
 Control Page
 https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
