@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-3-17 00:30
+Author : ChungYi Fu (Taiwan)  2018-3-17 00:50
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -113,6 +113,9 @@ void setup()
     WiFi.mode(WIFI_AP_STA);
     
     WiFi.softAP(apssid, appassword);
+  
+    //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0));
+  
     Serial.println("");
     Serial.println("APIP address: ");
     Serial.println(WiFi.softAPIP());    
