@@ -21,7 +21,7 @@ http://192.168.x.x/?analogread=13
 const char* ssid     = "";   //your network SSID
 const char* password = "";   //your network password
 
-const char* assid = "ESP32";      //APIP:192.168.4.1
+const char* assid = "ESP32";      //AP IP: 192.168.4.1
 const char* asecret = "12345678";
 
 WiFiServer server(80);
