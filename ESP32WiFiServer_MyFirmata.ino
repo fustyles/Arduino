@@ -1,23 +1,25 @@
 /* 
 ESP32
-
-Author : ChungYi Fu (Taiwan)  2018-3-16 22:00
-
+Author : ChungYi Fu (Taiwan)  2018-3-17 00:00
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
-
+http://192.168.x.x/?ip
+http://192.168.x.x/?mac
+http://192.168.x.x/?resetwifi=ssid;password
 http://192.168.x.x/?inputpullup=13
 http://192.168.x.x/?pinmode=13;1
 http://192.168.x.x/?digitalwrite=13;1
 http://192.168.x.x/?analogwrite=13;255
 http://192.168.x.x/?digitalread=13
 http://192.168.x.x/?analogread=13
-
 */
 
 #include <WiFi.h>
 
 const char* ssid     = "";   //your network SSID
 const char* password = "";   //your network password
+
+const char* assid = "ESP32";      //APIP:192.168.4.1
+const char* asecret = "12345678";
 
 WiFiServer server(80);
 
@@ -35,6 +37,23 @@ void ExecuteCommand()
     // You can do anything
     // Feedback="<font color=red>Hello World</font>";
   }
+  else if (cmd=="ip")
+  {
+    Feedback="APIP address: "+WiFi.softAPIP().toString();    
+    Feedback+="<br>";
+    Feedback+="STAIP address: "+WiFi.localIP().toString();
+  }  
+  else if (cmd=="mac")
+  {
+    Feedback+="STAIP mac: "+WiFi.macAddress();
+  }  
+  else if (cmd=="resetwifi")
+  {
+    WiFi.begin(ssid, password);
+    delay(5000);
+    Serial.println(WiFi.localIP());
+    Feedback=WiFi.localIP().toString();
+  }  
   else if (cmd=="inputpullup")
   {
     pinMode(str1.toInt(), INPUT_PULLUP);
@@ -77,25 +96,30 @@ void setup()
     Serial.begin(115200);
     delay(10);
     
-    Serial.println();
-    Serial.println();
-    Serial.print("Connecting to ");
-    Serial.println(ssid);
+    WiFi.mode(WIFI_AP_STA);
+    
+    WiFi.softAP(assid, asecret);
+    Serial.println("");
+    Serial.println("APIP address: ");
+    Serial.println(WiFi.softAPIP());    
 
     WiFi.begin(ssid, password);
 
+    Serial.print("Connecting to ");
+    Serial.println(ssid);
+    
+    long int StartTime=millis();
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
         Serial.print(".");
-    }
+        if ((StartTime+5000) < millis()) break;
+    } 
 
     Serial.println("");
-    Serial.println("WiFi connected.");
-    Serial.println("IP address: ");
+    Serial.println("STAIP address: ");
     Serial.println(WiFi.localIP());
     
     server.begin();
-
 }
 
 void loop(){
