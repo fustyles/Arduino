@@ -1,7 +1,10 @@
 /* 
 Arduino IDE + ESP32
+
 Author : ChungYi Fu (Taiwan)  2018-3-17 00:00
+
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
+
 http://192.168.x.x/?ip
 http://192.168.x.x/?mac
 http://192.168.x.x/?resetwifi=ssid;password
@@ -11,6 +14,7 @@ http://192.168.x.x/?digitalwrite=13;1
 http://192.168.x.x/?analogwrite=13;255
 http://192.168.x.x/?digitalread=13
 http://192.168.x.x/?analogread=13
+
 Control Page
 https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 */
