@@ -32,7 +32,7 @@ void ExecuteCommand()
   
   if (cmd=="your command")
   {
-    // you can do anything
+    // You can do anything
     // Feedback="<font color=red>Hello World</font>";
   }
   else if (cmd=="inputpullup")
