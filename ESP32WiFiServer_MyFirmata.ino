@@ -5,12 +5,12 @@ Author : ChungYi Fu (Taiwan)  2018-3-16 22:00
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
-http://192.168.x.x/?inputpullup=3
-http://192.168.x.x/?pinmode=3;1
-http://192.168.x.x/?digitalwrite=3;1
-http://192.168.x.x/?analogwrite=3;200
-http://192.168.x.x/?digitalread=3
-http://192.168.x.x/?analogread=3
+http://192.168.x.x/?inputpullup=13
+http://192.168.x.x/?pinmode=13;1
+http://192.168.x.x/?digitalwrite=13;1
+http://192.168.x.x/?analogwrite=13;255
+http://192.168.x.x/?digitalread=13
+http://192.168.x.x/?analogread=13
 
 */
 
