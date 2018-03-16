@@ -1,5 +1,5 @@
 /* 
-ESP32
+Arduino IDE + ESP32
 
 Author : ChungYi Fu (Taiwan)  2018-3-17 00:00
 
