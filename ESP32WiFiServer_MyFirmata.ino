@@ -53,7 +53,7 @@ void ExecuteCommand()
   {
     Feedback+="STA mac: "+WiFi.macAddress();
   }  
-  else if (cmd=="resetwifi")
+  else if (cmd=="resetwifi")    //It can't work!
   {
     //WiFi.begin((char*)str1, (char*)str2);
     WiFi.begin(ssid, password);
