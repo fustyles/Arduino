@@ -1,5 +1,5 @@
 /* 
-Arduino IDE + ESP32
+Arduino IDE + NodeMCU-32S
 
 Author : ChungYi Fu (Taiwan)  2018-3-17 00:30
 
