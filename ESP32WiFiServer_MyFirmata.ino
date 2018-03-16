@@ -55,8 +55,13 @@ void ExecuteCommand()
   }  
   else if (cmd=="resetwifi")
   {
-    WiFi.begin(ssid, password);
-    delay(5000);
+    WiFi.begin(str1, str2);
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+        if ((StartTime+5000) < millis()) break;
+    } 
     Serial.println(WiFi.localIP());
     Feedback=WiFi.localIP().toString();
   }  
