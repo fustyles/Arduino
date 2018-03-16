@@ -24,7 +24,7 @@ https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 const char* ssid     = "";   //your network SSID
 const char* password = "";   //your network password
 
-const char* apssid = "ESP32";      //AP IP: 192.168.4.1
+const char* apssid = "ESP32";      //Default APIP: 192.168.4.1
 const char* appassword = "12345678";
 
 WiFiServer server(80);
