@@ -30,7 +30,12 @@ void ExecuteCommand()
   Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
   Serial.println("");
   
-  if (cmd=="inputpullup")
+  if (cmd=="your command")
+  {
+    // you can do anything
+    // Feedback="<font color=red>Hello World</font>";
+  }
+  else if (cmd=="inputpullup")
   {
     pinMode(str1.toInt(), INPUT_PULLUP);
     Feedback=Command;
