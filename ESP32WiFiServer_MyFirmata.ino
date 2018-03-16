@@ -14,6 +14,9 @@ http://192.168.x.x/?digitalwrite=13;1
 http://192.168.x.x/?analogwrite=13;255
 http://192.168.x.x/?digitalread=13
 http://192.168.x.x/?analogread=13
+
+Control Page
+https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 */
 
 #include <WiFi.h>
