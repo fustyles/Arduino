@@ -23,6 +23,51 @@ WiFiServer server(80);
 
 String Feedback="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 
+
+void ExecuteCommand()
+{
+  Serial.println("");
+  //Serial.println("Command: "+Command);
+  Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
+  Serial.println("");
+  
+  if (cmd=="inputpullup")
+  {
+    pinMode(str1.toInt(), INPUT_PULLUP);
+    Feedback=Command;
+  }  
+  else if (cmd=="pinmode")
+  {
+    pinMode(str1.toInt(), str2.toInt());
+    Feedback=Command;
+  }        
+  else if (cmd=="digitalwrite")
+  {
+    pinMode(str1.toInt(), OUTPUT);
+    digitalWrite(str1.toInt(),str2.toInt());
+    Feedback=Command;
+  }   
+  else if (cmd=="digitalread")
+  {
+    Feedback=String(digitalRead(str1.toInt()));
+  }
+  else if (cmd=="analogwrite")
+  {
+    ledcAttachPin(str1.toInt(), 1);
+    ledcSetup(1, 12000, 8);
+    ledcWrite(1,str2.toInt());
+    Feedback=Command;
+  }       
+  else if (cmd=="analogread")
+  {
+    Feedback=String(analogRead(str1.toInt()));
+  }
+  else 
+  {
+    Feedback="Command is not defined";
+  }             
+}
+
 void setup()
 {
     Serial.begin(115200);
@@ -121,48 +166,3 @@ void loop(){
     //Serial.println("Client Disconnected.");
   }
 }
-
-void ExecuteCommand()
-{
-  Serial.println("");
-  //Serial.println("Command: "+Command);
-  Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
-  Serial.println("");
-  
-  if (cmd=="inputpullup")
-  {
-    pinMode(str1.toInt(), INPUT_PULLUP);
-    Feedback=Command;
-  }  
-  else if (cmd=="pinmode")
-  {
-    pinMode(str1.toInt(), str2.toInt());
-    Feedback=Command;
-  }        
-  else if (cmd=="digitalwrite")
-  {
-    pinMode(str1.toInt(), OUTPUT);
-    digitalWrite(str1.toInt(),str2.toInt());
-    Feedback=Command;
-  }   
-  else if (cmd=="digitalread")
-  {
-    Feedback=String(digitalRead(str1.toInt()));
-  }
-  else if (cmd=="analogwrite")
-  {
-    ledcAttachPin(str1.toInt(), 1);
-    ledcSetup(1, 12000, 8);
-    ledcWrite(1,str2.toInt());
-    Feedback=Command;
-  }       
-  else if (cmd=="analogread")
-  {
-    Feedback=String(analogRead(str1.toInt()));
-  }
-  else 
-  {
-    Feedback="Command is not defined";
-  }             
-}
-
