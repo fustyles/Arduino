@@ -39,13 +39,13 @@ void ExecuteCommand()
   }
   else if (cmd=="ip")
   {
-    Feedback="APIP address: "+WiFi.softAPIP().toString();    
+    Feedback="AP IP: "+WiFi.softAPIP().toString();    
     Feedback+="<br>";
-    Feedback+="STAIP address: "+WiFi.localIP().toString();
+    Feedback+="STA IP: "+WiFi.localIP().toString();
   }  
   else if (cmd=="mac")
   {
-    Feedback+="STAIP mac: "+WiFi.macAddress();
+    Feedback+="STA mac: "+WiFi.macAddress();
   }  
   else if (cmd=="resetwifi")
   {
