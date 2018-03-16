@@ -55,7 +55,7 @@ void ExecuteCommand()
   }  
   else if (cmd=="resetwifi")
   {
-    WiFi.begin(str1, str2);
+    WiFi.begin((char*)str1, (char*)str2);
     long int StartTime=millis();
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
