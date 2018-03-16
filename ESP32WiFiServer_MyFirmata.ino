@@ -21,7 +21,7 @@ const char* password = "";   //your network password
 
 WiFiServer server(80);
 
-String Feedback="",ReceiveData="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
+String Feedback="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 
 void setup()
 {
@@ -56,7 +56,7 @@ void loop(){
     //Serial.println("New Client.");
     String currentLine = "";
 
-    ReceiveData="";Command="";cmd="";str1="";str2="";str3="";str4="";str5="";str6="";str7="";str8="";str9="";
+    Command="";cmd="";str1="";str2="";str3="";str4="";str5="";str6="";str7="";str8="";str9="";
     byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
     while (client.connected()) {
@@ -93,11 +93,13 @@ void loop(){
         if (c == '\n') {
           if (currentLine.length() == 0) {
             if (Feedback=="") Feedback="Hello World";
+              
             client.println("HTTP/1.1 200 OK");
             client.println("Content-type:text/html");
             client.println();
             client.print(Feedback);
             client.println();
+              
             Feedback="";
             break;
           } else {
@@ -115,7 +117,6 @@ void loop(){
         }
       }
     }
-    // close the connection:
     client.stop();
     //Serial.println("Client Disconnected.");
   }
