@@ -136,9 +136,10 @@ void ExecuteCommand()
         while (client_ifttt.available()) 
           {
             char c = client_ifttt.read();
-            Feedback+=String(c);
+            //Feedback+=String(c);
           }
       }
+      Feedback="Connected to IFTTT";
     }
     else
     {
