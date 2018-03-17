@@ -12,7 +12,7 @@ Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 APIP： 192.168.4.1
 http://192.168.4.1/?ip
 http://192.168.4.1/?mac
-http://192.168.4.1/?resetwifi=id;pwd
+http://192.168.4.1/?resetwifi=ssid;password
 http://192.168.4.1/?restart
 http://192.168.4.1/?at=AT+Command
 http://192.168.4.1/?inputpullup=3
