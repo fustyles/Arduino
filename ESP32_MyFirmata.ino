@@ -191,7 +191,6 @@ void loop(){
  WiFiClient client = server.available();
 
   if (client) { 
-    //Serial.println("New Client.");
     String currentLine = "";
 
     Command="";cmd="";str1="";str2="";str3="";str4="";str5="";str6="";str7="";str8="";str9="";
@@ -281,6 +280,5 @@ void loop(){
       }
     }
     client.stop();
-    //Serial.println("Client Disconnected.");
   }
 }
