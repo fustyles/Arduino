@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-3-17 18:30
+Author : ChungYi Fu (Taiwan)  2018-3-17 19:30
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -16,6 +16,7 @@ http://192.168.4.1/?analogwrite=13;255
 http://192.168.4.1/?digitalread=13
 http://192.168.4.1/?analogread=13
 http://192.168.4.1/?touchread=13
+http://192.168.4.1/?tcp=domain;port;request
 http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 
 STAIP：
@@ -29,7 +30,7 @@ https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 #include <WiFi.h>
 
 const char* ssid     = "";   //your network SSID
-const char* password = "";   //your network password
+const char* password = "g";   //your network password
 
 const char* apssid = "ESP32";
 const char* appassword = "12345678";
@@ -113,6 +114,42 @@ void ExecuteCommand()
   {
     Feedback=String(touchRead(str1.toInt()));
   }  
+  else if (cmd=="tcp")
+  {
+    WiFiClient client_tcp;
+    
+    if (client_tcp.connect(str1.c_str(), str2.toInt())) 
+    {
+      Serial.println("Connected to "+str1);
+      
+      client_tcp.println("GET " + str3 + " HTTP/1.1");
+      client_tcp.print("Host: ");
+      client_tcp.println(str1);
+      client_tcp.println("Connection: close");
+      client_tcp.println();
+
+      long StartTime = millis();
+      while ((StartTime+5000) > millis())
+      {
+        while (client_tcp.available()) 
+        {
+            char c = client_tcp.read();
+            if (c == '\n') 
+            {
+              if (Feedback.length() == 0) 
+                break;
+              else 
+                Feedback = "";
+            } 
+            else if (c != '\r') 
+              Feedback += c;
+         }
+         if (Feedback.length()!= 0) break;
+      }
+    }
+    else
+      Feedback="Connection failed";
+  }
   else if (cmd=="ifttt")
   {
     WiFiClient client_ifttt;
@@ -251,6 +288,7 @@ void loop(){
             Feedback+="<option value=\"digitalread\">digitalRead</option>";
             Feedback+="<option value=\"analogread\">analogRead</option>";  
             Feedback+="<option value=\"touchread\">touchRead</option>";
+            Feedback+="<option value=\"tcp\">tcp</option>";
             Feedback+="<option value=\"ifttt\">ifttt</option>";
             Feedback+="</select>";
             Feedback+="<br><br>str1:"; 
