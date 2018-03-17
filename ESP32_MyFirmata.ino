@@ -99,7 +99,7 @@ void ExecuteCommand()
   else if (cmd=="analogwrite")
   {
     ledcAttachPin(str1.toInt(), 1);
-    ledcSetup(1, 12000, 8);
+    ledcSetup(1, 5000, 8);
     ledcWrite(1,str2.toInt());
     Feedback=Command;
   }       
