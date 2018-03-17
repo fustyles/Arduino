@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-3-17 12:00
+Author : ChungYi Fu (Taiwan)  2018-3-17 14:00
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -16,6 +16,7 @@ http://192.168.4.1/?analogwrite=13;200
 http://192.168.4.1/?digitalread=13
 http://192.168.4.1/?analogread=13
 http://192.168.4.1/?touchread=13
+http://192.168.4.1/?ifttt=event;key;value1
 
 STAIP：
 Query： http://192.168.4.1/?ip
@@ -27,8 +28,8 @@ https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 
 #include <WiFi.h>
 
-const char* ssid     = "";   //your network SSID
-const char* password = "";   //your network password
+const char* ssid     = "3COM";   //your network SSID
+const char* password = "godblessyou";   //your network password
 
 const char* apssid = "ESP32";
 const char* appassword = "12345678";
@@ -112,6 +113,38 @@ void ExecuteCommand()
   {
     Feedback=String(touchRead(str1.toInt()));
   }  
+  else if (cmd=="ifttt")
+  {
+    WiFiClient client_ifttt;
+    
+    if (client_ifttt.connect("maker.ifttt.com", 80)) 
+    {
+      Serial.println("Connected to IFTTT");
+      
+      String url = "/trigger/" + str1 + "/with/key/" + str2;
+      url += "?value1="+str3;
+      Serial.println(url);
+      client_ifttt.println("GET " + url + " HTTP/1.1");
+      client_ifttt.print("Host: ");
+      client_ifttt.println("maker.ifttt.com");
+      client_ifttt.println("Connection: close");
+      client_ifttt.println();
+
+      long StartTime = millis();
+      while ((StartTime+4000) > millis())
+      {
+        while (client_ifttt.available()) 
+          {
+            char c = client_ifttt.read();
+            Feedback+=String(c);
+          }
+      }
+    }
+    else
+    {
+      Feedback="IFTTT Connection failed";
+    }
+  }
   else 
   {
     Feedback="Command is not defined";
@@ -211,14 +244,17 @@ void loop(){
             Feedback+="<option value=\"analogwrite\">analogWrite</option>";
             Feedback+="<option value=\"digitalread\">digitalRead</option>";
             Feedback+="<option value=\"analogread\">analogRead</option>";  
-             Feedback+="<option value=\"touchread\">touchRead</option>";
+            Feedback+="<option value=\"touchread\">touchRead</option>";
+            Feedback+="<option value=\"ifttt\">ifttt</option>";
             Feedback+="</select>";
             Feedback+="<br><br>str1:"; 
             Feedback+="<input type=\"text\" name=\"str1\" id=\"str1\" size=\"20\">";      
             Feedback+="<br><br>str2:";
             Feedback+="<input type=\"text\" name=\"str2\" id=\"str2\" size=\"20\">";  
-            Feedback+="<br><br>";
-            Feedback+="<input type=\"button\" value=\"Send\" onclick=\"location.href='?'+cmd.value+'='+str1.value+';'+str2.value\">"; 
+            Feedback+="<br><br>str3:";
+            Feedback+="<input type=\"text\" name=\"str3\" id=\"str3\" size=\"20\">";  
+            Feedback+="<br><br>";           
+            Feedback+="<input type=\"button\" value=\"Send\" onclick=\"location.href='?'+cmd.value+'='+str1.value+';'+str2.value+';'+str3.value\">"; 
             Feedback+="</form>";
               
             client.println("HTTP/1.1 200 OK");
