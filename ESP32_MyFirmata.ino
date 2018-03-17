@@ -139,7 +139,7 @@ void ExecuteCommand()
             //Feedback+=String(c);
           }
       }
-      Feedback="Connected to IFTTT";
+      Feedback+="Connected to IFTTT";
     }
     else
     {
