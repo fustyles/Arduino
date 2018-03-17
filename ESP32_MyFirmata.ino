@@ -131,7 +131,7 @@ void ExecuteCommand()
       client_ifttt.println();
 
       long StartTime = millis();
-      while ((StartTime+5000) > millis())
+      while ((StartTime+4000) > millis())
       {
         while (client_ifttt.available()) 
           {
