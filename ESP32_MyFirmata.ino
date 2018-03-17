@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-3-17 19:30
+Author : ChungYi Fu (Taiwan)  2018-3-17 20:00
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -30,7 +30,7 @@ https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 #include <WiFi.h>
 
 const char* ssid     = "";   //your network SSID
-const char* password = "g";   //your network password
+const char* password = "";   //your network password
 
 const char* apssid = "ESP32";
 const char* appassword = "12345678";
@@ -61,6 +61,11 @@ void ExecuteCommand()
   {
     Feedback+="STA MAC: "+WiFi.macAddress();
   }  
+  else if (cmd=="restart")
+  {
+    setup();
+    Feedback=Command;
+  }    
   else if (cmd=="resetwifi")
   {
     WiFi.begin(str1.c_str(), str2.c_str());
@@ -122,7 +127,7 @@ void ExecuteCommand()
     {
       Serial.println("Connected to "+str1);
       
-      client_tcp.println("GET " + str3 + " HTTP/1.1");
+      client_tcp.println("GET /" + str3 + " HTTP/1.1");
       client_tcp.print("Host: ");
       client_tcp.println(str1);
       client_tcp.println("Connection: close");
@@ -297,7 +302,7 @@ void loop(){
             Feedback+="<input type=\"text\" name=\"str2\" id=\"str2\" size=\"20\">";  
             Feedback+="<br><br>str3:";
             Feedback+="<input type=\"text\" name=\"str3\" id=\"str3\" size=\"20\">";  
-            Feedback+="<br><br>";           
+            Feedback+="<br>(str3;str4;str5;str6;str7;str8;str9)<br><br>";           
             Feedback+="<input type=\"button\" value=\"Send\" onclick=\"location.href='?'+cmd.value+'='+str1.value+';'+str2.value+';'+str3.value\">"; 
             Feedback+="</form>";
               
