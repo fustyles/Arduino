@@ -126,8 +126,7 @@ void ExecuteCommand()
     
     if (client_tcp.connect(str1.c_str(), str2.toInt())) 
     {
-      Serial.println("Connected to "+str1);
-      
+      Serial.println("GET /" + str3);
       client_tcp.println("GET /" + str3 + " HTTP/1.1");
       client_tcp.print("Host: ");
       client_tcp.println(str1);
