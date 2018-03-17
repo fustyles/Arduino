@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-3-17 12:00
+Author : ChungYi Fu (Taiwan)  2018-3-17 12:30
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -207,10 +207,11 @@ void loop(){
             Feedback+="<option value=\"digitalread\">digitalRead</option>";
             Feedback+="<option value=\"analogread\">analogRead</option>";              
             Feedback+="</select>";
-            Feedback+="str1:"; 
-            Feedback+="<input type=\"text\" name=\"str1\" id=\"str1\" size=\"10\">";      
-            Feedback+="str2:";
-            Feedback+="<input type=\"text\" name=\"str2\" id=\"str2\" size=\"10\">";  
+            Feedback+="<br><br>str1:"; 
+            Feedback+="<input type=\"text\" name=\"str1\" id=\"str1\" size=\"20\">";      
+            Feedback+="<br><br>str2:";
+            Feedback+="<input type=\"text\" name=\"str2\" id=\"str2\" size=\"20\">";  
+            Feedback+="<br><br>";
             Feedback+="<input type=\"button\" value=\"Send\" onclick=\"location.href='?'+cmd.value+'='+str1.value+';'+str2.value\">"; 
             Feedback+="</form>";
               
