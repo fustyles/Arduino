@@ -16,7 +16,7 @@ http://192.168.4.1/?analogwrite=13;200
 http://192.168.4.1/?digitalread=13
 http://192.168.4.1/?analogread=13
 http://192.168.4.1/?touchread=13
-http://192.168.4.1/?ifttt=event;key;value1
+http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 
 STAIP：
 Query： http://192.168.4.1/?ip
