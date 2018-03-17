@@ -86,7 +86,10 @@ void ExecuteCommand()
   else if (cmd=="digitalwrite")
   {
     pinMode(str1.toInt(), OUTPUT);
-    digitalWrite(str1.toInt(),str2.toInt());
+    if (str2.toInt()==1)
+      digitalWrite(str1.toInt(),HIGH);
+    else
+      digitalWrite(str1.toInt(),LOW);
     Feedback=Command;
   }   
   else if (cmd=="digitalread")
