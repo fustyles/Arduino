@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-3-17 14:30
+Author : ChungYi Fu (Taiwan)  2018-3-17 18:00
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -134,12 +134,26 @@ void ExecuteCommand()
       while ((StartTime+4000) > millis())
       {
         while (client_ifttt.available()) 
-          {
+        {
             char c = client_ifttt.read();
-            //Feedback+=String(c);
+            if (c=='\n') 
+            {
+              if (Feedback.length() == 0) 
+              {
+                StartTime-=4000;
+                break;
+              } 
+              else 
+              {
+                Feedback="";
+              }              
+            }
+            else
+            {
+              Feedback+=String(c);
+            }
           }
       }
-      Feedback+="Connected to IFTTT";
     }
     else
     {
