@@ -122,7 +122,7 @@ void ExecuteCommand()
       Serial.println("Connected to IFTTT");
       
       String url = "/trigger/" + str1 + "/with/key/" + str2;
-      url += "?value1="+str3;
+      url += "?value1="+str3+"&value2="+str4+"&value3="+str5;
       Serial.println(url);
       client_ifttt.println("GET " + url + " HTTP/1.1");
       client_ifttt.print("Host: ");
@@ -131,7 +131,7 @@ void ExecuteCommand()
       client_ifttt.println();
 
       long StartTime = millis();
-      while ((StartTime+4000) > millis())
+      while ((StartTime+5000) > millis())
       {
         while (client_ifttt.available()) 
           {
