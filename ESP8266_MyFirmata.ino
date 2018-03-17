@@ -9,18 +9,18 @@ http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
-APIP： 192.168.4.1
+Default APIP： 192.168.4.1
 http://192.168.4.1/?ip
 http://192.168.4.1/?mac
-http://192.168.4.1/?resetwifi=ssid;password
 http://192.168.4.1/?restart
+http://192.168.4.1/?resetwifi=ssid;password
 http://192.168.4.1/?at=AT+Command
-http://192.168.4.1/?inputpullup=3
-http://192.168.4.1/?pinmode=3;1
-http://192.168.4.1/?digitalwrite=3;1
-http://192.168.4.1/?analogwrite=3;200
-http://192.168.4.1/?digitalread=3
-http://192.168.4.1/?analogread=3
+http://192.168.4.1/?inputpullup=13
+http://192.168.4.1/?pinmode=13;1
+http://192.168.4.1/?digitalwrite=13;1
+http://192.168.4.1/?analogwrite=13;255
+http://192.168.4.1/?digitalread=13
+http://192.168.4.1/?analogread=13
 http://192.168.4.1/?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 
 STAIP：
