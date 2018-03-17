@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-3-17 20:00
+Author : ChungYi Fu (Taiwan)  2018-3-17 20:30
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -10,10 +10,11 @@ http://192.168.4.1/?ip
 http://192.168.4.1/?mac
 http://192.168.4.1/?restart
 http://192.168.4.1/?resetwifi=ssid;password
+http://192.168.4.1/?at=AT+Command
 http://192.168.4.1/?inputpullup=13
 http://192.168.4.1/?pinmode=13;1
 http://192.168.4.1/?digitalwrite=13;1
-http://192.168.4.1/?analogwrite=13;200
+http://192.168.4.1/?analogwrite=13;255
 http://192.168.4.1/?digitalread=13
 http://192.168.4.1/?analogread=13
 http://192.168.4.1/?touchread=13
@@ -30,8 +31,8 @@ https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 
 #include <WiFi.h>
 
-const char* ssid     = "";   //your network SSID
-const char* password = "";   //your network password
+const char* ssid     = "3COM";   //your network SSID
+const char* password = "godblessyou";   //your network password
 
 const char* apssid = "ESP32";
 const char* appassword = "12345678";
@@ -81,7 +82,13 @@ void ExecuteCommand()
     Serial.println("");
     Serial.println(WiFi.localIP());
     Feedback=WiFi.localIP().toString();
-  }  
+  } 
+  else if (cmd=="at") 
+  {
+    Serial.println(str1);
+    Serial.flush();
+    Feedback=Command;
+  }     
   else if (cmd=="inputpullup")
   {
     pinMode(str1.toInt(), INPUT_PULLUP);
@@ -287,6 +294,7 @@ void loop(){
             Feedback+="<option value=\"mac\">MAC</option>";
             Feedback+="<option value=\"restart\">Restart</option>";
             Feedback+="<option value=\"resetwifi\">ResetWifi</option>";
+            Feedback+="<option value=\"at\">at</option>";
             Feedback+="<option value=\"inputpullup\">InputPullUp</option>";
             Feedback+="<option value=\"pinmode\">pinMode</option>";
             Feedback+="<option value=\"digitalwrite\">digitalWrite</option>";
