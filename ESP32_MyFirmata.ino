@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-3-17 12:30
+Author : ChungYi Fu (Taiwan)  2018-3-17 12:00
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -15,6 +15,7 @@ http://192.168.4.1/?digitalwrite=13;1
 http://192.168.4.1/?analogwrite=13;200
 http://192.168.4.1/?digitalread=13
 http://192.168.4.1/?analogread=13
+http://192.168.4.1/?touchread=13
 
 STAIP：
 Query： http://192.168.4.1/?ip
@@ -107,6 +108,10 @@ void ExecuteCommand()
   {
     Feedback=String(analogRead(str1.toInt()));
   }
+  else if (cmd=="touchread")
+  {
+    Feedback=String(touchRead(str1.toInt()));
+  }  
   else 
   {
     Feedback="Command is not defined";
@@ -205,7 +210,8 @@ void loop(){
             Feedback+="<option value=\"digitalwrite\">digitalWrite</option>";
             Feedback+="<option value=\"analogwrite\">analogWrite</option>";
             Feedback+="<option value=\"digitalread\">digitalRead</option>";
-            Feedback+="<option value=\"analogread\">analogRead</option>";              
+            Feedback+="<option value=\"analogread\">analogRead</option>";  
+             Feedback+="<option value=\"touchread\">touchRead</option>";
             Feedback+="</select>";
             Feedback+="<br><br>str1:"; 
             Feedback+="<input type=\"text\" name=\"str1\" id=\"str1\" size=\"20\">";      
