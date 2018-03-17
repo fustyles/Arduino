@@ -1,10 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP32)
-
-Author : ChungYi Fu (Taiwan)  2018-3-17 01:00
-
+Author : ChungYi Fu (Taiwan)  2018-3-17 12:00
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
-
 Default APIP： 192.168.4.1
 http://192.168.4.1/?ip
 http://192.168.4.1/?mac
@@ -15,11 +12,9 @@ http://192.168.4.1/?digitalwrite=13;1
 http://192.168.4.1/?analogwrite=13;200
 http://192.168.4.1/?digitalread=13
 http://192.168.4.1/?analogread=13
-
 STAIP：
 Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=id;pwd
-
 Control Page
 https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 */
@@ -189,7 +184,27 @@ void loop(){
                 
         if (c == '\n') {
           if (currentLine.length() == 0) {
-            if (Feedback=="") Feedback="Hello World";
+
+            Feedback+="<br><br>";
+            Feedback+="<form method=\"get\" action=\"\">";
+            Feedback+="cmd:";
+            Feedback+="<select name=\"cmd\" id=\"cmd\">";
+            Feedback+="<option value=\"ip\">IP</option>";
+            Feedback+="<option value=\"mac\">MAC</option>";
+            Feedback+="<option value=\"resetwifi\">ResetWifi</option>";
+            Feedback+="<option value=\"inputpullup\">InputPullUp</option>";
+            Feedback+="<option value=\"pinmode\">pinMode</option>";
+            Feedback+="<option value=\"digitalwrite\">digitalWrite</option>";
+            Feedback+="<option value=\"analogwrite\">analogWrite</option>";
+            Feedback+="<option value=\"digitalread\">digitalRead</option>";
+            Feedback+="<option value=\"analogread\">analogRead</option>";              
+            Feedback+="</select>";
+            Feedback+="str1:"; 
+            Feedback+="<input type=\"text\" name=\"str1\" id=\"str1\" size=\"10\">";      
+            Feedback+="str2:";
+            Feedback+="<input type=\"text\" name=\"str2\" id=\"str2\" size=\"10\">";  
+            Feedback+="<input type=\"button\" value=\"Send\" onclick=\"location.href='?'+cmd.value+'='+str1.value+';'+str2.value\">"; 
+            Feedback+="</form>";
               
             client.println("HTTP/1.1 200 OK");
             client.println("Content-type:text/html");
