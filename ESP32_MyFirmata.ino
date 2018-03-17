@@ -143,7 +143,7 @@ void ExecuteCommand()
     }
     else
     {
-      Feedback="IFTTT Connection failed";
+      Feedback="Connection failed";
     }
   }
   else 
