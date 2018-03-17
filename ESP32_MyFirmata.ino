@@ -131,28 +131,27 @@ void ExecuteCommand()
       client_ifttt.println();
 
       long StartTime = millis();
-      while ((StartTime+4000) > millis())
+      while ((StartTime+5000) > millis())
       {
         while (client_ifttt.available()) 
         {
             char c = client_ifttt.read();
-            if (c=='\n') 
-            {
+            if (c == '\n') {
               if (Feedback.length() == 0) 
               {
-                StartTime-=4000;
                 break;
               } 
               else 
               {
-                Feedback="";
-              }              
-            }
-            else
+                Feedback = "";
+              }
+            } 
+            else if (c != '\r') 
             {
-              Feedback+=String(c);
+              Feedback += c;
             }
-          }
+         }
+         if (Feedback.length()!= 0) break;
       }
     }
     else
@@ -185,13 +184,13 @@ void setup()
 
     WiFi.begin(ssid, password);
 
+    Serial.println("");
     Serial.print("Connecting to ");
     Serial.println(ssid);
     
     long int StartTime=millis();
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
-        Serial.print(".");
         if ((StartTime+5000) < millis()) break;
     } 
 
