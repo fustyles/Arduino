@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-3-17 20:30
+Author : ChungYi Fu (Taiwan)  2018-3-18 20:00
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -96,7 +96,10 @@ void ExecuteCommand()
   }  
   else if (cmd=="pinmode")
   {
-    pinMode(str1.toInt(), str2.toInt());
+    if (str2.toInt()==1)
+      pinMode(str1.toInt(), OUTPUT);
+    else
+      pinMode(str1.toInt(), INPUT);
     Feedback=Command;
   }        
   else if (cmd=="digitalwrite")
