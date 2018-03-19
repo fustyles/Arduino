@@ -194,7 +194,6 @@ void executecommand()
     }    
   else 
     {
-      //Feedback(CID,"<font color=\"red\">Command is not defined</font>",0);
       Feedback(CID,"<html>Command is not defined</html>",3);
     }    
 }
