@@ -71,7 +71,7 @@ void executecommand()
       digitalWrite(str2.toInt(), 0);
       digitalWrite(str3.toInt(), 0);
       digitalWrite(str4.toInt(), 0);
-      delay(100);
+      delay(10);
     
       if (str8=="S")
       {
