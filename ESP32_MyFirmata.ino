@@ -10,7 +10,6 @@ http://192.168.4.1/?ip
 http://192.168.4.1/?mac
 http://192.168.4.1/?restart
 http://192.168.4.1/?resetwifi=ssid;password
-http://192.168.4.1/?at=AT+Command
 http://192.168.4.1/?inputpullup=13
 http://192.168.4.1/?pinmode=13;1
 http://192.168.4.1/?digitalwrite=13;1
@@ -82,13 +81,7 @@ void ExecuteCommand()
     Serial.println("");
     Serial.println(WiFi.localIP());
     Feedback=WiFi.localIP().toString();
-  } 
-  else if (cmd=="at") 
-  {
-    Serial.println(str1);
-    Serial.flush();
-    Feedback=Command;
-  }     
+  }    
   else if (cmd=="inputpullup")
   {
     pinMode(str1.toInt(), INPUT_PULLUP);
@@ -311,7 +304,6 @@ void loop(){
             Feedback+="<option value=\"mac\">MAC</option>";
             Feedback+="<option value=\"restart\">Restart</option>";
             Feedback+="<option value=\"resetwifi\">ResetWifi</option>";
-            Feedback+="<option value=\"at\">at</option>";
             Feedback+="<option value=\"inputpullup\">InputPullUp</option>";
             Feedback+="<option value=\"pinmode\">pinMode</option>";
             Feedback+="<option value=\"digitalwrite\">digitalWrite</option>";
