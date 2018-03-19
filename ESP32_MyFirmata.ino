@@ -33,7 +33,7 @@ https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 const char* ssid     = "";   //your network SSID
 const char* password = "";   //your network password
 
-const char* apssid = "MyFirmataESP32";
+const char* apssid = "MyFirmata ESP32";
 const char* appassword = "12345678";
 
 WiFiServer server(80);
