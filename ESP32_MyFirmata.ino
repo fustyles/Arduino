@@ -73,7 +73,8 @@ void ExecuteCommand()
     Serial.print("Connecting to ");
     Serial.println(str1);
     long int StartTime=millis();
-    while (WiFi.status() != WL_CONNECTED) {
+    while (WiFi.status() != WL_CONNECTED) 
+    {
         delay(500);
         Serial.print(".");
         if ((StartTime+5000) < millis()) break;
