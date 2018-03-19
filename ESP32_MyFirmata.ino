@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-3-19 21:30
+Author : ChungYi Fu (Taiwan)  2018-3-19 22:00
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -240,6 +240,18 @@ void setup()
         delay(500);
         if ((StartTime+5000) < millis()) break;
     } 
+  
+    if (WiFi.localIP().toString()!="0.0.0.0")
+    {
+      pinMode(2, OUTPUT);
+      for (int i=0;i<5;i++)
+      {
+        digitalWrite(2,HIGH);
+        delay(100);
+        digitalWrite(2,LOW);
+        delay(100);
+      }
+    }  
 
     Serial.println("");
     Serial.println("STAIP address: ");
