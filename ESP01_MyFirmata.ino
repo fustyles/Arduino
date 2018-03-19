@@ -1,5 +1,5 @@
 /* 
-Author : ChungYi Fu (Taiwan)  2018-3-15 17:30
+Author : ChungYi Fu (Taiwan)  2018-3-19 22:30
 
 Arduino Uno (CH340G) + ESP8266 ESP-01 (1MB Flash, V2.0_AT_Firmware)
 
@@ -123,6 +123,11 @@ void executecommand()
       pinMode(str2.toInt(), OUTPUT);
       pinMode(str3.toInt(), OUTPUT);
       pinMode(str4.toInt(), OUTPUT);
+      digitalWrite(str1.toInt(), 0);
+      digitalWrite(str2.toInt(), 0);
+      digitalWrite(str3.toInt(), 0);
+      digitalWrite(str4.toInt(), 0);
+      delay(10);    
     
       if (str8=="S")
       {
