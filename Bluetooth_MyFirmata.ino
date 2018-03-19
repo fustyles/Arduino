@@ -67,6 +67,11 @@ void executecommand()
       pinMode(str2.toInt(), OUTPUT);
       pinMode(str3.toInt(), OUTPUT);
       pinMode(str4.toInt(), OUTPUT);
+      digitalWrite(str1.toInt(), 0);
+      digitalWrite(str2.toInt(), 0);
+      digitalWrite(str3.toInt(), 0);
+      digitalWrite(str4.toInt(), 0);
+      delay(100);
     
       if (str8=="S")
       {
