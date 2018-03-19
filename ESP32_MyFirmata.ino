@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-3-19 22:00
+Author : ChungYi Fu (Taiwan)  2018-3-19 23:00
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -166,11 +166,9 @@ void ExecuteCommand()
     
     if (client_ifttt.connect("maker.ifttt.com", 80)) 
     {
-      Serial.println("Connected to IFTTT");
-      
       String url = "/trigger/" + str1 + "/with/key/" + str2;
       url += "?value1="+str3+"&value2="+str4+"&value3="+str5;
-      Serial.println(url);
+      Serial.println("GET " + url);
       client_ifttt.println("GET " + url + " HTTP/1.1");
       client_ifttt.print("Host: ");
       client_ifttt.println("maker.ifttt.com");
