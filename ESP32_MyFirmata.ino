@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-3-18 20:00
+Author : ChungYi Fu (Taiwan)  2018-3-19 21:30
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -161,6 +161,7 @@ void ExecuteCommand()
          }
          if (Feedback.length()!= 0) break;
       }
+      client_tcp.stop();
     }
     else
       Feedback="Connection failed";
@@ -200,6 +201,7 @@ void ExecuteCommand()
          }
          if (Feedback.length()!= 0) break;
       }
+      client_ifttt.stop();
     }
     else
       Feedback="Connection failed";
