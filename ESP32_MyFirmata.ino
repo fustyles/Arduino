@@ -22,7 +22,7 @@ http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 
 STAIP：
 Query： http://192.168.4.1/?ip
-Link：http://192.168.4.1/?resetwifi=id;pwd
+Link：http://192.168.4.1/?resetwifi=ssid;password
 
 Control Page
 https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
