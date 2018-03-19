@@ -229,7 +229,8 @@ void setup()
     Serial.println(ssid);
     
     long int StartTime=millis();
-    while (WiFi.status() != WL_CONNECTED) {
+    while (WiFi.status() != WL_CONNECTED) 
+    {
         delay(500);
         if ((StartTime+5000) < millis()) break;
     } 
@@ -256,15 +257,17 @@ void setup()
 void loop(){
  WiFiClient client = server.available();
 
-  if (client) { 
+  if (client) 
+  { 
     String currentLine = "";
 
     Command="";cmd="";str1="";str2="";str3="";str4="";str5="";str6="";str7="";str8="";str9="";
     byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
-    while (client.connected()) {
-      
-      if (client.available()) {
+    while (client.connected()) 
+    {
+      if (client.available()) 
+      {
         char c = client.read();             
         
         if (c=='?') ReceiveState=1;
@@ -293,9 +296,10 @@ void loop(){
           if ((strState>=9)&&(c==';')) semicolonstate=1;
         }
                 
-        if (c == '\n') {
-          if (currentLine.length() == 0) {
-
+        if (c == '\n') 
+        {
+          if (currentLine.length() == 0) 
+          {
             Feedback+="<br><br>";
             Feedback+="<form method=\"get\" action=\"\">";
             Feedback+="cmd:";
@@ -335,7 +339,9 @@ void loop(){
           } else {
             currentLine = "";
           }
-        } else if (c != '\r') {
+        } 
+        else if (c != '\r') 
+        {
           currentLine += c;
         }
 
