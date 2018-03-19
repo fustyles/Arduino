@@ -34,7 +34,7 @@ const char* ssid     = "";   //your network SSID
 const char* password = "";   //your network password
 
 const char* apssid = "MyFirmata ESP32";
-const char* appassword = "12345678";         //Wifi password require at least 8 characters.
+const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 WiFiServer server(80);
 
