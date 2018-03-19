@@ -1,5 +1,5 @@
 /*
-Bluetooth
+Arduino Uno + Bluetooth(HC05,HC06)
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-3-19 09:30 
 
