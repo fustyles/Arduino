@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-3-21 00:00
+Author : ChungYi Fu (Taiwan)  2018-3-21 00:30
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -355,6 +355,7 @@ void loop(){
         }
       }
     }
+    delay(1);
     client.stop();
   }
   
