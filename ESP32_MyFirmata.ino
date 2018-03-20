@@ -359,7 +359,8 @@ void loop(){
   //{
   //  cmd="yourcmd";
   //  str1="yourstr1";
-  //  str2="yourstr1";
+  //  str2="yourstr2";
+  //  str3="yourstr3";
   //  ExecuteCommand();
   //  delay(10000);
   //}
