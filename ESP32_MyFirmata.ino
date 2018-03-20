@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-3-21 00:30
+Author : ChungYi Fu (Taiwan)  2018-3-21 01:00
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -331,7 +331,10 @@ void loop(){
             client.println("Content-type:text/html");
             client.println();
             client.println("<!DOCTYPE HTML>");
-            client.println("<html><head><meta charset=\"UTF-8\"></head><body>");
+            client.println("<html><head>");
+            client.println("<meta charset=\"UTF-8\">");
+            client.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
+            client.println("</head><body>");
             client.print(Feedback);
             client.print("</body></html>");
             client.println();
