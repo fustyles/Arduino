@@ -354,4 +354,13 @@ void loop(){
     }
     client.stop();
   }
+  
+  //if (SensorValue>limit)
+  //{
+  //  cmd="yourcmd";
+  //  str1="yourstr1";
+  //  str2="yourstr1";
+  //  ExecuteCommand();
+  //  delay(10000);
+  //}
 }
