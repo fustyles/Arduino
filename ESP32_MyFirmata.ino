@@ -362,7 +362,7 @@ void loop(){
     client.stop();
   }
   
-  //if (SensorValue>limit)
+  //if (SensorValue>LimitValue)
   //{
   //  cmd="yourcmd";
   //  str1="yourstr1";
