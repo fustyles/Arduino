@@ -98,6 +98,7 @@ void ExecuteCommand()
   }        
   else if (cmd=="digitalwrite")
   {
+    ledcDetachPin(str1.toInt());
     pinMode(str1.toInt(), OUTPUT);
     digitalWrite(str1.toInt(), str2.toInt());
     Feedback=Command;
