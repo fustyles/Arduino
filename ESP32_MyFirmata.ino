@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-3-21 01:00
+Author : ChungYi Fu (Taiwan)  2018-3-23 18:30
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -39,6 +39,7 @@ const char* appassword = "12345678";         //AP password require at least 8 ch
 WiFiServer server(80);
 
 String Feedback="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
+byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
 void ExecuteCommand()
 {
@@ -98,10 +99,7 @@ void ExecuteCommand()
   else if (cmd=="digitalwrite")
   {
     pinMode(str1.toInt(), OUTPUT);
-    if (str2.toInt()==1)
-      digitalWrite(str1.toInt(),HIGH);
-    else
-      digitalWrite(str1.toInt(),LOW);
+    digitalWrite(str1.toInt(), str2.toInt());
     Feedback=Command;
   }   
   else if (cmd=="digitalread")
@@ -252,15 +250,16 @@ void setup()
     server.begin();
 }
 
-void loop(){
+void loop()
+{
+Command="";cmd="";str1="";str2="";str3="";str4="";str5="";str6="";str7="";str8="";str9="";
+ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
+
  WiFiClient client = server.available();
 
   if (client) 
   { 
     String currentLine = "";
-
-    Command="";cmd="";str1="";str2="";str3="";str4="";str5="";str6="";str7="";str8="";str9="";
-    byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
     while (client.connected()) 
     {
@@ -268,31 +267,7 @@ void loop(){
       {
         char c = client.read();             
         
-        if (c=='?') ReceiveState=1;
-        if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
-
-        if (ReceiveState==1)
-        {
-          Command=Command+String(c);
-          
-          if (c=='=') cmdState=0;
-          if (c==';') strState++;
-        
-          if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
-          if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) str1=str1+String(c);
-          if ((cmdState==0)&&(strState==2)&&(c!=';')) str2=str2+String(c);
-          if ((cmdState==0)&&(strState==3)&&(c!=';')) str3=str3+String(c);
-          if ((cmdState==0)&&(strState==4)&&(c!=';')) str4=str4+String(c);
-          if ((cmdState==0)&&(strState==5)&&(c!=';')) str5=str5+String(c);
-          if ((cmdState==0)&&(strState==6)&&(c!=';')) str6=str6+String(c);
-          if ((cmdState==0)&&(strState==7)&&(c!=';')) str7=str7+String(c);
-          if ((cmdState==0)&&(strState==8)&&(c!=';')) str8=str8+String(c);
-          if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) str9=str9+String(c);
-          
-          if (c=='?') questionstate=1;
-          if (c=='=') equalstate=1;
-          if ((strState>=9)&&(c==';')) semicolonstate=1;
-        }
+        getCommand(c);
                 
         if (c == '\n') 
         {
@@ -370,4 +345,33 @@ void loop(){
   //  ExecuteCommand();
   //  delay(10000);
   //}
+}
+
+void getCommand(char c)
+{
+  if (c=='?') ReceiveState=1;
+  if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
+  
+  if (ReceiveState==1)
+  {
+    Command=Command+String(c);
+    
+    if (c=='=') cmdState=0;
+    if (c==';') strState++;
+  
+    if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
+    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) str1=str1+String(c);
+    if ((cmdState==0)&&(strState==2)&&(c!=';')) str2=str2+String(c);
+    if ((cmdState==0)&&(strState==3)&&(c!=';')) str3=str3+String(c);
+    if ((cmdState==0)&&(strState==4)&&(c!=';')) str4=str4+String(c);
+    if ((cmdState==0)&&(strState==5)&&(c!=';')) str5=str5+String(c);
+    if ((cmdState==0)&&(strState==6)&&(c!=';')) str6=str6+String(c);
+    if ((cmdState==0)&&(strState==7)&&(c!=';')) str7=str7+String(c);
+    if ((cmdState==0)&&(strState==8)&&(c!=';')) str8=str8+String(c);
+    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) str9=str9+String(c);
+    
+    if (c=='?') questionstate=1;
+    if (c=='=') equalstate=1;
+    if ((strState>=9)&&(c==';')) semicolonstate=1;
+  }
 }
