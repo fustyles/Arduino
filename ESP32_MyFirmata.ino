@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-3-23 18:30
+Author : ChungYi Fu (Taiwan)  2018-3-27 18:30
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -308,6 +308,7 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
             client.println("<!DOCTYPE HTML>");
             client.println("<html><head>");
             client.println("<meta charset=\"UTF-8\">");
+            client.println("<meta http-equiv=\"Access-Control-Allow-Origin\" content=\"*\">");
             client.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
             client.println("</head><body>");
             client.print(Feedback);
