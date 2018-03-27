@@ -303,6 +303,8 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
             Feedback+="</form>";
               
             client.println("HTTP/1.1 200 OK");
+            client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+            client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
             client.println("Content-type:text/html");
             client.println("Access-Control-Allow-Origin: *");
             client.println();
