@@ -294,11 +294,11 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
             Feedback+="<br>(str3;str4;str5;str6;str7;str8;str9)<br><br>";           
             Feedback+="<input type=\"button\" value=\"Send\" onclick=\"location.href='?'+cmd.value+'='+str1.value+';'+str2.value+';'+str3.value\">"; 
             Feedback+="</form>";
-              
+
             client.println("HTTP/1.1 200 OK");
             client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
             client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
-            client.println("Content-type:text/html");
+            client.println("Content-Type: text/html; charset=utf-8");
             client.println("Access-Control-Allow-Origin: *");
             client.println();
             client.println("<!DOCTYPE HTML>");
@@ -310,7 +310,30 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
             client.print(Feedback);
             client.print("</body></html>");
             client.println();
-              
+            
+            /*
+            client.println("HTTP/1.1 200 OK");
+            client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+            client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
+            client.println("Content-Type: application/json;charset=utf-8");
+            client.println("Access-Control-Allow-Origin: *");
+            client.println();
+            client.println("[{\"esp8266\":\""+Feedback+"\"}]");
+            client.println();
+            */
+            
+            /*
+            client.println("HTTP/1.1 200 OK");
+            client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+            client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
+            client.println("Content-Type: text/xml; charset=utf-8");
+            client.println("Access-Control-Allow-Origin: *");
+            client.println();
+            client.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            client.println("<esp8266><feedback>"+Feedback+"</feedback></esp8266>");
+            client.println();
+           */
+                        
             Feedback="";
             break;
           } else {
