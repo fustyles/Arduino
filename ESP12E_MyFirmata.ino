@@ -118,8 +118,8 @@ void ExecuteCommand()
   }
   else if (cmd=="tcp")
   {
-      String request ="/" + str3;
-      tcp(str1,request,str2.toInt());
+    String request ="/" + str3;
+    tcp(str1,request,str2.toInt());
   }
   else if (cmd=="ifttt")
   {
