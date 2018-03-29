@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-3-29 17:00
+Author : ChungYi Fu (Taiwan)  2018-3-30 00:30
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -19,6 +19,7 @@ http://192.168.4.1/?analogread=13
 http://192.168.4.1/?touchread=13
 http://192.168.4.1/?tcp=domain;port;request
 http://192.168.4.1/?ifttt=event;key;value1;value2;value3
+http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
 
 STAIP：
 Query： http://192.168.4.1/?ip
@@ -196,6 +197,44 @@ void ExecuteCommand()
     else
       Feedback="Connection failed";
   }
+else if (cmd=="thingspeakupdate")
+  {
+    WiFiClient client_thingspeak;
+    
+    if (client_thingspeak.connect("api.thingspeak.com", 80)) 
+    {
+      String url = "/update?api_key=" + str1;
+      url += "&field1="+str2+"&field2="+str3+"&field3="+str4+"&field4="+str5+"&field5="+str6+"&field6="+str7+"&field7="+str8+"&field8="+str9;
+      Serial.println("GET " + url);
+      client_thingspeak.println("GET " + url + " HTTP/1.1");
+      client_thingspeak.print("Host: ");
+      client_thingspeak.println("api.thingspeak.com");
+      client_thingspeak.println("Connection: close");
+      client_thingspeak.println();
+
+      long StartTime = millis();
+      while ((StartTime+5000) > millis())
+      {
+        while (client_thingspeak.available()) 
+        {
+            char c = client_thingspeak.read();
+            if (c == '\n') 
+            {
+              if (Feedback.length() == 0) 
+                break;
+              else 
+                Feedback = "";
+            } 
+            else if (c != '\r') 
+              Feedback += c;
+         }
+         if (Feedback.length()!= 0) break;
+      }
+      client_thingspeak.stop();
+    }
+    else
+      Feedback="Connection failed";
+  }      
   else 
   {
     Feedback="Command is not defined";
@@ -316,6 +355,7 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
             Feedback+="<option value=\"touchread\">touchRead</option>";
             Feedback+="<option value=\"tcp\">tcp</option>";
             Feedback+="<option value=\"ifttt\">ifttt</option>";
+            Feedback+="<option value=\"thingspeakupdate\">thingspeakupdate</option>";
             Feedback+="</select>";
             Feedback+="<br><br>str1:"; 
             Feedback+="<input type=\"text\" name=\"str1\" id=\"str1\" size=\"20\">";      
