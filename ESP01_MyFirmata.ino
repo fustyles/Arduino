@@ -32,8 +32,8 @@ https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 */
 
 // Check your Wi-Fi Router's Settings
-String WIFI_SSID="";   //your network SSID
-String WIFI_PWD="";    //your network password
+String WIFI_SSID = "";   //your network SSID
+String WIFI_PWD  = "";    //your network password
 
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
