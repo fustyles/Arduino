@@ -55,7 +55,7 @@ void ExecuteCommand()
   else if (cmd=="ip")
   {
     Feedback="AP IP: "+WiFi.softAPIP().toString();    
-    Feedback+="<br>";
+    Feedback+=", ";
     Feedback+="STA IP: "+WiFi.localIP().toString();
   }  
   else if (cmd=="mac")
