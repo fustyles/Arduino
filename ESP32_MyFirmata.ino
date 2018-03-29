@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-3-29 08:30
+Author : ChungYi Fu (Taiwan)  2018-3-29 17:00
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -355,7 +355,7 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
           currentLine += c;
         }
 
-        if ((currentLine.indexOf("?")!=-1)&&(currentLine.indexOf(" HTTP")!=-1))
+        if ((currentLine.indexOf("/?")!=-1)&&(currentLine.indexOf(" HTTP")!=-1))
         {
           currentLine="";
           Feedback="";
