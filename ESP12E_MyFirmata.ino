@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP12E)
 
-Author : ChungYi Fu (Taiwan)  2018-3-30 00:30
+Author : ChungYi Fu (Taiwan)  2018-3-30 01:00
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -118,14 +118,39 @@ void ExecuteCommand()
   }
   else if (cmd=="tcp")
   {
+      String request ="/" + str3;
+      tcp(str1,request,str2.toInt());
+  }
+  else if (cmd=="ifttt")
+  {
+    String domain="maker.ifttt.com";
+    String request = "/trigger/" + str1 + "/with/key/" + str2;
+    request += "?value1="+str3+"&value2="+str4+"&value3="+str5;
+    tcp(domain,request,80);
+  }
+  else if (cmd=="thingspeakupdate")
+  {
+    String domain="api.thingspeak.com";
+    String request = "/update?api_key=" + str1;
+    request += "&field1="+str2+"&field2="+str3+"&field3="+str4+"&field4="+str5+"&field5="+str6+"&field6="+str7+"&field7="+str8+"&field8="+str9;
+    tcp(domain,request,80);
+  }    
+  else 
+  {
+    Feedback="Command is not defined";
+  }
+}
+
+void tcp(String domain,String url,int port)
+{
     WiFiClient client_tcp;
     
-    if (client_tcp.connect(str1.c_str(), str2.toInt())) 
+    if (client_tcp.connect(domain, port)) 
     {
-      Serial.println("GET /" + str3);
-      client_tcp.println("GET /" + str3 + " HTTP/1.1");
+      Serial.println("GET " + url);
+      client_tcp.println("GET " + url + " HTTP/1.1");
       client_tcp.print("Host: ");
-      client_tcp.println(str1);
+      client_tcp.println(domain);
       client_tcp.println("Connection: close");
       client_tcp.println();
 
@@ -150,88 +175,7 @@ void ExecuteCommand()
       client_tcp.stop();
     }
     else
-      Feedback="Connection failed";
-  }
-  else if (cmd=="ifttt")
-  {
-    WiFiClient client_ifttt;
-    
-    if (client_ifttt.connect("maker.ifttt.com", 80)) 
-    {
-      String url = "/trigger/" + str1 + "/with/key/" + str2;
-      url += "?value1="+str3+"&value2="+str4+"&value3="+str5;
-      Serial.println("GET " + url);
-      client_ifttt.println("GET " + url + " HTTP/1.1");
-      client_ifttt.print("Host: ");
-      client_ifttt.println("maker.ifttt.com");
-      client_ifttt.println("Connection: close");
-      client_ifttt.println();
-
-      long StartTime = millis();
-      while ((StartTime+5000) > millis())
-      {
-        while (client_ifttt.available()) 
-        {
-            char c = client_ifttt.read();
-            if (c == '\n') 
-            {
-              if (Feedback.length() == 0) 
-                break;
-              else 
-                Feedback = "";
-            } 
-            else if (c != '\r') 
-              Feedback += c;
-         }
-         if (Feedback.length()!= 0) break;
-      }
-      client_ifttt.stop();
-    }
-    else
-      Feedback="Connection failed";
-  }
-else if (cmd=="thingspeakupdate")
-  {
-    WiFiClient client_thingspeak;
-    
-    if (client_thingspeak.connect("api.thingspeak.com", 80)) 
-    {
-      String url = "/update?api_key=" + str1;
-      url += "&field1="+str2+"&field2="+str3+"&field3="+str4+"&field4="+str5+"&field5="+str6+"&field6="+str7+"&field7="+str8+"&field8="+str9;
-      Serial.println("GET " + url);
-      client_thingspeak.println("GET " + url + " HTTP/1.1");
-      client_thingspeak.print("Host: ");
-      client_thingspeak.println("api.thingspeak.com");
-      client_thingspeak.println("Connection: close");
-      client_thingspeak.println();
-
-      long StartTime = millis();
-      while ((StartTime+5000) > millis())
-      {
-        while (client_thingspeak.available()) 
-        {
-            char c = client_thingspeak.read();
-            if (c == '\n') 
-            {
-              if (Feedback.length() == 0) 
-                break;
-              else 
-                Feedback = "";
-            } 
-            else if (c != '\r') 
-              Feedback += c;
-         }
-         if (Feedback.length()!= 0) break;
-      }
-      client_thingspeak.stop();
-    }
-    else
-      Feedback="Connection failed";
-  }    
-  else 
-  {
-    Feedback="Command is not defined";
-  }
+      Feedback="Connection failed";  
 }
 
 void setup()
@@ -441,4 +385,3 @@ void getCommand(char c)
     if ((strState>=9)&&(c==';')) semicolonstate=1;
   }
 }
-
