@@ -1,5 +1,5 @@
 /* 
-Author : ChungYi Fu (Taiwan)  2018-3-19 22:30
+Author : ChungYi Fu (Taiwan)  2018-3-29 17:00
 
 Arduino Uno (CH340G) + ESP8266 ESP-01 (1MB Flash, V2.0_AT_Firmware)
 
@@ -238,12 +238,12 @@ void loop()
 {
   getVariable();
   
-  if ((ReceiveData.indexOf("?")!=-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
+  if ((ReceiveData.indexOf("/?")!=-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
   {
     CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
     executecommand();
   }
-  else if ((ReceiveData.indexOf("?")!=-1)&&(ReceiveData.indexOf(" HTTP")==-1))
+  else if ((ReceiveData.indexOf("/?")!=-1)&&(ReceiveData.indexOf(" HTTP")==-1))
   {
     if(ReceiveData.indexOf("+IPD,")!=-1)
     {
@@ -251,7 +251,7 @@ void loop()
       Feedback(CID,"<html>It can't work！Check the length of command!</html>",3);
     }
   }
-  else if ((ReceiveData.indexOf("?")==-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
+  else if ((ReceiveData.indexOf("/?")==-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
   {
     CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
     Feedback(CID,"<html>Hello World</html>",3);
