@@ -141,14 +141,14 @@ void ExecuteCommand()
   }
 }
 
-void tcp(String domain,String url,int port)
+void tcp(String domain,String request,int port)
 {
     WiFiClient client_tcp;
     
     if (client_tcp.connect(domain, port)) 
     {
-      Serial.println("GET " + url);
-      client_tcp.println("GET " + url + " HTTP/1.1");
+      Serial.println("GET " + request);
+      client_tcp.println("GET " + request + " HTTP/1.1");
       client_tcp.print("Host: ");
       client_tcp.println(domain);
       client_tcp.println("Connection: close");
