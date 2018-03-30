@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP12E)
 
-Author : ChungYi Fu (Taiwan)  2018-3-30 01:30
+Author : ChungYi Fu (Taiwan)  2018-3-30 17:30
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -10,12 +10,12 @@ http://192.168.4.1/?ip
 http://192.168.4.1/?mac
 http://192.168.4.1/?restart
 http://192.168.4.1/?resetwifi=ssid;password
-http://192.168.4.1/?inputpullup=13
-http://192.168.4.1/?pinmode=13;1
-http://192.168.4.1/?digitalwrite=13;1
-http://192.168.4.1/?analogwrite=13;255
-http://192.168.4.1/?digitalread=13
-http://192.168.4.1/?analogread=13
+http://192.168.4.1/?inputpullup=pin
+http://192.168.4.1/?pinmode=pin;value
+http://192.168.4.1/?digitalwrite=pin;value
+http://192.168.4.1/?analogwrite=pin;value
+http://192.168.4.1/?digitalread=pin
+http://192.168.4.1/?analogread=pin
 http://192.168.4.1/?tcp=domain;port;request
 http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
@@ -118,8 +118,10 @@ void ExecuteCommand()
   }
   else if (cmd=="tcp")
   {
+    String domain=str1;
     String request ="/" + str3;
-    tcp(str1,request,str2.toInt());
+    int port=str2.toInt();
+    tcp(domain,request,port);
   }
   else if (cmd=="ifttt")
   {
@@ -139,43 +141,6 @@ void ExecuteCommand()
   {
     Feedback="Command is not defined";
   }
-}
-
-void tcp(String domain,String request,int port)
-{
-    WiFiClient client_tcp;
-    
-    if (client_tcp.connect(domain, port)) 
-    {
-      Serial.println("GET " + request);
-      client_tcp.println("GET " + request + " HTTP/1.1");
-      client_tcp.print("Host: ");
-      client_tcp.println(domain);
-      client_tcp.println("Connection: close");
-      client_tcp.println();
-
-      long StartTime = millis();
-      while ((StartTime+5000) > millis())
-      {
-        while (client_tcp.available()) 
-        {
-            char c = client_tcp.read();
-            if (c == '\n') 
-            {
-              if (Feedback.length() == 0) 
-                break;
-              else 
-                Feedback = "";
-            } 
-            else if (c != '\r') 
-              Feedback += c;
-         }
-         if (Feedback.length()!= 0) break;
-      }
-      client_tcp.stop();
-    }
-    else
-      Feedback="Connection failed";  
 }
 
 void setup()
@@ -384,4 +349,41 @@ void getCommand(char c)
     if (c=='=') equalstate=1;
     if ((strState>=9)&&(c==';')) semicolonstate=1;
   }
+}
+
+void tcp(String domain,String request,int port)
+{
+    WiFiClient client_tcp;
+    
+    if (client_tcp.connect(domain, port)) 
+    {
+      Serial.println("GET " + request);
+      client_tcp.println("GET " + request + " HTTP/1.1");
+      client_tcp.print("Host: ");
+      client_tcp.println(domain);
+      client_tcp.println("Connection: close");
+      client_tcp.println();
+
+      long StartTime = millis();
+      while ((StartTime+5000) > millis())
+      {
+        while (client_tcp.available()) 
+        {
+            char c = client_tcp.read();
+            if (c == '\n') 
+            {
+              if (Feedback.length() == 0) 
+                break;
+              else 
+                Feedback = "";
+            } 
+            else if (c != '\r') 
+              Feedback += c;
+         }
+         if (Feedback.length()!= 0) break;
+      }
+      client_tcp.stop();
+    }
+    else
+      Feedback="Connection failed";  
 }
