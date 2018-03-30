@@ -362,7 +362,7 @@ void tcp(String domain,String request,int port)
 {
     WiFiClient client_tcp;
     
-    if (client_tcp.connect(domain, port)) 
+    if (client_tcp.connect(domain.c_str(), port)) 
     {
       Serial.println("GET " + request);
       client_tcp.println("GET " + request + " HTTP/1.1");
