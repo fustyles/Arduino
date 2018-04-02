@@ -4,10 +4,11 @@ Servo myservo;
 int angle=90;
 int degree=5;
 
-int speedButton = 7;
-int rotateButton = 8;
 int motorPin1=5;
 int motorPin2=6;
+int speedButton = 7;
+int rotateButton = 8;
+
 int pressCount=0;
 int rotateState=-1;
 
@@ -16,8 +17,10 @@ void setup() {
   pinMode(rotateButton, INPUT);
   pinMode(motorPin1, OUTPUT);
   pinMode(motorPin2, OUTPUT);    
+  
   myservo.attach(9);
   myservo.write(angle);
+  
   Serial.begin(9600);
 }
 
@@ -64,7 +67,7 @@ void loop() {
       angle=angle+degree*2;
     }
     myservo.write(angle);
-    delay(300);
+    delay(200);
   }
 }
 
