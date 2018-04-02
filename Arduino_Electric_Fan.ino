@@ -54,7 +54,7 @@ void loop() {
   
   if (digitalRead(rotateButton)==1)
   {
-    rotateState *= (-1);
+    rotateState=rotateState*(-1);
     delay(200);
   }
   
@@ -64,7 +64,7 @@ void loop() {
     if ((angle<5)||(angle>175))
     {
       degree=degree*(-1);
-      angle+=degree*2;
+      angle=angle+degree*2;
     }
     myservo.write(angle);
     delay(200);
