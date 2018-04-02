@@ -64,7 +64,7 @@ void loop() {
     if ((angle<5)||(angle>175))
     {
       degree=degree*(-1);
-      angle=angle+degree*2;
+      angle+=degree*2;
     }
     myservo.write(angle);
     delay(200);
