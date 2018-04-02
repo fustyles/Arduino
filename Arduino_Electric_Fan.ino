@@ -4,10 +4,10 @@ Servo myservo;
 int angle=90;
 int degree=5;
 
-int motorPin1=5;       //馬達驅動IC
-int motorPin2=6;       //馬達驅動IC
-int speedButton = 7;   //風速四段變速切換按鈕
-int rotateButton = 8;  //風向旋轉切換按鈕
+int motorPin1=5;       //馬達驅動IC腳位
+int motorPin2=6;       //馬達驅動IC腳位
+int speedButton = 7;   //風速四段變速切換按鈕腳位
+int rotateButton = 8;  //風向旋轉切換按鈕腳位
 
 int pressCount=0;      //風速切換按鈕點選次數
 int rotateState=-1;    //風向旋轉狀態 1=旋轉, -1=暫停
