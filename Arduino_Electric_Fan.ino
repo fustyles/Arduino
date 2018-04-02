@@ -60,7 +60,7 @@ void loop() {
   
   if (rotateState==1)
   {
-    angle+=degree;
+    angle=angle+degree;
     if ((angle<5)||(angle>175))
     {
       degree=degree*(-1);
