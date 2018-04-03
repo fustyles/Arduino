@@ -1,7 +1,7 @@
 /* 
 Arduino Uno (CH340G) + ESP8266 ESP-01 (1MB Flash, V2.0_AT_Firmware)
 
-Author : ChungYi Fu (Taiwan)  2018-3-29 17:00
+Author : ChungYi Fu (Taiwan)  2018-04-04 07:00
 
 Update AT Firmware
 https://www.youtube.com/watch?v=QVhWVu8NnZc
@@ -236,7 +236,7 @@ void initial()
 
 void loop() 
 {
-  getVariable();
+  getCommand();
   
   if ((ReceiveData.indexOf("/?")!=-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
   {
@@ -310,7 +310,7 @@ String WaitReply(long int TimeLimit)
   return ReceiveData;
 }
 
-void getVariable()
+void getCommand()
 {
   ReceiveData="";command="";cmd="";str1="";str2="";str3="";str4="";str5="";str6="";str7="";str8="";str9="";
   byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
@@ -361,7 +361,7 @@ void getVariable()
     if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
     { 
       while(!mySerial.find('OK')){} 
-      delay(1000);
+      delay(10);
 
       APIP="";APMAC="";STAIP="";STAMAC="";
       int apipreadstate=0,staipreadstate=0,apmacreadstate=0,stamacreadstate=0,j=0;
