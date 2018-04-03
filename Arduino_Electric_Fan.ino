@@ -1,8 +1,8 @@
 #include <Servo.h>
 Servo myservo;
 
-int angle=90;
-int degree=5;
+int angle=90;          //風向初始角度
+int degree=5;          //單位時間風向旋轉角度
 
 int motorPin1=5;       //馬達驅動IC腳位
 int motorPin2=6;       //馬達驅動IC腳位
