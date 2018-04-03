@@ -5,12 +5,12 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-3-19 09:30
 
 Command Format : ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
-?inputpullup=3
-?pinmode=3;1
-?digitalwrite=3;1
-?analogwrite=3;200
-?digitalread=3
-?analogread=3
+?inputpullup=pin
+?pinmode=pin;value
+?digitalwrite=pin;value
+?analogwrite=pin;value
+?digitalread=pin
+?analogread=pin
 ?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 */
 
