@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP12E)
 
-Author : ChungYi Fu (Taiwan)  2018-4-4 07:00
+Author : ChungYi Fu (Taiwan)  2018-04-04 07:00
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
