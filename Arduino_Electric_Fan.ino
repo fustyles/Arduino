@@ -6,7 +6,7 @@ int degree=5;
 
 int motorPin1=5;       //馬達驅動IC腳位
 int motorPin2=6;       //馬達驅動IC腳位
-int speedButton = 7;   //風速四段變速切換按鈕腳位
+int speedButton = 7;   //風速四段變速切換按鈕腳位(吊扇)
 int rotateButton = 8;  //風向旋轉切換按鈕腳位
 
 int pressCount=0;      //風速切換按鈕點選次數
@@ -60,11 +60,11 @@ void loop() {
   
   if (rotateState==1)
   {
-    angle=angle+degree;
+    angle+=degree;
     if ((angle<5)||(angle>175))
     {
-      degree=degree*(-1);
-      angle=angle+degree*2;
+      degree*=(-1);
+      angle+=degree*2;
     }
     myservo.write(angle);
     delay(200);
