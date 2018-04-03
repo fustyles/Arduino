@@ -54,7 +54,7 @@ void loop() {
   
   if (digitalRead(rotateButton)==1)
   {
-    rotateState=rotateState*(-1);
+    rotateState*=(-1);
     delay(200);
   }
   
