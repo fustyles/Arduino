@@ -1,7 +1,7 @@
 /* 
 Arduino IDE + NodeMCU (ESP12E)
 
-Author : ChungYi Fu (Taiwan)  2018-3-30 17:30
+Author : ChungYi Fu (Taiwan)  2018-4-4 07:00
 
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
@@ -80,8 +80,8 @@ void ExecuteCommand()
         if ((StartTime+5000) < millis()) break;
     } 
     Serial.println("");
-    Serial.println(WiFi.localIP());
-    Feedback=WiFi.localIP().toString();
+    Serial.println("STAIP: "+WiFi.localIP().toString());
+    Feedback="STAIP: "+WiFi.localIP().toString();
   }    
   else if (cmd=="inputpullup")
   {
@@ -154,6 +154,7 @@ void setup()
   
     //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0));
   
+    delay(1000);
     Serial.println("");
     Serial.println("APIP address: ");
     Serial.println(WiFi.softAPIP());  
