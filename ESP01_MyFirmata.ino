@@ -1,5 +1,5 @@
 /* 
-Arduino Uno (CH340G) + ESP8266 ESP-01 (1MB Flash, V2.0_AT_Firmware)
+Arduino Uno(Uart) + ESP8266 ESP-01 (1MB Flash, V2.0_AT_Firmware)
 
 Author : ChungYi Fu (Taiwan)  2018-04-04 07:00
 
