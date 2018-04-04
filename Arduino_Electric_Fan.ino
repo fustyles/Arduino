@@ -25,10 +25,11 @@ void setup() {
 }
 
 void loop() {
+  //讀取風速切換按鈕狀態
   if (digitalRead(speedButton)==1)
   {
     pressCount++;
-    if (pressCount%4==0) 
+    if (pressCount%4==0)         
     {
       analogWrite(motorPin1,0);
       analogWrite(motorPin2,0);
@@ -52,13 +53,14 @@ void loop() {
     delay(200);
   }
   
+  //讀取風向旋轉切換按鈕狀態
   if (digitalRead(rotateButton)==1)
   {
-    rotateState*=(-1);
+    rotateState*=(-1);     //改變風向旋轉狀態設定值
     delay(200);
   }
   
-  if (rotateState==1)
+  if (rotateState==1)      //風向來回轉動
   {
     angle+=degree;
     if ((angle<5)||(angle>175))
