@@ -40,12 +40,12 @@ void setup()
 void loop() 
 {
   int x = rand() % 101;
-  String request = "GET /update?api_key=C8JXEXV94UY2XZ1K"+
+  String request = "GET /update?api_key=123456789"+
   request+="&field1="+String(x);
   request+=" HTTP/1.1\r\n";
   request+="Host: api.thingspeak.com\r\n";
   request+="Connection: close\r\n\r\n";
-  Serial.println(request);
+  Serial.println(x);
   
   SendData("AT+CIPSTART=\"TCP\",\"api.thingspeak.com\",80", 4000);
   SendData("AT+CIPSEND=" + String(request.length()+2), 2000);
