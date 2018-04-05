@@ -40,12 +40,16 @@ void setup()
 void loop() 
 {
   int x = rand() % 101;
-  Serial.println(x);
+  String request = "GET /update?api_key=C8JXEXV94UY2XZ1K"+
+  request+="&field1="+String(x);
+  request+=" HTTP/1.1\r\n";
+  request+="Host: api.thingspeak.com\r\n";
+  request+="Connection: close\r\n\r\n";
+  Serial.println(request);
   
   SendData("AT+CIPSTART=\"TCP\",\"api.thingspeak.com\",80", 4000);
-  String cmd = "GET /update?api_key=123456789&field1="+String(x)+" HTTP/1.1\r\nHost: api.thingspeak.com\r\nConnection: close\r\n\r\n";
-  SendData("AT+CIPSEND=" + String(cmd.length()+2), 2000);
-  SendData(cmd, 2000);
+  SendData("AT+CIPSEND=" + String(request.length()+2), 2000);
+  SendData(request, 2000);
   SendData("AT+CIPCLOSE",2000);
   delay(30000);
 }
@@ -73,7 +77,6 @@ String WaitReply(long int TimeLimit)
         ReceiveData=ReceiveData+String(c);
         //Serial.print(c);
       }
-      getSTA();
       return ReceiveData;
     }
   } 
