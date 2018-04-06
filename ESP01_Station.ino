@@ -20,7 +20,7 @@ void setup()
   mySerial.begin(9600);  // 9600 ,you will get more stable data.
   mySerial.setTimeout(10);
   
-  SendData("AT+CWMODE_CUR=0",2000);
+  SendData("AT+CWMODE_CUR=1",2000);
   SendData("AT+CIPMUX=0",2000);
   //String STA_ip="192.168.0.100";
   //String STA_gateway="192.168.0.1";
