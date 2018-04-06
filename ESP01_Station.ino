@@ -42,7 +42,7 @@ void loop()
     getSTAIP();
   else
   {
-    int val = rand()%256;                 
+    int val = rand()%255;                 
     String Domain="192.168.201.10";
     String request = "GET /?analogwrite=4;"+String(val)+" HTTP/1.1\r\nHost: "+Domain+"\r\n\r\n";
     
