@@ -7,7 +7,9 @@ Update AT Firmware(V2.0_AT_Firmware)
 https://www.youtube.com/watch?v=QVhWVu8NnZc
 http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
 
-Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
+Command Format :  
+http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
+http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
 Default APIP： 192.168.4.1
 http://192.168.4.1/?ip
