@@ -21,9 +21,10 @@ void setup()
   mySerial.begin(9600);  // 9600 ,you will get more stable data.
   mySerial.setTimeout(10);
   
+  SendData("AT+CIPSERVER=0",2000);
   SendData("AT+CWMODE_CUR=1",2000);
   SendData("AT+CIPMUX=0",2000);
-  SendData("AT+CIPSERVER=0",2000);   //port=80
+  
   if (WIFI_SSID!="") 
     SendData("AT+CWJAP_CUR=\""+WIFI_SSID+"\",\""+WIFI_PWD+"\"",5000);  
   else
