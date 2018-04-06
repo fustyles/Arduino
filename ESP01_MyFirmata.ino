@@ -1,9 +1,9 @@
 /* 
 Arduino Uno(Uart) + ESP8266 ESP-01 (1MB Flash, V2.0_AT_Firmware)
 
-Author : ChungYi Fu (Taiwan)  2018-04-04 07:00
+Author : ChungYi Fu (Taiwan)  2018-04-06 20:00
 
-Update AT Firmware
+Update AT Firmware(V2.0_AT_Firmware)
 https://www.youtube.com/watch?v=QVhWVu8NnZc
 http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
 
@@ -15,6 +15,7 @@ http://192.168.4.1/?mac
 http://192.168.4.1/?restart
 http://192.168.4.1/?resetwifi=ssid;password
 http://192.168.4.1/?at=AT+Command
+http://192.168.4.1/?tcp=domain;port;request
 http://192.168.4.1/?inputpullup=pin
 http://192.168.4.1/?pinmode=pin;value
 http://192.168.4.1/?digitalwrite=pin;value
@@ -87,6 +88,19 @@ void executecommand()
       mySerial.println(str1);
       mySerial.flush();
     }    
+  else if (cmd=="tcp")      //  ?tcp=domain;port;request
+    {
+      Feedback(CID,"<html>"+command+"</html>",3);
+      delay(1000);               
+      String Domain=str1;
+      String request = "GET /"+str3+" HTTP/1.1\r\nHost: "+Domain+"\r\n\r\n";
+      
+      SendData("AT+CIPSTART=4,\"TCP\",\""+Domain+"\","+str2, 4000);
+      SendData("AT+CIPSEND=4," + String(request.length()+2), 4000);
+      SendData(request, 2000);
+      delay(1);
+      SendData("AT+CIPCLOSE=4",2000);
+    }        
   else if (cmd=="inputpullup")
     {
       pinMode(str1.toInt(), INPUT_PULLUP);
