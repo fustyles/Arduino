@@ -9,7 +9,7 @@ String WIFI_PWD  = "";    //your network password
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
-String ReceiveData="",APIP="",APMAC="",STAIP="",STAMAC="";
+String ReceiveData="",STAIP="",STAMAC="";
 
 void setup()
 {
