@@ -20,7 +20,7 @@ void setup()
   SendData("AT+UART_CUR=9600,8,1,0,0",2000);   //Change uart baud rate of ESP-01 to 9600
   mySerial.begin(9600);  // 9600 ,you will get more stable data.
   mySerial.setTimeout(10);
-  
+
   SendData("AT+CIPSERVER=0",2000);
   SendData("AT+CWMODE_CUR=1",2000);
   SendData("AT+CIPMUX=0",2000);
@@ -33,9 +33,9 @@ void setup()
 
 void loop() 
 {
-  getSTAIP();
-
-  if (STAIP!="")
+  if (STAIP=="")
+    getSTAIP();
+  else
   {
     int val = rand()%256;
     String Domain="192.168.201.10";
@@ -97,7 +97,7 @@ void getSTAIP()
       while(!mySerial.find('OK')){} 
       delay(10);
 
-      int apipreadstate=0,staipreadstate=0,apmacreadstate=0,stamacreadstate=0,j=0;
+      int staipreadstate=0,stamacreadstate=0,j=0;
       mySerial.println("AT+CIFSR");
       mySerial.flush();
       delay(6);
@@ -110,16 +110,16 @@ void getSTAIP()
         if (t=="\"") j++;
         
         if (j==1) 
-          apipreadstate=1;
+          staipreadstate=1;
         else if (j==2)
-          apipreadstate=0;
-        if ((apipreadstate==1)&&(t!="\"")) STAIP=STAIP+t;
+          staipreadstate=0;
+        if ((staipreadstate==1)&&(t!="\"")) STAIP=STAIP+t;
 
         if (j==3) 
-          apmacreadstate=1;
+          stamacreadstate=1;
         else if (j==4)
-          apmacreadstate=0;
-        if ((apmacreadstate==1)&&(t!="\"")) STAMAC=STAMAC+t;
+          stamacreadstate=0;
+        if ((stamacreadstate==1)&&(t!="\"")) STAMAC=STAMAC+t;
         
         delay(1);
       } 
