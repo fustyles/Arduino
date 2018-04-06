@@ -1,6 +1,11 @@
 /* 
 Arduino Uno(Uart) + ESP8266 ESP-01 (1MB Flash, V2.0_AT_Firmware)
-Author : ChungYi Fu (Taiwan)  2018-04-04 07:00
+
+Author : ChungYi Fu (Taiwan)  2018-04-06 20:00
+
+Update AT Firmware(V2.0_AT_Firmware)
+https://www.youtube.com/watch?v=QVhWVu8NnZc
+http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
 */
 
 String WIFI_SSID = "";   //your network SSID
