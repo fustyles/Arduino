@@ -39,7 +39,7 @@ void loop()
   {
     int val = rand()%256;
     String Domain="192.168.201.10";
-    String request = "GET /?analogwrite=4;"+String(val)+" HTTP/1.1\r\n\r\n";
+    String request = "GET /?analogwrite=4;"+String(val)+" HTTP/1.1\r\nHost: "+Domain+"\r\n\r\n";
     SendData("AT+CIPSTART=\"TCP\",\""+Domain+"\",80", 4000);
     SendData("AT+CIPSEND=" + String(request.length()+2), 4000);
     SendData(request, 2000);
