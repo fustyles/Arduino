@@ -15,12 +15,12 @@ http://192.168.4.1/?mac
 http://192.168.4.1/?restart
 http://192.168.4.1/?resetwifi=ssid;password
 http://192.168.4.1/?at=AT+Command
-http://192.168.4.1/?inputpullup=13
-http://192.168.4.1/?pinmode=13;1
-http://192.168.4.1/?digitalwrite=13;1
-http://192.168.4.1/?analogwrite=13;255
-http://192.168.4.1/?digitalread=13
-http://192.168.4.1/?analogread=13
+http://192.168.4.1/?inputpullup=pin
+http://192.168.4.1/?pinmode=pin;value
+http://192.168.4.1/?digitalwrite=pin;value
+http://192.168.4.1/?analogwrite=pin;value
+http://192.168.4.1/?digitalread=pin
+http://192.168.4.1/?analogread=pin
 http://192.168.4.1/?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 
 STAIP：
