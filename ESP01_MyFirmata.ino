@@ -272,6 +272,18 @@ void loop()
     CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
     Feedback(CID,"<html>Hello World</html>",3);
   }
+  
+  //if (SensorValue>LimitValue)
+  //{
+  //  cmd="yourcmd";
+  //  str1="yourstr1";
+  //  str2="yourstr2";
+  //  str3="yourstr3";
+  //  ...
+  //  str9="yourstr9";
+  //  ExecuteCommand();
+  //  delay(10000);
+  //}  
 }
 
 void SendData(String data,int TimeLimit)
