@@ -129,7 +129,7 @@ void getSTAIP()
         
         delay(1);
       } 
-      Serial.println("STAIP: "+STAIP+"\nSTAMAC: "+STAMAC);
+      Serial.println("STAIP: "+STAIP+"\nSTAMAC: "+STAMAC+"\n");
     }
   }
 }
