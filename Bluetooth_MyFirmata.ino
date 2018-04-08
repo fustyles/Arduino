@@ -156,7 +156,7 @@ void setup()
 
 void loop() 
 {
-  getVariable();
+  getCommand();
 
   if (ReceiveData.indexOf("?")==0)
   {
@@ -169,7 +169,7 @@ void SendData(String data)
   mySerial.print(data);
 }
 
-void getVariable()
+void getCommand()
 {
   ReceiveData="";command="";cmd="";str1="";str2="";str3="";str4="";str5="";str6="";str7="";str8="";str9="";
   byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
