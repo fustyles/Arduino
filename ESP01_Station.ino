@@ -47,7 +47,7 @@ void loop()
     //If request length is too long, it can't work!
     String request = "GET /SensorValue="+String(val)+" HTTP/1.1\r\nHost: "+Domain+"\r\n\r\n";
     
-    SendData("AT+CIPSTART=\"TCP\",\""+Domain+"\",80", 4000);
+    SendData("AT+CIPSTART=\"TCP\",\""+Domain+"\",80", 5000);
     SendData("AT+CIPSEND=" + String(request.length()+2), 2000);
     SendData(request, 2000);
     delay(1);
