@@ -67,7 +67,7 @@ void SendData(String data,int TimeLimit)
 
 String WaitReply(long int TimeLimit)
 {
-  String ReceiveData="";
+  ReceiveData="";
   long int StartTime=millis();
   while( (StartTime+TimeLimit) > millis())
   {
