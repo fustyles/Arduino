@@ -1,5 +1,5 @@
 /* 
-Arduino IDE + NodeMCU (ESP32)
+NodeMCU (ESP32)
 
 Author : ChungYi Fu (Taiwan)  2018-04-04 07:00
 
