@@ -1,5 +1,5 @@
 /* 
-Arduino IDE + NodeMCU (ESP12E)
+NodeMCU (ESP12E)
 
 Author : ChungYi Fu (Taiwan)  2018-04-04 07:00
 
