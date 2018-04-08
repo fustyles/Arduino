@@ -90,8 +90,9 @@ void executecommand()
       mySerial.println(str1);
       mySerial.flush();
     }    
-  else if (cmd=="tcp")      //  ?tcp=domain;port;request
+  else if (cmd=="tcp")
     {
+      //If request length is too long, it can't work!
       Feedback(CID,"<html>"+command+"</html>",3);
       delay(1000);               
       String Domain=str1;
