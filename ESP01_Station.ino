@@ -47,7 +47,7 @@ void loop()
     String request = "GET /?analogwrite=4;"+String(val)+" HTTP/1.1\r\nHost: "+Domain+"\r\n\r\n";
     
     SendData("AT+CIPSTART=\"TCP\",\""+Domain+"\",80", 4000);
-    SendData("AT+CIPSEND=" + String(request.length()+2), 4000);
+    SendData("AT+CIPSEND=" + String(request.length()+2), 2000);
     SendData(request, 2000);
     delay(1);
     SendData("AT+CIPCLOSE",2000);
