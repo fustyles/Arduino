@@ -44,7 +44,8 @@ void loop()
   {
     int val = rand()%255;                 
     String Domain="192.168.201.10";
-    String request = "GET /?analogwrite=4;"+String(val)+" HTTP/1.1\r\nHost: "+Domain+"\r\n\r\n";
+    //If request length is too long, it can't work!
+    String request = "GET /SensorValue="+String(val)+" HTTP/1.1\r\nHost: "+Domain+"\r\n\r\n";
     
     SendData("AT+CIPSTART=\"TCP\",\""+Domain+"\",80", 4000);
     SendData("AT+CIPSEND=" + String(request.length()+2), 2000);
