@@ -50,7 +50,7 @@ void loop()
     //Send sensor data to web page(php...) and save data to database         
     String Domain="192.168.201.10";
     //If request length is too long, it can't work! 
-    String request = "GET /humidity="+String(SensorData)+" HTTP/1.1\r\nHost: "+Domain+"\r\n\r\n";
+    String request = "GET /?humidity="+String(SensorData)+" HTTP/1.1\r\nHost: "+Domain+"\r\n\r\n";
     
     SendData("AT+CIPSTART=\"TCP\",\""+Domain+"\",80", 5000);
     SendData("AT+CIPSEND=" + String(request.length()+2), 2000);
