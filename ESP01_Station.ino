@@ -58,7 +58,7 @@ void loop()
     delay(1);
     SendData("AT+CIPCLOSE",2000);
     
-    Serial.println(val);
+    Serial.println(SensorData);
     delay(5000);  
   }
 }
