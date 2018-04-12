@@ -24,9 +24,9 @@ void setup()
   Serial.begin(9600);
   
   //You must change uart baud rate of ESP-01 to 9600.
-  mySerial.begin(115200);   //Default uart baud rate -> 19200,38400,57600,74880,115200
-  SendData("AT+UART_CUR=9600,8,1,0,0",2000);   //Change uart baud rate of ESP-01 to 9600
-  mySerial.begin(9600);  // 9600 ,you will get more stable data.
+  mySerial.begin(115200);   //Default uart baud rate
+  SendData("AT+UART_CUR=9600,8,1,0,0",2000);   //Change uart baud rate to 9600
+  mySerial.begin(9600);  // you will get more stable data.
   mySerial.setTimeout(10);
 
   SendData("AT+CIPSERVER=0",2000);
@@ -45,7 +45,7 @@ void loop()
     getSTAIP();
   else
   {
-    int val = rand()%255;                 
+    int val = rand()%255;      //Sensor value           
     String Domain="192.168.201.10";
     //If request length is too long, it can't work! Why?
     String request = "GET /SensorValue="+String(val)+" HTTP/1.1\r\nHost: "+Domain+"\r\n\r\n";
