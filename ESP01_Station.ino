@@ -45,10 +45,10 @@ void loop()
     getSTAIP();
   else
   {
-    int val = rand()%255;      //Sensor value           
+    int val = rand()%100;      //humidity          
     String Domain="192.168.201.10";
     //If request length is too long, it can't work! Why?
-    String request = "GET /SensorValue="+String(val)+" HTTP/1.1\r\nHost: "+Domain+"\r\n\r\n";
+    String request = "GET /humidity="+String(val)+" HTTP/1.1\r\nHost: "+Domain+"\r\n\r\n";
     
     SendData("AT+CIPSTART=\"TCP\",\""+Domain+"\",80", 5000);
     SendData("AT+CIPSEND=" + String(request.length()+2), 2000);
