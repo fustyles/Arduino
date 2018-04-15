@@ -1,7 +1,10 @@
 /* 
-Arduino IDE + NodeMCU (ESP12E)
-Author : ChungYi Fu (Taiwan)  2018-4-4 07:00
+NodeMCU (ESP12E) + DFPlayer Mini MP3
+
+Author : ChungYi Fu (Taiwan)  2018-4-15 20:30
+
 Command Format :  ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
+
 Default APIP： 192.168.4.1
 STAIP：
 Query： http://192.168.4.1/?ip
@@ -22,7 +25,7 @@ WiFiServer server(80);
 #include "SoftwareSerial.h"
 #include "DFRobotDFPlayerMini.h"
 
-SoftwareSerial mySoftwareSerial(13, 15); // RX, TX
+SoftwareSerial mySoftwareSerial(13, 15); // RX(D7), TX(D8)
 DFRobotDFPlayerMini myDFPlayer;
 void printDetail(uint8_t type, int value);
 
