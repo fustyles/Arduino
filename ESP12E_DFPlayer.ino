@@ -85,13 +85,13 @@ void ExecuteCommand()
   else if (cmd=="volumeUp")
   {
     myDFPlayer.volumeUp();
-    delay(1000);
+    delay(100);
     Feedback+=cmd+": "+String(myDFPlayer.readVolume());
   }   
   else if (cmd=="volumeDown")
   {
     myDFPlayer.volumeDown();
-    delay(1000);
+    delay(100);
     Feedback+=cmd+": "+String(myDFPlayer.readVolume());
   }    
   else if (cmd=="EQ")
@@ -108,7 +108,7 @@ void ExecuteCommand()
       myDFPlayer.EQ(DFPLAYER_EQ_CLASSIC);
     else if  (str1=="BASS")
       myDFPlayer.EQ(DFPLAYER_EQ_BASS);
-    delay(1000);
+    delay(100);
     Feedback+=cmd+": "+String(myDFPlayer.readEQ());
   }      
   else if (cmd=="DEVICE")
@@ -441,18 +441,6 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
     delay(1);
     client.stop();
   }
-  
-  //if (SensorValue>LimitValue)
-  //{
-  //  cmd="yourcmd";
-  //  str1="yourstr1";
-  //  str2="yourstr2";
-  //  str3="yourstr3";
-  //  ...
-  //  str9="yourstr9";
-  //  ExecuteCommand();
-  //  delay(10000);
-  //}
 }
 
 void printDetail(uint8_t type, int value){
