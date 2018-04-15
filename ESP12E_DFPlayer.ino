@@ -16,8 +16,8 @@ Link：http://192.168.4.1/?resetwifi=ssid;password
 
 #include <ESP8266WiFi.h>
 
-const char* ssid     = "3COM";   //your network SSID
-const char* password = "godblessyou";   //your network password
+const char* ssid     = "";   //your network SSID
+const char* password = "";   //your network password
 
 const char* apssid = "MyFirmata ESP12E";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
