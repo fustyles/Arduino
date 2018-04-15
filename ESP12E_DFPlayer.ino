@@ -105,8 +105,8 @@ void ExecuteCommand()
       myDFPlayer.EQ(DFPLAYER_EQ_CLASSIC);
     else if  (str1=="BASS")
       myDFPlayer.EQ(DFPLAYER_EQ_BASS);
-    delay(100);
-    Feedback+=cmd+": "+String(myDFPlayer.readEQ());
+    
+    Feedback+=cmd+": "+str1;
   }      
   else if (cmd=="DEVICE")
   {
