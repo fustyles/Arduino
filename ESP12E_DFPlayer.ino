@@ -79,19 +79,16 @@ void ExecuteCommand()
   else if (cmd=="volume")
   {
     myDFPlayer.volume(str1.toInt());
-    delay(100);
     Feedback+=cmd+": "+str1;
   }     
   else if (cmd=="volumeUp")
   {
     myDFPlayer.volumeUp();
-    delay(100);
     Feedback+=cmd;
   }   
   else if (cmd=="volumeDown")
   {
     myDFPlayer.volumeDown();
-    delay(100);
     Feedback+=cmd;
   }    
   else if (cmd=="EQ")
