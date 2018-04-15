@@ -1,7 +1,7 @@
 /* 
 NodeMCU (ESP12E) + DFPlayer Mini MP3
 
-Author : ChungYi Fu (Taiwan)  2018-4-15 20:30
+Author : ChungYi Fu (Taiwan)  2018-4-15 23:30
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -80,19 +80,19 @@ void ExecuteCommand()
   {
     myDFPlayer.volume(str1.toInt());
     delay(100);
-    Feedback+=cmd+": "+String(myDFPlayer.readVolume());
+    Feedback+=cmd+": "+str1;
   }     
   else if (cmd=="volumeUp")
   {
     myDFPlayer.volumeUp();
     delay(100);
-    Feedback+=cmd+": "+String(myDFPlayer.readVolume());
+    Feedback+=cmd;
   }   
   else if (cmd=="volumeDown")
   {
     myDFPlayer.volumeDown();
     delay(100);
-    Feedback+=cmd+": "+String(myDFPlayer.readVolume());
+    Feedback+=cmd;
   }    
   else if (cmd=="EQ")
   {
@@ -500,41 +500,4 @@ void getCommand(char c)
     if (c=='=') equalstate=1;
     if ((strState>=9)&&(c==';')) semicolonstate=1;
   }
-}
-
-void tcp(String domain,String request,int port)
-{
-    WiFiClient client_tcp;
-    
-    if (client_tcp.connect(domain, port)) 
-    {
-      Serial.println("GET " + request);
-      client_tcp.println("GET " + request + " HTTP/1.1");
-      client_tcp.print("Host: ");
-      client_tcp.println(domain);
-      client_tcp.println("Connection: close");
-      client_tcp.println();
-
-      long StartTime = millis();
-      while ((StartTime+5000) > millis())
-      {
-        while (client_tcp.available()) 
-        {
-            char c = client_tcp.read();
-            if (c == '\n') 
-            {
-              if (Feedback.length() == 0) 
-                break;
-              else 
-                Feedback = "";
-            } 
-            else if (c != '\r') 
-              Feedback += c;
-         }
-         if (Feedback.length()!= 0) break;
-      }
-      client_tcp.stop();
-    }
-    else
-      Feedback="Connection failed";  
 }
