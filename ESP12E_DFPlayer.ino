@@ -8,6 +8,7 @@ http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
 Default APIP： 192.168.4.1
+
 STAIP：
 Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
@@ -15,8 +16,8 @@ Link：http://192.168.4.1/?resetwifi=ssid;password
 
 #include <ESP8266WiFi.h>
 
-const char* ssid     = "";   //your network SSID
-const char* password = "";   //your network password
+const char* ssid     = "3COM";   //your network SSID
+const char* password = "godblessyou";   //your network password
 
 const char* apssid = "MyFirmata ESP12E";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
@@ -79,7 +80,7 @@ void ExecuteCommand()
   else if (cmd=="volume")
   {
     myDFPlayer.volume(str1.toInt());
-    Feedback+=cmd+": "+str1;
+    Feedback+=cmd+"="+str1;
   }     
   else if (cmd=="volumeUp")
   {
@@ -106,7 +107,7 @@ void ExecuteCommand()
     else if  (str1=="BASS")
       myDFPlayer.EQ(DFPLAYER_EQ_BASS);
     
-    Feedback+=cmd+": "+str1;
+    Feedback+=cmd+"="+str1;
   }      
   else if (cmd=="DEVICE")
   {
@@ -121,7 +122,7 @@ void ExecuteCommand()
     else if  (str1=="FLASH")
       myDFPlayer.outputDevice(DFPLAYER_DEVICE_FLASH);
 
-    Feedback+=cmd+": "+str1;      
+    Feedback+=cmd+"="+str1;      
   }   
   else if (cmd=="sleep")
   {
@@ -146,7 +147,7 @@ void ExecuteCommand()
   else if (cmd=="outputSetting")
   {
     myDFPlayer.outputSetting(str1.toInt(), str2.toInt());
-    Feedback+=cmd+": "+str1+", "+str2;
+    Feedback+=cmd+"="+str1+";"+str2;
   }
   else if (cmd=="next")
   {
@@ -161,12 +162,12 @@ void ExecuteCommand()
   else if (cmd=="play")
   {
     myDFPlayer.play(str1.toInt());
-    Feedback+=cmd+": "+str1;
+    Feedback+=cmd+"="+str1;
   }
   else if (cmd=="loop")
   {
     myDFPlayer.loop(str1.toInt());
-    Feedback+=cmd+": "+str1;
+    Feedback+=cmd+"="+str1;
   }
   else if (cmd=="pause")
   {
@@ -181,7 +182,7 @@ void ExecuteCommand()
   else if (cmd=="playFolder")
   {
     myDFPlayer.playFolder(str1.toInt(), str2.toInt());
-    Feedback+=cmd+": "+str1+", "+str2;
+    Feedback+=cmd+"="+str1+";"+str2;
   }   
   else if (cmd=="enableLoopAll")
   {
@@ -196,12 +197,12 @@ void ExecuteCommand()
   else if (cmd=="playMp3Folder")
   {
     myDFPlayer.playMp3Folder(str1.toInt());
-    Feedback+=cmd+": "+str1;
+    Feedback+=cmd+"="+str1;
   }     
   else if (cmd=="advertise")
   {
     myDFPlayer.advertise(str1.toInt());
-    Feedback+=cmd+": "+str1;
+    Feedback+=cmd+"="+str1;
   }   
   else if (cmd=="stopAdvertise")
   {
@@ -211,12 +212,12 @@ void ExecuteCommand()
   else if (cmd=="playLargeFolder")
   {
     myDFPlayer.playLargeFolder(str1.toInt(), str2.toInt());
-    Feedback+=cmd+": "+str1+", "+str2;
+    Feedback+=cmd+"="+str1+";"+str2;
   }  
   else if (cmd=="loopFolder")
   {
     myDFPlayer.loopFolder(str1.toInt());
-    Feedback+=cmd+": "+str1;
+    Feedback+=cmd+"="+str1;
   }  
   else if (cmd=="randomAll")
   {
