@@ -316,7 +316,7 @@ void loop()
       if (client.available()) 
       {
         char c = client.read();             
-        //Serial.print(c);
+        
         getCommand(c);
                 
         if (c == '\n') 
