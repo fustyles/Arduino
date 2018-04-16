@@ -43,6 +43,17 @@ void loop()
 {
   if (STAIP=="")
     getSTAIP();
+    if (STAIP!="")
+    {
+      pinMode(13,1);
+      for (int i=0;i<20;i++)
+      {
+        digitalWrite(13,1);
+        delay(50);
+        digitalWrite(13,0);
+        delay(50);
+      }      
+    }
   else
   {
     int SensorData = rand()%100;      //humidity
