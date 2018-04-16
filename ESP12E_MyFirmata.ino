@@ -63,7 +63,7 @@ void ExecuteCommand()
   }  
   else if (cmd=="mac")
   {
-    Feedback+="STA MAC: "+WiFi.macAddress();
+    Feedback="STA MAC: "+WiFi.macAddress();
   }  
   else if (cmd=="restart")
   {
