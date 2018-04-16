@@ -41,8 +41,6 @@ void ExecuteCommand()
   //Serial.println("Command: "+Command);
   Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
   Serial.println("");
-  
-  myDFPlayer.pause();
     
   if (cmd=="your cmd")
   {
@@ -85,19 +83,23 @@ void ExecuteCommand()
       str1="30";
     else if (str1.toInt()<0)
       str1="0";
-      
+    myDFPlayer.pause();  
     myDFPlayer.volume(str1.toInt());
-    
+    myDFPlayer.start();
     Feedback=Command;
   }     
   else if (cmd=="volumeUp")
   {
+    myDFPlayer.pause();
     myDFPlayer.volumeUp();
+    myDFPlayer.start();
     Feedback=Command;
   }   
   else if (cmd=="volumeDown")
   {
+    myDFPlayer.pause();
     myDFPlayer.volumeDown();
+    myDFPlayer.start();
     Feedback=Command;
   }    
   else if (cmd=="EQ")
@@ -246,8 +248,6 @@ void ExecuteCommand()
   {
     Feedback="Command is not defined";
   }
-
-  myDFPlayer.start();
 }
 
 void setup()
