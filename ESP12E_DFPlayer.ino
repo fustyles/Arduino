@@ -1,7 +1,7 @@
 /* 
 NodeMCU (ESP12E) + DFPlayer Mini MP3
 
-Author : ChungYi Fu (Taiwan)  2018-4-16 19:00
+Author : ChungYi Fu (Taiwan)  2018-4-16 19:30
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
