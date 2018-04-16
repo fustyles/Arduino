@@ -1,7 +1,7 @@
 /* 
 NodeMCU (ESP12E) + DFPlayer Mini MP3
 
-Author : ChungYi Fu (Taiwan)  2018-4-16 14:00
+Author : ChungYi Fu (Taiwan)  2018-4-16 19:00
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -296,7 +296,16 @@ void setup()
     }
     else {
       Serial.println(F("DFPlayer Mini online."));
-      myDFPlayer.volume(15);  //Set volume value. From 0 to 30
+      myDFPlayer.volume(10);  //Set volume value. From 0 to 30
+      
+      pinMode(2, OUTPUT);
+      for (int i=0;i<5;i++)
+      {
+        digitalWrite(2,LOW);
+        delay(100);
+        digitalWrite(2,HIGH);
+        delay(100);
+      }
     }
 }
 
