@@ -297,14 +297,6 @@ void setup()
     else {
       Serial.println(F("DFPlayer Mini online."));
       myDFPlayer.volume(15);  //Set volume value. From 0 to 30
-      pinMode(2, OUTPUT);
-      for (int i=0;i<10;i++)
-      {
-        digitalWrite(2,HIGH);
-        delay(100);
-        digitalWrite(2,LOW);
-        delay(100);
-      }
     }
 }
 
