@@ -1,7 +1,7 @@
 /* 
 NodeMCU (ESP12E) + DFPlayer Mini MP3
 
-Author : ChungYi Fu (Taiwan)  2018-4-16 17:00
+Author : ChungYi Fu (Taiwan)  2018-4-16 14:00
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -337,8 +337,8 @@ void loop()
             Feedback+="<option value=\"volume\">volume(str1)</option>";
             Feedback+="<option value=\"volumeUp\">volumeUp</option>";
             Feedback+="<option value=\"volumeDown\">volumeDown</option>";
-            Feedback+="<option value=\"EQ\">EQ(str1:NORMAL,POP,ROCK,JAZZ,CLASSIC,BASS)</option>";
-            Feedback+="<option value=\"DEVICE\">DEVICE(str1:U_DISK,SD,AUX,SLEEP,FLASH)</option>";
+            Feedback+="<option value=\"EQ\">EQ(str1->NORMAL,POP,ROCK,JAZZ,CLASSIC,BASS)</option>";
+            Feedback+="<option value=\"DEVICE\">DEVICE(str1->U_DISK,SD,AUX,SLEEP,FLASH)</option>";
             Feedback+="<option value=\"sleep\">sleep</option>";
             Feedback+="<option value=\"reset\">reset</option>";
             Feedback+="<option value=\"enableDAC\">enableDAC</option>";
