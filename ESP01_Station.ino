@@ -43,6 +43,7 @@ void loop()
 {
   if (STAIP=="")
     getSTAIP();
+  
     if (STAIP!="")
     {
       pinMode(13,1);
