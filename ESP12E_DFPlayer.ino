@@ -49,18 +49,18 @@ void ExecuteCommand()
   }
   else if (cmd=="ip")
   {
-    Feedback+="AP IP: "+WiFi.softAPIP().toString();    
+    Feedback="AP IP: "+WiFi.softAPIP().toString();    
     Feedback+=", ";
     Feedback+="STA IP: "+WiFi.localIP().toString();
   }  
   else if (cmd=="mac")
   {
-    Feedback+="STA MAC: "+WiFi.macAddress();
+    Feedback="STA MAC: "+WiFi.macAddress();
   }  
   else if (cmd=="restart")
   {
     setup();
-    Feedback+=cmd;
+    Feedback=Command;
   }    
   else if (cmd=="resetwifi")
   {
@@ -75,22 +75,22 @@ void ExecuteCommand()
     } 
     Serial.println("");
     Serial.println("STAIP: "+WiFi.localIP().toString());
-    Feedback+="STAIP: "+WiFi.localIP().toString();
+    Feedback="STAIP: "+WiFi.localIP().toString();
   }   
   else if (cmd=="volume")
   {
     myDFPlayer.volume(str1.toInt());
-    Feedback+=cmd+"="+str1;
+    Feedback=Command;
   }     
   else if (cmd=="volumeUp")
   {
     myDFPlayer.volumeUp();
-    Feedback+=cmd;
+    Feedback=Command;
   }   
   else if (cmd=="volumeDown")
   {
     myDFPlayer.volumeDown();
-    Feedback+=cmd;
+    Feedback=Command;
   }    
   else if (cmd=="EQ")
   {
@@ -107,7 +107,7 @@ void ExecuteCommand()
     else if  (str1=="BASS")
       myDFPlayer.EQ(DFPLAYER_EQ_BASS);
     
-    Feedback+=cmd+"="+str1;
+    Feedback=Command;
   }      
   else if (cmd=="DEVICE")
   {
@@ -122,22 +122,22 @@ void ExecuteCommand()
     else if  (str1=="FLASH")
       myDFPlayer.outputDevice(DFPLAYER_DEVICE_FLASH);
 
-    Feedback+=cmd+"="+str1;      
+    Feedback=Command;    
   }   
   else if (cmd=="sleep")
   {
     myDFPlayer.sleep();
-    Feedback+=cmd;
+    Feedback=Command;
   }  
   else if (cmd=="reset")
   {
     myDFPlayer.reset();
-    Feedback+=cmd;
+    Feedback=Command;
   }
     else if (cmd=="enableDAC")
   {
     myDFPlayer.enableDAC();
-    Feedback+=cmd;
+    Feedback=Command;
   }  
   else if (cmd=="disableDAC")
   {
@@ -147,92 +147,92 @@ void ExecuteCommand()
   else if (cmd=="outputSetting")
   {
     myDFPlayer.outputSetting(str1.toInt(), str2.toInt());
-    Feedback+=cmd+"="+str1+";"+str2;
+    Feedback=Command;
   }
   else if (cmd=="next")
   {
     myDFPlayer.next();
-    Feedback+=cmd;
+    Feedback=Command;
   }
   else if (cmd=="previous")
   {
     myDFPlayer.previous();
-    Feedback+=cmd;
+    Feedback=Command;
   }
   else if (cmd=="play")
   {
     myDFPlayer.play(str1.toInt());
-    Feedback+=cmd+"="+str1;
+    Feedback=Command;
   }
   else if (cmd=="loop")
   {
     myDFPlayer.loop(str1.toInt());
-    Feedback+=cmd+"="+str1;
+    Feedback=Command;
   }
   else if (cmd=="pause")
   {
     myDFPlayer.pause();
-    Feedback+=cmd;
+    Feedback=Command;
   }  
   else if (cmd=="start")
   {
     myDFPlayer.start();
-    Feedback+=cmd;
+    Feedback=Command;
   }  
   else if (cmd=="playFolder")
   {
     myDFPlayer.playFolder(str1.toInt(), str2.toInt());
-    Feedback+=cmd+"="+str1+";"+str2;
+    Feedback=Command;
   }   
   else if (cmd=="enableLoopAll")
   {
     myDFPlayer.enableLoopAll();
-    Feedback+=cmd;
+    Feedback=Command;
   }    
   else if (cmd=="disableLoopAll")
   {
     myDFPlayer.disableLoopAll();
-    Feedback+=cmd;
+    Feedback=Command;
   }   
   else if (cmd=="playMp3Folder")
   {
     myDFPlayer.playMp3Folder(str1.toInt());
-    Feedback+=cmd+"="+str1;
+    Feedback=Command;
   }     
   else if (cmd=="advertise")
   {
     myDFPlayer.advertise(str1.toInt());
-    Feedback+=cmd+"="+str1;
+    Feedback=Command;
   }   
   else if (cmd=="stopAdvertise")
   {
     myDFPlayer.stopAdvertise();
-    Feedback+=cmd;
+    Feedback=Command;
   }  
   else if (cmd=="playLargeFolder")
   {
     myDFPlayer.playLargeFolder(str1.toInt(), str2.toInt());
-    Feedback+=cmd+"="+str1+";"+str2;
+    Feedback=Command;
   }  
   else if (cmd=="loopFolder")
   {
     myDFPlayer.loopFolder(str1.toInt());
-    Feedback+=cmd+"="+str1;
+    Feedback=Command;
   }  
   else if (cmd=="randomAll")
   {
     myDFPlayer.randomAll();
-    Feedback+=cmd;
+    Feedback=Command;
   }  
   else if (cmd=="enableLoop")
   {
     myDFPlayer.enableLoop();
-    Feedback+=cmd;
+    Feedback=Command;
   }  
   else if (cmd=="disableLoop")
   {
     myDFPlayer.disableLoop();
-    Feedback+=cmd;
+    Feedback=Command;
   }   
   else 
   {
