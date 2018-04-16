@@ -351,8 +351,8 @@ void loop()
             Feedback+="<option value=\"volume\">volume(str1)</option>";
             Feedback+="<option value=\"volumeUp\">volumeUp</option>";
             Feedback+="<option value=\"volumeDown\">volumeDown</option>";
-            Feedback+="<option value=\"EQ\">EQ(str1->NORMAL,POP,ROCK,JAZZ,CLASSIC,BASS)</option>";
-            Feedback+="<option value=\"DEVICE\">DEVICE(str1->U_DISK,SD,AUX,SLEEP,FLASH)</option>";
+            Feedback+="<option value=\"EQ\">EQ(str1=NORMAL,POP,ROCK,JAZZ,CLASSIC,BASS)</option>";
+            Feedback+="<option value=\"DEVICE\">DEVICE(str1=U_DISK,SD,AUX,SLEEP,FLASH)</option>";
             Feedback+="<option value=\"sleep\">sleep</option>";
             Feedback+="<option value=\"reset\">reset</option>";
             Feedback+="<option value=\"enableDAC\">enableDAC</option>";
