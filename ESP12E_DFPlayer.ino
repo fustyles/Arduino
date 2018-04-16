@@ -416,6 +416,10 @@ void loop()
     delay(1);
     client.stop();
   }
+  
+  if (myDFPlayer.available()) {
+    printDetail(myDFPlayer.readType(), myDFPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
+  }
 }
 
 void printDetail(uint8_t type, int value){
