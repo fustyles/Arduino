@@ -28,7 +28,7 @@ WiFiServer server(80);
 #include "SoftwareSerial.h"
 #include "DFRobotDFPlayerMini.h"
 
-SoftwareSerial mySoftwareSerial(13, 15); // RX(D7), TX(D8)
+SoftwareSerial mySoftwareSerial(13, 15); // RX, TX
 DFRobotDFPlayerMini myDFPlayer;
 void printDetail(uint8_t type, int value);
 
