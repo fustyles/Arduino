@@ -49,7 +49,7 @@ void ExecuteCommand()
   }
   else if (cmd=="ip")
   {
-    Feedback="AP IP: "+WiFi.softAPIP().toString();    
+    Feedback+="AP IP: "+WiFi.softAPIP().toString();    
     Feedback+=", ";
     Feedback+="STA IP: "+WiFi.localIP().toString();
   }  
@@ -60,7 +60,7 @@ void ExecuteCommand()
   else if (cmd=="restart")
   {
     setup();
-    Feedback=Command;
+    Feedback+=cmd;
   }    
   else if (cmd=="resetwifi")
   {
@@ -75,7 +75,7 @@ void ExecuteCommand()
     } 
     Serial.println("");
     Serial.println("STAIP: "+WiFi.localIP().toString());
-    Feedback="STAIP: "+WiFi.localIP().toString();
+    Feedback+="STAIP: "+WiFi.localIP().toString();
   }   
   else if (cmd=="volume")
   {
