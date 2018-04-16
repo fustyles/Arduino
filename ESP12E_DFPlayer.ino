@@ -298,7 +298,7 @@ void setup()
       myDFPlayer.volume(10);  //Set volume value. From 0 to 30
       
       pinMode(2, OUTPUT);
-      for (int i=0;i<5;i++)
+      for (int i=0;i<10;i++)
       {
         digitalWrite(2,LOW);
         delay(100);
