@@ -83,22 +83,28 @@ void ExecuteCommand()
       str1="30";
     else if (str1.toInt()<0)
       str1="0";
-    myDFPlayer.pause();  
+    myDFPlayer.pause(); 
+    delay(10);
     myDFPlayer.volume(str1.toInt());
+    delay(10);
     myDFPlayer.start();
     Feedback=Command;
   }     
   else if (cmd=="volumeUp")
   {
     myDFPlayer.pause();
+    delay(10);
     myDFPlayer.volumeUp();
+    delay(10);
     myDFPlayer.start();
     Feedback=Command;
   }   
   else if (cmd=="volumeDown")
   {
     myDFPlayer.pause();
+    delay(10);
     myDFPlayer.volumeDown();
+    delay(10);
     myDFPlayer.start();
     Feedback=Command;
   }    
