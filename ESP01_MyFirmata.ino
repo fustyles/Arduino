@@ -268,7 +268,7 @@ void loop()
     if(ReceiveData.indexOf("+IPD,")!=-1)
     {
       CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
-      Feedback(CID,"<html>It can't work！Check command length!</html>",3);
+      Feedback(CID,"<html>It can't work!Check command length.</html>",3);
     }
   }
   else if ((ReceiveData.indexOf("/?")==-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
