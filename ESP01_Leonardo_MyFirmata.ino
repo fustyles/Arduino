@@ -37,7 +37,7 @@ http://192.168.4.1/?mouserelease
 http://192.168.4.1/?keyboardpress=keycode1;keycode2;keycode3
 http://192.168.4.1/?keyboardprint=str1
 http://192.168.4.1/?keyboardprintln=str1
-http://192.168.4.1/?keyboardwrite=keycode1
+http://192.168.4.1/?keyboardwrite=keycode
 
 Default APIP： 192.168.4.1
 
