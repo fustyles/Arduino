@@ -79,9 +79,9 @@ void ExecuteCommand()
   }   
   else if (cmd=="volume")
   {
-    if (str1.toInt()>30)
+    if (str1>"30")
       str1="10";
-    else if (str1.toInt()<0)
+    else if (str1<"0")
       str1="10";
     myDFPlayer.pause(); 
     delay(10);
