@@ -1,14 +1,10 @@
 /* 
 NodeMCU (ESP12E) + DFPlayer Mini MP3
-
-Author : ChungYi Fu (Taiwan)  2018-4-18 17:30
-
+Author : ChungYi Fu (Taiwan)  2018-4-19 20:00
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
-
 Default APIP： 192.168.4.1
-
 STAIP：
 Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
@@ -41,7 +37,10 @@ void ExecuteCommand()
   //Serial.println("Command: "+Command);
   Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
   Serial.println("");
-    
+
+  myDFPlayer.pause();
+  delay(100);
+  
   if (cmd=="your cmd")
   {
     // You can do anything
@@ -79,33 +78,22 @@ void ExecuteCommand()
   }   
   else if (cmd=="volume")
   {
-    if (str1>"30")
-      str1="10";
-    else if (str1<"0")
-      str1="10";
-    myDFPlayer.pause(); 
-    delay(10);
+    if (str1.toInt()>30)
+      str1="30";
+    else if (str1.toInt()<0)
+      str1="0";
     myDFPlayer.volume(str1.toInt());
-    delay(10);
-    myDFPlayer.start();
+    
     Feedback=Command;
   }     
   else if (cmd=="volumeUp")
   {
-    myDFPlayer.pause();
-    delay(10);
     myDFPlayer.volumeUp();
-    delay(10);
-    myDFPlayer.start();
     Feedback=Command;
   }   
   else if (cmd=="volumeDown")
   {
-    myDFPlayer.pause();
-    delay(10);
     myDFPlayer.volumeDown();
-    delay(10);
-    myDFPlayer.start();
     Feedback=Command;
   }    
   else if (cmd=="EQ")
@@ -254,6 +242,10 @@ void ExecuteCommand()
   {
     Feedback="Command is not defined";
   }
+
+  delay(100);
+  myDFPlayer.start();
+  delay(100);
 }
 
 void setup()
@@ -297,7 +289,7 @@ void setup()
     mySoftwareSerial.begin(9600);
     
     Serial.println();
-    Serial.println(F("DFRobot DFPlayer Mini Demo"));
+    Serial.println(F("DFRobotDemo"));
     Serial.println(F("Initializing DFPlayer ... (May take 3~5 seconds)"));
     
     if (!myDFPlayer.begin(mySoftwareSerial)) {  //Use softwareSerial to communicate with mp3.
@@ -427,12 +419,42 @@ void loop()
     delay(1);
     client.stop();
   }
-  /*
-  if (myDFPlayer.available()) {
-    printDetail(myDFPlayer.readType(), myDFPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
-  }
-  */
 }
+
+void getCommand(char c)
+{
+  if (c=='?') ReceiveState=1;
+  if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
+  
+  if (ReceiveState==1)
+  {
+    Command=Command+String(c);
+    
+    if (c=='=') cmdState=0;
+    if (c==';') strState++;
+  
+    if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
+    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) str1=str1+String(c);
+    if ((cmdState==0)&&(strState==2)&&(c!=';')) str2=str2+String(c);
+    if ((cmdState==0)&&(strState==3)&&(c!=';')) str3=str3+String(c);
+    if ((cmdState==0)&&(strState==4)&&(c!=';')) str4=str4+String(c);
+    if ((cmdState==0)&&(strState==5)&&(c!=';')) str5=str5+String(c);
+    if ((cmdState==0)&&(strState==6)&&(c!=';')) str6=str6+String(c);
+    if ((cmdState==0)&&(strState==7)&&(c!=';')) str7=str7+String(c);
+    if ((cmdState==0)&&(strState==8)&&(c!=';')) str8=str8+String(c);
+    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) str9=str9+String(c);
+    
+    if (c=='?') questionstate=1;
+    if (c=='=') equalstate=1;
+    if ((strState>=9)&&(c==';')) semicolonstate=1;
+  }
+}
+
+/*
+if (myDFPlayer.available()) {
+  printDetail(myDFPlayer.readType(), myDFPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
+}
+*/
 
 void printDetail(uint8_t type, int value){
   switch (type) {
@@ -486,34 +508,5 @@ void printDetail(uint8_t type, int value){
       break;
     default:
       break;
-  }
-}
-
-void getCommand(char c)
-{
-  if (c=='?') ReceiveState=1;
-  if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
-  
-  if (ReceiveState==1)
-  {
-    Command=Command+String(c);
-    
-    if (c=='=') cmdState=0;
-    if (c==';') strState++;
-  
-    if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
-    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) str1=str1+String(c);
-    if ((cmdState==0)&&(strState==2)&&(c!=';')) str2=str2+String(c);
-    if ((cmdState==0)&&(strState==3)&&(c!=';')) str3=str3+String(c);
-    if ((cmdState==0)&&(strState==4)&&(c!=';')) str4=str4+String(c);
-    if ((cmdState==0)&&(strState==5)&&(c!=';')) str5=str5+String(c);
-    if ((cmdState==0)&&(strState==6)&&(c!=';')) str6=str6+String(c);
-    if ((cmdState==0)&&(strState==7)&&(c!=';')) str7=str7+String(c);
-    if ((cmdState==0)&&(strState==8)&&(c!=';')) str8=str8+String(c);
-    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) str9=str9+String(c);
-    
-    if (c=='?') questionstate=1;
-    if (c=='=') equalstate=1;
-    if ((strState>=9)&&(c==';')) semicolonstate=1;
   }
 }
