@@ -13,7 +13,6 @@ https://github.com/nodemcu/nodemcu-flasher
 
 Expanding Arduino Serial Port Buffer Size
 https://internetofhomethings.com/homethings/?p=927
-https://goo.gl/swNwM4
 */
 
 String WIFI_SSID = "";   //your network SSID
