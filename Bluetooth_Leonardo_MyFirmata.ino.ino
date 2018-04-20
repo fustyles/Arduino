@@ -26,7 +26,7 @@ Command Format :
 ?keyboardprintln=str1
 ?keyboardwrite=keycode
 
-Keyboard Modifiers
+Keyboard Modifiers (keyboardpress)
 https://www.arduino.cc/en/Reference/KeyboardModifiers
 */
 
