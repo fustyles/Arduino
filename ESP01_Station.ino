@@ -1,7 +1,7 @@
 /* 
 Arduino Uno(Uart) + ESP8266 ESP-01 (1MB Flash)
 
-Author : ChungYi Fu (Taiwan)  2018-04-16 23:30
+Author : ChungYi Fu (Taiwan)  2018-04-20 19:30
 
 Update AT Firmware(V2.0_AT_Firmware)
 https://www.youtube.com/watch?v=QVhWVu8NnZc
@@ -43,6 +43,7 @@ void setup()
 void loop() 
 {
   if (STAIP=="")
+  {
     getSTAIP();
   
     if (STAIP!="")
@@ -56,6 +57,7 @@ void loop()
         delay(50);
       }      
     }
+  }
   else
   {
     int SensorData = rand()%100;      //humidity
