@@ -11,6 +11,9 @@ nodemcu-flasher
 https://github.com/nodemcu/nodemcu-flasher
 (Baudrate:115200, Flash size:1MByte, Flash speed:26.7MHz, SPI Mode:QIO)
 
+Expanding Arduino Serial Port Buffer Size
+https://internetofhomethings.com/homethings/?p=927
+
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
