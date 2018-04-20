@@ -207,6 +207,5 @@ void getCommand()
         if ((strState>=9)&&(c==';')) semicolonstate=1;
       }
     }  
-    Serial.println(ReceiveData);
   }
 }
