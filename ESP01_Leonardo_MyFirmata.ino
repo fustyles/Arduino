@@ -324,10 +324,11 @@ String WaitReply(long int TimeLimit)
       delay(4);
       while(mySerial.available())
       {
-        ReceiveData=ReceiveData+String(char(mySerial.read()));
-        //ReceiveData=ReceiveData+mySerial.readStringUntil('\r'); 
+        //ReceiveData=ReceiveData+String(char(mySerial.read()));
+        ReceiveData=ReceiveData+mySerial.readStringUntil('\r'); 
       }
-      return ReceiveData;
+      //Serial.println(ReceiveData);
+      if (ReceiveData.indexOf("OK")!=-1) return ReceiveData;
     }
   } 
   return ReceiveData;
