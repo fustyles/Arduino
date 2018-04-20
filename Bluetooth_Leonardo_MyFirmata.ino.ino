@@ -21,7 +21,7 @@ Command Format :
 ?mousepressright
 ?mousepressmiddle
 ?mouserelease   
-?keyboardpress=keycode1;keycode2;keycode3
+?keyboardpress=keycode1;keycode2;keycode3;presstime
 ?keyboardprint=str1
 ?keyboardprintln=str1
 ?keyboardwrite=keycode
@@ -125,7 +125,7 @@ void executecommand()
       if (str1!="") Keyboard.press(char(str1.toInt()));
       if (str2!="") Keyboard.press(char(str2.toInt()));
       if (str3!="") Keyboard.press(char(str3.toInt()));
-      delay(100);
+      delay(str4.toInt());
       Keyboard.releaseAll();
       SendData(command);
     }  
