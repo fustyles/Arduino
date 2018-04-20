@@ -48,7 +48,7 @@ Link：http://192.168.4.1/?resetwifi=ssid;password
 Control Page
 https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 
-Keyboard Modifiers
+Keyboard Modifiers (keyboardpress)
 https://www.arduino.cc/en/Reference/KeyboardModifiers
 */
 
