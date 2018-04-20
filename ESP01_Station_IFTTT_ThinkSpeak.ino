@@ -72,10 +72,9 @@ void loop()
     String key="xxxxxxxxxxxxxxxx";
     String field1=String(SensorTemperature);
     String field2="";
-    String field3="";
     
     //If request length is too long, it can't work!
-    String request="GET /update?api_key="+key+"&field1="+field1+"&field2="+field2+"&field3="+field3+" HTTP/1.1\r\nHost: "+domain+"\r\n\r\n";
+    String request="GET /update?api_key="+key+"&field1="+field1+"&field2="+field2+" HTTP/1.1\r\nHost: "+domain+"\r\n\r\n";
     Serial.println(request);
     
     SendData("AT+CIPSTART=\"TCP\",\""+domain+"\",80", 5000);
