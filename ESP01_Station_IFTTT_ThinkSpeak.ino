@@ -85,7 +85,7 @@ void loop()
     
     if (SensorTemperature<10)
     {  
-      delay(1000);
+      delay(2000);
       //IFTTT      
       String domain="maker.ifttt.com";
       String event="xxxxx";
