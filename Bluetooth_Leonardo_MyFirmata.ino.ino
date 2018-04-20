@@ -25,6 +25,9 @@ Command Format :
 ?keyboardprint=str1
 ?keyboardprintln=str1
 ?keyboardwrite=keycode
+
+Keyboard Modifiers
+https://www.arduino.cc/en/Reference/KeyboardModifiers
 */
 
 
