@@ -1,6 +1,6 @@
 
 /*
-Arduino Uno(Uart) + Bluetooth
+Arduino Leonardo(Uart) + Bluetooth
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-4-20 09:00 
 
