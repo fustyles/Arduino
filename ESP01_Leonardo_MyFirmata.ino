@@ -34,7 +34,7 @@ http://192.168.4.1/?mousepressleft
 http://192.168.4.1/?mousepressright
 http://192.168.4.1/?mousepressmiddle
 http://192.168.4.1/?mouserelease   
-http://192.168.4.1/?keyboardpress=keycode1;keycode2;keycode3
+http://192.168.4.1/?keyboardpress=keycode1;keycode2;keycode3;presstime
 http://192.168.4.1/?keyboardprint=str1
 http://192.168.4.1/?keyboardprintln=str1
 http://192.168.4.1/?keyboardwrite=keycode
@@ -199,7 +199,7 @@ void executecommand()
       if (str1!="") Keyboard.press(char(str1.toInt()));
       if (str2!="") Keyboard.press(char(str2.toInt()));
       if (str3!="") Keyboard.press(char(str3.toInt()));
-      delay(100);
+      delay(str4.toInt());
       Keyboard.releaseAll();
       Feedback(CID,"<html>"+command+"</html>",3);
     }  
