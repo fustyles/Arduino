@@ -93,8 +93,11 @@ void loop()
       String key="xxxxxxxxxxxxxxxxxxxxxx";
       String value1=String(SensorTemperature);
       String value2="";
-      
-      //If request length is too long, it can't work!
+      /*
+      If request length is too long, it can't work!
+      Expanding Arduino Serial Port Buffer Size
+      https://internetofhomethings.com/homethings/?p=927
+      */
       request = "GET /trigger/"+event+"/with/key/"+key+"?value1="+value1+"&value2="+value2+" HTTP/1.1\r\nHost: "+domain+"\r\n\r\n";
       Serial.println(request);
       
