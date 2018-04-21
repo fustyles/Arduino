@@ -31,7 +31,6 @@ http://192.168.4.1/?digitalwrite=pin;value
 http://192.168.4.1/?analogwrite=pin;value
 http://192.168.4.1/?digitalread=pin
 http://192.168.4.1/?analogread=pin
-http://192.168.4.1/?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 
 STAIP：
 Query： http://192.168.4.1/?ip
@@ -145,86 +144,6 @@ void executecommand()
     {
       Feedback(CID,"<html>"+String(analogRead(str1.toInt()))+"</html>",3);
     }  
-  else if (cmd=="car")    // ?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
-    {
-      pinMode(str1.toInt(), OUTPUT);
-      pinMode(str2.toInt(), OUTPUT);
-      pinMode(str3.toInt(), OUTPUT);
-      pinMode(str4.toInt(), OUTPUT);
-      digitalWrite(str1.toInt(), 0);
-      digitalWrite(str2.toInt(), 0);
-      digitalWrite(str3.toInt(), 0);
-      digitalWrite(str4.toInt(), 0);
-      delay(10);    
-    
-      if (str8=="S")
-      {
-        analogWrite(str1.toInt(),0);
-        analogWrite(str2.toInt(),0);
-        analogWrite(str3.toInt(),0);
-        analogWrite(str4.toInt(),0);
-      }
-      else if  (str8=="F")
-      {
-        analogWrite(str1.toInt(),str5.toInt());
-        analogWrite(str2.toInt(),0);
-        analogWrite(str3.toInt(),0);
-        analogWrite(str4.toInt(),str6.toInt());       
-        if ((str7!="")&&(str7!="0"))
-        {
-          delay(str7.toInt());
-          analogWrite(str1.toInt(),0);
-          analogWrite(str2.toInt(),0);
-          analogWrite(str3.toInt(),0);
-          analogWrite(str4.toInt(),0);          
-        }     
-      }
-      else if  (str8=="B")
-      {
-        analogWrite(str1.toInt(),0);
-        analogWrite(str2.toInt(),str5.toInt());
-        analogWrite(str3.toInt(),str6.toInt());
-        analogWrite(str4.toInt(),0);  
-        if ((str7!="")&&(str7!="0"))
-        {
-          delay(str7.toInt());
-          analogWrite(str1.toInt(),0);
-          analogWrite(str2.toInt(),0);
-          analogWrite(str3.toInt(),0);
-          analogWrite(str4.toInt(),0);          
-        }     
-      }
-      else if  (str8=="L")
-      {
-        analogWrite(str1.toInt(),0);
-        analogWrite(str2.toInt(),str5.toInt());
-        analogWrite(str3.toInt(),0);
-        analogWrite(str4.toInt(),str6.toInt());         
-        if ((str7!="")&&(str7!="0"))
-        {
-          delay(str7.toInt());
-          analogWrite(str1.toInt(),0);
-          analogWrite(str2.toInt(),0);
-          analogWrite(str3.toInt(),0);
-          analogWrite(str4.toInt(),0);          
-        }
-      }
-      else if  (str8=="R")
-      {
-        analogWrite(str1.toInt(),str5.toInt());
-        analogWrite(str2.toInt(),0);
-        analogWrite(str3.toInt(),str6.toInt());
-        analogWrite(str4.toInt(),0);
-        if ((str7!="")&&(str7!="0"))
-        {
-          delay(str7.toInt());
-          analogWrite(str1.toInt(),0);
-          analogWrite(str2.toInt(),0);
-          analogWrite(str3.toInt(),0);
-          analogWrite(str4.toInt(),0);          
-        }        
-      }
-    }    
   else 
     {
       Feedback(CID,"<html>Command is not defined</html>",3);
