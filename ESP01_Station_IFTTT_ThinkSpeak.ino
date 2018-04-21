@@ -71,7 +71,6 @@ void loop()
     String key="xxxxxxxxxxxxxxxx";
     String field1=String(SensorTemperature);
     String field2="";
-    
     /*
     If request length is too long, it can't work!
     Expanding Arduino Serial Port Buffer Size
