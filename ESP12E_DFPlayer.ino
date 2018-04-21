@@ -43,7 +43,7 @@ void ExecuteCommand()
   Serial.println("");
 
   myDFPlayer.pause();
-  delay(100);
+  delay(300);
   
   if (cmd=="your cmd")
   {
@@ -247,9 +247,9 @@ void ExecuteCommand()
     Feedback="Command is not defined";
   }
 
-  delay(100);
+  delay(300);
   myDFPlayer.start();
-  delay(100);
+  delay(300);
 }
 
 void setup()
