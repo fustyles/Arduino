@@ -310,7 +310,11 @@ void SendData(String data,int TimeLimit)
 
 void Feedback(String CID,String Response,int datatype)
 {
-  //If response length is too long, it can't work.
+  /*
+  If response length is too long, it can't work!
+  Expanding Arduino Serial Port Buffer Size
+  https://internetofhomethings.com/homethings/?p=927
+  */
   if (datatype==0)  
   {
     Response="<!DOCTYPE HTML><html><head><meta charset=\"UTF-8\"></head><body>"+Response+"</body></html>";
