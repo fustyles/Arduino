@@ -119,6 +119,11 @@ void executecommand()
       Feedback(CID,"<html>"+command+"</html>",3);
       delay(1000);               
       String Domain=str1;
+      /*
+      If request length is too long, it can't work!
+      Expanding Arduino Serial Port Buffer Size
+      https://internetofhomethings.com/homethings/?p=927
+      */    
       String request = "GET /"+str3+" HTTP/1.1\r\nHost: "+Domain+"\r\n\r\n";
       
       SendData("AT+CIPSTART=4,\"TCP\",\""+Domain+"\","+str2, 4000);
