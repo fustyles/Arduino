@@ -75,6 +75,7 @@ void loop()
     If request length is too long, it can't work!
     Expanding Arduino Serial Port Buffer Size
     https://internetofhomethings.com/homethings/?p=927
+    If you change buffer size to 256, request length must be  less than or equal to 126.
     */
     String request="GET /update?api_key="+key+"&field1="+field1+"&field2="+field2+" HTTP/1.1\r\nHost: "+domain+"\r\n\r\n";
     Serial.println(request);
@@ -97,6 +98,7 @@ void loop()
       If request length is too long, it can't work!
       Expanding Arduino Serial Port Buffer Size
       https://internetofhomethings.com/homethings/?p=927
+      If you change buffer size to 256, request length must be  less than or equal to 126.
       */
       request = "GET /trigger/"+event+"/with/key/"+key+"?value1="+value1+"&value2="+value2+" HTTP/1.1\r\nHost: "+domain+"\r\n\r\n";
       Serial.println(request);
