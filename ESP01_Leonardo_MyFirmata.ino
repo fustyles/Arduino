@@ -123,7 +123,7 @@ void executecommand()
       If request length is too long, it can't work!
       Expanding Arduino Serial Port Buffer Size
       https://internetofhomethings.com/homethings/?p=927
-      If you change buffer size to 256, request length must be less than or equal to 126.
+      If you change buffer size to 256, request length must be less than or equal to 126?
       */    
       String request = "GET /"+str3+" HTTP/1.1\r\nHost: "+Domain+"\r\n\r\n";
       
@@ -304,7 +304,7 @@ void Feedback(String CID,String Response,int datatype)
   If response length is too long, it can't work!
   Expanding Arduino Serial Port Buffer Size
   https://internetofhomethings.com/homethings/?p=927
-  If you change buffer size to 256, response length must be  less than or equal to 126.
+  If you change buffer size to 256, response length must be  less than or equal to 126?
   */
   if (datatype==0)  
   {
