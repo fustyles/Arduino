@@ -107,7 +107,7 @@ void loop()
       SendData("AT+CIPCLOSE",2000);
     }  
     
-    delay(20000);
+    delay(30000);
   }
 }
 
