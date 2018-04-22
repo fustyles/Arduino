@@ -80,9 +80,9 @@ void loop()
     String request="GET /update?api_key="+key+"&field1="+field1+"&field2="+field2+" HTTP/1.1\r\nHost: "+domain+"\r\n\r\n";
     Serial.println(request);
     
-    SendData("AT+CIPSTART=\"TCP\",\""+domain+"\",80", 5000);
+    SendData("AT+CIPSTART=\"TCP\",\""+domain+"\",80", 4000);
     SendData("AT+CIPSEND=" + String(request.length()+2), 2000);
-    SendData(request, 2000);
+    SendData(request, 4000);
     SendData("AT+CIPCLOSE",2000);
     
     if (SensorTemperature<10)
@@ -103,9 +103,9 @@ void loop()
       request = "GET /trigger/"+event+"/with/key/"+key+"?value1="+value1+"&value2="+value2+" HTTP/1.1\r\nHost: "+domain+"\r\n\r\n";
       Serial.println(request);
       
-      SendData("AT+CIPSTART=\"TCP\",\""+domain+"\",80", 5000);
+      SendData("AT+CIPSTART=\"TCP\",\""+domain+"\",80", 4000);
       SendData("AT+CIPSEND=" + String(request.length()+2), 2000);
-      SendData(request, 2000);
+      SendData(request, 4000);
       SendData("AT+CIPCLOSE",2000);
     }  
     
