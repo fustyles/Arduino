@@ -71,6 +71,7 @@ void loop()
     If request length is too long, it can't work!
     Expanding Arduino Serial Port Buffer Size
     https://internetofhomethings.com/homethings/?p=927
+    If you change buffer size to 256, request length must be  less than or equal to 126.
     */
     String request = "GET /?humidity="+String(SensorData)+" HTTP/1.1\r\nHost: "+Domain+"\r\n\r\n";
     
