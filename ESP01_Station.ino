@@ -1,7 +1,7 @@
 /* 
 Arduino Uno(Uart) + ESP8266 ESP-01 (1MB Flash)
 
-Author : ChungYi Fu (Taiwan)  2018-04-20 19:30
+Author : ChungYi Fu (Taiwan)  2018-04-22 22:00
 
 Update AT Firmware(V2.0_AT_Firmware)
 https://www.youtube.com/watch?v=QVhWVu8NnZc
@@ -75,9 +75,9 @@ void loop()
     */
     String request = "GET /?humidity="+String(SensorData)+" HTTP/1.1\r\nHost: "+Domain+"\r\n\r\n";
     
-    SendData("AT+CIPSTART=\"TCP\",\""+Domain+"\",80", 5000);
+    SendData("AT+CIPSTART=\"TCP\",\""+Domain+"\",80", 4000);
     SendData("AT+CIPSEND=" + String(request.length()+2), 2000);
-    SendData(request, 2000);
+    SendData(request, 4000);
     delay(1);
     SendData("AT+CIPCLOSE",2000);
     
