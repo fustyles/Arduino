@@ -63,7 +63,8 @@ void loop()
   }
   else
   {
-    int SensorTemperature = rand()%40;     // Temperature
+    //Sensor Data
+    int SensorTemperature = rand()%40;     
     Serial.print(SensorTemperature);
 
     //ThingSpeak
