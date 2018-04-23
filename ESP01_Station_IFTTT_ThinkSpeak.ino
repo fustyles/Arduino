@@ -109,7 +109,7 @@ void loop()
       SendData("AT+CIPCLOSE",2000);
     }  
     
-    delay(30000);
+    delay(30000);  // Time interval should be more than or equal to 15 seconds.
   }
 }
 
