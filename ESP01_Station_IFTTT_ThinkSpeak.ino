@@ -1,16 +1,12 @@
 /* 
 Arduino Uno(Uart) + ESP8266 ESP-01 (1MB Flash)
-
 Author : ChungYi Fu (Taiwan)  2018-04-23 10:00
-
 Update AT Firmware(V2.0_AT_Firmware)
 https://www.youtube.com/watch?v=QVhWVu8NnZc
 http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
-
 nodemcu-flasher
 https://github.com/nodemcu/nodemcu-flasher
 (Baudrate:115200, Flash size:1MByte, Flash speed:26.7MHz, SPI Mode:QIO)
-
 Expanding Arduino Serial Port Buffer Size
 https://internetofhomethings.com/homethings/?p=927
 */
@@ -64,14 +60,14 @@ void loop()
   else
   {
     //Sensor Data
-    int SensorTemperature = rand()%40;     
-    Serial.print(SensorTemperature);
+    int SensorTemperature = rand()%40;    
+    int SensorHumidity = rand()%100;  
 
     //ThingSpeak
     String domain="api.thingspeak.com";
-    String key="xxxxxxxxxxxxxxxx";
+    String key="xxxxxxxxxxxxxxxxxxxx";
     String field1=String(SensorTemperature);
-    String field2="";
+    String field2=String(SensorHumidity);
     /*
     If request length is too long, it can't work!
     Expanding Arduino Serial Port Buffer Size
@@ -86,15 +82,15 @@ void loop()
     SendData(request, 4000);
     SendData("AT+CIPCLOSE",2000);
     
-    if (SensorTemperature<10)
+    if ((SensorTemperature<10)||(SensorHumidity<20))
     {  
-      delay(2000);
+      delay(1000);
       //IFTTT      
       String domain="maker.ifttt.com";
-      String event="xxxxx";
-      String key="xxxxxxxxxxxxxxxxxxxxxx";
+      String event="xxxxxx";
+      String key="xxxxxxxxxxxxxxxxxxxx";
       String value1=String(SensorTemperature);
-      String value2="";
+      String value2=String(SensorHumidity);
       /*
       If request length is too long, it can't work!
       Expanding Arduino Serial Port Buffer Size
@@ -110,7 +106,7 @@ void loop()
       SendData("AT+CIPCLOSE",2000);
     }  
     
-    delay(30000);  // Time interval should be more than or equal to 15 seconds.(ThingSpeak)
+    delay(20000);  // Time interval should be more than or equal to 15 seconds.(ThingSpeak)
   }
 }
 
