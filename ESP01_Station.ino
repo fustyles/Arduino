@@ -108,7 +108,7 @@ String WaitReply(long int TimeLimit)
         //ReceiveData=ReceiveData+String(char(mySerial.read()));
         ReceiveData=ReceiveData+mySerial.readStringUntil('\r'); 
       }
-      //Serial.println(ReceiveData);
+      Serial.println(ReceiveData);
       if (ReceiveData.indexOf("OK")!=-1) return ReceiveData;
     }
   } 
