@@ -27,9 +27,9 @@ void setup()
 {
   Serial.begin(9600);
   
-  //You must change uart baud rate to 9600.
-  mySerial.begin(115200);   //Default uart baud rate
-  SendData("AT+UART_CUR=9600,8,1,0,0",2000);   //Change uart baud rate to 9600
+  //You must change baud rate to 9600.
+  mySerial.begin(115200);   //Default baud rate
+  SendData("AT+UART_CUR=9600,8,1,0,0",2000);   //Change baud rate to 9600
   mySerial.begin(9600);  // you will get more stable data without junk chars.
   mySerial.setTimeout(10);
 
@@ -40,7 +40,7 @@ void setup()
   if (WIFI_SSID!="") 
     SendData("AT+CWJAP_CUR=\""+WIFI_SSID+"\",\""+WIFI_PWD+"\"",5000);  
   else
-    Serial.print("Please check your network SSID and password");  
+    Serial.print("Please check your network SSID and password settings");  
 }
 
 void loop() 
@@ -76,7 +76,7 @@ void loop()
     If request length is too long, it can't work!
     Expanding Arduino Serial Port Buffer Size
     https://internetofhomethings.com/homethings/?p=927
-    If you change buffer size to 256 bytes, request length must be less than or equal to 126?
+    If you change buffer size to 256 bytes, request length must be less than or equal to 128.
     */
     String request="GET /update?api_key="+key+"&field1="+field1+"&field2="+field2+" HTTP/1.1\r\nHost: "+domain+"\r\n\r\n";
     Serial.println(request);
@@ -99,7 +99,7 @@ void loop()
       If request length is too long, it can't work!
       Expanding Arduino Serial Port Buffer Size
       https://internetofhomethings.com/homethings/?p=927
-      If you change buffer size to 256 bytes, request length must be less than or equal to 126?
+      If you change buffer size to 256 bytes, request length must be less than or equal to 128.
       */
       request = "GET /trigger/"+event+"/with/key/"+key+"?value1="+value1+"&value2="+value2+" HTTP/1.1\r\nHost: "+domain+"\r\n\r\n";
       Serial.println(request);
