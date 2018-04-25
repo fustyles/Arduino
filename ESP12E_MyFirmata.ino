@@ -1,5 +1,5 @@
 /* 
-NodeMCU (ESP12E)
+NodeMCU (ESP12E) or ESP-01
 
 Author : ChungYi Fu (Taiwan)  2018-04-04 07:00
 
