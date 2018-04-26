@@ -385,7 +385,7 @@ void tcp(String domain,String request,int port)
             else if (c != '\r') 
               getResponse += String(c);
          }
-         if (Feedback.length()!= 0) break;
+         //if (Feedback.length()!= 0) break;
       }
       client_tcp.stop();
     }
