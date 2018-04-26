@@ -3,9 +3,13 @@ ESP-01 (SoftwareSerial: gpio0,gpio2)
 
 Author : ChungYi Fu (Taiwan)  2018-04-26 18:30
 
-Command Format :  
+Wifi Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
+
+Serial Port Command Format : 
+?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
+?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
 Default APIP： 192.168.4.1
 http://192.168.4.1/?ip
