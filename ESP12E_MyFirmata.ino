@@ -118,7 +118,7 @@ void ExecuteCommand()
   {
     Feedback=String(analogRead(str1.toInt()));
   }
-  else if (cmd=="tcp")
+  else if (cmd=="tcp")     //  http://192.168.201.11/?tcp=wwwgoogle.com;80;?test;1
   {
     String domain=str1;
     String request ="/" + str3;
