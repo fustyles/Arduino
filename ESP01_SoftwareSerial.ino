@@ -77,7 +77,7 @@ void ExecuteCommand()
     Serial.println("STAIP: "+WiFi.localIP().toString());
     Feedback="STAIP: "+WiFi.localIP().toString();
   }  
-  else if (cmd=="tcp")     //  http://192.168.4.1/?tcp=wwwgoogle.com;80;?test;1
+  else if (cmd=="tcp")     //  http://192.168.4.1/?tcp=www.google.com;80;?test;1
   {
     String domain=str1;
     String request ="/" + str3;
