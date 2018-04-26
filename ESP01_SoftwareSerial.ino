@@ -12,12 +12,6 @@ http://192.168.4.1/?ip
 http://192.168.4.1/?mac
 http://192.168.4.1/?restart
 http://192.168.4.1/?resetwifi=ssid;password
-http://192.168.4.1/?inputpullup=pin
-http://192.168.4.1/?pinmode=pin;value
-http://192.168.4.1/?digitalwrite=pin;value
-http://192.168.4.1/?analogwrite=pin;value
-http://192.168.4.1/?digitalread=pin
-http://192.168.4.1/?analogread=pin
 http://192.168.4.1/?tcp=domain;port;request;waitstate
 http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
