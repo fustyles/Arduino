@@ -81,13 +81,13 @@ void ExecuteCommand()
     Serial.println("STAIP: "+WiFi.localIP().toString());
     Feedback="STAIP: "+WiFi.localIP().toString();
   }  
-  else if (cmd=="tcp")     //  http://192.168.4.1/?tcp=www.google.com;80;?test;1
+  else if (cmd=="tcp")     // http://192.168.4.1/?tcp=www.google.com;80;?test;1
   {
     String domain=str1;
     String request ="/" + str3;
     int port=str2.toInt();
     int waitstate=str4.toInt();
-    tcp(domain,request,port,waitstate);
+    tcp(domain,request,port,waitstate);   
   }
   else if (cmd=="ifttt")
   {
@@ -362,7 +362,7 @@ void getSerialCommand()
   }
 }
 
-void tcp(String domain,String request,int port,int waitstate)
+void tcp(String domain,String request,int port,int waitstate)  // If it can't get response well, you can set waitstate to 1.
 {
     WiFiClient client_tcp;
     
