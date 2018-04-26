@@ -220,13 +220,6 @@ void loop()
             Feedback+="<option value=\"mac\">MAC</option>";
             Feedback+="<option value=\"restart\">Restart</option>";
             Feedback+="<option value=\"resetwifi\">ResetWifi</option>";
-            Feedback+="<option value=\"inputpullup\">InputPullUp</option>";
-            Feedback+="<option value=\"pinmode\">pinMode</option>";
-            Feedback+="<option value=\"digitalwrite\">digitalWrite</option>";
-            Feedback+="<option value=\"analogwrite\">analogWrite</option>";
-            Feedback+="<option value=\"digitalread\">digitalRead</option>";
-            Feedback+="<option value=\"analogread\">analogRead</option>";  
-            Feedback+="<option value=\"touchread\">touchRead</option>";
             Feedback+="<option value=\"tcp\">tcp</option>";
             Feedback+="<option value=\"ifttt\">ifttt</option>";
             Feedback+="<option value=\"thingspeakupdate\">thingspeakupdate</option>";
