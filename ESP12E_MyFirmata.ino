@@ -362,14 +362,13 @@ void tcp(String domain,String request,int port)
     {
       Serial.println("GET " + request);
       client_tcp.println("GET " + request + " HTTP/1.1");
-      client_tcp.print("Host: ");
-      client_tcp.println(domain);
+      client_tcp.println("Host: " + domain);
       client_tcp.println("Connection: close");
       client_tcp.println();
 
       String getResponse="";
       long StartTime = millis();
-      while ((StartTime+5000) > millis())
+      while ((StartTime+4000) > millis())
       {
         while (client_tcp.available()) 
         {
