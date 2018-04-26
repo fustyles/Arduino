@@ -104,6 +104,8 @@ void ExecuteCommand()
   }    
   else 
   {
+    mySerial.println(Command);
+    delay(100);
     Feedback="Command is not defined";
   }
 }
@@ -265,8 +267,6 @@ void loop()
         {
           currentLine="";
           Feedback="";
-          mySerial.println(Command);
-          delay(1);
           ExecuteCommand();
         }
       }
