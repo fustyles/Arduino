@@ -389,11 +389,11 @@ void tcp(String domain,String request,int port,int waitstate)  // If it can't ru
 }
 
 /*
-Arduino Uno (UART) connect to ESP-01 (UART:gpio0,gpio2)
+Arduino Uno
 
 Command Format:
 ?tcp=domain;port;request;waitstate
-?ifttt=event;key;value1;value2;value3   (?ifttt=test;xxxxxxxxxxxxxxxxx;100;200;300)
+?ifttt=event;key;value1;value2;value3
 ?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
 
 
