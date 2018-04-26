@@ -1,7 +1,7 @@
 /* 
 NodeMCU (ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-04-04 07:00
+Author : ChungYi Fu (Taiwan)  2018-04-26 18:00
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -375,26 +375,26 @@ void tcp(String domain,String request,int port)
       client_tcp.println();
 
       String getResponse="";
+      boolean state = false;
       long StartTime = millis();
-      while ((StartTime+4000) > millis())
+      while ((StartTime+3000) > millis())
       {
         while (client_tcp.available()) 
         {
             char c = client_tcp.read();
+            
             if (c == '\n') 
             {
-              if (getResponse.length() == 0) 
-                break;
-              else
-                Feedback+=getResponse;
-                getResponse = "";
+              if (getResponse.length()==0) state = true; 
+              getResponse = "";
             } 
-            else if (c != '\r') 
+            else if (c != '\r')
               getResponse += String(c);
+            if (state==true) Feedback += String(c);
          }
-         Serial.println(Feedback);
-         if (Feedback.length()!= 0) break;
+         //if (Feedback.length()!= 0) break;
       }
+      Serial.println(Feedback);
       client_tcp.stop();
     }
     else
