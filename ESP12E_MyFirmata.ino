@@ -367,26 +367,26 @@ void tcp(String domain,String request,int port)
       client_tcp.println();
 
       String getResponse="";
+      boolean state = false;
       long StartTime = millis();
-      while ((StartTime+4000) > millis())
+      while ((StartTime+3000) > millis())
       {
         while (client_tcp.available()) 
         {
             char c = client_tcp.read();
+            
             if (c == '\n') 
             {
-              if (getResponse.length() == 0) 
-                break;
-              else
-                Feedback+=getResponse;
-                getResponse = "";
+              if (getResponse.length()==0) state = true; 
+              getResponse = "";
             } 
-            else if (c != '\r') 
+            else if (c != '\r')
               getResponse += String(c);
+            if (state==true) Feedback += String(c);
          }
-         Serial.println(Feedback);
-         if (Feedback.length()!= 0) break;
+         //if (Feedback.length()!= 0) break;
       }
+      Serial.println(Feedback);
       client_tcp.stop();
     }
     else
