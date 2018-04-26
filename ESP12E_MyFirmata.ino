@@ -165,7 +165,8 @@ void setup()
     //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
 
     WiFi.begin(ssid, password);
-
+  
+    delay(1000);
     Serial.println("");
     Serial.print("Connecting to ");
     Serial.println(ssid);
