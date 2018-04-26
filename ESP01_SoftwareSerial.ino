@@ -105,7 +105,7 @@ void ExecuteCommand()
   else 
   {
     mySerial.println(Command);
-    delay(100);
+    delay(1000);
     Feedback="Command is not defined";
   }
 }
@@ -113,6 +113,7 @@ void ExecuteCommand()
 void setup()
 {
     mySerial.begin(9600);
+    mySerial.setTimeout(10);
   
     Serial.begin(115200);
     delay(10);
