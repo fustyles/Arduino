@@ -1,5 +1,5 @@
 /* 
-ESP-01 (SoftwareSerial: gpio0,gpio2)
+ESP-01 (SoftwareSerial: gpio0,gpio2) connect to Arduino Uno
 
 Author : ChungYi Fu (Taiwan)  2018-04-26 18:30
 
