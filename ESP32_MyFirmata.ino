@@ -173,6 +173,7 @@ void setup()
 
     WiFi.begin(ssid, password);
 
+    delay(1000);
     Serial.println("");
     Serial.print("Connecting to ");
     Serial.println(ssid);
