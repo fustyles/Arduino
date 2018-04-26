@@ -1,7 +1,7 @@
 /* 
 ESP-01 (gpio0,gpio2) connect to Arduino Uno (without AT Command)
 
-Author : ChungYi Fu (Taiwan)  2018-04-26 18:30
+Author : ChungYi Fu (Taiwan)  2018-04-27 00:00
 
 Wifi Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
