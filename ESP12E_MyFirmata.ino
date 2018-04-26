@@ -1,5 +1,5 @@
 /* 
-NodeMCU (ESP12E) or ESP-01
+NodeMCU (ESP12E)
 
 Author : ChungYi Fu (Taiwan)  2018-04-04 07:00
 
@@ -376,17 +376,17 @@ void tcp(String domain,String request,int port)
             char c = client_tcp.read();
             if (c == '\n') 
             {
-              if (Feedback.length() == 0) 
+              if (getResponse.length() == 0) 
                 break;
               else
                 //Serial.println(Feedback);
-                getResponse+=Feedback;
-                Feedback = "";
+                Feedback+=getResponse;
+                getResponse = "";
             } 
             else if (c != '\r') 
-              Feedback += String(c);
+              getResponse += String(c);
          }
-         if (getResponse.length()!= 0) break;
+         if (Feedback.length()!= 0) break;
       }
       client_tcp.stop();
     }
