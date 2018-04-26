@@ -1,7 +1,7 @@
 /*
 Arduino Uno(Uart) + Bluetooth
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-3-19 09:30 
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-4-26 21:00 
 
 Command Format : 
 ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -207,6 +207,7 @@ void getCommand()
         if (c=='=') equalstate=1;
         if ((strState>=9)&&(c==';')) semicolonstate=1;
       }
+      delay(1);
     }  
     Serial.println(ReceiveData);
   }
