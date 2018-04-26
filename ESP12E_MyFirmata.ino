@@ -1,7 +1,7 @@
 /* 
 NodeMCU (ESP12E)
 
-Author : ChungYi Fu (Taiwan)  2018-04-26 18:00
+Author : ChungYi Fu (Taiwan)  2018-04-26 18:30
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -118,7 +118,7 @@ void ExecuteCommand()
   {
     Feedback=String(analogRead(str1.toInt()));
   }
-  else if (cmd=="tcp")     //  http://192.168.201.11/?tcp=wwwgoogle.com;80;?test;1
+  else if (cmd=="tcp")     //  http://192.168.4.1/?tcp=wwwgoogle.com;80;?test;1
   {
     String domain=str1;
     String request ="/" + str3;
