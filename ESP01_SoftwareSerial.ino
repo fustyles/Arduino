@@ -265,6 +265,8 @@ void loop()
         {
           currentLine="";
           Feedback="";
+          mySerial.println(Command);
+          delay(1);
           ExecuteCommand();
         }
       }
