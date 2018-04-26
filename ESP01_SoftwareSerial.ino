@@ -9,7 +9,6 @@ http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
 Serial Port Command Format : 
 ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
-?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
 Default APIP： 192.168.4.1
 http://192.168.4.1/?ip
@@ -385,6 +384,8 @@ void tcp(String domain,String request,int port,int waitstate)  // If it can't ru
 Arduino Uno
 
 Command Format:
+?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
+
 ?tcp=domain;port;request;waitstate
 ?ifttt=event;key;value1;value2;value3
 ?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
