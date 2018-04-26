@@ -1,7 +1,7 @@
 /* 
 NodeMCU (ESP12E)
 
-Author : ChungYi Fu (Taiwan)  2018-04-04 07:00
+Author : ChungYi Fu (Taiwan)  2018-04-26 18:00
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -123,7 +123,8 @@ void ExecuteCommand()
     String domain=str1;
     String request ="/" + str3;
     int port=str2.toInt();
-    tcp(domain,request,port,str4.toInt());
+    int waitstate=str4.toInt();
+    tcp(domain,request,port,waitstate);
   }
   else if (cmd=="ifttt")
   {
