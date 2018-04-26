@@ -377,12 +377,14 @@ void tcp(String domain,String request,int port)
             {
               if (Feedback.length() == 0) 
                 break;
-              else 
+              else
+                //Serial.println(Feedback);
                 Feedback = "";
             } 
             else if (c != '\r') 
               Feedback += c;
          }
+         //Serial.println(Feedback);
          if (Feedback.length()!= 0) break;
       }
       client_tcp.stop();
