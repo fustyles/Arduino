@@ -367,6 +367,7 @@ void tcp(String domain,String request,int port)
       client_tcp.println("Connection: close");
       client_tcp.println();
 
+      String getResponse="";
       long StartTime = millis();
       while ((StartTime+5000) > millis())
       {
@@ -379,13 +380,13 @@ void tcp(String domain,String request,int port)
                 break;
               else
                 //Serial.println(Feedback);
+                getResponse+=Feedback;
                 Feedback = "";
             } 
             else if (c != '\r') 
-              Feedback += c;
+              Feedback += String(c);
          }
-         //Serial.println(Feedback);
-         if (Feedback.length()!= 0) break;
+         if (getResponse.length()!= 0) break;
       }
       client_tcp.stop();
     }
