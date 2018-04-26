@@ -1,18 +1,7 @@
 /* 
-Arduino Uno(Uart) + ESP8266 ESP-01 (1MB Flash)
+NodeMCU (ESP12E)  or ESP-01
 
-Author : ChungYi Fu (Taiwan)  2018-04-20 22:00
-
-Update AT Firmware(V2.0_AT_Firmware)
-https://www.youtube.com/watch?v=QVhWVu8NnZc
-http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
-
-nodemcu-flasher
-https://github.com/nodemcu/nodemcu-flasher
-(Baudrate:115200, Flash size:1MByte, Flash speed:26.7MHz, SPI Mode:QIO)
-
-Expanding Arduino Serial Port Buffer Size
-https://internetofhomethings.com/homethings/?p=927
+Author : ChungYi Fu (Taiwan)  2018-04-26 18:30
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -23,14 +12,15 @@ http://192.168.4.1/?ip
 http://192.168.4.1/?mac
 http://192.168.4.1/?restart
 http://192.168.4.1/?resetwifi=ssid;password
-http://192.168.4.1/?at=AT+Command
-http://192.168.4.1/?tcp=domain;port;request
 http://192.168.4.1/?inputpullup=pin
 http://192.168.4.1/?pinmode=pin;value
 http://192.168.4.1/?digitalwrite=pin;value
 http://192.168.4.1/?analogwrite=pin;value
 http://192.168.4.1/?digitalread=pin
 http://192.168.4.1/?analogread=pin
+http://192.168.4.1/?tcp=domain;port;request;waitstate
+http://192.168.4.1/?ifttt=event;key;value1;value2;value3
+http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
 
 STAIP：
 Query： http://192.168.4.1/?ip
@@ -40,345 +30,366 @@ Control Page (http)
 https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 */
 
-// Check your Wi-Fi Router's Settings
-String WIFI_SSID = "";   //your network SSID
-String WIFI_PWD  = "";    //your network password
+#include <ESP8266WiFi.h>
 
-#include <SoftwareSerial.h>
-SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
+const char* ssid     = "";   //your network SSID
+const char* password = "";   //your network password
 
-String ReceiveData="", command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
-String APIP="",APMAC="",STAIP="",STAMAC="",CID="";
+const char* apssid = "MyFirmata ESP12E";
+const char* appassword = "12345678";         //AP password require at least 8 characters.
 
-void executecommand()
+WiFiServer server(80);
+
+String Feedback="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
+byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
+
+void ExecuteCommand()
 {
   Serial.println("");
-  //Serial.println("command: "+command);
+  //Serial.println("Command: "+Command);
   Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
+  Serial.println("");
   
-  if (cmd=="yourcmd")
-    {
-      //you can do anything
-      
-      //Feedback(CID,"<font color=\"red\">"+cmd+"="+str1+";"+str2+";"+str3+"</font>",0);  --> HTML
-      //Feedback(CID,cmd+"="+str1+";"+str2+";"+str3,1);  --> XML
-      //Feedback(CID,cmd+"="+str1+";"+str2+";"+str3,2);  --> JSON
-      //Feedback(CID,"<html>"+cmd+"="+str1+";"+str2+";"+str3+"</html>",3);  --> Custom definition
-    } 
+  if (cmd=="your cmd")
+  {
+    // You can do anything
+    // Feedback="<font color=\"red\">Hello World</font>";
+  }
   else if (cmd=="ip")
-    {
-      Feedback(CID,"<html>APIP: "+APIP+"<br>STAIP: "+STAIP+"</html>",3);
-    }
+  {
+    Feedback="AP IP: "+WiFi.softAPIP().toString();    
+    Feedback+=", ";
+    Feedback+="STA IP: "+WiFi.localIP().toString();
+  }  
   else if (cmd=="mac")
-    {
-      Feedback(CID,"<html>APMAC: "+APMAC+"<br>STAMAC: "+STAMAC+"</html>",3);
-    }    
-  else if (cmd=="resetwifi")
-    {
-      Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
-      delay(3000);
-      SendData("AT+CWQAP",2000);
-      SendData("AT+CWJAP_CUR=\""+str1+"\",\""+str2+"\"",5000);
-    }
+  {
+    Feedback="STA MAC: "+WiFi.macAddress();
+  }  
   else if (cmd=="restart")
+  {
+    setup();
+    Feedback=Command;
+  }    
+  else if (cmd=="resetwifi")
+  {
+    WiFi.begin(str1.c_str(), str2.c_str());
+    Serial.print("Connecting to ");
+    Serial.println(str1);
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) 
     {
-      Feedback(CID,"<html>"+command+"</html>",3);
-      delay(3000);
-      SendData("AT+RST",2000);
-      delay(2000);
-      setup();
-      initial();
-    }    
-  else if (cmd=="at")      //  ?cmd=str1 -> ?at=AT+RST
-    {
-      Feedback(CID,"<html>"+WaitReply(3000)+"</html>",3);
-      delay(1000);
-      mySerial.println(str1);
-      mySerial.flush();
-    }    
-  else if (cmd=="tcp")
-    {
-      Feedback(CID,"<html>"+command+"</html>",3);
-      delay(1000);               
-      String Domain=str1;
-      /*
-      If request length is too long, it can't work!
-      Expanding Arduino Serial Port Buffer Size
-      https://internetofhomethings.com/homethings/?p=927
-      If you change buffer size to 256, request length must be less than or equal to 126?
-      */
-      String request = "GET /"+str3+" HTTP/1.1\r\nHost: "+Domain+"\r\n\r\n";
-      
-      SendData("AT+CIPSTART=4,\"TCP\",\""+Domain+"\","+str2, 4000);
-      SendData("AT+CIPSEND=4," + String(request.length()+2), 4000);
-      SendData(request, 2000);
-      delay(1);
-      SendData("AT+CIPCLOSE=4",2000);
-    }        
+        delay(500);
+        if ((StartTime+5000) < millis()) break;
+    } 
+    Serial.println("");
+    Serial.println("STAIP: "+WiFi.localIP().toString());
+    Feedback="STAIP: "+WiFi.localIP().toString();
+  }    
   else if (cmd=="inputpullup")
-    {
-      pinMode(str1.toInt(), INPUT_PULLUP);
-      Feedback(CID,"<html>"+command+"</html>",3);
-    }  
+  {
+    pinMode(str1.toInt(), INPUT_PULLUP);
+    Feedback=Command;
+  }  
   else if (cmd=="pinmode")
-    {
-      pinMode(str1.toInt(), str2.toInt());
-      Feedback(CID,"<html>"+command+"</html>",3);
-    }        
+  {
+    if (str2.toInt()==1)
+      pinMode(str1.toInt(), OUTPUT);
+    else
+      pinMode(str1.toInt(), INPUT);
+    Feedback=Command;
+  }        
   else if (cmd=="digitalwrite")
-    {
-      pinMode(str1.toInt(), OUTPUT);
-      digitalWrite(str1.toInt(),str2.toInt());
-      Feedback(CID,"<html>"+command+"</html>",3);
-    }   
+  {
+    pinMode(str1.toInt(), OUTPUT);
+    digitalWrite(str1.toInt(), str2.toInt());
+    Feedback=Command;
+  }   
   else if (cmd=="digitalread")
-    {
-      Feedback(CID,"<html>"+String(digitalRead(str1.toInt()))+"</html>",3);
-    }    
+  {
+    Feedback=String(digitalRead(str1.toInt()));
+  }
   else if (cmd=="analogwrite")
-    {
-      pinMode(str1.toInt(), OUTPUT);
-      analogWrite(str1.toInt(),str2.toInt());
-      Feedback(CID,"<html>"+command+"</html>",3);
-    }       
+  {
+    pinMode(str1.toInt(), OUTPUT);
+    analogWrite(str1.toInt(), str2.toInt());
+    Feedback=Command;
+  }       
   else if (cmd=="analogread")
-    {
-      Feedback(CID,"<html>"+String(analogRead(str1.toInt()))+"</html>",3);
-    }  
+  {
+    Feedback=String(analogRead(str1.toInt()));
+  }
+  else if (cmd=="tcp")     //  http://192.168.4.1/?tcp=wwwgoogle.com;80;?test;1
+  {
+    String domain=str1;
+    String request ="/" + str3;
+    int port=str2.toInt();
+    int waitstate=str4.toInt();
+    tcp(domain,request,port,waitstate);
+  }
+  else if (cmd=="ifttt")
+  {
+    String domain="maker.ifttt.com";
+    String request = "/trigger/" + str1 + "/with/key/" + str2;
+    request += "?value1="+str3+"&value2="+str4+"&value3="+str5;
+    tcp(domain,request,80,0);
+  }
+  else if (cmd=="thingspeakupdate")
+  {
+    String domain="api.thingspeak.com";
+    String request = "/update?api_key=" + str1;
+    request += "&field1="+str2+"&field2="+str3+"&field3="+str4+"&field4="+str5+"&field5="+str6+"&field6="+str7+"&field7="+str8+"&field8="+str9;
+    tcp(domain,request,80,0);
+  }    
   else 
-    {
-      Feedback(CID,"<html>Command is not defined</html>",3);
-    }    
+  {
+    Feedback="Command is not defined";
+  }
 }
 
 void setup()
 {
-  Serial.begin(9600);
+    Serial.begin(115200);
+    delay(10);
+    
+    WiFi.mode(WIFI_AP_STA);
+    
+    WiFi.softAP(apssid, appassword);
   
-  //You must change uart baud rate of ESP-01 to 9600.
-  mySerial.begin(115200);   //Default uart baud rate -> 19200,38400,57600,74880,115200
-  SendData("AT+UART_CUR=9600,8,1,0,0",2000);   //Change uart baud rate of ESP-01 to 9600
-  mySerial.begin(9600);  // 9600 ,you will get more stable data.
-  mySerial.setTimeout(10);
+    //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0));
   
-  initial();
-}
+    delay(1000);
+    Serial.println("");
+    Serial.println("APIP address: ");
+    Serial.println(WiFi.softAPIP());  
+  
+    //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
 
-void initial()
-{
-  SendData("AT+CWMODE_CUR=3",2000);
-  SendData("AT+CIPMUX=1",2000);
-  SendData("AT+CIPSERVER=1,80",2000);   //port=80
-  SendData("AT+CIPSTO=5",2000);  //timeout= 5 seconds
-  SendData("AT+CIPAP_CUR=\"192.168.4.1\"",2000);  //APIP: 192.168.4.1
-  //SendData("AT+CWSAP_CUR=\""+AP_id+"\",\""+AP_pwd+"\",3,4",2000);
-  //String STA_ip="192.168.0.100";
-  //String STA_gateway="192.168.0.1";
-  //String STA_netmask="255.255.255.0";
-  //SendData("AT+CIPSTA_CUR=\""+STA_ip+"\",\""+STA_gateway+"\",\""+STA_netmask+"\"",2000);
-  if (WIFI_SSID!="") 
-    SendData("AT+CWJAP_CUR=\""+WIFI_SSID+"\",\""+WIFI_PWD+"\"",5000);  
-  else
-    Serial.print("Please check your network SSID and password");  
-}
-
-void loop() 
-{
-  getCommand();
+    WiFi.begin(ssid, password);
   
-  if ((ReceiveData.indexOf("/?")!=-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
-  {
-    CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
-    executecommand();
-  }
-  else if ((ReceiveData.indexOf("/?")!=-1)&&(ReceiveData.indexOf(" HTTP")==-1))
-  {
-    if(ReceiveData.indexOf("+IPD,")!=-1)
+    delay(1000);
+    Serial.println("");
+    Serial.print("Connecting to ");
+    Serial.println(ssid);
+    
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) 
     {
-      CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
-      Feedback(CID,"<html>It can't work!Check command length.</html>",3);
-    }
-  }
-  else if ((ReceiveData.indexOf("/?")==-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
-  {
-    CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
-    Feedback(CID,"<html>Hello World</html>",3);
-  }
+        delay(500);
+        if ((StartTime+5000) < millis()) break;
+    } 
   
-  /*
-  if (SensorValue>LimitValue)
-  {
-    cmd="yourcmd";
-    str1="yourstr1";
-    str2="yourstr2";
-    str3="yourstr3";
-    ...
-    str9="yourstr9";
-    ExecuteCommand();
-    delay(10000);
-  }
-  */
-}
-
-void SendData(String data,int TimeLimit)
-{
-  mySerial.println(data);
-  mySerial.flush();
-  delay(10);
-  WaitReply(TimeLimit);
-}
-
-void Feedback(String CID,String Response,int datatype)
-{
-  /*
-  If response length is too long, it can't work!
-  Expanding Arduino Serial Port Buffer Size
-  https://internetofhomethings.com/homethings/?p=927
-  If you change buffer size to 256, response length must be less than or equal to 126?
-  */
-  if (datatype==0)  
-  {
-    Response="<!DOCTYPE HTML><html><head><meta charset=\"UTF-8\"></head><body>"+Response+"</body></html>";
-  }
-  else if (datatype==1) 
-  {
-    Response="<?xml version=\"1.0\" encoding=\"UTF-8\"?><ESP8266><Data><Text>"+Response+"</Text></Data></ESP8266>";
-  }  
-  else if (datatype==2) 
-  {
-    Response="[{\"ESP8266\":\""+Response+"\"}]";
-  }
-  else
-    Response=Response;
-
-  SendData("AT+CIPSEND="+CID+","+(Response.length()+2),2000);
-  SendData(Response,2000);
-  delay(1);
-  SendData("AT+CIPCLOSE="+CID,2000);
-}
-
-String WaitReply(long int TimeLimit)
-{
-  String ReceiveData="";
-  long int StartTime=millis();
-  while( (StartTime+TimeLimit) > millis())
-  {
-    if (mySerial.available())
+    if (WiFi.localIP().toString()!="0.0.0.0")
     {
-      delay(4);
-      while(mySerial.available())
+      pinMode(2, OUTPUT);
+      for (int i=0;i<5;i++)
       {
-        //ReceiveData=ReceiveData+String(char(mySerial.read()));
-        ReceiveData=ReceiveData+mySerial.readStringUntil('\r'); 
-      }
-      //Serial.println(ReceiveData);
-      if (ReceiveData.indexOf("OK")!=-1) return ReceiveData;
-    }
-  } 
-  return ReceiveData;
-}
-
-void getCommand()
-{
-  ReceiveData="";command="";cmd="";str1="";str2="";str3="";str4="";str5="";str6="";str7="";str8="";str9="";
-  byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
-  
-  if (mySerial.available())
-  {
-    while (mySerial.available())
-    {
-      char c=mySerial.read();
-      ReceiveData=ReceiveData+String(c);
-      
-      if (c=='?') ReceiveState=1;
-      if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
-      
-      if (ReceiveState==1)
-      {
-        command=command+String(c);
-        
-        if (c=='=') cmdState=0;
-        if (c==';') strState++;
-
-        if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
-        if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) str1=str1+String(c);
-        if ((cmdState==0)&&(strState==2)&&(c!=';')) str2=str2+String(c);
-        if ((cmdState==0)&&(strState==3)&&(c!=';')) str3=str3+String(c);
-        if ((cmdState==0)&&(strState==4)&&(c!=';')) str4=str4+String(c);
-        if ((cmdState==0)&&(strState==5)&&(c!=';')) str5=str5+String(c);
-        if ((cmdState==0)&&(strState==6)&&(c!=';')) str6=str6+String(c);
-        if ((cmdState==0)&&(strState==7)&&(c!=';')) str7=str7+String(c);
-        if ((cmdState==0)&&(strState==8)&&(c!=';')) str8=str8+String(c);
-        if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) str9=str9+String(c);
-        
-        if (c=='?') questionstate=1;
-        if (c=='=') equalstate=1;
-        if ((strState>=9)&&(c==';')) semicolonstate=1;
-      }
-      
-      if (ReceiveData.indexOf(" HTTP")!=-1)
-      {
-         while (mySerial.available())
-        {
-          mySerial.read();
-        }
+        digitalWrite(2,HIGH);
+        delay(100);
+        digitalWrite(2,LOW);
+        delay(100);
       }
     }  
-    Serial.println(ReceiveData);
+
+    Serial.println("");
+    Serial.println("STAIP address: ");
+    Serial.println(WiFi.localIP());
     
-    if (ReceiveData.indexOf("WIFI GOT IP")!=-1)
-    { 
-      while(!mySerial.find('OK')){} 
-      delay(10);
+    server.begin();
+}
 
-      APIP="";APMAC="";STAIP="";STAMAC="";
-      int apipreadstate=0,staipreadstate=0,apmacreadstate=0,stamacreadstate=0,j=0;
-      mySerial.println("AT+CIFSR");
-      mySerial.flush();
-      delay(6);
-      
-      while(mySerial.available())
+void loop()
+{
+  Command="";cmd="";str1="";str2="";str3="";str4="";str5="";str6="";str7="";str8="";str9="";
+  ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
+
+  WiFiClient client = server.available();
+
+  if (client) 
+  { 
+    String currentLine = "";
+
+    while (client.connected()) 
+    {
+      if (client.available()) 
       {
-        char c=mySerial.read();
-        String t=String(c);
+        char c = client.read();             
         
-        if (t=="\"") j++;
-        
-        if (j==1) 
-          apipreadstate=1;
-        else if (j==2)
-          apipreadstate=0;
-        if ((apipreadstate==1)&&(t!="\"")) APIP=APIP+t;
+        getCommand(c);
+                
+        if (c == '\n') 
+        {
+          if (currentLine.length() == 0) 
+          {
+            /*
+            client.println("HTTP/1.1 200 OK");
+            client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+            client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
+            client.println("Content-Type: application/json;charset=utf-8");
+            client.println("Access-Control-Allow-Origin: *");
+            //client.println("Connection: close");
+            client.println();
+            client.println("[{\"esp8266\":\""+Feedback+"\"}]");
+            client.println();
+            */
+            
+            /*
+            client.println("HTTP/1.1 200 OK");
+            client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+            client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
+            client.println("Content-Type: text/xml; charset=utf-8");
+            client.println("Access-Control-Allow-Origin: *");
+            //client.println("Connection: close");
+            client.println();
+            client.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            client.println("<esp8266><feedback>"+Feedback+"</feedback></esp8266>");
+            client.println();
+           */
+            
+            Feedback+="<br><br>";
+            Feedback+="<form method=\"get\" action=\"\">";
+            Feedback+="cmd:";
+            Feedback+="<select name=\"cmd\" id=\"cmd\">";
+            Feedback+="<option value=\"ip\">IP</option>";
+            Feedback+="<option value=\"mac\">MAC</option>";
+            Feedback+="<option value=\"restart\">Restart</option>";
+            Feedback+="<option value=\"resetwifi\">ResetWifi</option>";
+            Feedback+="<option value=\"inputpullup\">InputPullUp</option>";
+            Feedback+="<option value=\"pinmode\">pinMode</option>";
+            Feedback+="<option value=\"digitalwrite\">digitalWrite</option>";
+            Feedback+="<option value=\"analogwrite\">analogWrite</option>";
+            Feedback+="<option value=\"digitalread\">digitalRead</option>";
+            Feedback+="<option value=\"analogread\">analogRead</option>";  
+            Feedback+="<option value=\"touchread\">touchRead</option>";
+            Feedback+="<option value=\"tcp\">tcp</option>";
+            Feedback+="<option value=\"ifttt\">ifttt</option>";
+            Feedback+="<option value=\"thingspeakupdate\">thingspeakupdate</option>";
+            Feedback+="</select>";
+            Feedback+="<br><br>str1:"; 
+            Feedback+="<input type=\"text\" name=\"str1\" id=\"str1\" size=\"20\">";      
+            Feedback+="<br><br>str2:";
+            Feedback+="<input type=\"text\" name=\"str2\" id=\"str2\" size=\"20\">";  
+            Feedback+="<br><br>str3:";
+            Feedback+="<input type=\"text\" name=\"str3\" id=\"str3\" size=\"20\">";  
+            Feedback+="<br>(str3;str4;str5;str6;str7;str8;str9)<br><br>";           
+            Feedback+="<input type=\"button\" value=\"Send\" onclick=\"location.href='?'+cmd.value+'='+str1.value+';'+str2.value+';'+str3.value\">"; 
+            Feedback+="</form>";
 
-        if (j==3) 
-          apmacreadstate=1;
-        else if (j==4)
-          apmacreadstate=0;
-        if ((apmacreadstate==1)&&(t!="\"")) APMAC=APMAC+t;
-        
-        if (j==5) 
-          staipreadstate=1;
-        else if (j==6)
-          staipreadstate=0;
-        if ((staipreadstate==1)&&(t!="\"")) STAIP=STAIP+t;
+            client.println("HTTP/1.1 200 OK");
+            client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+            client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
+            client.println("Content-Type: text/html; charset=utf-8");
+            client.println("Access-Control-Allow-Origin: *");
+            //client.println("Connection: close");
+            client.println();
+            client.println("<!DOCTYPE HTML>");
+            client.println("<html><head>");
+            client.println("<meta charset=\"UTF-8\">");
+            client.println("<meta http-equiv=\"Access-Control-Allow-Origin\" content=\"*\">");
+            client.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
+            client.println("</head><body>");
+            client.println(Feedback);
+            client.println("</body></html>");
+            client.println();
+                        
+            Feedback="";
+            break;
+          } else {
+            currentLine = "";
+          }
+        } 
+        else if (c != '\r') 
+        {
+          currentLine += c;
+        }
 
-        if (j==7) 
-          stamacreadstate=1;
-        else if (j==8)
-          stamacreadstate=0;
-        if ((stamacreadstate==1)&&(t!="\"")) STAMAC=STAMAC+t;
-      } 
-      
-      pinMode(13,1);
-      for (int i=0;i<20;i++)
-      {
-        digitalWrite(13,1);
-        delay(50);
-        digitalWrite(13,0);
-        delay(50);
+        if ((currentLine.indexOf("/?")!=-1)&&(currentLine.indexOf(" HTTP")!=-1))
+        {
+          currentLine="";
+          Feedback="";
+          ExecuteCommand();
+        }
       }
-      
-      Serial.println("APIP: "+APIP+"\nAPMAC: "+APMAC+"\nSTAIP: "+STAIP+"\nSTAMAC: "+STAMAC);
     }
+    delay(1);
+    client.stop();
   }
+  
+  //if (SensorValue>LimitValue)
+  //{
+  //  cmd="yourcmd";
+  //  str1="yourstr1";
+  //  str2="yourstr2";
+  //  str3="yourstr3";
+  //  ...
+  //  str9="yourstr9";
+  //  ExecuteCommand();
+  //  delay(10000);
+  //}
+}
+
+void getCommand(char c)
+{
+  if (c=='?') ReceiveState=1;
+  if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
+  
+  if (ReceiveState==1)
+  {
+    Command=Command+String(c);
+    
+    if (c=='=') cmdState=0;
+    if (c==';') strState++;
+  
+    if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
+    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) str1=str1+String(c);
+    if ((cmdState==0)&&(strState==2)&&(c!=';')) str2=str2+String(c);
+    if ((cmdState==0)&&(strState==3)&&(c!=';')) str3=str3+String(c);
+    if ((cmdState==0)&&(strState==4)&&(c!=';')) str4=str4+String(c);
+    if ((cmdState==0)&&(strState==5)&&(c!=';')) str5=str5+String(c);
+    if ((cmdState==0)&&(strState==6)&&(c!=';')) str6=str6+String(c);
+    if ((cmdState==0)&&(strState==7)&&(c!=';')) str7=str7+String(c);
+    if ((cmdState==0)&&(strState==8)&&(c!=';')) str8=str8+String(c);
+    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) str9=str9+String(c);
+    
+    if (c=='?') questionstate=1;
+    if (c=='=') equalstate=1;
+    if ((strState>=9)&&(c==';')) semicolonstate=1;
+  }
+}
+
+void tcp(String domain,String request,int port,int waitstate)
+{
+    WiFiClient client_tcp;
+    
+    if (client_tcp.connect(domain, port)) 
+    {
+      Serial.println("GET " + request);
+      client_tcp.println("GET " + request + " HTTP/1.1");
+      client_tcp.println("Host: " + domain);
+      client_tcp.println("Connection: close");
+      client_tcp.println();
+
+      String getResponse="";
+      boolean state = false;
+      long StartTime = millis();
+      while ((StartTime+3000) > millis())
+      {
+        while (client_tcp.available()) 
+        {
+            char c = client_tcp.read();
+            if (c == '\n') 
+            {
+              if (getResponse.length()==0) state=true; 
+              getResponse = "";
+            } 
+            else if (c != '\r')
+              getResponse += String(c);
+            if (state>0) Feedback += String(c);
+         }
+         if ((waitstate==0)&&(Feedback.length()!= 0)) break;
+      }
+      Serial.println(Feedback);
+      client_tcp.stop();
+    }
+    else
+      Feedback="Connection failed";  
 }
