@@ -385,7 +385,7 @@ void tcp(String domain,String request,int port)
               getResponse += String(c);
          }
          Serial.println(Feedback);
-         //if (Feedback.length()!= 0) break;
+         if (Feedback.length()!= 0) break;
       }
       client_tcp.stop();
     }
