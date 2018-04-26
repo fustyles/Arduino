@@ -366,32 +366,34 @@ void tcp(String domain,String request,int port)
 {
     WiFiClient client_tcp;
     
-    if (client_tcp.connect(domain.c_str(), port)) 
+    if (client_tcp.connect(domain, port)) 
     {
       Serial.println("GET " + request);
       client_tcp.println("GET " + request + " HTTP/1.1");
-      client_tcp.print("Host: ");
-      client_tcp.println(domain);
+      client_tcp.println("Host: " + domain);
       client_tcp.println("Connection: close");
       client_tcp.println();
 
+      String getResponse="";
       long StartTime = millis();
-      while ((StartTime+5000) > millis())
+      while ((StartTime+4000) > millis())
       {
         while (client_tcp.available()) 
         {
             char c = client_tcp.read();
             if (c == '\n') 
             {
-              if (Feedback.length() == 0) 
+              if (getResponse.length() == 0) 
                 break;
-              else 
-                Feedback = "";
+              else
+                Feedback+=getResponse;
+                getResponse = "";
             } 
             else if (c != '\r') 
-              Feedback += c;
+              getResponse += String(c);
          }
-         if (Feedback.length()!= 0) break;
+         //Serial.println(Feedback);
+         //if (Feedback.length()!= 0) break;
       }
       client_tcp.stop();
     }
