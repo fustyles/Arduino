@@ -35,7 +35,7 @@ SoftwareSerial mySerial(0, 2); // Arduino RX:10, TX:11
 const char* ssid     = "";   //your network SSID
 const char* password = "";   //your network password
 
-const char* apssid = "MyFirmata ESP12E";
+const char* apssid = "MyFirmata ESP01";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 WiFiServer server(80);
