@@ -6,16 +6,16 @@ int degree=5;          //單位時間風向旋轉角度
 
 int motorPin1=5;       //馬達驅動IC腳位
 int motorPin2=6;       //馬達驅動IC腳位
-int speedButton=7;   //風速四段變速切換按鈕腳位(吊扇)
-int rotateButton=8;  //風向旋轉切換按鈕腳位
+int speedButtonPin=7;   //風速四段變速切換按鈕腳位(吊扇)
+int rotateButtonPin=8;  //風向旋轉切換按鈕腳位
 int ServoPin=9;        //伺服馬達腳位
 
 int pressCount=0;      //風速切換按鈕點選次數
 int rotateState=-1;    //風向旋轉狀態 1=旋轉, -1=暫停
 
 void setup() {
-  pinMode(speedButton, INPUT);
-  pinMode(rotateButton, INPUT);
+  pinMode(speedButtonPin, INPUT);
+  pinMode(rotateButtonPin, INPUT);
   pinMode(motorPin1, OUTPUT);
   pinMode(motorPin2, OUTPUT);    
   
