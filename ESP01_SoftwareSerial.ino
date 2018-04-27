@@ -1,7 +1,7 @@
 /* 
 ESP-01 (gpio0,gpio2) connect to Arduino Uno (without AT Command)
 
-Author : ChungYi Fu (Taiwan)  2018-04-27 00:00
+Author : ChungYi Fu (Taiwan)  2018-04-27 20:30
 
 Wifi Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -169,7 +169,16 @@ void loop()
   Command="";cmd="";str1="";str2="";str3="";str4="";str5="";str6="";str7="";str8="";str9="";
   ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
-  getSerialCommand();
+  if (mySerial.available())
+  {
+    while (mySerial.available())
+    {
+      char c=mySerial.read();
+      getCommand(c);
+      delay(1);
+    }  
+    if (cmd!="") ExecuteCommand();
+  }
   
   WiFiClient client = server.available();
 
@@ -181,8 +190,7 @@ void loop()
     {
       if (client.available()) 
       {
-        char c = client.read();             
-        
+        char c = client.read();
         getCommand(c);
                 
         if (c == '\n') 
@@ -303,45 +311,6 @@ void getCommand(char c)
     if (c=='?') questionstate=1;
     if (c=='=') equalstate=1;
     if ((strState>=9)&&(c==';')) semicolonstate=1;
-  }
-}
-
-void getSerialCommand()
-{
-  if (mySerial.available())
-  {
-    while (mySerial.available())
-    {
-      char c=mySerial.read();
-      
-      if (c=='?') ReceiveState=1;
-      if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
-      
-      if (ReceiveState==1)
-      {
-        Command=Command+String(c);
-        
-        if (c=='=') cmdState=0;
-        if (c==';') strState++;
-
-        if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
-        if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) str1=str1+String(c);
-        if ((cmdState==0)&&(strState==2)&&(c!=';')) str2=str2+String(c);
-        if ((cmdState==0)&&(strState==3)&&(c!=';')) str3=str3+String(c);
-        if ((cmdState==0)&&(strState==4)&&(c!=';')) str4=str4+String(c);
-        if ((cmdState==0)&&(strState==5)&&(c!=';')) str5=str5+String(c);
-        if ((cmdState==0)&&(strState==6)&&(c!=';')) str6=str6+String(c);
-        if ((cmdState==0)&&(strState==7)&&(c!=';')) str7=str7+String(c);
-        if ((cmdState==0)&&(strState==8)&&(c!=';')) str8=str8+String(c);
-        if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) str9=str9+String(c);
-        
-        if (c=='?') questionstate=1;
-        if (c=='=') equalstate=1;
-        if ((strState>=9)&&(c==';')) semicolonstate=1;
-      }
-      delay(1);
-    }  
-    if (cmd!="") ExecuteCommand();
   }
 }
 
