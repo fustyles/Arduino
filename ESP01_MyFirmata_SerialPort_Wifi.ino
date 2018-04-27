@@ -1,5 +1,5 @@
 /* 
-ESP-01 (gpio0,gpio2) connect to Arduino Uno (without AT Command)
+ESP-01 (gpio0,gpio2) connect to Arduino Uno (without using AT command)
 
 Author : ChungYi Fu (Taiwan)  2018-04-27 20:30
 
