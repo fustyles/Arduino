@@ -80,7 +80,7 @@ void ExecuteCommand()
     Serial.println("STAIP: "+WiFi.localIP().toString());
     Feedback="STAIP: "+WiFi.localIP().toString();
   }  
-  else if (cmd=="tcp")     // http://192.168.4.1/?tcp=www.google.com;80;?test;1
+  else if (cmd=="tcp")  // If it can't get response, you can set waitstate to 1.
   {
     String domain=str1;
     String request ="/" + str3;
