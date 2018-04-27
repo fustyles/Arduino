@@ -118,7 +118,7 @@ void ExecuteCommand()
   {
     Feedback=String(analogRead(str1.toInt()));
   }
-  else if (cmd=="tcp")     //  http://192.168.4.1/?tcp=wwwgoogle.com;80;?test;1
+  else if (cmd=="tcp")  // If it can't get response, you can set waitstate to 1.
   {
     String domain=str1;
     String request ="/" + str3;
@@ -131,14 +131,14 @@ void ExecuteCommand()
     String domain="maker.ifttt.com";
     String request = "/trigger/" + str1 + "/with/key/" + str2;
     request += "?value1="+str3+"&value2="+str4+"&value3="+str5;
-    tcp(domain,request,80,0);  // If it can't get response, you can set waitstate to 1.
+    tcp(domain,request,80,1);  // If it can't get response, you can set waitstate to 1.
   }
   else if (cmd=="thingspeakupdate")
   {
     String domain="api.thingspeak.com";
     String request = "/update?api_key=" + str1;
     request += "&field1="+str2+"&field2="+str3+"&field3="+str4+"&field4="+str5+"&field5="+str6+"&field6="+str7+"&field7="+str8+"&field8="+str9;
-    tcp(domain,request,80,0);  // If it can't get response, you can set waitstate to 1.
+    tcp(domain,request,80,1);  // If it can't get response, you can set waitstate to 1.
   }    
   else 
   {
