@@ -27,7 +27,7 @@ void setup() {
 
 void loop() {
   //讀取風速切換按鈕狀態
-  if (digitalRead(speedButton)==1)
+  if (digitalRead(speedButtonPin)==1)
   {
     pressCount++;
     if (pressCount%4==0)         
@@ -55,7 +55,7 @@ void loop() {
   }
   
   //讀取風向旋轉切換按鈕狀態
-  if (digitalRead(rotateButton)==1)
+  if (digitalRead(rotateButtonPin)==1)
   {
     rotateState*=(-1);     //改變風向旋轉狀態設定值
     delay(200);
