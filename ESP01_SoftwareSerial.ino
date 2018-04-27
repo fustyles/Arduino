@@ -93,14 +93,14 @@ void ExecuteCommand()
     String domain="maker.ifttt.com";
     String request = "/trigger/" + str1 + "/with/key/" + str2;
     request += "?value1="+str3+"&value2="+str4+"&value3="+str5;
-    tcp(domain,request,80,1);  // If it can't run well, you can set waitstate to 1.
+    tcp(domain,request,80,1);  // If it can't get response, you can set waitstate to 1.
   }
   else if (cmd=="thingspeakupdate")
   {
     String domain="api.thingspeak.com";
     String request = "/update?api_key=" + str1;
     request += "&field1="+str2+"&field2="+str3+"&field3="+str4+"&field4="+str5+"&field5="+str6+"&field6="+str7+"&field7="+str8+"&field8="+str9;
-    tcp(domain,request,80,1);  // If it can't run well, you can set waitstate to 1.
+    tcp(domain,request,80,1);  // If it can't get response, you can set waitstate to 1.
   }    
   else 
   {
@@ -314,7 +314,7 @@ void getCommand(char c)
   }
 }
 
-void tcp(String domain,String request,int port,int waitstate)  // If it can't run well, you can set waitstate to 1.
+void tcp(String domain,String request,int port,int waitstate)  // If it can't get response, you can set waitstate to 1.
 {
     WiFiClient client_tcp;
     
