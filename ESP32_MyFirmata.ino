@@ -391,7 +391,7 @@ void tcp(String domain,String request,int port,int waitstate)  // If it can't ge
             } 
             else if (c != '\r')
               getResponse += String(c);
-            if (state>0) Feedback += String(c);
+            if (state==true) Feedback += String(c);
          }
          if ((waitstate==0)&&(Feedback.length()!= 0)) break;
       }
