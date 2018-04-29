@@ -1,7 +1,7 @@
 /* 
 NodeMCU (ESP12E)
 
-Author : ChungYi Fu (Taiwan)  2018-04-26 18:30
+Author : ChungYi Fu (Taiwan)  2018-04-29 14:30
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
