@@ -1,5 +1,5 @@
 /* 
-Arduino Uno(Uart) + ESP8266 ESP-01 (1MB Flash)
+Arduino Uno + ESP8266 ESP-01 (AT Command)
 
 Author : ChungYi Fu (Taiwan)  2018-04-22 22:00
 
