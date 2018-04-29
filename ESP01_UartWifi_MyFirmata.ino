@@ -104,7 +104,7 @@ void ExecuteCommand()
   }    
   else 
   {
-    mySerial.println(Command);
+    mySerial.println(Command);  // Send command to Arduino Uno
     delay(1000);
     Feedback="Command is not defined";
   }
