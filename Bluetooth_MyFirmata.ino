@@ -1,9 +1,9 @@
 /*
-Arduino Uno(Uart) + Bluetooth
+Arduino Uno + Bluetooth
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-4-26 21:00 
 
-Command Format : 
+Uart Command Format : 
 ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
 ?inputpullup=pin
