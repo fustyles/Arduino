@@ -28,7 +28,7 @@ https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 */
 
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(0, 2); // Arduino RX:10, TX:11 
+SoftwareSerial mySerial(0, 2); // gpio0,gpio2
 
 #include <ESP8266WiFi.h>
 
