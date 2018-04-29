@@ -1,5 +1,5 @@
 /* 
-Arduino Uno + ESP-01 (gpio0,gpio2) (without using AT command)
+Arduino Uno + ESP-01 (gpio0,gpio2) (without using AT Command)
 
 Author : ChungYi Fu (Taiwan)  2018-04-27 20:30
 
