@@ -1,5 +1,5 @@
 /* 
-Arduino Leonardo(Uart) + ESP8266 ESP-01 (1MB Flash, V2.0_AT_Firmware)
+Arduino Leonardo + ESP8266 ESP-01 (AT Command)
 
 Author : ChungYi Fu (Taiwan)  2018-04-20 22:00
 
