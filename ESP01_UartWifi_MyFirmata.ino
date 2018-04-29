@@ -355,7 +355,7 @@ void tcp(String domain,String request,int port,int waitstate)  // If it can't ge
 /*
 Arduino Uno
 
-Command Format:
+Uart Command Format:
 ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
 ?tcp=domain;port;request;waitstate
