@@ -1,5 +1,5 @@
 /* 
-Arduino Leonardo + ESP8266 ESP-01 (AT Command)
+Arduino Leonardo (keyboard,mouse) + ESP8266 ESP-01 (AT Command)
 
 Author : ChungYi Fu (Taiwan)  2018-04-20 22:00
 
