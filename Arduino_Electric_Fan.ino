@@ -38,17 +38,17 @@ void loop() {
     }
     else if (pressCount%4==1) 
     {
-      analogWrite(motorPin1,100);
+      analogWrite(motorPin1,100);  //0~255
       analogWrite(motorPin2,0);
     }
     else if (pressCount%4==2) 
     {
-      analogWrite(motorPin1,120);
+      analogWrite(motorPin1,120);  //0~255
       analogWrite(motorPin2,0);
     }
     else if (pressCount%4==3) 
     {
-      analogWrite(motorPin1,140);
+      analogWrite(motorPin1,140);  //0~255
       analogWrite(motorPin2,0);
     }
     delay(200);
