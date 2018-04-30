@@ -425,7 +425,7 @@ Uart Command Format:
 ?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
 
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(10, 11); // connect to NodeMCU (ESP12E)
+SoftwareSerial mySerial(10, 11); // NodeMCU(ESP12E) RX(D7,gpio13), TX(D8,gpio15)
 
 void setup()
 {
