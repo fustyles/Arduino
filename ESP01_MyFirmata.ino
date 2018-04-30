@@ -3,6 +3,9 @@ ESP-01
 
 Author : ChungYi Fu (Taiwan)  2018-04-26 18:30
 
+Control Page (http)
+https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
+
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -25,9 +28,6 @@ http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;fiel
 STAIP：
 Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
-
-Control Page (http)
-https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 */
 
 #include <ESP8266WiFi.h>
