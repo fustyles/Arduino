@@ -365,7 +365,7 @@ Uart Command Format:
 
 
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(10, 11); // connect to ESP-01 (gpio0,gpio2)
+SoftwareSerial mySerial(10, 11); // ESP-01 (gpio0,gpio2)
 void setup()
 {
   Serial.begin(9600);
