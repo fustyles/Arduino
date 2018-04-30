@@ -14,8 +14,8 @@ int pressCount=0;      //風速切換按鈕點選次數
 int rotateState=-1;    //風向旋轉狀態 1=旋轉, -1=暫停
 
 void setup() {
-  pinMode(speedButtonPin, INPUT);
-  pinMode(rotateButtonPin, INPUT);
+  pinMode(speedButtonPin, INPUT_PULLUP);
+  pinMode(rotateButtonPin, INPUT_PULLUP);
   pinMode(motorPin1, OUTPUT);
   pinMode(motorPin2, OUTPUT);    
   
@@ -27,7 +27,7 @@ void setup() {
 
 void loop() {
   //讀取風速切換按鈕狀態
-  if (digitalRead(speedButtonPin)==1)
+  if (digitalRead(speedButtonPin)==0)
   {
     pressCount++;
     if (pressCount%4==0)         
@@ -55,7 +55,7 @@ void loop() {
   }
   
   //讀取風向旋轉切換按鈕狀態
-  if (digitalRead(rotateButtonPin)==1)
+  if (digitalRead(rotateButtonPin)==0)
   {
     rotateState*=(-1);     //改變風向旋轉狀態設定值
     delay(200);
