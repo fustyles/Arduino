@@ -368,6 +368,7 @@ void tcp(String domain,String request,int port,int waitstate)   // If it can't g
       client_tcp.println();
 
       String getResponse="";
+      Feedback="";
       boolean state = false;
       long StartTime = millis();
       while ((StartTime+3000) > millis())
