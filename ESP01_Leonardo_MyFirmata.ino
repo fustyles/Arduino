@@ -14,6 +14,12 @@ https://github.com/nodemcu/nodemcu-flasher
 Expanding Arduino Serial Port Buffer Size
 https://internetofhomethings.com/homethings/?p=927
 
+Control Page
+https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
+
+Keyboard Modifiers (keyboardpress)
+https://www.arduino.cc/en/Reference/KeyboardModifiers
+
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -47,12 +53,6 @@ Default APIP： 192.168.4.1
 STAIP：
 Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
-
-Control Page
-https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
-
-Keyboard Modifiers (keyboardpress)
-https://www.arduino.cc/en/Reference/KeyboardModifiers
 */
 
 // Check your Wi-Fi Router's Settings
