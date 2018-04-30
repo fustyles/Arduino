@@ -1,7 +1,7 @@
 /* 
 ESP-01
 
-Author : ChungYi Fu (Taiwan)  2018-04-26 18:30
+Author : ChungYi Fu (Taiwan)  2018-04-30 21:30
 
 Control Page (http)
 https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
@@ -368,6 +368,7 @@ void tcp(String domain,String request,int port,int waitstate)  // If it can't ge
       client_tcp.println();
 
       String getResponse="";
+      Feedback="";
       boolean state = false;
       long StartTime = millis();
       while ((StartTime+3000) > millis())
