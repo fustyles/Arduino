@@ -1,5 +1,5 @@
 /* 
- NodeMCU (ESP32) (gpio16,gpio17) + Arduino Uno (without using AT Command)
+NodeMCU (ESP32) (gpio16,gpio17) + Arduino Uno (without using AT Command)
  
 Author : ChungYi Fu (Taiwan)  2018-04-30 19:00
 
