@@ -1,5 +1,5 @@
 /* 
-Arduino Uno + ESP8266 ESP-01 (AT Command)
+ESP-01 + Arduino Uno (AT Command)
 
 Author : ChungYi Fu (Taiwan)  2018-04-20 22:00
 
@@ -13,6 +13,9 @@ https://github.com/nodemcu/nodemcu-flasher
 
 Expanding Arduino Serial Port Buffer Size
 https://internetofhomethings.com/homethings/?p=927
+
+Control Page (http)
+https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -35,9 +38,6 @@ http://192.168.4.1/?analogread=pin
 STAIP：
 Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
-
-Control Page (http)
-https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 */
 
 // Check your Wi-Fi Router's Settings
