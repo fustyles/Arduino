@@ -14,6 +14,9 @@ https://github.com/nodemcu/nodemcu-flasher
 Expanding Arduino Serial Port Buffer Size
 https://internetofhomethings.com/homethings/?p=927
 
+Control Page (http)
+https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
+
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
