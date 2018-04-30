@@ -1,7 +1,7 @@
 /* 
 NodeMCU (ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-04-29 14:30
+Author : ChungYi Fu (Taiwan)  2018-04-30 18:00
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -368,7 +368,7 @@ void tcp(String domain,String request,int port,int waitstate)  // If it can't ge
 {
     WiFiClient client_tcp;
     
-    if (client_tcp.connect(domain, port)) 
+    if (client_tcp.connect(domain.c_str(), port)) 
     {
       Serial.println("GET " + request);
       client_tcp.println("GET " + request + " HTTP/1.1");
