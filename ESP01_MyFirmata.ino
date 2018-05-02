@@ -131,7 +131,7 @@ void ExecuteCommand()
     String domain="maker.ifttt.com";
     String request = "/trigger/" + str1 + "/with/key/" + str2;
     request += "?value1="+str3+"&value2="+str4+"&value3="+str5;
-    tcp(domain,request,80,);
+    tcp(domain,request,80);
   }
   else if (cmd=="thingspeakupdate")
   {
