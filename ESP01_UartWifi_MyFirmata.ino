@@ -331,7 +331,7 @@ void tcp(String domain,String request,int port)
       Feedback="";
       boolean state = false;
       long StartTime = millis();
-      while ((StartTime+3000) > millis())
+      while ((StartTime+4000) > millis())
       {
         while (client_tcp.available()) 
         {
