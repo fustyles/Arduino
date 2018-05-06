@@ -51,6 +51,8 @@ void loop() {
         analogWrite(motorPin2,0);
         break;        
       default:
+        analogWrite(motorPin1,0);
+        analogWrite(motorPin2,0);        
         break;
     }
     delay(500);
