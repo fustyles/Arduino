@@ -1,7 +1,6 @@
 /* 
 ESP8266
-
-Author : ChungYi Fu (Taiwan)  2018-05-06 17:00
+Author : ChungYi Fu (Taiwan)  2018-05-06 20:00
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -53,7 +52,16 @@ void setup()
     Serial.println(WiFi.localIP());
     
     if (WiFi.localIP().toString()!="0.0.0.0")
+    {
       WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
+      /*
+      cmd="ifttt";
+      str1="eventname";
+      str2="key";
+      str3=WiFi.localIP().toString();
+      ExecuteCommand();
+      */
+    }
     else
       WiFi.softAP(apssid, appassword);
       
@@ -183,11 +191,66 @@ void ExecuteCommand()
     Serial.println("");
     Serial.println("STAIP: "+WiFi.localIP().toString()); 
     if (WiFi.localIP().toString()!="0.0.0.0") 
-      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   
+    {
+      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
+      /*
+      cmd="ifttt";
+      str1="eventname";
+      str2="key";
+      str3=WiFi.localIP().toString();
+      ExecuteCommand();
+      */
+    }
     Feedback="STAIP: "+WiFi.localIP().toString();
   }     
+  else if (cmd=="ifttt")
+  {
+    String domain="maker.ifttt.com";
+    String request = "/trigger/" + str1 + "/with/key/" + str2;
+    request += "?value1="+str3+"&value2="+str4+"&value3="+str5;
+    tcp(domain,request,80);
+  }  
   else 
   {
     Feedback="Command is not defined";
   }
+}
+
+void tcp(String domain,String request,int port)
+{
+    WiFiClient client_tcp;
+    
+    if (client_tcp.connect(domain.c_str(), port)) 
+    {
+      Serial.println("GET " + request);
+      client_tcp.println("GET " + request + " HTTP/1.1");
+      client_tcp.println("Host: " + domain);
+      client_tcp.println("Connection: close");
+      client_tcp.println();
+
+      String getResponse="";
+      Feedback="";
+      boolean state = false;
+      long StartTime = millis();
+      while ((StartTime+4000) > millis())
+      {
+        while (client_tcp.available()) 
+        {
+            char c = client_tcp.read();
+            if (c == '\n') 
+            {
+              if (getResponse.length()==0) state=true; 
+              getResponse = "";
+            } 
+            else if (c != '\r')
+              getResponse += String(c);
+            if (state==true) Feedback += String(c);
+         }
+         if ((state==true)&&(Feedback.length()!= 0)) break;
+      }
+      Serial.println(Feedback);
+      client_tcp.stop();
+    }
+    else
+      Feedback="Connection failed";  
 }
