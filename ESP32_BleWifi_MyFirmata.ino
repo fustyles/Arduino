@@ -44,8 +44,8 @@ BluetoothSerial SerialBT;
 
 #include <WiFi.h>
 
-const char* ssid     = "3COM";   //your network SSID
-const char* password = "godblessyou";   //your network password
+const char* ssid     = "";   //your network SSID
+const char* password = "";   //your network password
 
 const char* apssid = "MyFirmata ESP32";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
@@ -178,14 +178,6 @@ void setup()
     delay(10);
     
     WiFi.mode(WIFI_AP_STA);
-    
-    //WiFi.softAP(apssid, appassword);
-    //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0));
-  
-    delay(1000);
-    Serial.println("");
-    Serial.println("APIP address: ");
-    Serial.println(WiFi.softAPIP());  
   
     //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
 
@@ -219,8 +211,14 @@ void setup()
     Serial.println("STAIP address: ");
     Serial.println(WiFi.localIP());
 
+    //WiFi.softAP(apssid, appassword);
     WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
-    server.begin();
+    //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
+    server.begin(); 
+    delay(1000);
+    Serial.println("");
+    Serial.println("APIP address: ");
+    Serial.println(WiFi.softAPIP());  
 }
 
 void loop()
