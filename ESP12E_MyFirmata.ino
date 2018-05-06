@@ -1,12 +1,9 @@
 /* 
 NodeMCU (ESP12E)
-
-Author : ChungYi Fu (Taiwan)  2018-05-03 01:00
-
+Author : ChungYi Fu (Taiwan)  2018-05-06 14:00
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
-
 Default APIP： 192.168.4.1
 http://192.168.4.1/?ip
 http://192.168.4.1/?mac
@@ -21,11 +18,9 @@ http://192.168.4.1/?analogread=pin
 http://192.168.4.1/?tcp=domain;port;request
 http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
-
 STAIP：
 Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
-
 Control Page (http)
 https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 */
@@ -83,6 +78,11 @@ void ExecuteCommand()
     } 
     Serial.println("");
     Serial.println("STAIP: "+WiFi.localIP().toString());
+    if (WiFi.localIP().toString()!="0.0.0.0") 
+    {
+      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
+      server.begin();
+    }          
     Feedback="STAIP: "+WiFi.localIP().toString();
   }    
   else if (cmd=="inputpullup")
@@ -152,15 +152,6 @@ void setup()
     delay(10);
     
     WiFi.mode(WIFI_AP_STA);
-    
-    WiFi.softAP(apssid, appassword);
-  
-    //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0));
-  
-    delay(1000);
-    Serial.println("");
-    Serial.println("APIP address: ");
-    Serial.println(WiFi.softAPIP());  
   
     //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
 
@@ -175,7 +166,7 @@ void setup()
     while (WiFi.status() != WL_CONNECTED) 
     {
         delay(500);
-        if ((StartTime+5000) < millis()) break;
+        if ((StartTime+10000) < millis()) break;
     } 
   
     if (WiFi.localIP().toString()!="0.0.0.0")
@@ -194,7 +185,13 @@ void setup()
     Serial.println("STAIP address: ");
     Serial.println(WiFi.localIP());
     
-    server.begin();
+    //WiFi.softAP(apssid, appassword);
+    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
+    //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
+    Serial.println("");
+    Serial.println("APIP address: ");
+    Serial.println(WiFi.softAPIP());    
+    server.begin(); 
 }
 
 void loop()
