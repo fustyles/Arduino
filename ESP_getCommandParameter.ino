@@ -181,12 +181,7 @@ void ExecuteCommand()
         if ((StartTime+10000) < millis()) break;
     } 
     Serial.println("");
-    Serial.println("STAIP: "+WiFi.localIP().toString());
-    if (WiFi.localIP().toString()!="0.0.0.0") 
-    {
-      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
-      server.begin();
-    }        
+    Serial.println("STAIP: "+WiFi.localIP().toString());       
     Feedback="STAIP: "+WiFi.localIP().toString();
   }     
   else 
