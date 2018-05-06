@@ -1,13 +1,21 @@
 /* 
 ESP8266
-Author : ChungYi Fu (Taiwan)  2018-95-06 13:00
+
+Author : ChungYi Fu (Taiwan)  2018-95-06 16:00
+
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
+
+STAIP：
+http://192.168.4.1/?resetwifi=ssid;password
 */
 
-#include <WiFi.h>
-//#include <ESP8266WiFi.h>
+//ESP32
+//#include <WiFi.h>
+
+//ESP01、ESP12E
+#include <ESP8266WiFi.h>
 
 const char* ssid     = "";   //your network SSID
 const char* password = "";   //your network password
@@ -161,6 +169,26 @@ void ExecuteCommand()
     // You can do anything
     //Feedback="<font color=\"red\">Hello World</font>";
   }
+  else if (cmd=="resetwifi")
+  {
+    WiFi.begin(str1.c_str(), str2.c_str());
+    Serial.print("Connecting to ");
+    Serial.println(str1);
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) 
+    {
+        delay(500);
+        if ((StartTime+10000) < millis()) break;
+    } 
+    Serial.println("");
+    Serial.println("STAIP: "+WiFi.localIP().toString());
+    if (WiFi.localIP().toString()!="0.0.0.0") 
+    {
+      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
+      server.begin();
+    }        
+    Feedback="STAIP: "+WiFi.localIP().toString();
+  }     
   else 
   {
     Feedback="Command is not defined";
