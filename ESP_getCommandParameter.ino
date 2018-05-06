@@ -44,18 +44,6 @@ void setup()
         delay(500);
         if ((StartTime+5000) < millis()) break;
     } 
-  
-    if (WiFi.localIP().toString()!="0.0.0.0")
-    {
-      pinMode(2, OUTPUT);
-      for (int i=0;i<5;i++)
-      {
-        digitalWrite(2,LOW);
-        delay(100);
-        digitalWrite(2,HIGH);
-        delay(100);
-      }
-    }  
 
     Serial.println("");
     Serial.println("STAIP address: ");
