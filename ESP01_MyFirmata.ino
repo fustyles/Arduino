@@ -1,7 +1,7 @@
 /* 
 ESP-01
 
-Author : ChungYi Fu (Taiwan)  2018-05-03 01:00
+Author : ChungYi Fu (Taiwan)  2018-05-06 22:00
 
 Control Page (http)
 https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
@@ -83,6 +83,8 @@ void ExecuteCommand()
     } 
     Serial.println("");
     Serial.println("STAIP: "+WiFi.localIP().toString());
+    if (WiFi.localIP().toString()!="0.0.0.0") 
+      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);    
     Feedback="STAIP: "+WiFi.localIP().toString();
   }    
   else if (cmd=="inputpullup")
@@ -152,15 +154,6 @@ void setup()
     delay(10);
     
     WiFi.mode(WIFI_AP_STA);
-    
-    WiFi.softAP(apssid, appassword);
-  
-    //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0));
-  
-    delay(1000);
-    Serial.println("");
-    Serial.println("APIP address: ");
-    Serial.println(WiFi.softAPIP());  
   
     //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
 
@@ -194,7 +187,16 @@ void setup()
     Serial.println("STAIP address: ");
     Serial.println(WiFi.localIP());
     
-    server.begin();
+    if (WiFi.localIP().toString()!="0.0.0.0")
+      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
+    else
+      WiFi.softAP(apssid, appassword);
+      
+    //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
+    Serial.println("");
+    Serial.println("APIP address: ");
+    Serial.println(WiFi.softAPIP());    
+    server.begin(); 
 }
 
 void loop()
