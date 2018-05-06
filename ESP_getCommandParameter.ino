@@ -8,8 +8,8 @@ http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 */
 
-#include <WiFi.h>
-//  #include <ESP8266WiFi.h>
+// #include <WiFi.h>
+#include <ESP8266WiFi.h>
 
 const char* ssid     = "";   //your network SSID
 const char* password = "";   //your network password
