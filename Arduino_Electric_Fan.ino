@@ -31,6 +31,7 @@ void loop() {
   {
     pressCount=(pressCount+1)%4;
     //Serial.println(pressCount);
+    
     switch (pressCount) 
     {
       case 0:
