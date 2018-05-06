@@ -75,8 +75,18 @@ void ExecuteCommand()
     } 
     Serial.println("");
     Serial.println("STAIP: "+WiFi.localIP().toString());
+    /*
     if (WiFi.localIP().toString()!="0.0.0.0") 
-      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);  
+    {
+      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
+      
+      cmd="ifttt";
+      str1="eventname";
+      str2="key";
+      str3=WiFi.localIP().toString();
+      ExecuteCommand();
+    }
+    */ 
     Feedback="STAIP: "+WiFi.localIP().toString();
   }   
   else if (cmd=="volume")
