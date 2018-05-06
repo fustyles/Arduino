@@ -29,29 +29,30 @@ void loop() {
   //讀取風速切換按鈕狀態
   if (digitalRead(speedButtonPin)==0)
   {
-    pressCount++;
-    if (pressCount%4==0)         
+    pressCount=(pressCount+1)%4;
+    Serial.println(pressCount);
+    switch (pressCount) 
     {
-      analogWrite(motorPin1,0);
-      analogWrite(motorPin2,0);
-      pressCount=0;
+      case 0:
+        analogWrite(motorPin1,0);
+        analogWrite(motorPin2,0);
+        break;
+      case 1:
+        analogWrite(motorPin1,100);  //0~255
+        analogWrite(motorPin2,0);
+        break;
+      case 2:
+        analogWrite(motorPin1,120);  //0~255
+        analogWrite(motorPin2,0);
+        break;
+      case 3:
+        analogWrite(motorPin1,140);  //0~255
+        analogWrite(motorPin2,0);
+        break;        
+      default:
+        break;
     }
-    else if (pressCount%4==1) 
-    {
-      analogWrite(motorPin1,100);  //0~255
-      analogWrite(motorPin2,0);
-    }
-    else if (pressCount%4==2) 
-    {
-      analogWrite(motorPin1,120);  //0~255
-      analogWrite(motorPin2,0);
-    }
-    else if (pressCount%4==3) 
-    {
-      analogWrite(motorPin1,140);  //0~255
-      analogWrite(motorPin2,0);
-    }
-    delay(200);
+    delay(500);
   }
   
   //讀取風向旋轉切換按鈕狀態
