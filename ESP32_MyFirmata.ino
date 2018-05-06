@@ -165,11 +165,6 @@ void setup()
     
     WiFi.mode(WIFI_AP_STA);
   
-    delay(1000);
-    Serial.println("");
-    Serial.println("APIP address: ");
-    Serial.println(WiFi.softAPIP());  
-  
     //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
 
     WiFi.begin(ssid, password);
