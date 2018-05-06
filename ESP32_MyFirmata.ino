@@ -202,7 +202,6 @@ void setup()
     Serial.println(WiFi.localIP());
   
     WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
-    
     server.begin();
 }
 
