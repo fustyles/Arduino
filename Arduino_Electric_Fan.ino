@@ -30,7 +30,7 @@ void loop() {
   if (digitalRead(speedButtonPin)==0)
   {
     pressCount=(pressCount+1)%4;
-    Serial.println(pressCount);
+    //Serial.println(pressCount);
     switch (pressCount) 
     {
       case 0:
