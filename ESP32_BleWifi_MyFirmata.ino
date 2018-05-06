@@ -214,11 +214,10 @@ void setup()
     //WiFi.softAP(apssid, appassword);
     WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
     //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
-    server.begin(); 
-    delay(1000);
     Serial.println("");
     Serial.println("APIP address: ");
-    Serial.println(WiFi.softAPIP());  
+    Serial.println(WiFi.softAPIP());    
+    server.begin();  
 }
 
 void loop()
