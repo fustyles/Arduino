@@ -1,7 +1,7 @@
 /* 
 Arduino Uno + NodeMCU (ESP12E) (without using AT Command)
 
-Author : ChungYi Fu (Taiwan)  2018-05-06 14:00
+Author : ChungYi Fu (Taiwan)  2018-05-06 17:00
 
 Wifi Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -202,8 +202,11 @@ void setup()
     Serial.println("STAIP address: ");
     Serial.println(WiFi.localIP());
     
-    //WiFi.softAP(apssid, appassword);
-    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
+    if (WiFi.localIP().toString()!="0.0.0.0")
+      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
+    else
+      WiFi.softAP(apssid, appassword);
+      
     //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
     Serial.println("");
     Serial.println("APIP address: ");
