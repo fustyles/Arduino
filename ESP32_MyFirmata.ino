@@ -85,10 +85,7 @@ void ExecuteCommand()
     Serial.println("");
     Serial.println("STAIP: "+WiFi.localIP().toString());
     if (WiFi.localIP().toString()!="0.0.0.0") 
-    {
       WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
-      server.begin();
-    }
     Feedback="STAIP: "+WiFi.localIP().toString();
   }    
   else if (cmd=="inputpullup")
