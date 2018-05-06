@@ -22,24 +22,6 @@ WiFiServer server(80);
 String Feedback="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
-void ExecuteCommand()
-{
-  Serial.println("");
-  Serial.println("Command: "+Command);
-  Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
-  Serial.println("");
-  
-  if (cmd=="yourcmd")
-  {
-    // You can do anything
-    //Feedback="<font color=\"red\">Hello World</font>";
-  }
-  else 
-  {
-    Feedback="Command is not defined";
-  }
-}
-
 void setup()
 {
     Serial.begin(115200);
@@ -181,5 +163,23 @@ void getCommand(char c)
     if (c=='?') questionstate=1;
     if (c=='=') equalstate=1;
     if ((strState>=9)&&(c==';')) semicolonstate=1;
+  }
+}
+
+void ExecuteCommand()
+{
+  Serial.println("");
+  Serial.println("Command: "+Command);
+  Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
+  Serial.println("");
+  
+  if (cmd=="yourcmd")
+  {
+    // You can do anything
+    //Feedback="<font color=\"red\">Hello World</font>";
+  }
+  else 
+  {
+    Feedback="Command is not defined";
   }
 }
