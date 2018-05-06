@@ -136,35 +136,6 @@ void loop()
   }
 }
 
-void getCommand(char c)
-{
-  if (c=='?') ReceiveState=1;
-  if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
-  
-  if (ReceiveState==1)
-  {
-    Command=Command+String(c);
-    
-    if (c=='=') cmdState=0;
-    if (c==';') strState++;
-  
-    if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
-    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) str1=str1+String(c);
-    if ((cmdState==0)&&(strState==2)&&(c!=';')) str2=str2+String(c);
-    if ((cmdState==0)&&(strState==3)&&(c!=';')) str3=str3+String(c);
-    if ((cmdState==0)&&(strState==4)&&(c!=';')) str4=str4+String(c);
-    if ((cmdState==0)&&(strState==5)&&(c!=';')) str5=str5+String(c);
-    if ((cmdState==0)&&(strState==6)&&(c!=';')) str6=str6+String(c);
-    if ((cmdState==0)&&(strState==7)&&(c!=';')) str7=str7+String(c);
-    if ((cmdState==0)&&(strState==8)&&(c!=';')) str8=str8+String(c);
-    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) str9=str9+String(c);
-    
-    if (c=='?') questionstate=1;
-    if (c=='=') equalstate=1;
-    if ((strState>=9)&&(c==';')) semicolonstate=1;
-  }
-}
-
 void ExecuteCommand()
 {
   Serial.println("");
@@ -213,6 +184,35 @@ void ExecuteCommand()
   else 
   {
     Feedback="Command is not defined";
+  }
+}
+
+void getCommand(char c)
+{
+  if (c=='?') ReceiveState=1;
+  if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
+  
+  if (ReceiveState==1)
+  {
+    Command=Command+String(c);
+    
+    if (c=='=') cmdState=0;
+    if (c==';') strState++;
+  
+    if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
+    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) str1=str1+String(c);
+    if ((cmdState==0)&&(strState==2)&&(c!=';')) str2=str2+String(c);
+    if ((cmdState==0)&&(strState==3)&&(c!=';')) str3=str3+String(c);
+    if ((cmdState==0)&&(strState==4)&&(c!=';')) str4=str4+String(c);
+    if ((cmdState==0)&&(strState==5)&&(c!=';')) str5=str5+String(c);
+    if ((cmdState==0)&&(strState==6)&&(c!=';')) str6=str6+String(c);
+    if ((cmdState==0)&&(strState==7)&&(c!=';')) str7=str7+String(c);
+    if ((cmdState==0)&&(strState==8)&&(c!=';')) str8=str8+String(c);
+    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) str9=str9+String(c);
+    
+    if (c=='?') questionstate=1;
+    if (c=='=') equalstate=1;
+    if ((strState>=9)&&(c==';')) semicolonstate=1;
   }
 }
 
