@@ -3,6 +3,9 @@ ESP-01
 
 Author : ChungYi Fu (Taiwan)  2018-05-06 22:00
 
+Expanding Arduino Serial Port Buffer Size
+https://internetofhomethings.com/homethings/?p=927
+
 Control Page (http)
 https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 
