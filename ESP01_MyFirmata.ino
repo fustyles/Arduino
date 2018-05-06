@@ -193,6 +193,8 @@ void setup()
     Serial.println("");
     Serial.println("STAIP address: ");
     Serial.println(WiFi.localIP());
+  
+    server.begin();
 }
 
 void loop()
