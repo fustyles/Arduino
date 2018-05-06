@@ -163,7 +163,7 @@ void ExecuteCommand()
     Serial.println("STAIP: "+WiFi.localIP().toString()); 
     if (WiFi.localIP().toString()!="0.0.0.0") 
     {
-      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
+      //WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
       /*
       cmd="ifttt";
       str1="eventname";
