@@ -29,15 +29,6 @@ void setup()
     
     WiFi.mode(WIFI_AP_STA);
     
-    WiFi.softAP(apssid, appassword);
-  
-    //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0));
-  
-    delay(1000);
-    Serial.println("");
-    Serial.println("APIP address: ");
-    Serial.println(WiFi.softAPIP());  
-  
     //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
 
     WiFi.begin(ssid, password);
@@ -70,6 +61,11 @@ void setup()
     Serial.println("STAIP address: ");
     Serial.println(WiFi.localIP());
     
+    WiFi.softAP(apssid, appassword);
+    //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0));
+    Serial.println("");
+    Serial.println("APIP address: ");
+    Serial.println(WiFi.softAPIP());    
     server.begin();
 }
 
