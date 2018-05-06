@@ -300,7 +300,16 @@ void setup()
     Serial.println(WiFi.localIP());
     
     if (WiFi.localIP().toString()!="0.0.0.0")
+    {
       WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
+      /*
+      cmd="ifttt";
+      str1="eventname";
+      str2="key";
+      str3=WiFi.localIP().toString();
+      ExecuteCommand();
+      */
+    }
     else
       WiFi.softAP(apssid, appassword);
       
