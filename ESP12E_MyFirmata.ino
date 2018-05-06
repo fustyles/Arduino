@@ -1,9 +1,12 @@
 /* 
 NodeMCU (ESP12E)
+
 Author : ChungYi Fu (Taiwan)  2018-05-06 14:00
+
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
+
 Default APIP： 192.168.4.1
 http://192.168.4.1/?ip
 http://192.168.4.1/?mac
@@ -18,9 +21,11 @@ http://192.168.4.1/?analogread=pin
 http://192.168.4.1/?tcp=domain;port;request
 http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
+
 STAIP：
 Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
+
 Control Page (http)
 https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 */
