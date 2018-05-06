@@ -1,5 +1,5 @@
 /* 
-ESP01
+ESP8266
 
 Author : ChungYi Fu (Taiwan)  2018-04-28 18:30
 
