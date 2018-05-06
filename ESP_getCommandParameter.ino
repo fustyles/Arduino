@@ -1,5 +1,5 @@
 /* 
-ESP 
+ESP01
 
 Author : ChungYi Fu (Taiwan)  2018-04-28 18:30
 
@@ -8,12 +8,13 @@ http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 */
 
-#include <ESP8266WiFi.h>
+#include <WiFi.h>
+//  #include <ESP8266WiFi.h>
 
 const char* ssid     = "";   //your network SSID
 const char* password = "";   //your network password
 
-const char* apssid = "MyFirmata ESP01";
+const char* apssid = "MyFirmata ESP";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 WiFiServer server(80);
@@ -31,7 +32,7 @@ void ExecuteCommand()
   if (cmd=="yourcmd")
   {
     // You can do anything
-    Feedback="<font color=\"red\">Hello World</font>";
+    //Feedback="<font color=\"red\">Hello World</font>";
   }
   else 
   {
