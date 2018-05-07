@@ -62,7 +62,7 @@ void loop() {
   if (digitalRead(rotateButtonPin)==0)
   {
     rotateState*=(-1);     //改變風向旋轉狀態設定值
-    delay(200);
+    delay(500);
   }
   
   if (rotateState==1)      //風向來回轉動
