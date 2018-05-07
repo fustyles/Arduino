@@ -92,8 +92,6 @@ void ExecuteCommand()
     /*
     if (WiFi.localIP().toString()!="0.0.0.0") 
     {
-      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
-      
       cmd="ifttt";
       str1="eventname";
       str2="key";
