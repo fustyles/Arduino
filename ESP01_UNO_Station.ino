@@ -30,7 +30,7 @@ void setup()
   //You must change uart baud rate of ESP-01 to 9600.
   mySerial.begin(115200);   //Default uart baud rate
   SendData("AT+UART_CUR=9600,8,1,0,0",2000);   //Change uart baud rate to 9600
-  mySerial.begin(9600);  // you will get more stable data.
+  mySerial.begin(9600);  // you will get more stable data without junk chars.
   mySerial.setTimeout(10);
 
   SendData("AT+CIPSERVER=0",2000);
