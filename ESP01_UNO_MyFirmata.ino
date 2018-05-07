@@ -158,7 +158,7 @@ void setup()
   //You must change uart baud rate of ESP-01 to 9600.
   mySerial.begin(115200);   //Default uart baud rate -> 19200,38400,57600,74880,115200
   SendData("AT+UART_CUR=9600,8,1,0,0",2000);   //Change uart baud rate of ESP-01 to 9600
-  mySerial.begin(9600);  // 9600 ,you will get more stable data.
+  mySerial.begin(9600);  // 9600 ,you will get more stable data without junk chars.
   mySerial.setTimeout(10);
   
   initial();
@@ -234,7 +234,7 @@ void Feedback(String CID,String Response,int datatype)
   If response length is too long, it can't work!
   Expanding Arduino Serial Port Buffer Size
   https://internetofhomethings.com/homethings/?p=927
-  If you change buffer size to 256, response length must be less than or equal to 126?
+  If you change buffer size to 256 bytes, response length must be less than or equal to 128.
   */
   if (datatype==0)  
   {
