@@ -67,13 +67,13 @@ void loop()
 
     //Send sensor data to web page(php...) and save data to database         
     String Domain="192.168.201.10";
+    String request = "GET /?humidity="+String(SensorData)+" HTTP/1.1\r\nHost: "+Domain+"\r\n\r\n";
     /*
     If request length is too long, it can't work!
     Expanding Arduino Serial Port Buffer Size
     https://internetofhomethings.com/homethings/?p=927
     If you change buffer size to 256, request length must be less than or equal to 126?
-    */
-    String request = "GET /?humidity="+String(SensorData)+" HTTP/1.1\r\nHost: "+Domain+"\r\n\r\n";
+    */    
     
     SendData("AT+CIPSTART=\"TCP\",\""+Domain+"\",80", 4000);
     SendData("AT+CIPSEND=" + String(request.length()+2), 2000);
