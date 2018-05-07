@@ -76,7 +76,7 @@ void loop()
     */    
     
     SendData("AT+CIPSTART=\"TCP\",\""+Domain+"\",80", 4000);
-    SendData("AT+CIPSEND=" + String(request.length()+2), 2000);
+    SendData("AT+CIPSEND=" + String(request.length()+2), 2000);  //Serial.println(request) -> request+"\r\n" -> request.length()+2
     SendData(request, 4000);
     delay(1);
     SendData("AT+CIPCLOSE",2000);
