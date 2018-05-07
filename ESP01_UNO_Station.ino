@@ -40,7 +40,7 @@ void setup()
   if (WIFI_SSID!="") 
     SendData("AT+CWJAP_CUR=\""+WIFI_SSID+"\",\""+WIFI_PWD+"\"",5000);  
   else
-    Serial.print("Please check your network SSID and password");  
+    Serial.print("Please check your network SSID and password settings");
 }
 
 void loop() 
