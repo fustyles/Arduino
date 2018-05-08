@@ -164,7 +164,7 @@ void loop()
             client.println("<input type=\"button\" onclick=\"location.href='?rotate=0'\" value=\"Stop\">");
             client.println("<br/><br/>");
             client.println("Speed: ");
-            client.println("<input type=\"range\" name=\"pwm\" min=\"0\" max=\"255\" step=\"1\" value=\""+String(speedValue)+"\" onchange=\"set.value='Set '+pwm.value;\">");
+            client.println("<input type=\"range\" name=\"pwm\" min=\"0\" max=\"255\" step=\"5\" value=\""+String(speedValue)+"\" onchange=\"set.value='Set '+pwm.value;\">");
             client.println("<input type=\"button\" onclick=\"location.href='?speed=0'\" value=\"Stop\">");
             client.println("<input type=\"button\" name=\"set\" onclick=\"location.href='?speed='+pwm.value;\" value=\"Set "+String(speedValue)+"\">");
             client.println("</form></body></html>");
