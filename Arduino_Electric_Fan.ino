@@ -1,3 +1,7 @@
+/*
+Arduino Uno + 3V DC Motor + Motor Driver Board
+*/
+
 #include <Servo.h>
 Servo myservo;
 
