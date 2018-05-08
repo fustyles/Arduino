@@ -1,5 +1,8 @@
 /*
-Arduino Uno + 3V DC Motor + Motor Driver Board
+Arduino Uno
+3V DC Motor
+Motor Driver Board
+SG90 Mini Servo
 */
 
 #include <Servo.h>
