@@ -25,9 +25,9 @@ WiFiServer server(80);
 
 int angle=90;            //風向初始角度
 int degree=5;            //單位時間風向旋轉角度
-int servoPin=12;         //伺服馬達腳位
-int motorPin1=14;        //馬達驅動IC腳位
-int motorPin2=27;        //馬達驅動IC腳位
+int servoPin=12;         //伺服馬達腳位  GPIO12
+int motorPin1=14;        //馬達驅動IC腳位  GPIO14
+int motorPin2=27;        //馬達驅動IC腳位  GPIO27
 int rotateState=0;       //風向旋轉狀態 1=旋轉, 0=暫停
 int rotateInterval=500;  //風向旋轉間隔時間 (ms)
 int speedValue=0;        //初始風速
