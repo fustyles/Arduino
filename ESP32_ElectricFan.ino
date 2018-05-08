@@ -74,7 +74,7 @@ void setup()
   pinMode(motorPin2, OUTPUT);    
   
   ledcSetup(1, 50, 16); // channel 1, 50 Hz, 16-bit width
-  ledcAttachPin(servoPin, 1);   // GPIO 22 assigned to channel 1
+  ledcAttachPin(servoPin, 1);
   ledcWrite(1, map(angle, 0, 180, 1638, 7864));
 
   ledcAttachPin(motorPin1, 2);
