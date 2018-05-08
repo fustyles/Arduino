@@ -126,9 +126,13 @@ void loop()
             client.println("<input type=\"button\" onclick=\"location.href='?rotate=0'\" value=\"Stop\">");
             client.println("<br/><br/>");
             client.println("Speed: ");
-            client.println("<input type=\"range\" name=\"pwm\" min=\"0\" max=\"255\" step=\"5\" value=\""+String(speedValue)+"\" onchange=\"set.value='Set '+pwm.value;\">");
+            client.println("<input type=\"range\" name=\"pwm\" min=\"0\" max=\"255\" step=\"5\" value=\""+String(speedValue)+"\" onchange=\"setspeed.value='Set '+pwm.value;\">");
             client.println("<input type=\"button\" onclick=\"location.href='?speed=0'\" value=\"Stop\">");
-            client.println("<input type=\"button\" name=\"set\" onclick=\"location.href='?speed='+pwm.value;\" value=\"Set "+String(speedValue)+"\">");
+            client.println("<input type=\"button\" name=\"setspeed\" onclick=\"location.href='?speed='+pwm.value;\" value=\"Set "+String(speedValue)+"\">");
+            client.println("<br/><br/>");
+            client.println("Angle: ");
+            client.println("<input type=\"range\" name=\"angle\" min=\"5\" max=\"175\" step=\"5\" value=\""+String(angle)+"\" onchange=\"setangle.value='Set '+angle.value;\">");
+            client.println("<input type=\"button\" name=\"setangle\" onclick=\"location.href='?angle='+angle.value;\" value=\"Set "+String(angle)+"\">");
             client.println("</form></body></html>");
             client.println();
                         
@@ -185,6 +189,12 @@ void ExecuteCommand()
     ledcWrite(2,0);    
     ledcWrite(3,str1.toInt());
   }  
+  else if (cmd=="angle")
+  {
+    rotateState=0;
+    angle=str1.toInt();
+    ledcWrite(1, map(angle, 0, 180, 1638, 7864));
+  }    
   else if (cmd=="resetwifi")
   {
     WiFi.begin(str1.c_str(), str2.c_str());
