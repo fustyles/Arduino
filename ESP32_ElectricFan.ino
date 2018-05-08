@@ -1,5 +1,5 @@
 /* 
-Electric Fan (odeMCU ESP32)
+Electric Fan (NodeMCU ESP32)
 
 Author : ChungYi Fu (Taiwan)  2018-05-08 21:30
 
