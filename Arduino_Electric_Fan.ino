@@ -37,7 +37,7 @@ void loop()
   //讀取風速切換按鈕狀態
   if (digitalRead(speedButtonPin)==0)
   {
-    pressCount=(pressCount+1)%4;
+    pressCount=(pressCount+1)%4;     //風速四段切換
     //Serial.println(pressCount);
     
     switch (pressCount) 
@@ -69,7 +69,7 @@ void loop()
   //讀取風向旋轉切換按鈕狀態
   if (digitalRead(rotateButtonPin)==0)
   {
-    rotateState*=(-1);     //改變風向旋轉狀態設定值
+    rotateState*=(-1);     //風向旋轉狀態切換
     delay(500);
   }
   
