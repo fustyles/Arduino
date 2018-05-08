@@ -121,7 +121,7 @@ void loop()
             client.println("</head><body><form>");
             client.println(Feedback);
             client.println("<br/><br/>");
-            client.println("Rotate: ");
+            client.println("Rotation: ");
             client.println("<input type=\"button\" onclick=\"location.href='?rotate=1'\" value=\"Start\">");
             client.println("<input type=\"button\" onclick=\"location.href='?rotate=0'\" value=\"Stop\">");
             client.println("<br/><br/>");
