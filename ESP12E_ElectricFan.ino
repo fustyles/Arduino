@@ -1,7 +1,7 @@
 /* 
 Electric Fan (NodeMCU ESP12E with 3V Motor)
 
-Author : ChungYi Fu (Taiwan)  2018-05-08 23:30
+Author : ChungYi Fu (Taiwan)  2018-05-09 06:30
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -177,18 +177,21 @@ void ExecuteCommand()
   if (cmd=="rotate")
   {
     rotateState=str1.toInt();
+    Feedback="rotateState is "+str1;
   }  
   else if (cmd=="speed")
   {
     speedValue=str1.toInt();
     analogWrite(motorPin1,0);    
     analogWrite(motorPin2,str1.toInt());
+    Feedback="speedValue is "+str1;
   }  
   else if (cmd=="angle")
   {
     rotateState=0;
     angle=str1.toInt();
     myservo.write(angle);
+    Feedback="Angle is "+str1;
   }    
   else if (cmd=="resetwifi")
   {
