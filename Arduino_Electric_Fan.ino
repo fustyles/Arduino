@@ -19,7 +19,10 @@ int degree=5;          //單位時間風向旋轉角度
 int pressCount=0;      //風速切換按鈕點選次數
 int rotateState=-1;    //風向旋轉狀態 1(旋轉), -1(停止)
 
-void setup() {
+void setup() 
+{
+  Serial.begin(9600);
+  
   pinMode(speedButtonPin, INPUT_PULLUP);
   pinMode(rotateButtonPin, INPUT_PULLUP);
   pinMode(motorPin1, OUTPUT);
@@ -27,11 +30,10 @@ void setup() {
   
   myservo.attach(servoPin);
   myservo.write(angle);
-  
-  Serial.begin(9600);
 }
 
-void loop() {
+void loop() 
+{
   //讀取風速切換按鈕狀態
   if (digitalRead(speedButtonPin)==0)
   {
