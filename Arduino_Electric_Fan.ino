@@ -18,6 +18,7 @@ int angle=90;          //風向初始角度
 int degree=5;          //單位時間風向旋轉角度
 int pressCount=0;      //風速切換按鈕點選次數
 int rotateState=-1;    //風向旋轉狀態 1(旋轉), -1(停止)
+int rotateSpeed=200;   //風向旋轉速度 (ms)
 
 void setup() 
 {
@@ -82,6 +83,7 @@ void loop()
       angle+=degree*2;
     }
     myservo.write(angle);
-    delay(200);
+    
+    delay(rotateSpeed);
   }
 }
