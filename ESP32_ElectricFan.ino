@@ -122,8 +122,6 @@ void loop()
             client.println("<meta http-equiv=\"Access-Control-Allow-Origin\" content=\"*\">");
             client.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
             client.println("</head><body><form>");
-            client.println(Feedback);
-            client.println("<br/><br/>");
             client.println("Rotation: ");
             client.println("<input type=\"button\" onclick=\"location.href='?rotate=1'\" value=\"Start\">");
             client.println("<input type=\"button\" onclick=\"location.href='?rotate=0'\" value=\"Stop\">");
@@ -136,6 +134,8 @@ void loop()
             client.println("Angle: ");
             client.println("<input type=\"range\" name=\"angle\" min=\"5\" max=\"175\" step=\"5\" value=\""+String(angle)+"\" onchange=\"setangle.value='Set '+angle.value;\">");
             client.println("<input type=\"button\" name=\"setangle\" onclick=\"location.href='?angle='+angle.value;\" value=\"Set "+String(angle)+"\">");
+            client.println("<br/><br/>");
+            client.println(Feedback);
             client.println("</form></body></html>");
             client.println();
                         
