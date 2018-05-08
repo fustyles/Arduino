@@ -35,44 +35,6 @@ int speedValue=150;      //初始風速
 String Feedback="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
-void ExecuteCommand()
-{
-  Serial.println("");
-  Serial.println("Command: "+Command);
-  Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
-  Serial.println("");
-  
-  if (cmd=="rotate")
-  {
-    rotateState=str1.toInt();
-  }  
-  else if (cmd=="speed")
-  {
-    speedValue=str1.toInt();
-    ledcWrite(2,0);    
-    ledcWrite(3,str1.toInt());
-  }  
-  else if (cmd=="resetwifi")
-  {
-    WiFi.begin(str1.c_str(), str2.c_str());
-    Serial.print("Connecting to ");
-    Serial.println(str1);
-    long int StartTime=millis();
-    while (WiFi.status() != WL_CONNECTED) 
-    {
-        delay(500);
-        if ((StartTime+10000) < millis()) break;
-    } 
-    Serial.println("");
-    Serial.println("STAIP: "+WiFi.localIP().toString());
-    Feedback="STAIP: "+WiFi.localIP().toString();
-  }    
-  else 
-  {
-    Feedback="Command is not defined";
-  }
-}
-
 void setup()
 {
   Serial.begin(115200);
@@ -205,6 +167,44 @@ void loop()
     ledcWrite(1, map(angle, 0, 180, 1638, 7864));
     delay(rotateInterval);
   }  
+}
+
+void ExecuteCommand()
+{
+  Serial.println("");
+  Serial.println("Command: "+Command);
+  Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
+  Serial.println("");
+  
+  if (cmd=="rotate")
+  {
+    rotateState=str1.toInt();
+  }  
+  else if (cmd=="speed")
+  {
+    speedValue=str1.toInt();
+    ledcWrite(2,0);    
+    ledcWrite(3,str1.toInt());
+  }  
+  else if (cmd=="resetwifi")
+  {
+    WiFi.begin(str1.c_str(), str2.c_str());
+    Serial.print("Connecting to ");
+    Serial.println(str1);
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) 
+    {
+        delay(500);
+        if ((StartTime+10000) < millis()) break;
+    } 
+    Serial.println("");
+    Serial.println("STAIP: "+WiFi.localIP().toString());
+    Feedback="STAIP: "+WiFi.localIP().toString();
+  }    
+  else 
+  {
+    Feedback="Command is not defined";
+  }
 }
 
 void getCommand(char c)
