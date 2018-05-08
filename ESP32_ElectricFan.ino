@@ -30,7 +30,7 @@ int motorPin1=14;        //馬達驅動IC腳位
 int motorPin2=27;        //馬達驅動IC腳位
 int rotateState=0;       //風向旋轉狀態 1=旋轉, 0=暫停
 int rotateInterval=500;  //風向旋轉間隔時間 (ms)
-int speedValue=150;      //初始風速
+int speedValue=0;      //初始風速
 
 String Feedback="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
