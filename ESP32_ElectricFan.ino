@@ -163,7 +163,6 @@ void loop()
       degree*=(-1);
       angle+=degree*2;
     }
-    Serial.println(angle);
     ledcWrite(1, map(angle, 0, 180, 1638, 7864));
     delay(rotateInterval);
   }  
