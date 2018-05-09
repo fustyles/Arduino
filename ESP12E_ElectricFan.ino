@@ -115,7 +115,7 @@ void loop()
             client.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
             client.println("</head><body><form>");
             client.println("Fan Speeds <br/>");
-            client.println("<input type=\"range\" name=\"speed\" min=\"0\" max=\"1023\" step=\"100\" value=\""+String(speed)+"\" onchange=\"setspeed.value='Set '+speed.value;\">");
+            client.println("<input type=\"range\" name=\"speed\" min=\"0\" max=\"1023\" step=\"20\" value=\""+String(speed)+"\" onchange=\"setspeed.value='Set '+speed.value;\">");
             client.println("<input type=\"button\" onclick=\"location.href='?speed=0'\" value=\"Stop\">");
             client.println("<input type=\"button\" name=\"setspeed\" onclick=\"location.href='?speed='+speed.value;\" value=\"Set "+String(speed)+"\">");
             client.println("<br/><br/>");            
