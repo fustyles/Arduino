@@ -192,7 +192,7 @@ void ExecuteCommand()
     rotateState=0;
     angle=str1.toInt();
     myservo.write(angle);
-    Feedback="Angle is changed to "+str1;
+    Feedback="angle is changed to "+str1;
   }   
   else if (cmd=="degree")
   {
