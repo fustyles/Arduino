@@ -184,7 +184,7 @@ void ExecuteCommand()
   {
     speedValue=str1.toInt();
     analogWrite(motorPin1,0);    
-    analogWrite(motorPin2,str1.toInt());
+    analogWrite(motorPin2,speedValue);
     Feedback="speedValue is changed to "+str1;
   }  
   else if (cmd=="angle")
