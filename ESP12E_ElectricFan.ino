@@ -24,11 +24,12 @@ WiFiServer server(80);
 #include <Servo.h>
 Servo myservo;
 
-int angle=90;            //風向初始角度
-int degree=5;            //單位時間風向旋轉角度
 int servoPin=12;         //伺服馬達腳位  D6
 int motorPin1=13;        //馬達驅動IC腳位  D7
 int motorPin2=15;        //馬達驅動IC腳位  D8
+
+int angle=90;            //風向初始角度
+int degree=5;            //單位時間風向旋轉角度
 int rotateState=0;       //風向旋轉狀態 1=旋轉, 0=暫停
 int rotateInterval=500;  //風向旋轉間隔時間 (ms)
 int speedValue=0;        //初始風速
