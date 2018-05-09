@@ -28,14 +28,14 @@ WiFiServer server(80);
 Servo myservo;
 
 int servoPin=15;           //Servo PIN -> D8 (GPIO15)
-int motorPin1=5;          //Motor Driver IC PIN1 -> D1 (GPIO5)
-int motorPin2=4;          //Motor Driver IC PIN2 -> D2 (GPIO4)
+int motorPin1=5;           //Motor Driver IC PIN1 -> D1 (GPIO5)
+int motorPin2=4;           //Motor Driver IC PIN2 -> D2 (GPIO4)
 
 int angle=90;              //Angle of Servo position (0~180)
 int degree=5;              //Degrees in angle of rotation
 int rotateState=0;         //Rotation 1=Start, 0=Stop
 int rotationInterval=500;  //Rotation interval (ms)
-int speed=0;          //Fan speeds (0~1023)
+int speed=0;               //Fan speeds (0~1023)
 
 String Feedback="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
