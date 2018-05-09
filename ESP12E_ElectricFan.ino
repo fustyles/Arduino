@@ -118,13 +118,13 @@ void loop()
             client.println(Feedback);
             client.println("<br/><br/>");
             client.println("Rotation: ");
-            client.println("<input type=\"button\" onclick=\"location.href='?rotate=1'\" value=\"Start\">");
-            client.println("<input type=\"button\" onclick=\"location.href='?rotate=0'\" value=\"Stop\">");
+            client.println("<input type=\"button\" onclick=\"location.href='?rotateState=1'\" value=\"Start\">");
+            client.println("<input type=\"button\" onclick=\"location.href='?rotateState=0'\" value=\"Stop\">");
             client.println("<br/><br/>");
             client.println("Speed: ");
             client.println("<input type=\"range\" name=\"pwm\" min=\"0\" max=\"255\" step=\"5\" value=\""+String(speedValue)+"\" onchange=\"setspeed.value='Set '+pwm.value;\">");
-            client.println("<input type=\"button\" onclick=\"location.href='?speed=0'\" value=\"Stop\">");
-            client.println("<input type=\"button\" name=\"setspeed\" onclick=\"location.href='?speed='+pwm.value;\" value=\"Set "+String(speedValue)+"\">");
+            client.println("<input type=\"button\" onclick=\"location.href='?speedValue=0'\" value=\"Stop\">");
+            client.println("<input type=\"button\" name=\"setspeed\" onclick=\"location.href='?speedValue='+pwm.value;\" value=\"Set "+String(speedValue)+"\">");
             client.println("<br/><br/>");
             client.println("Angle: ");
             client.println("<input type=\"range\" name=\"angle\" min=\"5\" max=\"175\" step=\"5\" value=\""+String(angle)+"\" onchange=\"setangle.value='Set '+angle.value;\">");
@@ -175,12 +175,12 @@ void ExecuteCommand()
   Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
   Serial.println("");
   
-  if (cmd=="rotate")
+  if (cmd=="rotateState")
   {
     rotateState=str1.toInt();
     Feedback="rotateState is changed to "+str1;
   }  
-  else if (cmd=="speed")
+  else if (cmd=="speedValue")
   {
     speedValue=str1.toInt();
     analogWrite(motorPin1,0);    
