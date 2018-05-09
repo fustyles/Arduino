@@ -137,11 +137,11 @@ void loop()
             client.println("<input type=\"button\" name=\"setAngle\" onclick=\"location.href='?angle='+angle.value;\" value=\"Set "+String(angle)+"\">");
             client.println("<br/><br/>");
             client.println("Servo Degrees: ");
-            client.println("<input type=\"range\" name=\"degree\" min=\"-20\" max=\"20\" step=\"1\" value=\""+String(degree)+"\" onchange=\"setDegree.value='Set '+degree.value;\">");
+            client.println("<input type=\"range\" name=\"degree\" min=\"-30\" max=\"30\" step=\"5\" value=\""+String(degree)+"\" onchange=\"setDegree.value='Set '+degree.value;\">");
             client.println("<input type=\"button\" name=\"setDegree\" onclick=\"location.href='?degree='+degree.value;\" value=\"Set "+String(degree)+"\">");
             client.println("<br/><br/>");
             client.println("Servo Interval: ");
-            client.println("<input type=\"range\" name=\"rotationInterval\" min=\"100\" max=\"2000\" step=\"100\" value=\""+String(rotationInterval)+"\" onchange=\"setRotationInterval.value='Set '+rotationInterval.value;\">");
+            client.println("<input type=\"range\" name=\"rotationInterval\" min=\"100\" max=\"2000\" step=\"200\" value=\""+String(rotationInterval)+"\" onchange=\"setRotationInterval.value='Set '+rotationInterval.value;\">");
             client.println("<input type=\"button\" name=\"setRotationInterval\" onclick=\"location.href='?rotationInterval='+rotationInterval.value;\" value=\"Set "+String(rotationInterval)+"\">");
             client.println("<br/><br/>");
             client.println(Feedback);
