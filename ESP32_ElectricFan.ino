@@ -26,15 +26,15 @@ WiFiServer server(80);
 
 #include "esp32-hal-ledc.h"
 
-int servoPin=12;         //伺服馬達腳位  GPIO12
-int motorPin1=14;        //馬達驅動IC腳位  GPIO14
-int motorPin2=27;        //馬達驅動IC腳位  GPIO27
+int servoPin=12;         //Servo PIN -> GPIO12
+int motorPin1=14;        //Motor Driver IC PIN1 -> GPIO14
+int motorPin2=27;        //Motor Driver IC PIN2 -> GPIO27
 
-int angle=90;            //風向初始角度
-int degree=5;            //單位時間風向旋轉角度
-int rotateState=0;       //風向旋轉狀態 1=旋轉, 0=暫停
-int rotateInterval=500;  //風向旋轉間隔時間 (ms)
-int speedValue=0;        //初始風速
+int angle=90;            //Angle of Servo position
+int degree=5;            //Degrees in angle of rotation
+int rotateState=0;       //Rotation 1=Start, 0=Stop
+int rotateInterval=500;  //Rotation interval (ms)
+int speedValue=0;        //Fan speeds
 
 String Feedback="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
@@ -163,7 +163,7 @@ void loop()
     client.stop();
   }
 
-  if (rotateState==1)      //風向來回轉動
+  if (rotateState==1)
   {
     angle+=degree;
     if ((angle<5)||(angle>175))
