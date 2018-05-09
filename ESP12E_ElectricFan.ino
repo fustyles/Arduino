@@ -64,7 +64,10 @@ void setup()
   Serial.println("STAIP address: ");
   Serial.println(WiFi.localIP());
   
-  WiFi.softAP(apssid, appassword);
+  if (WiFi.localIP().toString()!="0.0.0.0")
+    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
+  else
+    WiFi.softAP(apssid, appassword);
     
   //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
   Serial.println("");
