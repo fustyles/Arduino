@@ -193,7 +193,17 @@ void ExecuteCommand()
     angle=str1.toInt();
     myservo.write(angle);
     Feedback="Angle is changed to "+str1;
+  }   
+  else if (cmd=="degree")
+  {
+    degree=str1.toInt();
+    Feedback="degree is changed to "+str1;
   }    
+  else if (cmd=="rotateInterval")
+  {
+    rotateInterval=str1.toInt();
+    Feedback="rotateInterval is changed to "+str1;
+  }     
   else if (cmd=="resetwifi")
   {
     WiFi.begin(str1.c_str(), str2.c_str());
