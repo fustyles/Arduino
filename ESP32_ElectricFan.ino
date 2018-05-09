@@ -192,7 +192,7 @@ void ExecuteCommand()
   {
     speedValue=str1.toInt();
     ledcWrite(2,0);    
-    ledcWrite(3,str1.toInt());
+    ledcWrite(3,speedValue);
     Feedback="speedValue is changed to "+str1;
   }  
   else if (cmd=="angle")
