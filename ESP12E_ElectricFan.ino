@@ -27,15 +27,15 @@ WiFiServer server(80);
 #include <Servo.h>
 Servo myservo;
 
-int servoPin=12;         //Servo PIN -> D6 (GPIO12)
-int motorPin1=13;        //Motor Driver IC PIN1 -> D7 (GPIO13)
-int motorPin2=15;        //Motor Driver IC PIN2 -> D8 (GPIO15)
+int servoPin=12;           //Servo PIN -> D6 (GPIO12)
+int motorPin1=13;          //Motor Driver IC PIN1 -> D7 (GPIO13)
+int motorPin2=15;          //Motor Driver IC PIN2 -> D8 (GPIO15)
 
-int angle=90;            //Angle of Servo position (0~180)
-int degree=5;            //Degrees in angle of rotation
-int rotateState=0;       //Rotation 1=Start, 0=Stop
+int angle=90;              //Angle of Servo position (0~180)
+int degree=5;              //Degrees in angle of rotation
+int rotateState=0;         //Rotation 1=Start, 0=Stop
 int rotationInterval=500;  //Rotation interval (ms)
-int speedValue=0;        //Fan speeds (0~255)
+int speedValue=0;          //Fan speeds (0~255)
 
 String Feedback="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
@@ -132,7 +132,7 @@ void loop()
             client.println("<input type=\"button\" name=\"setAngle\" onclick=\"location.href='?angle='+angle.value;\" value=\"Set "+String(angle)+"\">");
             client.println("<br/><br/>");
             client.println("Servo Degrees: ");
-            client.println("<input type=\"range\" name=\"degree\" min=\"-20\" max=\"20\" step=\"1\" value=\""+String(degree)+"\" onchange=\"setDegree.value='Set '+degree.value;\">");
+            client.println("<input type=\"range\" name=\"degree\" min=\"-20\" max=\"20\" step=\"2\" value=\""+String(degree)+"\" onchange=\"setDegree.value='Set '+degree.value;\">");
             client.println("<input type=\"button\" name=\"setDegree\" onclick=\"location.href='?degree='+degree.value;\" value=\"Set "+String(degree)+"\">");
             client.println("<br/><br/>");
             client.println("Servo Interval: ");
