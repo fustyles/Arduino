@@ -19,18 +19,19 @@ http://192.168.4.1/?resetwifi=ssid;password
 const char* ssid     = "";   //your network SSID
 const char* password = "";   //your network password
 
-const char* apssid = "ESP32 ElectricFan";
+const char* apssid = "ElectricFan";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 WiFiServer server(80);
 
 #include "esp32-hal-ledc.h"
 
-int angle=90;            //風向初始角度
-int degree=5;            //單位時間風向旋轉角度
 int servoPin=12;         //伺服馬達腳位  GPIO12
 int motorPin1=14;        //馬達驅動IC腳位  GPIO14
 int motorPin2=27;        //馬達驅動IC腳位  GPIO27
+
+int angle=90;            //風向初始角度
+int degree=5;            //單位時間風向旋轉角度
 int rotateState=0;       //風向旋轉狀態 1=旋轉, 0=暫停
 int rotateInterval=500;  //風向旋轉間隔時間 (ms)
 int speedValue=0;        //初始風速
@@ -185,21 +186,21 @@ void ExecuteCommand()
   if (cmd=="rotate")
   {
     rotateState=str1.toInt();
-    Feedback="rotateState is "+str1;
+    Feedback="rotateState is changed to "+str1;
   }  
   else if (cmd=="speed")
   {
     speedValue=str1.toInt();
     ledcWrite(2,0);    
     ledcWrite(3,str1.toInt());
-    Feedback="speedValue is "+str1;
+    Feedback="speedValue is changed to "+str1;
   }  
   else if (cmd=="angle")
   {
     rotateState=0;
     angle=str1.toInt();
     ledcWrite(1, map(angle, 0, 180, 1638, 7864));
-    Feedback="Angle is "+str1;
+    Feedback="Angle is changed to "+str1;
   }    
   else if (cmd=="resetwifi")
   {
