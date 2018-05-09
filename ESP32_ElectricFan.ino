@@ -200,7 +200,7 @@ void ExecuteCommand()
     rotateState=0;
     angle=str1.toInt();
     ledcWrite(1, map(angle, 0, 180, 1638, 7864));
-    Feedback="Angle is changed to "+str1;
+    Feedback="angle is changed to "+str1;
   }    
   else if (cmd=="degree")
   {
