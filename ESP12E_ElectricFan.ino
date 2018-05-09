@@ -123,7 +123,7 @@ void loop()
             client.println("<input type=\"button\" onclick=\"location.href='?speedValue=0'\" value=\"Stop\">");
             client.println("<input type=\"button\" name=\"setSpeedValue\" onclick=\"location.href='?speedValue='+speedValue.value;\" value=\"Set "+String(speedValue)+"\">");
             client.println("<br/><br/>");            
-            client.println("Rotation: ");
+            client.println("Servo Rotation: ");
             client.println("<input type=\"button\" onclick=\"location.href='?rotateState=1'\" value=\"Start\">");
             client.println("<input type=\"button\" onclick=\"location.href='?rotateState=0'\" value=\"Stop\">");
             client.println("<br/><br/>");
@@ -131,11 +131,11 @@ void loop()
             client.println("<input type=\"range\" name=\"angle\" min=\"0\" max=\"180\" step=\"5\" value=\""+String(angle)+"\" onchange=\"setAngle.value='Set '+angle.value;\">");
             client.println("<input type=\"button\" name=\"setAngle\" onclick=\"location.href='?angle='+angle.value;\" value=\"Set "+String(angle)+"\">");
             client.println("<br/><br/>");
-            client.println("Angle Degrees: ");
+            client.println("Servo Degrees: ");
             client.println("<input type=\"range\" name=\"degree\" min=\"-20\" max=\"20\" step=\"1\" value=\""+String(degree)+"\" onchange=\"setDegree.value='Set '+degree.value;\">");
             client.println("<input type=\"button\" name=\"setDegree\" onclick=\"location.href='?degree='+degree.value;\" value=\"Set "+String(degree)+"\">");
             client.println("<br/><br/>");
-            client.println("Interval Time: ");
+            client.println("Servo Interval: ");
             client.println("<input type=\"range\" name=\"rotationInterval\" min=\"100\" max=\"2000\" step=\"100\" value=\""+String(rotationInterval)+"\" onchange=\"setRotationInterval.value='Set '+rotationInterval.value;\">");
             client.println("<input type=\"button\" name=\"setRotationInterval\" onclick=\"location.href='?rotationInterval='+rotationInterval.value;\" value=\"Set "+String(rotationInterval)+"\">");
             client.println("<br/><br/>");
