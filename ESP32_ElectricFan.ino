@@ -133,7 +133,7 @@ void loop()
             client.println("<input type=\"button\" onclick=\"location.href='?rotateState=0'\" value=\"Stop\">");
             client.println("<br/><br/>");
             client.println("Servo Position: ");
-            client.println("<input type=\"range\" name=\"angle\" min=\"0\" max=\"180\" step=\"5\" value=\""+String(angle)+"\" onchange=\"setAngle.value='Set '+angle.value;\">");
+            client.println("<input type=\"range\" name=\"angle\" min=\"0\" max=\"180\" step=\"10\" value=\""+String(angle)+"\" onchange=\"setAngle.value='Set '+angle.value;\">");
             client.println("<input type=\"button\" name=\"setAngle\" onclick=\"location.href='?angle='+angle.value;\" value=\"Set "+String(angle)+"\">");
             client.println("<br/><br/>");
             client.println("Servo Degrees: ");
