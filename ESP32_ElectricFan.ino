@@ -1,11 +1,15 @@
 /* 
 Electric Fan (NodeMCU ESP32)
+
 Author : ChungYi Fu (Taiwan)  2018-05-09 23:00
+
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
+
 Default APIP: 
 192.168.4.1
+
 STAIP：
 http://192.168.4.1/?resetwifi=ssid;password
 */
