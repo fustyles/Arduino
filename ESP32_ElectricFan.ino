@@ -1,7 +1,7 @@
 /* 
 Electric Fan (NodeMCU ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-05-09 06:30
+Author : ChungYi Fu (Taiwan)  2018-05-09 08:30
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
