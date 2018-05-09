@@ -1,5 +1,5 @@
 /* 
-Electric Fan (NodeMCU ESP12E with 3V Motor)
+Electric Fan (NodeMCU ESP12E with 3V DC Motor)
 
 Author : ChungYi Fu (Taiwan)  2018-05-09 08:30
 
