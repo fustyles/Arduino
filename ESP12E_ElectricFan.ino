@@ -24,9 +24,9 @@ WiFiServer server(80);
 #include <Servo.h>
 Servo myservo;
 
-int servoPin=12;         //Servo PIN -> D6
-int motorPin1=13;        //Motor Driver IC PIN1 -> D7
-int motorPin2=15;        //Motor Driver IC PIN2 -> D8
+int servoPin=12;         //Servo PIN -> D6 (GPIO12)
+int motorPin1=13;        //Motor Driver IC PIN1 -> D7 (GPIO13)
+int motorPin2=15;        //Motor Driver IC PIN2 -> D8 (GPIO15)
 
 int angle=90;            //Angle of Servo position
 int degree=5;            //Degrees in angle of rotation
