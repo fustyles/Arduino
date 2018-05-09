@@ -1,15 +1,11 @@
 /* 
 Electric Fan (NodeMCU ESP12E with 3V DC Motor)
-
 Author : ChungYi Fu (Taiwan)  2018-05-09 17:30
-
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
-
 Default APIP: 
 192.168.4.1
-
 STAIP：
 http://192.168.4.1/?resetwifi=ssid;password
 */
@@ -35,7 +31,7 @@ int angle=90;              //Angle of Servo position (0~180)
 int degree=5;              //Degrees in angle of rotation
 int rotateState=0;         //Rotation 1=Start, 0=Stop
 int rotationInterval=500;  //Rotation interval (ms)
-int speedValue=0;          //Fan speeds (0~255)
+int speed=0;          //Fan speeds (0~1023)
 
 String Feedback="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
@@ -46,7 +42,7 @@ void setup()
   delay(10);
   
   WiFi.mode(WIFI_AP_STA);
-  
+
   //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
   WiFi.begin(ssid, password);
   delay(1000);
@@ -118,25 +114,25 @@ void loop()
             client.println("<meta http-equiv=\"Access-Control-Allow-Origin\" content=\"*\">");
             client.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
             client.println("</head><body><form>");
-            client.println("Fan Speeds: ");
-            client.println("<input type=\"range\" name=\"speedValue\" min=\"0\" max=\"255\" step=\"5\" value=\""+String(speedValue)+"\" onchange=\"setSpeedValue.value='Set '+speedValue.value;\">");
-            client.println("<input type=\"button\" onclick=\"location.href='?speedValue=0'\" value=\"Stop\">");
-            client.println("<input type=\"button\" name=\"setSpeedValue\" onclick=\"location.href='?speedValue='+speedValue.value;\" value=\"Set "+String(speedValue)+"\">");
+            client.println("Fan Speeds <br/>");
+            client.println("<input type=\"range\" name=\"speed\" min=\"0\" max=\"1023\" step=\"100\" value=\""+String(speed)+"\" onchange=\"setspeed.value='Set '+speed.value;\">");
+            client.println("<input type=\"button\" onclick=\"location.href='?speed=0'\" value=\"Stop\">");
+            client.println("<input type=\"button\" name=\"setspeed\" onclick=\"location.href='?speed='+speed.value;\" value=\"Set "+String(speed)+"\">");
             client.println("<br/><br/>");            
-            client.println("Servo Rotation: ");
+            client.println("Servo Rotation <br/>");
             client.println("<input type=\"button\" onclick=\"location.href='?rotateState=1'\" value=\"Start\">");
             client.println("<input type=\"button\" onclick=\"location.href='?rotateState=0'\" value=\"Stop\">");
             client.println("<br/><br/>");
-            client.println("Servo Position: ");
+            client.println("Angle Of Servo Position <br/>");
             client.println("<input type=\"range\" name=\"angle\" min=\"0\" max=\"180\" step=\"10\" value=\""+String(angle)+"\" onchange=\"setAngle.value='Set '+angle.value;\">");
             client.println("<input type=\"button\" name=\"setAngle\" onclick=\"location.href='?angle='+angle.value;\" value=\"Set "+String(angle)+"\">");
             client.println("<br/><br/>");
-            client.println("Servo Degrees: ");
+            client.println("Servo Angle Degrees <br/>");
             client.println("<input type=\"range\" name=\"degree\" min=\"-30\" max=\"30\" step=\"5\" value=\""+String(degree)+"\" onchange=\"setDegree.value='Set '+degree.value;\">");
             client.println("<input type=\"button\" name=\"setDegree\" onclick=\"location.href='?degree='+degree.value;\" value=\"Set "+String(degree)+"\">");
             client.println("<br/><br/>");
-            client.println("Servo Interval: ");
-            client.println("<input type=\"range\" name=\"rotationInterval\" min=\"100\" max=\"2000\" step=\"200\" value=\""+String(rotationInterval)+"\" onchange=\"setRotationInterval.value='Set '+rotationInterval.value;\">");
+            client.println("Servo Rotation Interval <br/>");
+            client.println("<input type=\"range\" name=\"rotationInterval\" min=\"100\" max=\"2000\" step=\"100\" value=\""+String(rotationInterval)+"\" onchange=\"setRotationInterval.value='Set '+rotationInterval.value;\">");
             client.println("<input type=\"button\" name=\"setRotationInterval\" onclick=\"location.href='?rotationInterval='+rotationInterval.value;\" value=\"Set "+String(rotationInterval)+"\">");
             client.println("<br/><br/>");
             client.println(Feedback);
@@ -191,12 +187,12 @@ void ExecuteCommand()
     rotateState=str1.toInt();
     Feedback="rotateState is changed to "+str1;
   }  
-  else if (cmd=="speedValue")
+  else if (cmd=="speed")
   {
-    speedValue=str1.toInt();
+    speed=str1.toInt();
     analogWrite(motorPin1,0);    
-    analogWrite(motorPin2,speedValue);
-    Feedback="speedValue is changed to "+str1;
+    analogWrite(motorPin2,speed);
+    Feedback="speed is changed to "+str1;
   }  
   else if (cmd=="angle")
   {
