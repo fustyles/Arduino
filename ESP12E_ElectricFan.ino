@@ -1,6 +1,6 @@
 /* 
 Electric Fan (NodeMCU ESP12E with 3V DC Motor)
-Author : ChungYi Fu (Taiwan)  2018-05-09 23:30
+Author : ChungYi Fu (Taiwan)  2018-05-09 17:30
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -23,9 +23,9 @@ WiFiServer server(80);
 #include <Servo.h>
 Servo myservo;
 
-int servoPin=12;           //Servo PIN -> D6 (GPIO12)
-int motorPin1=13;          //Motor Driver IC PIN1 -> D7 (GPIO13)
-int motorPin2=15;          //Motor Driver IC PIN2 -> D8 (GPIO15)
+int servoPin=15;           //Servo PIN -> D8 (GPIO15)
+int motorPin1=5;          //Motor Driver IC PIN1 -> D1 (GPIO5)
+int motorPin2=4;          //Motor Driver IC PIN2 -> D2 (GPIO4)
 
 int angle=90;              //Angle of Servo position (0~180)
 int degree=5;              //Degrees in angle of rotation
