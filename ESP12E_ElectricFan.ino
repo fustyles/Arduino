@@ -16,7 +16,7 @@ http://192.168.4.1/?resetwifi=ssid;password
 const char* ssid     = "";   //your network SSID
 const char* password = "";   //your network password
 
-const char* apssid = "ESP12E ElectricFan";
+const char* apssid = "ElectricFan";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 WiFiServer server(80);
@@ -177,21 +177,21 @@ void ExecuteCommand()
   if (cmd=="rotate")
   {
     rotateState=str1.toInt();
-    Feedback="rotateState is "+str1;
+    Feedback="rotateState is changed to "+str1;
   }  
   else if (cmd=="speed")
   {
     speedValue=str1.toInt();
     analogWrite(motorPin1,0);    
     analogWrite(motorPin2,str1.toInt());
-    Feedback="speedValue is "+str1;
+    Feedback="speedValue is changed to "+str1;
   }  
   else if (cmd=="angle")
   {
     rotateState=0;
     angle=str1.toInt();
     myservo.write(angle);
-    Feedback="Angle is "+str1;
+    Feedback="Angle is changed to "+str1;
   }    
   else if (cmd=="resetwifi")
   {
