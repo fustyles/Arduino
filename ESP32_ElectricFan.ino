@@ -26,15 +26,15 @@ WiFiServer server(80);
 
 #include "esp32-hal-ledc.h"
 
-int servoPin=12;         //Servo PIN -> GPIO12
-int motorPin1=14;        //Motor Driver IC PIN1 -> GPIO14
-int motorPin2=27;        //Motor Driver IC PIN2 -> GPIO27
+int servoPin=12;           //Servo PIN -> GPIO12
+int motorPin1=14;          //Motor Driver IC PIN1 -> GPIO14
+int motorPin2=27;          //Motor Driver IC PIN2 -> GPIO27
 
-int angle=90;            //Angle of Servo position (0~180)
-int degree=5;            //Degrees in angle of rotation
-int rotateState=0;       //Rotation 1=Start, 0=Stop
+int angle=90;              //Angle of Servo position (0~180)
+int degree=5;              //Degrees in angle of rotation
+int rotateState=0;         //Rotation 1=Start, 0=Stop
 int rotationInterval=500;  //Rotation interval (ms)
-int speedValue=0;        //Fan speeds (0~255)
+int speedValue=0;          //Fan speeds (0~255)
 
 String Feedback="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
@@ -128,7 +128,7 @@ void loop()
             client.println("<input type=\"button\" onclick=\"location.href='?speedValue=0'\" value=\"Stop\">");
             client.println("<input type=\"button\" name=\"setSpeedValue\" onclick=\"location.href='?speedValue='+speedValue.value;\" value=\"Set "+String(speedValue)+"\">");
             client.println("<br/><br/>");            
-            client.println("Rotation: ");
+            client.println("Servo Rotation: ");
             client.println("<input type=\"button\" onclick=\"location.href='?rotateState=1'\" value=\"Start\">");
             client.println("<input type=\"button\" onclick=\"location.href='?rotateState=0'\" value=\"Stop\">");
             client.println("<br/><br/>");
@@ -136,11 +136,11 @@ void loop()
             client.println("<input type=\"range\" name=\"angle\" min=\"0\" max=\"180\" step=\"5\" value=\""+String(angle)+"\" onchange=\"setAngle.value='Set '+angle.value;\">");
             client.println("<input type=\"button\" name=\"setAngle\" onclick=\"location.href='?angle='+angle.value;\" value=\"Set "+String(angle)+"\">");
             client.println("<br/><br/>");
-            client.println("Angle Degrees: ");
+            client.println("Servo Degrees: ");
             client.println("<input type=\"range\" name=\"degree\" min=\"-20\" max=\"20\" step=\"1\" value=\""+String(degree)+"\" onchange=\"setDegree.value='Set '+degree.value;\">");
             client.println("<input type=\"button\" name=\"setDegree\" onclick=\"location.href='?degree='+degree.value;\" value=\"Set "+String(degree)+"\">");
             client.println("<br/><br/>");
-            client.println("Interval Time: ");
+            client.println("Servo Interval: ");
             client.println("<input type=\"range\" name=\"rotationInterval\" min=\"100\" max=\"2000\" step=\"100\" value=\""+String(rotationInterval)+"\" onchange=\"setRotationInterval.value='Set '+rotationInterval.value;\">");
             client.println("<input type=\"button\" name=\"setRotationInterval\" onclick=\"location.href='?rotationInterval='+rotationInterval.value;\" value=\"Set "+String(rotationInterval)+"\">");
             client.println("<br/><br/>");
