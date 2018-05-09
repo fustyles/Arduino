@@ -213,7 +213,7 @@ void ExecuteCommand()
     while (WiFi.status() != WL_CONNECTED) 
     {
         delay(500);
-        if ((StartTime+10000) < millis()) break;
+        if ((StartTime+5000) < millis()) break;
     } 
     Serial.println("");
     Serial.println("STAIP: "+WiFi.localIP().toString());
