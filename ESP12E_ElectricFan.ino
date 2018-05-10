@@ -1,6 +1,6 @@
 /* 
 Electric Fan (NodeMCU ESP12E)
-You must provide stable and large enough current for ESP.
+You must provide stable and large enough current for ESP or the device won't work.
 
 Author : ChungYi Fu (Taiwan)  2018-05-09 23:30
 
