@@ -18,7 +18,7 @@ https://internetofhomethings.com/homethings/?p=927
 */
 
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(0, 2); // RX:gpio0 TX:gpio2
+SoftwareSerial mySerial(0, 2); // RX:gpio0 TX:gpio2  ->  Arduino Uno P6, P7
 
 #include <ESP8266WiFi.h>
 
