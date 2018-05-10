@@ -1,10 +1,7 @@
 /* 
-ESP-01 Electric Fan + Arduino Uno (without using AT Command)
+ESP-01 Electric Fan (with Arduino Uno)
 
 Author : ChungYi Fu (Taiwan)  2018-05-10 20:00
-
-Expanding Arduino Serial Port Buffer Size
-https://internetofhomethings.com/homethings/?p=927
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -15,6 +12,9 @@ Default APIP:
 
 STAIP：
 http://192.168.4.1/?resetwifi=ssid;password
+
+Expanding Arduino Serial Port Buffer Size
+https://internetofhomethings.com/homethings/?p=927
 */
 
 #include <SoftwareSerial.h>
