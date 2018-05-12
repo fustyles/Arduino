@@ -1,5 +1,5 @@
 /* 
-Humidity&Temperature Chart (NodeMCU ESP32)
+Temperature&Humidity Chart (NodeMCU ESP32)
 
 Author : ChungYi Fu (Taiwan)  2018-05-13 00:00
 
