@@ -175,7 +175,7 @@ void loop()
             client.println("    });");
             client.println("  }");
             client.println("</script>");
-            client.println("<body onload=\"createDHTchart('"+chartType+"','"+chartData+"',600,600,'time','Humidity&Temperature');setTimeout('location.reload();',"+timeInterval+");\">");
+            client.println("<body onload=\"createDHTchart('"+chartType+"','"+chartData+"',600,600,'time','Temperature&Humidity');setTimeout('location.reload();',"+timeInterval+");\">");
             client.println("</body></html>");
             client.println();
                         
