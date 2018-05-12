@@ -70,13 +70,13 @@ void setup()
 
 void loop()
 {
-  //Sensor Data
-  int Temperature = rand()%40;    
-  int Humidity = rand()%100;
-
   time2 = millis();
   if (time2>=(timeInterval+time1))
   {
+    //Sensor Data
+    int Temperature = rand()%40;    
+    int Humidity = rand()%100;  
+    
     int t=time2/1000;
     t=t%86400;
     chartData=chartData+String(t/3600)+":"+String((t%3600)/60)+":"+String(t%60)+","+Temperature+","+Humidity+";";
