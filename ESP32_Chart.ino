@@ -20,9 +20,9 @@ String Feedback="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",st
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
 String chartType="";   //AreaChart or LineChart
-String chartData="";     //Format:  hh:mm:ss,temperature,humidity;
-int showCount=10;
-int count=0;
+String chartData="";   //Data Format:  hh:mm:ss,temperature,humidity;
+int showCount=10;      //Max Count
+int count=0;           
 unsigned long time1,time2,timeInterval=5000;
 
 void setup()
