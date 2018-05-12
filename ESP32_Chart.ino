@@ -84,7 +84,7 @@ void loop()
       chartData=chartData.substring(chartData.indexOf(";")+1);
     else
       count++;
-    Serial.println(chartData);
+    //Serial.println(chartData);
   }
     
   Command="";cmd="";str1="";str2="";str3="";str4="";str5="";str6="";str7="";str8="";str9="";
