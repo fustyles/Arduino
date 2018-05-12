@@ -9,7 +9,7 @@ http://STAIP/?chartType=AreaChart
 http://192.168.4.1/?resetwifi=ssid;password
 */
 
-String chartType="";   //AreaChart or LineChart
+String chartType="";   //LineChart or AreaChart
 String chartData="";   //Data Format:  hh:mm:ss,temperature,humidity;
 int showCount=10;      //Max Count
 int count=0;           
