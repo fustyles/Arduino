@@ -119,7 +119,7 @@ void loop()
             client.println("<meta http-equiv=\"Access-Control-Allow-Origin\" content=\"*\">");
             client.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
             client.println("</head><body><form>");
-            client.println("Fan Speeds (0~1023)<br/>");
+            client.println("Fan Speeds (0 ~ 1023)<br/>");
             client.println("<input type=\"range\" name=\"speed\" min=\"0\" max=\"1023\" step=\"20\" value=\""+String(speed)+"\" onchange=\"setspeed.value='Set '+speed.value;\">");
             client.println("<input type=\"button\" onclick=\"location.href='?speed=0'\" value=\"Stop\">");
             client.println("<input type=\"button\" name=\"setspeed\" onclick=\"location.href='?speed='+speed.value;\" value=\"Set "+String(speed)+"\">");
@@ -128,11 +128,11 @@ void loop()
             client.println("<input type=\"button\" onclick=\"location.href='?rotateState=1'\" value=\"Start\">");
             client.println("<input type=\"button\" onclick=\"location.href='?rotateState=0'\" value=\"Stop\">");
             client.println("<br/><br/>");
-            client.println("Angle Of Servo Position (0~180)<br/>");
+            client.println("Angle Of Servo Position (0 ~ 180)<br/>");
             client.println("<input type=\"range\" name=\"angle\" min=\"0\" max=\"180\" step=\"10\" value=\""+String(angle)+"\" onchange=\"setAngle.value='Set '+angle.value;\">");
             client.println("<input type=\"button\" name=\"setAngle\" onclick=\"location.href='?angle='+angle.value;\" value=\"Set "+String(angle)+"\">");
             client.println("<br/><br/>");
-            client.println("Servo Angle Degrees (-30~30)<br/>");
+            client.println("Servo Angle Degrees (-30 ~ +30)<br/>");
             client.println("<input type=\"range\" name=\"degree\" min=\"-30\" max=\"30\" step=\"5\" value=\""+String(degree)+"\" onchange=\"setDegree.value='Set '+degree.value;\">");
             client.println("<input type=\"button\" name=\"setDegree\" onclick=\"location.href='?degree='+degree.value;\" value=\"Set "+String(degree)+"\">");
             client.println("<br/><br/>");
