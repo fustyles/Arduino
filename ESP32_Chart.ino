@@ -1,7 +1,7 @@
 /* 
 Temperature&Humidity Chart (NodeMCU ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-05-13 00:00
+Author : ChungYi Fu (Taiwan)  2018-05-13 01:00
 
 Command Format :  
 http://STAIP   (default:LineChart)
@@ -78,6 +78,7 @@ void loop()
   if (time2>=(timeInterval+time1))
   {
     int t=time2/1000;
+    t=t%86400;
     chartData=chartData+String(t/3600)+":"+String((t%3600)/60)+":"+String(t%60)+","+Temperature+","+Humidity+";";
     time1 = time2;
     if (count==showCount)
