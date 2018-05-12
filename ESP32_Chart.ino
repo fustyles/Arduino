@@ -23,7 +23,8 @@ String chartType="";   //AreaChart or LineChart
 String chartData="";   //Data Format:  hh:mm:ss,temperature,humidity;
 int showCount=10;      //Max Count
 int count=0;           
-unsigned long time1,time2,timeInterval=5000;
+unsigned long time1,time2;
+int timeInterval=5000; //ms
 
 void setup()
 {
