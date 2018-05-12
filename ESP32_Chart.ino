@@ -1,6 +1,6 @@
 /* 
 Humidity&Temperature (NodeMCU ESP32)
-Author : ChungYi Fu (Taiwan)  2018-05-09 17:30
+Author : ChungYi Fu (Taiwan)  2018-05-13 00:00
 Command Format :  
 http://STAIP/?chartType=LineChart
 http://STAIP/?chartType=AreaChart
