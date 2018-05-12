@@ -4,7 +4,7 @@ Temperature&Humidity Chart (NodeMCU ESP32)
 Author : ChungYi Fu (Taiwan)  2018-05-13 00:00
 
 Command Format :  
-http://STAIP/?chartType=LineChart
+http://STAIP/?chartType=LineChart  (default)
 http://STAIP/?chartType=AreaChart
 http://192.168.4.1/?resetwifi=ssid;password
 */
