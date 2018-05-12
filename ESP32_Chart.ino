@@ -71,7 +71,7 @@ void setup()
 void loop()
 {
   time2 = millis();
-  if (time2>=(timeInterval+time1))
+  if (time2>=(time1+timeInterval))
   {
     //Sensor Data
     int Temperature = rand()%40;    
