@@ -6,6 +6,7 @@ Author : ChungYi Fu (Taiwan)  2018-05-13 00:00
 Command Format :  
 http://STAIP/?chartType=LineChart
 http://STAIP/?chartType=AreaChart
+http://192.168.4.1/?resetwifi=ssid;password
 */
 
 String chartType="";   //AreaChart or LineChart
@@ -213,6 +214,21 @@ void ExecuteCommand()
   {
     chartType=str1;
   }
+  else if (cmd=="resetwifi")
+  {
+    WiFi.begin(str1.c_str(), str2.c_str());
+    Serial.print("Connecting to ");
+    Serial.println(str1);
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) 
+    {
+        delay(500);
+        if ((StartTime+5000) < millis()) break;
+    } 
+    Serial.println("");
+    Serial.println("STAIP: "+WiFi.localIP().toString());
+    Feedback="STAIP: "+WiFi.localIP().toString();
+  }   
   else 
   {
     Feedback="Command is not defined";
