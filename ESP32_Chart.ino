@@ -86,7 +86,7 @@ void loop()
   if (time2>=(time1+timeInterval))
   {
     //Sensor Data
-    int Temperature = rand()%200-100;    
+    int Temperature = rand()%300-100;    
     int Humidity = rand()%100;  
     
     int t=time2/1000;
