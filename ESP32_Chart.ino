@@ -1,5 +1,5 @@
 /* 
-NodeMCU ESP32 Chart
+NodeMCU ESP32 Chart (D3.js)
 
 Author : ChungYi Fu (Taiwan)  2018-05-13 20:00
 
@@ -12,6 +12,7 @@ http://STAIP/?chartHeight=value
 http://STAIP/?showCount=value
 http://STAIP/?yScaleMax=value
 http://STAIP/?yScaleMin=value
+(You can't link to ESP by APIP)
 
 http://192.168.4.1/?resetwifi=ssid;password
 */
