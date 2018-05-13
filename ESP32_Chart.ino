@@ -1,7 +1,7 @@
 /* 
 NodeMCU ESP32 Chart (D3.js)
 
-Author : ChungYi Fu (Taiwan)  2018-05-13 20:00
+Author : ChungYi Fu (Taiwan)  2018-05-13 21:00
 
 Command Format :  
 http://STAIP   (default:LineChart)
@@ -9,7 +9,7 @@ http://STAIP/?chartType=LineChart
 http://STAIP/?chartType=AreaChart
 http://STAIP/?chartWidth=value
 http://STAIP/?chartHeight=value
-http://STAIP/?showCount=value
+http://STAIP/?showNumber=value
 http://STAIP/?yScaleMax=value
 http://STAIP/?yScaleMin=value
 (You can't link to ESP page by APIP)
@@ -19,7 +19,7 @@ http://192.168.4.1/?resetwifi=ssid;password
 
 String chartType="";     //LineChart or AreaChart
 String chartData="";     //Data Format:  hh:mm:ss,temperature,humidity;
-int showCount=10;        //Number of data records
+int showNumber=10;        //Number of data records
 int timeInterval=5000;   //ms
 int chartWidth=600;      //px
 int chartHeight=600;     //px
@@ -95,7 +95,7 @@ void loop()
     t%=86400;
     chartData=chartData+String(t/3600)+":"+String((t%3600)/60)+":"+String(t%60)+","+Temperature+","+Humidity+";";
     time1 = time2;
-    if (count==showCount)
+    if (count==showNumber)
       chartData=chartData.substring(chartData.indexOf(";")+1);
     else
       count++;
@@ -237,14 +237,14 @@ void ExecuteCommand()
   {
     chartHeight=str1.toInt();
   }    
-  else if (cmd=="showCount")
+  else if (cmd=="showNumber")
   {
-    if (str1.toInt()<showCount)
+    if (str1.toInt()<showNumber)
     {
       chartData="";
       count=0;
     }
-    showCount=str1.toInt();
+    showNumber=str1.toInt();
   }  
   else if (cmd=="yScaleMax")
   {
