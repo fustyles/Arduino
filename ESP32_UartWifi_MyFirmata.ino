@@ -35,7 +35,7 @@ https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 */
 
 #include <HardwareSerial.h>
-HardwareSerial mySerial(1);  // RX:gpio16 TX:gpio17
+HardwareSerial mySerial(1);
 
 #include <WiFi.h>
 
@@ -174,7 +174,7 @@ void ExecuteCommand()
 
 void setup()
 {
-    mySerial.begin(9600, SERIAL_8N1, 16, 17);
+    mySerial.begin(9600, SERIAL_8N1, 16, 17);    // RX:gpio16 TX:gpio17  ->  Arduino Uno TX:D11 RX:D10
       
     Serial.begin(115200);
     delay(10);
