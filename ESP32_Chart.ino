@@ -24,14 +24,15 @@ int chartWidth=600;      //px
 int chartHeight=600;     //px
 int yScaleMax=200;       //Max Temperature
 int yScaleMin=-100;      //Min Temperature
-int count=0;           
+String yTitle="Temperature&Humidity";
+String xTitle="Time";
 unsigned long time1,time2;
-
+int count=0;           
 
 #include <WiFi.h>
 
-const char* ssid     = "";   //your network SSID
-const char* password = "";   //your network password
+const char* ssid     = "3COM";   //your network SSID
+const char* password = "godblessyou";   //your network password
 
 const char* apssid = "ESP32 Chart";
 const char* appassword = "12345678";         //AP password requires at least 8 characters.
@@ -188,7 +189,7 @@ void loop()
             client.println("    });");
             client.println("  }");
             client.println("</script>");
-            client.println("<body onload=\"createChart('"+chartType+"','"+chartData+"',"+chartWidth+","+chartHeight+",'time','Temperature&Humidity');setTimeout('location.reload();',"+timeInterval+");\">");
+            client.println("<body onload=\"createChart('"+chartType+"','"+chartData+"',"+chartWidth+","+chartHeight+",'"+xTitle+"','"+yTitle+"');setTimeout('location.reload();',"+timeInterval+");\">");
             client.println("</body></html>");
             client.println();
                         
