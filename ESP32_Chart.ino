@@ -84,7 +84,7 @@ void loop()
     int Humidity = rand()%100;  
     
     int t=time2/1000;
-    t=t%86400;
+    t%=86400;
     chartData=chartData+String(t/3600)+":"+String((t%3600)/60)+":"+String(t%60)+","+Temperature+","+Humidity+";";
     time1 = time2;
     if (count==showCount)
