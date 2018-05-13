@@ -34,7 +34,7 @@ https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 */
 
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(13, 15); // RX(D7), TX(D8)
+SoftwareSerial mySerial(13, 15); // RX(D7,gpio13), TX(D8,gpio15) ->  Arduino Uno TX:D11 RX:D10
 
 #include <ESP8266WiFi.h>
 
