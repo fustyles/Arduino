@@ -1,8 +1,6 @@
 /* 
 NodeMCU ESP32 Chart
-
 Author : ChungYi Fu (Taiwan)  2018-05-13 20:00
-
 Command Format :  
 http://STAIP   (default:LineChart)
 http://STAIP/?chartType=LineChart
@@ -12,7 +10,6 @@ http://STAIP/?chartHeight=value
 http://STAIP/?showCount=value
 http://STAIP/?yScaleMax=value
 http://STAIP/?yScaleMin=value
-
 http://192.168.4.1/?resetwifi=ssid;password
 */
 
@@ -141,17 +138,17 @@ void loop()
             client.println("    var margin = {top: 50, right: 50, bottom: 70, left: 50};");
             client.println("    var width = input_width - margin.left - margin.right;");
             client.println("    var height = input_height - margin.top - margin.bottom;");
-            client.println("    if (document.getElementById('fustyles_DHTchart'))");
+            client.println("    if (document.getElementById('fustyles_chart'))");
             client.println("    {");
             client.println("      d3.selectAll(\"svg > *\").remove();");
-            client.println("      var svg = d3.select('#fustyles_DHTchart').attr('width', width + margin.left + margin.right).attr('height', height + margin.top + margin.bottom).append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);");
+            client.println("      var svg = d3.select('#fustyles_chart').attr('width', width + margin.left + margin.right).attr('height', height + margin.top + margin.bottom).append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);");
             client.println("    }");
             client.println("    else");
             client.println("    {");
             client.println("      var sheet = document.createElement('style');");
             client.println("      sheet.innerHTML = \"body {font-size: 100%;}.area1 {fill: red;}.area2 {fill: blue;}.line1 {fill: none;stroke: red;stroke-width: 2px;}.line2 {fill: none;stroke: blue;stroke-width: 2px;}.point1 {fill:red;stroke:red;}.point2 {fill:blue;stroke:blue;}\";");   
             client.println("      document.head.appendChild(sheet);");
-            client.println("      var svg = d3.select('body').append('svg').attr('id','fustyles_DHTchart').attr('width', width + margin.left + margin.right).attr('height', height + margin.top + margin.bottom).append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);");
+            client.println("      var svg = d3.select('body').append('svg').attr('id','fustyles_chart').attr('width', width + margin.left + margin.right).attr('height', height + margin.top + margin.bottom).append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);");
             client.println("    }");
             client.println("    var string = \"time,temperature,humidity\\n\"+input_data.replace(/;/ig,\"\\n\");");
             client.println("    var data = d3.csvParse(string);");
