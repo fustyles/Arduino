@@ -1,6 +1,8 @@
 /* 
 Temperature&Humidity Chart (NodeMCU ESP32)
+
 Author : ChungYi Fu (Taiwan)  2018-05-13 13:00
+
 Command Format :  
 http://STAIP   (default:LineChart)
 http://STAIP/?chartType=AreaChart
