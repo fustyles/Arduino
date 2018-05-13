@@ -31,8 +31,8 @@ int count=0;
 
 #include <WiFi.h>
 
-const char* ssid     = "3COM";   //your network SSID
-const char* password = "godblessyou";   //your network password
+const char* ssid     = "";   //your network SSID
+const char* password = "";   //your network password
 
 const char* apssid = "ESP32 Chart";
 const char* appassword = "12345678";         //AP password requires at least 8 characters.
