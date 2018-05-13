@@ -9,6 +9,7 @@ http://STAIP/?chartType=LineChart
 http://STAIP/?chartType=AreaChart
 http://STAIP/?chartWidth=value
 http://STAIP/?chartHeight=value
+http://STAIP/?showCount=value
 
 http://192.168.4.1/?resetwifi=ssid;password
 */
@@ -230,6 +231,15 @@ void ExecuteCommand()
   {
     chartHeight=str1.toInt();
   }    
+  else if (cmd=="showCount")
+  {
+    if (str1.toInt()<showCount)
+    {
+      chartData="";
+      count=0;
+    }
+    showCount=str1.toInt();
+  }   
   else if (cmd=="resetwifi")
   {
     WiFi.begin(str1.c_str(), str2.c_str());
