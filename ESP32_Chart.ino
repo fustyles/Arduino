@@ -25,8 +25,8 @@ int chartWidth=600;      //px
 int chartHeight=600;     //px
 int yScaleMax=200;       //Maximum value of the Y axis
 int yScaleMin=-100;      //Minimum value of the Y axis
-String yTitle="Temperature&Humidity";
 String xTitle="Time";
+String yTitle="Temperature&Humidity";
 unsigned long time1,time2;
 int count=0;           
 
