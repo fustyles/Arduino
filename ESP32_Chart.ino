@@ -1,7 +1,7 @@
 /* 
-Temperature&Humidity Chart (NodeMCU ESP32)
+NodeMCU ESP32 Chart
 
-Author : ChungYi Fu (Taiwan)  2018-05-13 13:30
+Author : ChungYi Fu (Taiwan)  2018-05-13 20:00
 
 Command Format :  
 http://STAIP   (default:LineChart)
@@ -31,8 +31,8 @@ int count=0;
 
 #include <WiFi.h>
 
-const char* ssid     = "";   //your network SSID
-const char* password = "";   //your network password
+const char* ssid     = "3COM";   //your network SSID
+const char* password = "godblessyou";   //your network password
 
 const char* apssid = "ESP32 Chart";
 const char* appassword = "12345678";         //AP password requires at least 8 characters.
@@ -137,10 +137,10 @@ void loop()
             client.println("<script src=\"http://d3js.org/d3.v4.min.js\"></script>");
             client.println("</head>");
             client.println("<script>");
-            client.println("  function createChart(input_type_,input_value_,input_WIDTH_,input_HEIGHT_,input_TITLE_X_,input_TITLE_Y_) {");
+            client.println("  function createChart(input_type,input_data,input_width,input_height,input_title_x,input_title_y,input_yscale_max,input_yscale_min) {");
             client.println("    var margin = {top: 50, right: 50, bottom: 70, left: 50};");
-            client.println("    var width = input_WIDTH_ - margin.left - margin.right;");
-            client.println("    var height = input_HEIGHT_ - margin.top - margin.bottom;");
+            client.println("    var width = input_width - margin.left - margin.right;");
+            client.println("    var height = input_height - margin.top - margin.bottom;");
             client.println("    if (document.getElementById('fustyles_DHTchart'))");
             client.println("    {");
             client.println("      d3.selectAll(\"svg > *\").remove();");
@@ -153,7 +153,7 @@ void loop()
             client.println("      document.head.appendChild(sheet);");
             client.println("      var svg = d3.select('body').append('svg').attr('id','fustyles_DHTchart').attr('width', width + margin.left + margin.right).attr('height', height + margin.top + margin.bottom).append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);");
             client.println("    }");
-            client.println("    var string = \"time,temperature,humidity\\n\"+input_value_.replace(/;/ig,\"\\n\");");
+            client.println("    var string = \"time,temperature,humidity\\n\"+input_data.replace(/;/ig,\"\\n\");");
             client.println("    var data = d3.csvParse(string);");
             client.println("    var parseTime = d3.timeParse(\"%H:%M:%S\");");
             client.println("    data.forEach(function(d){");
@@ -164,15 +164,15 @@ void loop()
             client.println("    var xScale = d3.scaleTime().range([0, width]);");
             client.println("    var yScale = d3.scaleLinear().range([height, 0]);");
             client.println("    xScale.domain(d3.extent(data, d => d.time));");
-            client.println("    yScale.domain(["+String(yScaleMin)+", "+String(yScaleMax)+"]);");
-            client.println("    if (input_type_=='AreaChart')");
+            client.println("    yScale.domain([input_yscale_min, input_yscale_max]);");
+            client.println("    if (input_type=='AreaChart')");
             client.println("    {");
             client.println("      var area2 = d3.area().x(d => xScale(d.time)).y0(height).y1(d => yScale(d.humidity));");
             client.println("      svg.append(\"path\").data([data]).attr(\"class\", \"area2\").attr(\"d\", area2);");
             client.println("    }");
             client.println("    var line2 = d3.line().x(d => xScale(d.time)).y(d => yScale(d.humidity));"); 
             client.println("    svg.append('path').data([data]).attr('class', 'line2').attr('d', line2);");
-            client.println("    if (input_type_=='AreaChart')");
+            client.println("    if (input_type=='AreaChart')");
             client.println("    {");
             client.println("      var area1 = d3.area().x(d => xScale(d.time)).y0(height).y1(d => yScale(d.temperature));");
             client.println("      svg.append(\"path\").data([data]).attr(\"class\", \"area1\").attr(\"d\", area1);");  
@@ -180,16 +180,16 @@ void loop()
             client.println("    var line1 = d3.line().x(d => xScale(d.time)).y(d => yScale(d.temperature));");    
             client.println("    svg.append('path').data([data]).attr('class', 'line1').attr('d', line1);");   
             client.println("    svg.append(\"g\").attr(\"transform\", \"translate(0,\" + height + \")\").call(d3.axisBottom(xScale).tickFormat(d3.timeFormat(\"%H:%M:%S\"))).selectAll(\"text\").style(\"text-anchor\", \"end\").attr(\"dx\", \"-.8em\").attr(\"dy\", \".15em\").attr(\"transform\", \"rotate(-65)\");");
-            client.println("    svg.append(\"text\").attr(\"transform\", \"translate(\" + (width+25) + \" ,\" + (height-10) + \")\").style(\"text-anchor\", \"middle\").text(input_TITLE_X_);");
+            client.println("    svg.append(\"text\").attr(\"transform\", \"translate(\" + (width+25) + \" ,\" + (height-10) + \")\").style(\"text-anchor\", \"middle\").text(input_title_x);");
             client.println("    svg.append(\"g\").call(d3.axisLeft(yScale));");
-            client.println("    svg.append(\"text\").attr(\"y\", -30 ).attr(\"x\", 40 ).attr(\"dy\", \"1em\").style(\"text-anchor\", \"middle\").text(input_TITLE_Y_);");
+            client.println("    svg.append(\"text\").attr(\"y\", -30 ).attr(\"x\", 40 ).attr(\"dy\", \"1em\").style(\"text-anchor\", \"middle\").text(input_title_y);");
             client.println("    data.forEach(function(d){");
             client.println("      svg.append('circle').attr(\"cx\",xScale(d.time)).attr(\"cy\",yScale(d.temperature)).attr(\"r\",2).attr(\"title\",'test').attr(\"class\", \"point1\").append(\"svg:title\").text(d.temperature);");
             client.println("      svg.append('circle').attr(\"cx\",xScale(d.time)).attr(\"cy\",yScale(d.humidity)).attr(\"r\",2).attr(\"class\", \"point2\").append(\"svg:title\").text(d.humidity);");   
             client.println("    });");
             client.println("  }");
             client.println("</script>");
-            client.println("<body onload=\"createChart('"+chartType+"','"+chartData+"',"+chartWidth+","+chartHeight+",'"+xTitle+"','"+yTitle+"');setTimeout('location.reload();',"+timeInterval+");\">");
+            client.println("<body onload=\"createChart('"+chartType+"','"+chartData+"',"+chartWidth+","+chartHeight+",'"+xTitle+"','"+yTitle+"',"+yScaleMax+","+yScaleMin+");setTimeout('location.reload();',"+timeInterval+");\">");
             client.println("</body></html>");
             client.println();
                         
