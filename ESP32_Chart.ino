@@ -8,6 +8,7 @@ http://STAIP   (default:LineChart)
 http://STAIP/?chartType=AreaChart
 http://STAIP/?chartWidth=value
 http://STAIP/?chartHeight=value
+
 http://192.168.4.1/?resetwifi=ssid;password
 */
 
