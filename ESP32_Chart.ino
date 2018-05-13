@@ -1,7 +1,7 @@
 /* 
 Temperature&Humidity Chart (NodeMCU ESP32)
 
-Author : ChungYi Fu (Taiwan)  2018-05-13 13:00
+Author : ChungYi Fu (Taiwan)  2018-05-13 13:30
 
 Command Format :  
 http://STAIP   (default:LineChart)
@@ -19,7 +19,8 @@ String chartData="";     //Data Format:  hh:mm:ss,temperature,humidity;
 int showCount=10;        //Max Count
 int timeInterval=5000;   //ms
 int chartWidth=600;      //px
-int chartHeight=400;     //px
+int chartHeight=600;     //px
+int yScaleMax=200;       //Max Temperature
 int count=0;           
 unsigned long time1,time2;
 
@@ -82,7 +83,7 @@ void loop()
   if (time2>=(time1+timeInterval))
   {
     //Sensor Data
-    int Temperature = rand()%40;    
+    int Temperature = rand()%200;    
     int Humidity = rand()%100;  
     
     int t=time2/1000;
@@ -159,7 +160,7 @@ void loop()
             client.println("    var xScale = d3.scaleTime().range([0, width]);");
             client.println("    var yScale = d3.scaleLinear().range([height, 0]);");
             client.println("    xScale.domain(d3.extent(data, d => d.time));");
-            client.println("    yScale.domain([0, 100]);");
+            client.println("    yScale.domain([0, "+String(yScaleMax)+"]);");
             client.println("    if (input_type_=='AreaChart')");
             client.println("    {");
             client.println("      var area2 = d3.area().x(d => xScale(d.time)).y0(height).y1(d => yScale(d.humidity));");
