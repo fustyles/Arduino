@@ -130,7 +130,7 @@ void loop()
             client.println("<script src=\"http://d3js.org/d3.v4.min.js\"></script>");
             client.println("</head>");
             client.println("<script>");
-            client.println("  function createDHTchart(input_type_,input_value_,input_WIDTH_,input_HEIGHT_,input_TITLE_X_,input_TITLE_Y_) {");
+            client.println("  function createChart(input_type_,input_value_,input_WIDTH_,input_HEIGHT_,input_TITLE_X_,input_TITLE_Y_) {");
             client.println("    var margin = {top: 50, right: 50, bottom: 70, left: 50};");
             client.println("    var width = input_WIDTH_ - margin.left - margin.right;");
             client.println("    var height = input_HEIGHT_ - margin.top - margin.bottom;");
@@ -182,7 +182,7 @@ void loop()
             client.println("    });");
             client.println("  }");
             client.println("</script>");
-            client.println("<body onload=\"createDHTchart('"+chartType+"','"+chartData+"',"+chartWidth+","+chartHeight+",'time','Temperature&Humidity');setTimeout('location.reload();',"+timeInterval+");\">");
+            client.println("<body onload=\"createChart('"+chartType+"','"+chartData+"',"+chartWidth+","+chartHeight+",'time','Temperature&Humidity');setTimeout('location.reload();',"+timeInterval+");\">");
             client.println("</body></html>");
             client.println();
                         
