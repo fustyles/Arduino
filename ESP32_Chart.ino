@@ -12,7 +12,7 @@ http://STAIP/?chartHeight=value
 http://STAIP/?showCount=value
 http://STAIP/?yScaleMax=value
 http://STAIP/?yScaleMin=value
-(You can't link to ESP by APIP)
+(You can't link to ESP page by APIP)
 
 http://192.168.4.1/?resetwifi=ssid;password
 */
