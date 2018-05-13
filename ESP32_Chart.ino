@@ -10,6 +10,8 @@ http://STAIP/?chartType=AreaChart
 http://STAIP/?chartWidth=value
 http://STAIP/?chartHeight=value
 http://STAIP/?showCount=value
+http://STAIP/?yScaleMax=value
+http://STAIP/?yScaleMin=value
 
 http://192.168.4.1/?resetwifi=ssid;password
 */
@@ -21,6 +23,7 @@ int timeInterval=5000;   //ms
 int chartWidth=600;      //px
 int chartHeight=600;     //px
 int yScaleMax=200;       //Max Temperature
+int yScaleMin=-100;       //Min Temperature
 int count=0;           
 unsigned long time1,time2;
 
@@ -160,7 +163,7 @@ void loop()
             client.println("    var xScale = d3.scaleTime().range([0, width]);");
             client.println("    var yScale = d3.scaleLinear().range([height, 0]);");
             client.println("    xScale.domain(d3.extent(data, d => d.time));");
-            client.println("    yScale.domain([0, "+String(yScaleMax)+"]);");
+            client.println("    yScale.domain(["+String(yScaleMin)+", "+String(yScaleMax)+"]);");
             client.println("    if (input_type_=='AreaChart')");
             client.println("    {");
             client.println("      var area2 = d3.area().x(d => xScale(d.time)).y0(height).y1(d => yScale(d.humidity));");
@@ -240,7 +243,15 @@ void ExecuteCommand()
       count=0;
     }
     showCount=str1.toInt();
-  }   
+  }  
+  else if (cmd=="yScaleMax")
+  {
+    yScaleMax=str1.toInt();
+  }
+  else if (cmd=="yScaleMin")
+  {
+    yScaleMin=str1.toInt();
+  }  
   else if (cmd=="resetwifi")
   {
     WiFi.begin(str1.c_str(), str2.c_str());
