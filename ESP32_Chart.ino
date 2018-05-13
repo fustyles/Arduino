@@ -23,7 +23,7 @@ int timeInterval=5000;   //ms
 int chartWidth=600;      //px
 int chartHeight=600;     //px
 int yScaleMax=200;       //Max Temperature
-int yScaleMin=-100;       //Min Temperature
+int yScaleMin=-100;      //Min Temperature
 int count=0;           
 unsigned long time1,time2;
 
