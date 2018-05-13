@@ -1,20 +1,23 @@
 /* 
 Temperature&Humidity Chart (NodeMCU ESP32)
-
-Author : ChungYi Fu (Taiwan)  2018-05-13 02:00
-
+Author : ChungYi Fu (Taiwan)  2018-05-13 13:00
 Command Format :  
 http://STAIP   (default:LineChart)
 http://STAIP/?chartType=AreaChart
+http://STAIP/?chartWidth=value
+http://STAIP/?chartHeight=value
 http://192.168.4.1/?resetwifi=ssid;password
 */
 
-String chartType="";   //LineChart or AreaChart
-String chartData="";   //Data Format:  hh:mm:ss,temperature,humidity;
-int showCount=10;      //Max Count
+String chartType="";     //LineChart or AreaChart
+String chartData="";     //Data Format:  hh:mm:ss,temperature,humidity;
+int showCount=10;        //Max Count
+int timeInterval=5000;   //ms
+int chartWidth=600;      //px
+int chartHeight=400;     //px
 int count=0;           
 unsigned long time1,time2;
-int timeInterval=5000; //ms
+
 
 #include <WiFi.h>
 
@@ -176,7 +179,7 @@ void loop()
             client.println("    });");
             client.println("  }");
             client.println("</script>");
-            client.println("<body onload=\"createDHTchart('"+chartType+"','"+chartData+"',600,600,'time','Temperature&Humidity');setTimeout('location.reload();',"+timeInterval+");\">");
+            client.println("<body onload=\"createDHTchart('"+chartType+"','"+chartData+"',"+chartWidth+","+chartHeight+",'time','Temperature&Humidity');setTimeout('location.reload();',"+timeInterval+");\">");
             client.println("</body></html>");
             client.println();
                         
@@ -215,6 +218,14 @@ void ExecuteCommand()
   {
     chartType=str1;
   }
+  else if (cmd=="chartWidth")
+  {
+    chartWidth=str1.toInt();
+  }  
+  else if (cmd=="chartHeight")
+  {
+    chartHeight=str1.toInt();
+  }    
   else if (cmd=="resetwifi")
   {
     WiFi.begin(str1.c_str(), str2.c_str());
