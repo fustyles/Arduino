@@ -1,6 +1,8 @@
 /* 
 NodeMCU ESP32 Chart
+
 Author : ChungYi Fu (Taiwan)  2018-05-13 20:00
+
 Command Format :  
 http://STAIP   (default:LineChart)
 http://STAIP/?chartType=LineChart
@@ -10,6 +12,7 @@ http://STAIP/?chartHeight=value
 http://STAIP/?showCount=value
 http://STAIP/?yScaleMax=value
 http://STAIP/?yScaleMin=value
+
 http://192.168.4.1/?resetwifi=ssid;password
 */
 
