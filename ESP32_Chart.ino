@@ -19,7 +19,7 @@ http://192.168.4.1/?resetwifi=ssid;password
 */
 
 String chartType="LineChart";          //LineChart or AreaChart
-String chartData="";                   //Data Format:  hh:mm:ss,temperature,humidity;
+String chartData="";                   //Data Format:  hh:mm:ss,sensorValue1,sensorValue2;
 int showCount=10;                      //Data records
 int timeInterval=5000;                 //ms
 int chartWidth=600;                    //px
