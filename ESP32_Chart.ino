@@ -12,7 +12,7 @@ http://STAIP/?chartHeight=value
 http://STAIP/?showNumber=value
 http://STAIP/?yScaleMax=value
 http://STAIP/?yScaleMin=value
-(You can't link to chart page by using APIP address)
+(It is necessary to load D3.js from webside,so you can't link to chart page by using APIP address)
 
 http://192.168.4.1/?resetwifi=ssid;password
 */
