@@ -17,16 +17,16 @@ http://STAIP/?yScaleMin=value
 http://192.168.4.1/?resetwifi=ssid;password
 */
 
-String chartType="";     //LineChart or AreaChart
-String chartData="";     //Data Format:  hh:mm:ss,temperature,humidity;
-int showNumber=10;        //Number of data records
-int timeInterval=5000;   //ms
-int chartWidth=600;      //px
-int chartHeight=600;     //px
-int yScaleMax=200;       //Maximum value of the Y axis
-int yScaleMin=-100;      //Minimum value of the Y axis
-String xTitle="Time";
-String yTitle="Temperature&Humidity";
+String chartType="LineChart";          //LineChart or AreaChart
+String chartData="";                   //Data Format:  hh:mm:ss,temperature,humidity;
+int showNumber=10;                     //Number of data records
+int timeInterval=5000;                 //ms
+int chartWidth=600;                    //px
+int chartHeight=600;                   //px
+int yScaleMax=200;                     //Maximum value of the Y axis
+int yScaleMin=-100;                    //Minimum value of the Y axis
+String xTitle="Time";                  //Title of the X axis 
+String yTitle="Temperature&Humidity";  //Title of the Y axis 
 unsigned long time1,time2;
 int count=0;           
 
