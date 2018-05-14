@@ -7,10 +7,10 @@ Command Format :
 http://STAIP   (default:LineChart)
 http://STAIP/?chartType=LineChart
 http://STAIP/?chartType=AreaChart
+http://STAIP/?showNumber=value
 http://STAIP/?timeInterval=value
 http://STAIP/?chartWidth=value
 http://STAIP/?chartHeight=value
-http://STAIP/?showNumber=value
 http://STAIP/?yScaleMax=value
 http://STAIP/?yScaleMin=value
 (It is necessary to load D3.js from the webside,so you can't link to chart page by using APIP address)
@@ -230,6 +230,15 @@ void ExecuteCommand()
   {
     chartType=str1;
   }
+  else if (cmd=="showNumber")
+  {
+    if (str1.toInt()<showNumber)
+    {
+      chartData="";
+      count=0;
+    }
+    showNumber=str1.toInt();
+  }   
   else if (cmd=="timeInterval")
   {
     timeInterval=str1.toInt();
@@ -241,16 +250,7 @@ void ExecuteCommand()
   else if (cmd=="chartHeight")
   {
     chartHeight=str1.toInt();
-  }     
-  else if (cmd=="showNumber")
-  {
-    if (str1.toInt()<showNumber)
-    {
-      chartData="";
-      count=0;
-    }
-    showNumber=str1.toInt();
-  }  
+  }      
   else if (cmd=="yScaleMax")
   {
     yScaleMax=str1.toInt();
