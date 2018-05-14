@@ -7,6 +7,7 @@ Command Format :
 http://STAIP   (default:LineChart)
 http://STAIP/?chartType=LineChart
 http://STAIP/?chartType=AreaChart
+http://STAIP/?timeInterval=value
 http://STAIP/?chartWidth=value
 http://STAIP/?chartHeight=value
 http://STAIP/?showNumber=value
@@ -237,6 +238,10 @@ void ExecuteCommand()
   {
     chartHeight=str1.toInt();
   }    
+  else if (cmd=="timeInterval")
+  {
+    timeInterval=str1.toInt();
+  }   
   else if (cmd=="showNumber")
   {
     if (str1.toInt()<showNumber)
