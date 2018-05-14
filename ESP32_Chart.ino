@@ -1,7 +1,7 @@
 /* 
 NodeMCU ESP32 Chart (D3.js)
 
-Author : ChungYi Fu (Taiwan)  2018-05-13 21:00
+Author : ChungYi Fu (Taiwan)  2018-05-14 14:00
 
 Command Format :  
 http://STAIP   (default:LineChart)
@@ -230,6 +230,10 @@ void ExecuteCommand()
   {
     chartType=str1;
   }
+  else if (cmd=="timeInterval")
+  {
+    timeInterval=str1.toInt();
+  }    
   else if (cmd=="chartWidth")
   {
     chartWidth=str1.toInt();
@@ -237,11 +241,7 @@ void ExecuteCommand()
   else if (cmd=="chartHeight")
   {
     chartHeight=str1.toInt();
-  }    
-  else if (cmd=="timeInterval")
-  {
-    timeInterval=str1.toInt();
-  }   
+  }     
   else if (cmd=="showNumber")
   {
     if (str1.toInt()<showNumber)
