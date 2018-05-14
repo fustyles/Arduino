@@ -15,7 +15,7 @@ http://STAIP/?yScaleMax=value
 http://STAIP/?yScaleMin=value
 http://STAIP/?xTitle=string
 http://STAIP/?yTitle=string
-(It is necessary to load D3.js from the webside,so you can't link to chart page by using APIP address)
+(It is necessary to load D3.js from the webside,so you must let the device connect to the network)
 
 http://192.168.4.1/?resetwifi=ssid;password
 */
