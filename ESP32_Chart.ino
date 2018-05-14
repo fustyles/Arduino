@@ -7,7 +7,7 @@ Command Format :
 http://STAIP   (default:LineChart)
 http://STAIP/?chartType=LineChart
 http://STAIP/?chartType=AreaChart
-http://STAIP/?showNumber=value
+http://STAIP/?showCount=value
 http://STAIP/?timeInterval=value
 http://STAIP/?chartWidth=value
 http://STAIP/?chartHeight=value
@@ -20,7 +20,7 @@ http://192.168.4.1/?resetwifi=ssid;password
 
 String chartType="LineChart";          //LineChart or AreaChart
 String chartData="";                   //Data Format:  hh:mm:ss,temperature,humidity;
-int showNumber=10;                     //Number of data records
+int showCount=10;                      //Data records
 int timeInterval=5000;                 //ms
 int chartWidth=600;                    //px
 int chartHeight=600;                   //px
@@ -96,7 +96,7 @@ void loop()
     t%=86400;
     chartData=chartData+String(t/3600)+":"+String((t%3600)/60)+":"+String(t%60)+","+Temperature+","+Humidity+";";
     time1 = time2;
-    if (count==showNumber)
+    if (count==showCount)
       chartData=chartData.substring(chartData.indexOf(";")+1);
     else
       count++;
@@ -230,14 +230,14 @@ void ExecuteCommand()
   {
     chartType=str1;
   }
-  else if (cmd=="showNumber")
+  else if (cmd=="showCount")
   {
-    if (str1.toInt()<showNumber)
+    if (str1.toInt()<showCount)
     {
       chartData="";
       count=0;
     }
-    showNumber=str1.toInt();
+    showCount=str1.toInt();
   }   
   else if (cmd=="timeInterval")
   {
