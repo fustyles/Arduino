@@ -14,6 +14,8 @@ http://STAIP/?chartHeight=value
 http://STAIP/?yScaleMax=value
 http://STAIP/?yScaleMin=value
 http://STAIP/?xTitle=string
+http://STAIP/?yTitle1=string
+http://STAIP/?yTitle2=string
 (It is necessary to load D3.js from D3JS webside,so you must let the device connect to the network.)
 
 http://192.168.4.1/?resetwifi=ssid;password
@@ -27,10 +29,12 @@ int chartWidth=600;                    //Chart width (px)
 int chartHeight=600;                   //Chart height (px)
 int yScaleMax=200;                     //Maximum value of the Y axis
 int yScaleMin=-100;                    //Minimum value of the Y axis
-String xTitle="Time";                  //Title of the X axis 
-String yTitle="";                      //Title of the Y axis 
+String xTitle="Time";                  //Title of the X axis  
+String yTitle1="Temperature(°F)";      //Title of the Y axis 
+String yTitle2="Humidity(%)";          //Title of the Y axis
 unsigned long time1,time2;
-int count=0;           
+int count=0;    
+String yTitle="";     
 
 #include <ESP8266WiFi.h>
 
@@ -92,7 +96,7 @@ void loop()
     //Sensor Data
     int Temperature = rand()%300-100;    
     int Humidity = rand()%100;  
-    yTitle="Temperature(°F)="+String(Temperature)+"  Humidity(%)="+String(Humidity);
+    yTitle=yTitle1+"="+String(Temperature)+"    "+yTitle2+"="+String(Humidity);
     
     int t=time2/1000;
     t%=86400;
@@ -265,10 +269,14 @@ void ExecuteCommand()
   {
     xTitle=str1;
   }
-  else if (cmd=="yTitle")
+  else if (cmd=="yTitle1")
   {
-    yTitle=str1;
+    yTitle1=str1;
   }    
+  else if (cmd=="yTitle2")
+  {
+    yTitle2=str1;
+  }      
   else if (cmd=="resetwifi")
   {
     WiFi.begin(str1.c_str(), str2.c_str());
