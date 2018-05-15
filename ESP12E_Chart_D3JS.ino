@@ -1,5 +1,5 @@
 /* 
-NodeMCU ESP32 Chart (D3JS)
+NodeMCU ESP12E Chart (D3JS)
 
 Author : ChungYi Fu (Taiwan)  2018-05-15 20:00
 
