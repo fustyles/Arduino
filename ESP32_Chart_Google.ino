@@ -1,7 +1,7 @@
 /* 
 NodeMCU ESP32 Chart (Google)
 
-Author : ChungYi Fu (Taiwan)  2018-05-15 21:00
+Author : ChungYi Fu (Taiwan)  2018-05-15 23:00
 
 Command Format :  
 http://STAIP   (default:LineChart)
@@ -26,10 +26,11 @@ int timeInterval=5000;                 //Sensor time interval (ms)
 int chartWidth=600;                    //Chart width (px)
 int chartHeight=600;                   //Chart height (px)
 String xTitle="Time";                  //Title of the X axis 
-String yTitle1="Temperature(°F)";     //Title of the Y axis 
-String yTitle2="Humidity(%)";        //Title of the Y axis 
+String yTitle1="Temperature(°F)";      //Title of the Y axis 
+String yTitle2="Humidity(%)";          //Title of the Y axis 
 unsigned long time1,time2;
-int count=0;           
+int count=0;    
+String yTitle="";  
 
 #include <WiFi.h>
 
@@ -90,7 +91,8 @@ void loop()
   {
     //Sensor Data
     int Temperature = rand()%300-100;    
-    int Humidity = rand()%100;  
+    int Humidity = rand()%100; 
+    yTitle=yTitle1+"="+String(Temperature)+"    "+yTitle2+"="+String(Humidity); 
     
     int t=time2/1000;
     t%=86400;
@@ -157,10 +159,7 @@ void loop()
             client.println("        ParaVal = getPara[i].split(\",\");");
             client.println("        data.setValue(i, 0, ParaVal[0]);");
             client.println("        data.setValue(i, 1, ParaVal[1]);");
-            client.println("        data.setValue(i, 2, ParaVal[2]);");
-            client.println("        if (i==(getPara.length-2)) {");
-            client.println("          var ShowTH ='"+yTitle1+" = '+ParaVal[1]+'   '+'"+yTitle2+" = '+ParaVal[2];");
-            client.println("         }");               
+            client.println("        data.setValue(i, 2, ParaVal[2]);");       
             client.println("      }");
             if (chartType=="AreaChart")
             {
@@ -172,16 +171,15 @@ void loop()
               client.println("      //Line Chart");
               client.println("      var chart = new google.visualization.LineChart(document.getElementById('myChart'));");
             }
-            
             client.println("      var options = {");
-            client.println("            title: ShowTH,");
-            client.println("        titleTextStyle:{");
-            client.println("              color: 'red', ");
-            client.println("              fontName: 'Times New Roman', ");
-            client.println("              fontSize: 20, ");
-            client.println("              bold: true,  ");
-            client.println("              italic: false ");
-            client.println("                },");
+            client.println("            title: '"+yTitle+"',");
+            client.println("            titleTextStyle:{");
+            client.println("            color: 'red', ");
+            client.println("            fontName: 'Times New Roman', ");
+            client.println("            fontSize: 20, ");
+            client.println("            bold: true,  ");
+            client.println("            italic: false ");
+            client.println("          },");
             client.println("        hAxis : { ");
             client.println("            textStyle : {fontSize: 14}");
             client.println("          },");
@@ -193,7 +191,7 @@ void loop()
             client.println("        width:'"+String(chartWidth)+"',");
             client.println("        height:'"+String(chartHeight)+"',");
             client.println("        legend: { position: 'bottom' }");
-            client.println("            };");
+            client.println("           };");
             client.println("    chart.draw(data, options);");
             client.println("    }");
             client.println("  } ");
