@@ -33,7 +33,8 @@ String yTitle="Temperature&Humidity";  //Title of the Y axis
 unsigned long time1,time2;
 int count=0;           
 
-#include <WiFi.h>
+#include <WiFi.h>    //ESP32
+//#include <ESP8266WiFi.h>   //ESP12E
 
 const char* ssid     = "";   //your network SSID
 const char* password = "";   //your network password
