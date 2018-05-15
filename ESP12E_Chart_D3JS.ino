@@ -35,7 +35,7 @@ int count=0;
 const char* ssid     = "";   //your network SSID
 const char* password = "";   //your network password
 
-const char* apssid = "ESP32 Chart";
+const char* apssid = "ESP12E Chart";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 WiFiServer server(80);
