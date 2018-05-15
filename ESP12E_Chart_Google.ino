@@ -1,7 +1,7 @@
 /* 
 NodeMCU ESP12E Chart (Google)
 
-Author : ChungYi Fu (Taiwan)  2018-05-15 20:00
+Author : ChungYi Fu (Taiwan)  2018-05-15 21:00
 
 Command Format :  
 http://STAIP   (default:LineChart)
@@ -12,7 +12,8 @@ http://STAIP/?timeInterval=value
 http://STAIP/?chartWidth=value
 http://STAIP/?chartHeight=value
 http://STAIP/?xTitle=string
-http://STAIP/?yTitle=string
+http://STAIP/?yTitle1=string
+http://STAIP/?yTitle2=string
 (It is necessary to load google.js from Google webside,so you must let the device connect to the network.)
 
 http://192.168.4.1/?resetwifi=ssid;password
@@ -266,9 +267,9 @@ void ExecuteCommand()
   {
     yTitle1=str1;
   }    
-  else if (cmd=="yTitle1")
+  else if (cmd=="yTitle2")
   {
-    yTitle1=str1;
+    yTitle2=str1;
   }   
   else if (cmd=="resetwifi")
   {
