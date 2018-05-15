@@ -1,5 +1,5 @@
 /* 
-NodeMCU ESP32 Chart (Google)
+NodeMCU ESP12E Chart (Google)
 
 Author : ChungYi Fu (Taiwan)  2018-05-15 20:00
 
