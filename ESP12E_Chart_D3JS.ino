@@ -1,6 +1,8 @@
 /* 
-NodeMCU ESP32 Chart (D3.js)
+NodeMCU ESP32 Chart (D3JS)
+
 Author : ChungYi Fu (Taiwan)  2018-05-14 19:00
+
 Command Format :  
 http://STAIP   (default:LineChart)
 http://STAIP/?chartType=LineChart
@@ -14,6 +16,7 @@ http://STAIP/?yScaleMin=value
 http://STAIP/?xTitle=string
 http://STAIP/?yTitle=string
 (It is necessary to load D3.js from D3JS webside,so you must let the device connect to the network.)
+
 http://192.168.4.1/?resetwifi=ssid;password
 */
 
