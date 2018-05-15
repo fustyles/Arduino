@@ -25,8 +25,8 @@ int timeInterval=5000;                 //Sensor time interval (ms)
 int chartWidth=600;                    //Chart width (px)
 int chartHeight=600;                   //Chart height (px)
 String xTitle="Time";                  //Title of the X axis 
-String yTitle1="Temperature(°F )";     //Title of the Y axis 
-String yTitle2="Humidity( % )";        //Title of the Y axis 
+String yTitle1="Temperature(°F)";     //Title of the Y axis 
+String yTitle2="Humidity(%)";        //Title of the Y axis 
 unsigned long time1,time2;
 int count=0;           
 
