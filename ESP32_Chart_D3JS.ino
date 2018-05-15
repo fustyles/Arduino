@@ -29,7 +29,7 @@ int chartHeight=600;                   //Chart height (px)
 int yScaleMax=200;                     //Maximum value of the Y axis
 int yScaleMin=-100;                    //Minimum value of the Y axis
 String xTitle="Time";                  //Title of the X axis 
-String yTitle="Temperature&Humidity";  //Title of the Y axis 
+String yTitle="";  //Title of the Y axis 
 unsigned long time1,time2;
 int count=0;           
 
@@ -93,6 +93,7 @@ void loop()
     //Sensor Data
     int Temperature = rand()%300-100;    
     int Humidity = rand()%100;  
+    yTitle="Temperature(°F)="+String(Temperature)+"  Humidity(%)="+String(Humidity);
     
     int t=time2/1000;
     t%=86400;
@@ -186,7 +187,7 @@ void loop()
             client.println("    svg.append(\"g\").attr(\"transform\", \"translate(0,\" + height + \")\").call(d3.axisBottom(xScale).tickFormat(d3.timeFormat(\"%H:%M:%S\"))).selectAll(\"text\").style(\"text-anchor\", \"end\").attr(\"dx\", \"-.8em\").attr(\"dy\", \".15em\").attr(\"transform\", \"rotate(-65)\");");
             client.println("    svg.append(\"text\").attr(\"transform\", \"translate(\" + (width+25) + \" ,\" + (height-10) + \")\").style(\"text-anchor\", \"middle\").text(input_title_x);");
             client.println("    svg.append(\"g\").call(d3.axisLeft(yScale));");
-            client.println("    svg.append(\"text\").attr(\"y\", -30 ).attr(\"x\", 40 ).attr(\"dy\", \"1em\").style(\"text-anchor\", \"middle\").text(input_title_y);");
+            client.println("    svg.append(\"text\").attr(\"y\", -30 ).attr(\"x\", 80 ).attr(\"dy\", \"1em\").style(\"text-anchor\", \"middle\").text(input_title_y);");
             client.println("    data.forEach(function(d){");
             client.println("      svg.append('circle').attr(\"cx\",xScale(d.time)).attr(\"cy\",yScale(d.temperature)).attr(\"r\",2).attr(\"title\",'test').attr(\"class\", \"point1\").append(\"svg:title\").text(d.temperature);");
             client.println("      svg.append('circle').attr(\"cx\",xScale(d.time)).attr(\"cy\",yScale(d.humidity)).attr(\"r\",2).attr(\"class\", \"point2\").append(\"svg:title\").text(d.humidity);");   
