@@ -13,7 +13,7 @@ http://STAIP/?chartWidth=value
 http://STAIP/?chartHeight=value
 http://STAIP/?xTitle=string
 http://STAIP/?yTitle=string
-(It is necessary to load D3.js from D3JS webside,so you must let the device connect to the network.)
+(It is necessary to load google.js from Google webside,so you must let the device connect to the network.)
 
 http://192.168.4.1/?resetwifi=ssid;password
 */
