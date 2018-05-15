@@ -190,7 +190,7 @@ void loop()
             client.println("    });");
             client.println("  }");
             client.println("</script>");
-            client.println("<body onload=\"createChart('"+chartType+"','"+chartData+"',"+chartWidth+","+chartHeight+",'"+xTitle+"','"+yTitle+"',"+yScaleMax+","+yScaleMin+");setTimeout('location.reload();',"+timeInterval+");\">");
+            client.println("<body onload=\"createChart('"+chartType+"','"+chartData+"',"+String(chartWidth)+","+String(chartHeight)+",'"+xTitle+"','"+yTitle+"',"+String(yScaleMax)+","+String(yScaleMin)+");setTimeout('location.reload();',"+String(timeInterval)+");\">");
             client.println("</body></html>");
             client.println();
                         
