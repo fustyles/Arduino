@@ -1,7 +1,7 @@
 /* 
 NodeMCU ESP32 Chart (D3JS)
 
-Author : ChungYi Fu (Taiwan)  2018-05-15 21:00
+Author : ChungYi Fu (Taiwan)  2018-05-15 20:00
 
 Command Format :  
 http://STAIP   (default:LineChart)
@@ -29,12 +29,12 @@ int chartWidth=600;                    //Chart width (px)
 int chartHeight=600;                   //Chart height (px)
 int yScaleMax=200;                     //Maximum value of the Y axis
 int yScaleMin=-100;                    //Minimum value of the Y axis
-String xTitle="Time";                  //Title of the X axis 
+String xTitle="Time";                  //Title of the X axis  
 String yTitle1="Temperature(°F)";      //Title of the Y axis 
 String yTitle2="Humidity(%)";          //Title of the Y axis
 unsigned long time1,time2;
-int count=0; 
-String yTitle="";
+int count=0;    
+String yTitle="";     
 
 #include <WiFi.h>
 
