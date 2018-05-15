@@ -1,5 +1,5 @@
 /* 
-NodeMCU ESP32 Chart (D3.js)
+NodeMCU ESP32 Chart (D3JS)
 Author : ChungYi Fu (Taiwan)  2018-05-14 19:00
 Command Format :  
 http://STAIP   (default:LineChart)
@@ -190,7 +190,7 @@ void loop()
             client.println("    });");
             client.println("  }");
             client.println("</script>");
-            client.println("<body onload=\"createChart('"+chartType+"','"+chartData+"',"+chartWidth+","+chartHeight+",'"+xTitle+"','"+yTitle+"',"+yScaleMax+","+yScaleMin+");setTimeout('location.reload();',"+timeInterval+");\">");
+            client.println("<body onload=\"createChart('"+chartType+"','"+chartData+"',"+String(chartWidth)+","+String(chartHeight)+",'"+xTitle+"','"+yTitle+"',"+String(yScaleMax)+","+String(yScaleMin)+");setTimeout('location.reload();',"+String(timeInterval)+");\">");
             client.println("</body></html>");
             client.println();
                         
