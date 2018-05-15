@@ -29,7 +29,7 @@ int chartHeight=600;                   //Chart height (px)
 int yScaleMax=200;                     //Maximum value of the Y axis
 int yScaleMin=-100;                    //Minimum value of the Y axis
 String xTitle="Time";                  //Title of the X axis 
-String yTitle="";  //Title of the Y axis 
+String yTitle="";                      //Title of the Y axis 
 unsigned long time1,time2;
 int count=0;           
 
