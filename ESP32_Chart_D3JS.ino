@@ -288,7 +288,15 @@ void ExecuteCommand()
   }   
   else if (cmd=="settings")
   {
-    if (str1!="") showCount=str1.toInt();
+    if (str1!="") 
+    {
+      if (str1.toInt()<showCount)
+      {
+        chartData="";
+        count=0;
+      }
+      showCount=str1.toInt();
+    }
     if (str2!="") timeInterval=str2.toInt();
     if (str3!="") chartWidth=str3.toInt();
     if (str4!="") chartHeight=str4.toInt();
