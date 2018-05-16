@@ -19,6 +19,10 @@ http://STAIP/?yTitle2=string
 (It is necessary to load js from D3JS webside,so you must let your mobile connect to the internet.)
 
 http://192.168.4.1/?resetwifi=ssid;password
+
+Command Format :  
+http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
+http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 */
 
 String chartType="LineChart";          //LineChart or AreaChart
