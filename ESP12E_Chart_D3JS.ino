@@ -22,7 +22,6 @@ http://192.168.4.1/?resetwifi=ssid;password
 */
 
 String chartType="LineChart";          //LineChart or AreaChart
-String chartData="";                   //Data Format:  hh:mm:ss,data1,data2;
 int showCount=10;                      //Data records
 int timeInterval=5000;                 //Sensor time interval (ms)
 int chartWidth=600;                    //Chart width (px)
@@ -32,6 +31,7 @@ int yScaleMin=-100;                    //Minimum value of the Y axis
 String xTitle="Time";                  //Title of the X axis  
 String yTitle1="Temperature(°F)";      //Title of the Y axis 
 String yTitle2="Humidity(%)";          //Title of the Y axis
+String chartData="";                   //Data Format:  hh:mm:ss,data1,data2;
 unsigned long time1,time2;
 int count=0;    
 String yTitle="";     
