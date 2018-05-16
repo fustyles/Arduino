@@ -24,7 +24,6 @@ http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 */
 
 String chartType="LineChart";          //LineChart or AreaChart
-String chartData="";                   //Data Format:  hh:mm:ss,data1,data2;
 int showCount=10;                      //Data records
 int timeInterval=5000;                 //Sensor time interval (ms)
 String chartWidth="800";               //Chart width (px)
@@ -32,6 +31,7 @@ String chartHeight="400";              //Chart height (px)
 String xTitle="Time";                  //Title of the X axis 
 String yTitle1="Temperature(°F)";      //Title of the Y axis 
 String yTitle2="Humidity(%)";          //Title of the Y axis 
+String chartData="";                   //Data Format:  hh:mm:ss,data1,data2;
 unsigned long time1,time2;
 int count=0;    
 String yTitle="";  
@@ -280,23 +280,21 @@ void ExecuteCommand()
   }   
   else if (cmd=="settings")
   {
-    if (str1!="") chartType=str1;
-    if (str2!="") chartData=str2;
-    if (str3!="") 
+    if (str1!="") 
     {
-      if (str3.toInt()<showCount)
+      if (str1.toInt()<showCount)
       {
         chartData="";
         count=0;
       }
-      showCount=str3.toInt();
+      showCount=str1.toInt();
     }
-    if (str4!="") timeInterval=str4.toInt();
-    if (str5!="") chartWidth=str5.toInt();
-    if (str6!="") chartHeight=str6.toInt();
-    if (str7!="") xTitle=str7; 
-    if (str8!="") yTitle1=str8; 
-    if (str9!="") yTitle2=str9;
+    if (str2!="") timeInterval=str2.toInt();
+    if (str3!="") chartWidth=str3.toInt();
+    if (str4!="") chartHeight=str4.toInt();
+    if (str5!="") xTitle=str5; 
+    if (str6!="") yTitle1=str6; 
+    if (str7!="") yTitle2=str7;
   }
   else if (cmd=="resetwifi")
   {
