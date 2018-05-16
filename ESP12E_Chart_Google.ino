@@ -275,15 +275,15 @@ void ExecuteCommand()
   }   
   else if (cmd=="settings")
   {
-    chartType=str1;
-    chartData=str2;
-    showCount=str3.toInt();
-    timeInterval=str4.toInt();
-    chartWidth=str5.toInt();
-    chartHeight=str6.toInt();
-    xTitle=str7; 
-    yTitle1=str8; 
-    yTitle2=str9;
+    if (str1!="") chartType=str1;
+    if (str2!="") chartData=str2;
+    if (str3!="") showCount=str3.toInt();
+    if (str4!="") timeInterval=str4.toInt();
+    if (str5!="") chartWidth=str5.toInt();
+    if (str6!="") chartHeight=str6.toInt();
+    if (str7!="") xTitle=str7; 
+    if (str8!="") yTitle1=str8; 
+    if (str9!="") yTitle2=str9;
   }
   else if (cmd=="resetwifi")
   {
