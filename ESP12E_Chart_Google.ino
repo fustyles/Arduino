@@ -96,6 +96,7 @@ void loop()
     //Sensor Data
     int Temperature = rand()%300-100;    
     int Humidity = rand()%100; 
+    
     yTitle=yTitle1+"="+String(Temperature)+"    "+yTitle2+"="+String(Humidity); 
     
     int t=time2/1000;
