@@ -1,7 +1,7 @@
 /* 
 NodeMCU ESP32 Chart (Google)
 
-Author : ChungYi Fu (Taiwan)  2018-05-15 23:00
+Author : ChungYi Fu (Taiwan)  2018-05-16 22:00
 
 Command Format :  
 http://STAIP   (default:LineChart)
@@ -269,6 +269,18 @@ void ExecuteCommand()
   {
     yTitle2=str1;
   }   
+  else if (cmd=="settings")
+  {
+    chartType=str1;
+    chartData=str2;
+    showCount=str3.toInt();
+    timeInterval=str4.toInt();
+    chartWidth=str5.toInt();
+    chartHeight=str6.toInt();
+    xTitle=str7; 
+    yTitle1=str8; 
+    yTitle2=str9;
+  }
   else if (cmd=="resetwifi")
   {
     WiFi.begin(str1.c_str(), str2.c_str());
