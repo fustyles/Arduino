@@ -202,6 +202,10 @@ void loop()
             client.println("  }");
             client.println("</script>");
             client.println("<body onload=\"createChart('"+chartType+"','"+chartData+"',"+String(chartWidth)+","+String(chartHeight)+",'"+xTitle+"','"+yTitle+"',"+String(yScaleMax)+","+String(yScaleMin)+");setTimeout('location.reload();',"+String(timeInterval)+");\">");
+            if (Feedback!="")
+            {
+              client.println(Feedback);
+            }
             client.println("</body></html>");
             client.println();
                         
@@ -283,16 +287,16 @@ void ExecuteCommand()
   }      
   else if (cmd=="settings")
   {
-    showCount=str1.toInt();
-    timeInterval=str2.toInt();
-    chartWidth=str3.toInt();
-    chartHeight=str4.toInt();
-    yScaleMax=str5.toInt();
-    yScaleMin=-str6.toInt();
-    xTitle=str7;  
-    yTitle1=str8;
-    yTitle2=str9;
-  }  
+    if (str1!="") showCount=str1.toInt();
+    if (str2!="") timeInterval=str2.toInt();
+    if (str3!="") chartWidth=str3.toInt();
+    if (str4!="") chartHeight=str4.toInt();
+    if (str5!="") yScaleMax=str5.toInt();
+    if (str6!="") yScaleMin=-str6.toInt();
+    if (str7!="") xTitle=str7;  
+    if (str8!="") yTitle1=str8;
+    if (str9!="") yTitle2=str9;
+  }    
   else if (cmd=="resetwifi")
   {
     WiFi.begin(str1.c_str(), str2.c_str());
