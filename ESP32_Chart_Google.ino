@@ -201,8 +201,11 @@ void loop()
             client.println("  } ");
             client.println("</script>");
             client.println("<body onload=\"drawChart();setTimeout('location.reload();',"+String(timeInterval)+");\">");
-            client.println(Feedback);
-            client.println("<br/><br/>");
+            if (Feedback!="")
+            {
+              client.println(Feedback);
+              client.println("<br/><br/>");
+            }
             client.println("<div id=\"myChart\"/>");
             client.println("</body></html>");
             client.println();
