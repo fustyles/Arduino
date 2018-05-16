@@ -205,6 +205,7 @@ void loop()
             if (Feedback!="")
             {
               client.println(Feedback);
+              client.println("<br/><br/>");
             }
             client.println("</body></html>");
             client.println();
