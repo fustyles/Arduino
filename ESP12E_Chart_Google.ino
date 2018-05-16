@@ -14,13 +14,13 @@ http://STAIP/?chartHeight=value
 http://STAIP/?xTitle=string
 http://STAIP/?yTitle1=string
 http://STAIP/?yTitle2=string
-(It is necessary to load google.js from Google webside,so you must let the device connect to the network.)
+(It is necessary to load js from Google webside,so you must let your mobile connect to the network.)
 
 http://192.168.4.1/?resetwifi=ssid;password
 */
 
 String chartType="LineChart";          //LineChart or AreaChart
-String chartData="";                   //Data Format:  hh:mm:ss,sensorValue1,sensorValue2;
+String chartData="";                   //Data Format:  hh:mm:ss,data1,data2;
 int showCount=10;                      //Data records
 int timeInterval=5000;                 //Sensor time interval (ms)
 int chartWidth=600;                    //Chart width (px)
