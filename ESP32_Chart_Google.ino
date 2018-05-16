@@ -1,7 +1,7 @@
 /* 
 NodeMCU ESP32 Chart (Google)
 
-Author : ChungYi Fu (Taiwan)  2018-05-16 22:00
+Author : ChungYi Fu (Taiwan)  2018-05-16 23:00
 
 Command Format :  
 http://STAIP   (default:LineChart)
@@ -27,8 +27,8 @@ String chartType="LineChart";          //LineChart or AreaChart
 String chartData="";                   //Data Format:  hh:mm:ss,data1,data2;
 int showCount=10;                      //Data records
 int timeInterval=5000;                 //Sensor time interval (ms)
-int chartWidth=600;                    //Chart width (px)
-int chartHeight=400;                   //Chart height (px)
+String chartWidth="800";               //Chart width (px)
+String chartHeight="400";              //Chart height (px)
 String xTitle="Time";                  //Title of the X axis 
 String yTitle1="Temperature(°F)";      //Title of the Y axis 
 String yTitle2="Humidity(%)";          //Title of the Y axis 
@@ -192,8 +192,8 @@ void loop()
             client.println("          },");
             client.println("            allowHtml: true,");
             client.println("            showRowNumber: true,");
-            client.println("        width:'"+String(chartWidth)+"',");
-            client.println("        height:'"+String(chartHeight)+"',");
+            client.println("        width:'"+chartWidth+"',");
+            client.println("        height:'"+chartHeight+"',");
             client.println("        legend: { position: 'bottom' }");
             client.println("           };");
             client.println("    chart.draw(data, options);");
@@ -255,11 +255,11 @@ void ExecuteCommand()
   }    
   else if (cmd=="chartWidth")
   {
-    chartWidth=str1.toInt();
+    chartWidth=str1;
   }  
   else if (cmd=="chartHeight")
   {
-    chartHeight=str1.toInt();
+    chartHeight=str1;
   }       
   else if (cmd=="xTitle")
   {
