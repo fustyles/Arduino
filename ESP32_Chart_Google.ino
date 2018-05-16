@@ -282,7 +282,15 @@ void ExecuteCommand()
   {
     if (str1!="") chartType=str1;
     if (str2!="") chartData=str2;
-    if (str3!="") showCount=str3.toInt();
+    if (str3!="") 
+    {
+      if (str3.toInt()<showCount)
+      {
+        chartData="";
+        count=0;
+      }
+      showCount=str3.toInt();
+    }
     if (str4!="") timeInterval=str4.toInt();
     if (str5!="") chartWidth=str5.toInt();
     if (str6!="") chartHeight=str6.toInt();
