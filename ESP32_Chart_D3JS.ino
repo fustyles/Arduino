@@ -16,7 +16,7 @@ http://STAIP/?yScaleMin=value
 http://STAIP/?xTitle=string
 http://STAIP/?yTitle1=string
 http://STAIP/?yTitle2=string
-(It is necessary to load js from D3JS webside,so you must let your mobile connect to the network.)
+(It is necessary to load js from D3JS webside,so you must let your mobile connect to the internet.)
 
 http://192.168.4.1/?resetwifi=ssid;password
 */
