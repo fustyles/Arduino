@@ -18,7 +18,7 @@ http://STAIP/?yTitle1=string
 http://STAIP/?yTitle2=string
 (It is necessary to load js file from D3JS webside,so you must connect your computer to the Internet.)
 
-http://192.168.4.1/?resetwifi=ssid;password
+http://APIP/?resetwifi=ssid;password
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
