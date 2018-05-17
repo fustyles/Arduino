@@ -16,6 +16,7 @@ http://STAIP/?yScaleMin=value
 http://STAIP/?xTitle=string
 http://STAIP/?yTitle1=string
 http://STAIP/?yTitle2=string
+http://STAIP/?settings=showCount;timeInterval;chartWidth;chartHeight;xTitle;yTitle1;yTitle2;yScaleMax;yScaleMin
 (It is necessary to load js file from D3JS webside,so you must connect your computer to the Internet.)
 
 http://APIP/?resetwifi=ssid;password
