@@ -14,6 +14,7 @@ http://STAIP/?chartHeight=value
 http://STAIP/?xTitle=string
 http://STAIP/?yTitle1=string
 http://STAIP/?yTitle2=string
+http://STAIP/?settings=showCount;timeInterval;chartWidth;chartHeight;xTitle;yTitle1;yTitle2
 (It is necessary to load js file from Google webside,so you must connect your computer to the Internet.)
 
 http://APIP/?resetwifi=ssid;password
