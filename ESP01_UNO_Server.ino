@@ -1,7 +1,7 @@
 /* 
 ESP-01 + Arduino Uno (AT Command)
 
-Author : ChungYi Fu (Taiwan)  2018-04-20 22:00
+Author : ChungYi Fu (Taiwan)  2018-05-23 22:00
 
 Update AT Firmware(V2.0_AT_Firmware)
 https://www.youtube.com/watch?v=QVhWVu8NnZc
@@ -224,8 +224,8 @@ String WaitReply(long int TimeLimit)
       delay(4);
       while(mySerial.available())
       {
-        //ReceiveData=ReceiveData+String(char(mySerial.read()));
-        ReceiveData=ReceiveData+mySerial.readStringUntil('\r'); 
+        ReceiveData=ReceiveData+String(char(mySerial.read()));
+        //ReceiveData=ReceiveData+mySerial.readStringUntil('\r'); 
       }
       //Serial.println(ReceiveData);
       if (ReceiveData.indexOf("OK")!=-1) return ReceiveData;
