@@ -106,7 +106,6 @@ String WaitReply(long int TimeLimit)
       while(mySerial.available())
       {
         ReceiveData=ReceiveData+String(char(mySerial.read()));
-        //ReceiveData=ReceiveData+mySerial.readStringUntil('\r'); 
       }
       Serial.println(ReceiveData);
       if (ReceiveData.indexOf("OK")!=-1) return ReceiveData;
