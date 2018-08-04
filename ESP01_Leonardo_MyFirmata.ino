@@ -255,7 +255,7 @@ void initial()
   SendData("AT+CWMODE_CUR=3",2000);
   SendData("AT+CIPMUX=1",2000);
   SendData("AT+CIPSERVER=1,80",2000);   //port=80
-  SendData("AT+CIPSTO=0",2000);  //timeout= 0 seconds
+  SendData("AT+CIPSTO=5",2000);  //timeout= 5 seconds
   SendData("AT+CIPAP_CUR=\"192.168.4.1\"",2000);  //APIP: 192.168.4.1
   SendData("AT+CWSAP_CUR=\""+AP_SSID+"\",\""+AP_PWD+"\",3,4",2000);
   //String STA_ip="192.168.0.100";
