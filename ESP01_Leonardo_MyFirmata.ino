@@ -59,8 +59,8 @@ Link：http://192.168.4.1/?resetwifi=ssid;password
 String WIFI_SSID = "";   //your network SSID
 String WIFI_PWD  = "";    //your network password
 
-const char* apssid = "MyFirmata ESP01";
-const char* appassword = "12345678";         //AP password require at least 8 characters.
+String apssid = "MyFirmata Leonardo";
+String appassword = "12345678";         //AP password require at least 8 characters.
 
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
