@@ -1,29 +1,21 @@
 /* 
 ESP-01 + Arduino Leonardo (keyboard,mouse) (AT Command)
-
 Author : ChungYi Fu (Taiwan)  2018-05-23 22:00
-
 Update AT Firmware
 https://www.youtube.com/watch?v=QVhWVu8NnZc
 http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
-
 nodemcu-flasher
 https://github.com/nodemcu/nodemcu-flasher
 (Baudrate:115200, Flash size:1MByte, Flash speed:26.7MHz, SPI Mode:QIO)
-
 Expanding Arduino Serial Port Buffer Size
 https://internetofhomethings.com/homethings/?p=927
-
 Control Page
 https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
-
 Keyboard Modifiers (keyboardpress)
 https://www.arduino.cc/en/Reference/KeyboardModifiers
-
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
-
 http://192.168.4.1/?ip
 http://192.168.4.1/?mac
 http://192.168.4.1/?restart
@@ -47,9 +39,7 @@ http://192.168.4.1/?keyboardpress=keycode1;keycode2;keycode3;presstime
 http://192.168.4.1/?keyboardprint=str1
 http://192.168.4.1/?keyboardprintln=str1
 http://192.168.4.1/?keyboardwrite=keycode
-
 Default APIP： 192.168.4.1
-
 STAIP：
 Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
@@ -59,8 +49,8 @@ Link：http://192.168.4.1/?resetwifi=ssid;password
 String WIFI_SSID = "";   //your network SSID
 String WIFI_PWD  = "";    //your network password
 
-String apssid = "MyFirmata Leonardo";
-String appassword = "12345678";         //AP password require at least 8 characters.
+String AP_SSID = "MyFirmata Leonardo";
+String AP_PWD = "12345678";         //AP password require at least 8 characters.
 
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
@@ -258,7 +248,7 @@ void initial()
   SendData("AT+CIPSERVER=1,80",2000);   //port=80
   SendData("AT+CIPSTO=5",2000);  //timeout= 5 seconds
   SendData("AT+CIPAP_CUR=\"192.168.4.1\"",2000);  //APIP: 192.168.4.1
-  SendData("AT+CWSAP_CUR=\""+AP_id+"\",\""+AP_pwd+"\",3,4",2000);
+  SendData("AT+CWSAP_CUR=\""+AP_SSID+"\",\""+AP_PWD+"\",3,4",2000);
   //String STA_ip="192.168.0.100";
   //String STA_gateway="192.168.0.1";
   //String STA_netmask="255.255.255.0";
