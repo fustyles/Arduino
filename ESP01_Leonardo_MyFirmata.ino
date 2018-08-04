@@ -1,7 +1,7 @@
 /* 
 ESP-01 + Arduino Leonardo (keyboard,mouse) (AT Command)
 
-Author : ChungYi Fu (Kaohsiung. Taiwan)  2018-05-23 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-05-23 22:00
 
 Update AT Firmware
 https://www.youtube.com/watch?v=QVhWVu8NnZc
