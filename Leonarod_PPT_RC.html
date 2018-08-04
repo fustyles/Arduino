@@ -1,0 +1,60 @@
+﻿<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+</head>
+<body>
+<center>
+<table width="300" height="400">
+<tr><td colspan="2">
+IP:<input type="text" name="apip" id="apip" size="20" value="192.168.4.1">
+</td></tr>
+<tr><td>
+<tr><td>
+<input type="button" onclick="sendkeys.src='http://'+document.getElementById('apip').value+'/?keyboardpress=130;83;;100';" value="Alt+S">
+</td>
+<td>
+<input type="button" onclick="sendkeys.src='http://'+document.getElementById('apip').value+'/?keyboardpress=130;70;;100';" value="Alt+F">
+</td></tr>
+<tr><td>
+<input type="button" onclick="sendkeys.src='http://'+document.getElementById('apip').value+'/?keyboardwrite=211';" value="PAGE_UP">
+</td>
+<td>
+<input type="button" onclick="sendkeys.src='http://'+document.getElementById('apip').value+'/?keyboardwrite=214';" value="PAGE_DOWN">
+</td></tr>
+<tr><td>
+<input type="button" onclick="sendkeys.src='http://'+document.getElementById('apip').value+'/?keyboardwrite=198';" value="F5">
+</td>
+<td>
+<input type="button" onclick="sendkeys.src='http://'+document.getElementById('apip').value+'/?keyboardpress=133;198;;100';" value="SHIFT+F5">
+</td></tr>
+<tr><td>
+<input type="button" onclick="sendkeys.src='http://'+document.getElementById('apip').value+'/?keyboardwrite=66';" value="B">
+</td>
+<td>
+<input type="button" onclick="sendkeys.src='http://'+document.getElementById('apip').value+'/?keyboardwrite=87';" value="W">
+</td></tr>
+<tr><td>
+<input type="button" onclick="sendkeys.src='http://'+document.getElementById('apip').value+'/?keyboardwrite=177';" value="ESC">
+</td>
+<td>
+</td></tr>
+<tr><td colspan="2">
+<iframe id="sendkeys" width="200" height="100">123</iframe>
+</td></tr>
+</table>
+</center>
+</body>
+</html>
+
+<!--
+Code:
+https://github.com/fustyles/Arduino/blob/master/ESP01_Leonardo_MyFirmata.ino
+
+keyboardPress:
+http://web.tnu.edu.tw/me/study/moodle/tutor/vb6/tutor/r03/index.htm
+
+keyboardWrite:
+https://www.arduino.cc/en/Reference/KeyboardModifiers
+-->
