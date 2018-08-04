@@ -40,7 +40,7 @@ Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
 */
 
-String AP_SSID = "MyFirmata Leonardo";
+String AP_SSID = "MyFirmata ESP01";
 String AP_PWD = "12345678";         //AP password require at least 8 characters.
 
 // Check your Wi-Fi Router's Settings
