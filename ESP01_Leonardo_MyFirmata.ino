@@ -59,6 +59,9 @@ Link：http://192.168.4.1/?resetwifi=ssid;password
 String WIFI_SSID = "";   //your network SSID
 String WIFI_PWD  = "";    //your network password
 
+const char* apssid = "MyFirmata ESP01";
+const char* appassword = "12345678";         //AP password require at least 8 characters.
+
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
 
@@ -255,7 +258,7 @@ void initial()
   SendData("AT+CIPSERVER=1,80",2000);   //port=80
   SendData("AT+CIPSTO=5",2000);  //timeout= 5 seconds
   SendData("AT+CIPAP_CUR=\"192.168.4.1\"",2000);  //APIP: 192.168.4.1
-  //SendData("AT+CWSAP_CUR=\""+AP_id+"\",\""+AP_pwd+"\",3,4",2000);
+  SendData("AT+CWSAP_CUR=\""+AP_id+"\",\""+AP_pwd+"\",3,4",2000);
   //String STA_ip="192.168.0.100";
   //String STA_gateway="192.168.0.1";
   //String STA_netmask="255.255.255.0";
