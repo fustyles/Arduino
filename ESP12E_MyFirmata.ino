@@ -27,7 +27,7 @@ Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
 
 Control Page (http)
-https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
+https://github.com/fustyles/Arduino/blob/master/ESP8266_MyFirmata.html
 */
 
 #include <ESP8266WiFi.h>
