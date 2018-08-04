@@ -35,8 +35,9 @@ http://192.168.4.1/?digitalread=pin
 http://192.168.4.1/?analogread=pin
 */
 
-String apssid = "MyFirmata ESP01";
-String appassword = "12345678";         //AP password require at least 8 characters.
+String AP_SSID = "MyFirmata ESP01";
+String AP_PWD = "12345678";         //AP password require at least 8 characters.
+
 String APIP="192.168.4.1";
 String APMAC="",CID="";
 
@@ -60,7 +61,7 @@ void setup()
   SendData("AT+CIPSERVER=1,80",2000);   //port=80
   SendData("AT+CIPSTO=5",2000);  //timeout= 5 seconds
   SendData("AT+CIPAP_CUR=\""+APIP+"\"",2000);
-  SendData("AT+CWSAP_CUR=\""+apssid+"\",\""+appassword+"\",3,4",2000);
+  SendData("AT+CWSAP_CUR=\""+AP_SSID+"\",\""+AP_PWD+"\",3,4",2000);
   getAPIP();
 }
 
