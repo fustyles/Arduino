@@ -15,7 +15,7 @@ Expanding Arduino Serial Port Buffer Size
 https://internetofhomethings.com/homethings/?p=927
 
 Control Page
-https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
+https://github.com/fustyles/Arduino/blob/master/ESP8266_MyFirmata.html
 
 Keyboard Modifiers (keyboardpress)
 https://www.arduino.cc/en/Reference/KeyboardModifiers
