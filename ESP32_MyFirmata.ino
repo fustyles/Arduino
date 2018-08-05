@@ -33,6 +33,7 @@ https://github.com/fustyles/Arduino/blob/master/ESP8266_MyFirmata.html
 
 #include <WiFi.h>
 
+// Enter your WiFi ssid and password
 const char* ssid     = "";   //your network SSID
 const char* password = "";   //your network password
 
