@@ -38,6 +38,7 @@ SoftwareSerial mySerial(13, 15); // RX(D7,gpio13), TX(D8,gpio15) ->  Arduino Uno
 
 #include <ESP8266WiFi.h>
 
+// Enter your WiFi ssid and password
 const char* ssid     = "";   //your network SSID
 const char* password = "";   //your network password
 
