@@ -170,42 +170,42 @@ void executecommand()
   else if (cmd=="mousemove")
     {
       Mouse.move(str1.toInt(), str2.toInt(), str3.toInt());
-      Feedback(CID,"<html>"+command+"</html>",3);
+      //Feedback(CID,"<html>"+command+"</html>",3);
     }  
   else if (cmd=="mouseclickleft")
     {
       Mouse.click(MOUSE_LEFT);
-      Feedback(CID,"<html>"+command+"</html>",3);
+      //Feedback(CID,"<html>"+command+"</html>",3);
     } 
   else if (cmd=="mouseclickright")
     {
       Mouse.click(MOUSE_RIGHT);
-      Feedback(CID,"<html>"+command+"</html>",3);
+      //Feedback(CID,"<html>"+command+"</html>",3);
     } 
   else if (cmd=="mouseclickmiddle")
     {
       Mouse.click(MOUSE_MIDDLE);
-      Feedback(CID,"<html>"+command+"</html>",3);
+      //Feedback(CID,"<html>"+command+"</html>",3);
     }     
   else if (cmd=="mousepressleft")
     {
       Mouse.press(MOUSE_LEFT);
-      Feedback(CID,"<html>"+command+"</html>",3);
+      //Feedback(CID,"<html>"+command+"</html>",3);
     } 
   else if (cmd=="mousepressright")
     {
       Mouse.press(MOUSE_RIGHT);
-      Feedback(CID,"<html>"+command+"</html>",3);
+      //Feedback(CID,"<html>"+command+"</html>",3);
     } 
   else if (cmd=="mousepressmiddle")
     {
       Mouse.press(MOUSE_MIDDLE);
-      Feedback(CID,"<html>"+command+"</html>",3);
+      //Feedback(CID,"<html>"+command+"</html>",3);
     } 
   else if (cmd=="mouserelease")
     {
       Mouse.release();
-      Feedback(CID,"<html>"+command+"</html>",3);
+      //Feedback(CID,"<html>"+command+"</html>",3);
     }     
   else if (cmd=="keyboardpress")
     {
@@ -214,22 +214,22 @@ void executecommand()
       if (str3!="") Keyboard.press(char(str3.toInt()));
       delay(str4.toInt());
       Keyboard.releaseAll();
-      Feedback(CID,"<html>"+command+"</html>",3);
+      //Feedback(CID,"<html>"+command+"</html>",3);
     }  
   else if (cmd=="keyboardprint")
     {
       Keyboard.print(str1);
-      Feedback(CID,"<html>"+command+"</html>",3);
+      //Feedback(CID,"<html>"+command+"</html>",3);
     }  
   else if (cmd=="keyboardprintln")
     {
       Keyboard.println(str1);
-      Feedback(CID,"<html>"+command+"</html>",3);
+      //Feedback(CID,"<html>"+command+"</html>",3);
     }  
   else if (cmd=="keyboardwrite")
     {
       Keyboard.write(char(str1.toInt()));
-      Feedback(CID,"<html>"+command+"</html>",3);
+      //Feedback(CID,"<html>"+command+"</html>",3);
     }      
   else 
     {
