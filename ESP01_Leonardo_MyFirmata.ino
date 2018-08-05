@@ -3,17 +3,6 @@ Arduino Leonardo (keyboard,mouse) + ESP-01 (AT Command)
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-05-23 22:00
 
-Update AT Firmware
-https://www.youtube.com/watch?v=QVhWVu8NnZc
-http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
-
-nodemcu-flasher
-https://github.com/nodemcu/nodemcu-flasher
-(Baudrate:115200, Flash size:1MByte, Flash speed:26.7MHz, SPI Mode:QIO)
-
-Expanding Arduino Serial Port Buffer Size
-https://internetofhomethings.com/homethings/?p=927
-
 Control Page
 https://github.com/fustyles/Arduino/blob/master/ESP8266_MyFirmata.html
 
@@ -54,6 +43,17 @@ Default APIP： 192.168.4.1
 STAIP：
 Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
+
+Update AT Firmware
+https://www.youtube.com/watch?v=QVhWVu8NnZc
+http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
+
+nodemcu-flasher
+https://github.com/nodemcu/nodemcu-flasher
+(Baudrate:115200, Flash size:1MByte, Flash speed:26.7MHz, SPI Mode:QIO)
+
+Expanding Arduino Serial Port Buffer Size
+https://internetofhomethings.com/homethings/?p=927
 */
 
 // Check your Wi-Fi Router's Settings
