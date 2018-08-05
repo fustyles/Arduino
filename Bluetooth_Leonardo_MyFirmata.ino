@@ -82,7 +82,7 @@ void executecommand()
   else if (cmd=="mousemove")
     {
       Mouse.move(str1.toInt(), str2.toInt(), str3.toInt());
-      //SendData(command);
+      //SendData(command);  //If you want to execute the command quickly, don't feedback!
     }  
   else if (cmd=="mouseclickleft")
     {
