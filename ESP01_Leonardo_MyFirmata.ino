@@ -57,7 +57,7 @@ https://internetofhomethings.com/homethings/?p=927
 */
 
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
+SoftwareSerial mySerial(10, 11); // ESP01 TX->pin10, RX->pin11 
 
 #include <Keyboard.h>
 #include <Mouse.h>
