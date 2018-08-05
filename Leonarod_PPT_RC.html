@@ -1,14 +1,13 @@
-﻿<html>
+<!doctype html>
 <head>
   <meta charset="utf-8">
-  <meta name="robots" content="noindex">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 </head>
 <body>
 <center>
 <table height="500">
 <tr><td colspan="2">
-IP:<input type="text" name="apip" id="apip" size="20" value="192.168.4.1">
+IP:&nbsp;&nbsp;<input type="text" name="apip" id="apip" size="25" value="192.168.4.1">
 </td></tr>
 <tr><td>
 <input type="button" onclick="sendkeys.src='http://'+document.getElementById('apip').value+'/?keyboardwrite=198';" value="F5">
@@ -23,32 +22,31 @@ IP:<input type="text" name="apip" id="apip" size="20" value="192.168.4.1">
 <input type="button" onclick="sendkeys.src='http://'+document.getElementById('apip').value+'/?keyboardwrite=214';" value="PAGE DOWN">
 </td></tr>
 <tr><td>
-<input type="button" onclick="sendkeys.src='http://'+document.getElementById('apip').value+'/?keyboardwrite=66';" value="B">
+<input type="button" onclick="sendkeys.src='http://'+document.getElementById('apip').value+'/?keyboardwrite=87';" value="W">
 </td>
 <td>
 <input type="button" onclick="sendkeys.src='http://'+document.getElementById('apip').value+'/?keyboardwrite=177';" value="ESC">
 </td></tr>
 <tr><td>
-<input type="button" onclick="sendkeys.src='http://'+document.getElementById('apip').value+'/?keyboardwrite=87';" value="W">
+<input type="button" onclick="sendkeys.src='http://'+document.getElementById('apip').value+'/?ip';" value="IP">
 </td>
 <td>
-<input type="button" onclick="sendkeys.src='http://'+document.getElementById('apip').value+'/?ip';" value="IP">
+<input type="button" onclick="sendkeys.src='http://'+document.getElementById('apip').value+'/?keyboardwrite=66';" value="B">
 </td></tr>
 <tr><td colspan="2">
-<iframe id="sendkeys" height="100">123</iframe>
+<iframe id="sendkeys" width="250" height="100"></iframe>
 </td></tr>
 </table>
+
 </center>
 </body>
 </html>
 
 <!--
-Code:
+Arduino Leonardo Code
 https://github.com/fustyles/Arduino/blob/master/ESP01_Leonardo_MyFirmata.ino
 
-keyboardPress:
-http://web.tnu.edu.tw/me/study/moodle/tutor/vb6/tutor/r03/index.htm
-
-keyboardWrite:
+keyboardPress, keyboardWrite
 https://www.arduino.cc/en/Reference/KeyboardModifiers
+http://web.tnu.edu.tw/me/study/moodle/tutor/vb6/tutor/r03/index.htm
 -->
