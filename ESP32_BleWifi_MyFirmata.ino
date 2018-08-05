@@ -44,6 +44,7 @@ BluetoothSerial SerialBT;
 
 #include <WiFi.h>
 
+// Enter your WiFi ssid and password
 const char* ssid     = "";   //your network SSID
 const char* password = "";   //your network password
 
