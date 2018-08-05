@@ -16,6 +16,7 @@ Link：http://192.168.4.1/?resetwifi=ssid;password
 
 #include <ESP8266WiFi.h>
 
+// Enter your WiFi ssid and password
 const char* ssid     = "";   //your network SSID
 const char* password = "";   //your network password
 
