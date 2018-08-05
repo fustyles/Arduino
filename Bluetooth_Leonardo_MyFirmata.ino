@@ -30,14 +30,13 @@ Keyboard Modifiers (keyboardpress)
 https://www.arduino.cc/en/Reference/KeyboardModifiers
 */
 
-
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
-
-String ReceiveData="", command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
+SoftwareSerial mySerial(10, 11); // Bluetooth TX->pin10, RX->pin11 
 
 #include <Keyboard.h>
 #include <Mouse.h>
+
+String ReceiveData="", command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 
 void executecommand()
 {
