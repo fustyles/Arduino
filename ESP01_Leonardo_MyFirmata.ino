@@ -170,7 +170,7 @@ void executecommand()
   else if (cmd=="mousemove")
     {
       Mouse.move(str1.toInt(), str2.toInt(), str3.toInt());
-      //Feedback(CID,"<html>"+command+"</html>",3);
+      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute the command quickly, it needn't feedback!
     }  
   else if (cmd=="mouseclickleft")
     {
