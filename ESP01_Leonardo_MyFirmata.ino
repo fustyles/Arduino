@@ -56,7 +56,7 @@ Expanding Arduino Serial Port Buffer Size
 https://internetofhomethings.com/homethings/?p=927
 */
 
-// Check your Wi-Fi Router's Settings
+// Enter your WiFi ssid and password
 String WIFI_SSID = "";   //your network SSID
 String WIFI_PWD  = "";    //your network password
 
