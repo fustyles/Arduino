@@ -13,7 +13,7 @@ Uart Command Format :
 ?analogwrite=pin;value
 ?digitalread=pin
 ?analogread=pin
-?mousemove=xVal;yPos;wheel
+?mousemove=xPos;yPos;wheel
 ?mouseclickleft 
 ?mouseclickright
 ?mouseclickmiddle 
