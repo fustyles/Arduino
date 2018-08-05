@@ -56,6 +56,12 @@ Expanding Arduino Serial Port Buffer Size
 https://internetofhomethings.com/homethings/?p=927
 */
 
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
+
+#include <Keyboard.h>
+#include <Mouse.h>
+
 // Enter your WiFi ssid and password
 String WIFI_SSID = "";   //your network SSID
 String WIFI_PWD  = "";    //your network password
@@ -63,14 +69,8 @@ String WIFI_PWD  = "";    //your network password
 String AP_SSID = "MyFirmata Leonardo";
 String AP_PWD = "12345678";         //AP password require at least 8 characters.
 
-#include <SoftwareSerial.h>
-SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
-
 String ReceiveData="", command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 String APIP="",APMAC="",STAIP="",STAMAC="",CID="";
-
-#include <Keyboard.h>
-#include <Mouse.h>
 
 void executecommand()
 {
