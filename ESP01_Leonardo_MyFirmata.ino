@@ -34,7 +34,8 @@ http://192.168.4.1/?digitalwrite=pin;value
 http://192.168.4.1/?analogwrite=pin;value
 http://192.168.4.1/?digitalread=pin
 http://192.168.4.1/?analogread=pin
-http://192.168.4.1/?mousemove=xVal;yPos;wheel
+http://192.168.4.1/?tcp=domain;port;request
+http://192.168.4.1/?mousemove=xPos;yPos;wheel
 http://192.168.4.1/?mouseclickleft 
 http://192.168.4.1/?mouseclickright
 http://192.168.4.1/?mouseclickmiddle 
