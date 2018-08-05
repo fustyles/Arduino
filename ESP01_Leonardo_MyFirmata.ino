@@ -17,24 +17,25 @@ https://internetofhomethings.com/homethings/?p=927
 Control Page
 https://github.com/fustyles/Arduino/blob/master/ESP8266_MyFirmata.html
 
-Keyboard Modifiers (keyboardpress)
+Keyboard Modifiers (keyboardpress, keyboardwrite)
 https://www.arduino.cc/en/Reference/KeyboardModifiers
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
+
 http://192.168.4.1/?ip
 http://192.168.4.1/?mac
 http://192.168.4.1/?restart
 http://192.168.4.1/?resetwifi=ssid;password
 http://192.168.4.1/?at=AT+Command
+http://192.168.4.1/?tcp=domain;port;request
 http://192.168.4.1/?inputpullup=pin
 http://192.168.4.1/?pinmode=pin;value
 http://192.168.4.1/?digitalwrite=pin;value
 http://192.168.4.1/?analogwrite=pin;value
 http://192.168.4.1/?digitalread=pin
 http://192.168.4.1/?analogread=pin
-http://192.168.4.1/?tcp=domain;port;request
 http://192.168.4.1/?mousemove=xPos;yPos;wheel
 http://192.168.4.1/?mouseclickleft 
 http://192.168.4.1/?mouseclickright
