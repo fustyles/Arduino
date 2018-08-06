@@ -35,18 +35,18 @@ void executecommand()
   else if (cmd=="inputpullup")
     {
       pinMode(str1.toInt(), INPUT_PULLUP);
-      SendData(command);  //If you want to execute the command quickly, don't feedback!
+      SendData(command);  //If you want to execute command quickly, don't feedback!
     }  
   else if (cmd=="pinmode")
     {
       pinMode(str1.toInt(), str2.toInt());
-      SendData(command);  //If you want to execute the command quickly, don't feedback!
+      SendData(command);  //If you want to execute command quickly, don't feedback!
     }        
   else if (cmd=="digitalwrite")
     {
       pinMode(str1.toInt(), OUTPUT);
       digitalWrite(str1.toInt(),str2.toInt());
-      SendData(command);  //If you want to execute the command quickly, don't feedback!
+      SendData(command);  //If you want to execute command quickly, don't feedback!
     }   
   else if (cmd=="digitalread")
     {
@@ -56,7 +56,7 @@ void executecommand()
     {
       pinMode(str1.toInt(), OUTPUT);
       analogWrite(str1.toInt(),str2.toInt());
-      SendData(command);  //If you want to execute the command quickly, don't feedback!
+      SendData(command);  //If you want to execute command quickly, don't feedback!
     }       
   else if (cmd=="analogread")
     {
