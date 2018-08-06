@@ -15,6 +15,7 @@ http://192.168.4.1/?resetwifi=ssid;password
 
 Expanding Arduino Serial Port Buffer Size
 https://internetofhomethings.com/homethings/?p=927
+https://www.facebook.com/francefu/videos/10211231615856099/
 */
 
 #include <SoftwareSerial.h>
