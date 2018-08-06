@@ -1,7 +1,7 @@
 /* 
 NodeMCU (ESP32)
  
-Author : ChungYi Fu (Taiwan)  2018-05-06 17:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-05 22:00
 
 Wifi Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
