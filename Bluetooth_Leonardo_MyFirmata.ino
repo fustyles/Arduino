@@ -44,7 +44,7 @@ void executecommand()
   //Serial.println("command: "+command);
   Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
   
-  //If you want to execute command quickly, please don't execute "Feedback"!
+  //If you want to execute command quickly, please don't execute "SendData"!
   
   if (cmd=="yourcmd")
     {
