@@ -48,7 +48,7 @@ String AP_SSID = "MyFirmata ESP01";
 String AP_PWD = "12345678";         //AP password require at least 8 characters.
 
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
+SoftwareSerial mySerial(10, 11);  // ESP01 TX->D10, RX->D11 
 
 String ReceiveData="", command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 String APIP="",APMAC="",STAIP="",STAMAC="",CID="";
