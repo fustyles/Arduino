@@ -54,6 +54,7 @@ https://github.com/nodemcu/nodemcu-flasher
 
 Expanding Arduino Serial Port Buffer Size
 https://internetofhomethings.com/homethings/?p=927
+https://www.facebook.com/francefu/videos/10211231615856099/
 */
 
 #include <SoftwareSerial.h>
