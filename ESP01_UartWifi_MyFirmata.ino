@@ -31,7 +31,7 @@ Link：http://192.168.4.1/?resetwifi=ssid;password
 */
 
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(0, 2); // RX:gpio0 TX:gpio2  ->  Arduino Uno TX:D11 RX:D10
+SoftwareSerial mySerial(0, 2); // ESP01 TX(gpio2)->D10, RX(gpio0)->D11
 
 #include <ESP8266WiFi.h>
 
@@ -370,7 +370,7 @@ Uart Command Format:
 
 
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(10, 11); // ESP-01 (gpio2,gpio0)
+SoftwareSerial mySerial(10, 11);  // ESP01 TX(gpio2)->D10, RX(gpio0)->D11
 void setup()
 {
   Serial.begin(9600);
