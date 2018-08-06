@@ -18,7 +18,7 @@ https://internetofhomethings.com/homethings/?p=927
 */
 
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(0, 2);   // RX:gpio0 TX:gpio2  ->  Arduino Uno TX:D7 RX:D6
+SoftwareSerial mySerial(0, 2);   // ESP01 TX(gpio2)->D6, RX(gpio0)->D7
 
 #include <ESP8266WiFi.h>
 
@@ -255,7 +255,7 @@ void getCommand(char c)
 // Arduino Uno
 
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(6, 7); // ESP-01 (gpio2,gpio0)
+SoftwareSerial mySerial(6, 7);  // ESP01 TX(gpio2)->D6, RX(gpio0)->D7
 
 #include <Servo.h>
 Servo myservo;
