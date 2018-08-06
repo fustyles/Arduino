@@ -121,18 +121,18 @@ void executecommand()
   else if (cmd=="inputpullup")
     {
       pinMode(str1.toInt(), INPUT_PULLUP);
-      Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute the command quickly, don't feedback!
+      Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
     }  
   else if (cmd=="pinmode")
     {
       pinMode(str1.toInt(), str2.toInt());
-      Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute the command quickly, don't feedback!
+      Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
     }        
   else if (cmd=="digitalwrite")
     {
       pinMode(str1.toInt(), OUTPUT);
       digitalWrite(str1.toInt(),str2.toInt());
-      Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute the command quickly, don't feedback!
+      Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
     }   
   else if (cmd=="digitalread")
     {
@@ -142,7 +142,7 @@ void executecommand()
     {
       pinMode(str1.toInt(), OUTPUT);
       analogWrite(str1.toInt(),str2.toInt());
-      Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute the command quickly, don't feedback!
+      Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
     }       
   else if (cmd=="analogread")
     {
