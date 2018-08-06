@@ -140,18 +140,18 @@ void executecommand()
   else if (cmd=="inputpullup")
     {
       pinMode(str1.toInt(), INPUT_PULLUP);
-      Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute the command quickly, don't feedback!
+      Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
     }  
   else if (cmd=="pinmode")
     {
       pinMode(str1.toInt(), str2.toInt());
-      Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute the command quickly, don't feedback!
+      Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
     }        
   else if (cmd=="digitalwrite")
     {
       pinMode(str1.toInt(), OUTPUT);
       digitalWrite(str1.toInt(),str2.toInt());
-      Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute the command quickly, don't feedback!
+      Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
     }   
   else if (cmd=="digitalread")
     {
@@ -161,7 +161,7 @@ void executecommand()
     {
       pinMode(str1.toInt(), OUTPUT);
       analogWrite(str1.toInt(),str2.toInt());
-      Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute the command quickly, don't feedback!
+      Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
     }       
   else if (cmd=="analogread")
     {
@@ -170,12 +170,12 @@ void executecommand()
   else if (cmd=="mousemove")
     {
       Mouse.move(str1.toInt(), str2.toInt(), str3.toInt());
-      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute the command quickly, don't feedback!
+      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
     }  
   else if (cmd=="mouseclickleft")
     {
       Mouse.click(MOUSE_LEFT);
-      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute the command quickly, don't feedback!
+      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
     } 
   else if (cmd=="mouseclickright")
     {
@@ -185,27 +185,27 @@ void executecommand()
   else if (cmd=="mouseclickmiddle")
     {
       Mouse.click(MOUSE_MIDDLE);
-      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute the command quickly, don't feedback!
+      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
     }     
   else if (cmd=="mousepressleft")
     {
       Mouse.press(MOUSE_LEFT);
-      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute the command quickly, don't feedback!
+      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
     } 
   else if (cmd=="mousepressright")
     {
       Mouse.press(MOUSE_RIGHT);
-      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute the command quickly, don't feedback!
+      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
     } 
   else if (cmd=="mousepressmiddle")
     {
       Mouse.press(MOUSE_MIDDLE);
-      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute the command quickly, don't feedback!
+      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
     } 
   else if (cmd=="mouserelease")
     {
       Mouse.release();
-      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute the command quickly, don't feedback!
+      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
     }     
   else if (cmd=="keyboardpress")
     {
@@ -214,22 +214,22 @@ void executecommand()
       if (str3!="") Keyboard.press(char(str3.toInt()));
       delay(str4.toInt());
       Keyboard.releaseAll();
-      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute the command quickly, don't feedback!
+      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
     }  
   else if (cmd=="keyboardprint")
     {
       Keyboard.print(str1);
-      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute the command quickly, don't feedback!
+      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
     }  
   else if (cmd=="keyboardprintln")
     {
       Keyboard.println(str1);
-      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute the command quickly, don't feedback!
+      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
     }  
   else if (cmd=="keyboardwrite")
     {
       Keyboard.write(char(str1.toInt()));
-      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute the command quickly, don't feedback!
+      //Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
     }      
   else 
     {
