@@ -1,7 +1,7 @@
 /* 
 ESP-01 + Arduino Uno (AT Command)
 
-Author : ChungYi Fu (Taiwan)  2018-05-23 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-05 22:00
 
 Update AT Firmware(V2.0_AT_Firmware)
 https://www.youtube.com/watch?v=QVhWVu8NnZc
