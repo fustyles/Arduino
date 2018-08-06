@@ -1,5 +1,5 @@
 /* 
-Arduino Uno + ESP-01(AT Command)
+Arduino Uno + ESP-01 (AT Command)
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-05 22:00
 
