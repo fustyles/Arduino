@@ -20,7 +20,7 @@ String WIFI_SSID = "";   //your network SSID
 String WIFI_PWD  = "";    //your network password
 
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(10, 11); // ESP01 TX->pin10, RX->pin11 
+SoftwareSerial mySerial(10, 11); // ESP01 TX->D10, RX->D11 
 
 String ReceiveData="",STAIP="",STAMAC="";
 
