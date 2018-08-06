@@ -1,7 +1,7 @@
 /* 
 NodeMCU ESP32 Chart (Google)
 
-Author : ChungYi Fu (Taiwan)  2018-05-16 23:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-05 22:00
 
 Command Format :  
 http://STAIP   (default:LineChart)
