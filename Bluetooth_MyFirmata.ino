@@ -1,7 +1,7 @@
 /*
 Arduino Uno + Bluetooth
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-4-26 21:00 
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-05 22:00 
 
 Uart Command Format : 
 ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
