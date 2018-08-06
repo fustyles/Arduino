@@ -1,7 +1,7 @@
 /* 
 ESP-01 + Arduino Uno (without using AT Command)
 
-Author : ChungYi Fu (Taiwan)  2018-05-03 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-05 22:00
 
 Expanding Arduino Serial Port Buffer Size
 https://internetofhomethings.com/homethings/?p=927
