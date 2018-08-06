@@ -59,6 +59,8 @@ void executecommand()
   //Serial.println("command: "+command);
   Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
   
+  //If you want to execute command quickly, please don't execute "Feedback"!
+  
   if (cmd=="yourcmd")
     {
       //you can do anything
@@ -121,18 +123,18 @@ void executecommand()
   else if (cmd=="inputpullup")
     {
       pinMode(str1.toInt(), INPUT_PULLUP);
-      Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
+      Feedback(CID,"<html>"+command+"</html>",3);
     }  
   else if (cmd=="pinmode")
     {
       pinMode(str1.toInt(), str2.toInt());
-      Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
+      Feedback(CID,"<html>"+command+"</html>",3);
     }        
   else if (cmd=="digitalwrite")
     {
       pinMode(str1.toInt(), OUTPUT);
       digitalWrite(str1.toInt(),str2.toInt());
-      Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
+      Feedback(CID,"<html>"+command+"</html>",3);
     }   
   else if (cmd=="digitalread")
     {
@@ -142,7 +144,7 @@ void executecommand()
     {
       pinMode(str1.toInt(), OUTPUT);
       analogWrite(str1.toInt(),str2.toInt());
-      Feedback(CID,"<html>"+command+"</html>",3);  //If you want to execute command quickly, don't feedback!
+      Feedback(CID,"<html>"+command+"</html>",3);
     }       
   else if (cmd=="analogread")
     {
