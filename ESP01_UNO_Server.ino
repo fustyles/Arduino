@@ -42,7 +42,7 @@ String APIP="192.168.4.1";
 String APMAC="",CID="";
 
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(10, 11); // Arduino RX:10, TX:11 
+SoftwareSerial mySerial(10, 11);  // ESP01 TX->D10, RX->D11 
 
 String ReceiveData="", command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 
