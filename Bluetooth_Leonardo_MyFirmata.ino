@@ -84,42 +84,34 @@ void executecommand()
   else if (cmd=="mousemove")
     {
       Mouse.move(str1.toInt(), str2.toInt(), str3.toInt());
-      //SendData(command);
     }  
   else if (cmd=="mouseclickleft")
     {
       Mouse.click(MOUSE_LEFT);
-      //SendData(command);
     } 
   else if (cmd=="mouseclickright")
     {
       Mouse.click(MOUSE_RIGHT);
-      //SendData(command);
     } 
   else if (cmd=="mouseclickmiddle")
     {
       Mouse.click(MOUSE_MIDDLE);
-      //SendData(command);
     }     
   else if (cmd=="mousepressleft")
     {
       Mouse.press(MOUSE_LEFT);
-      //SendData(command);
     } 
   else if (cmd=="mousepressright")
     {
       Mouse.press(MOUSE_RIGHT);
-      //SendData(command);
     } 
   else if (cmd=="mousepressmiddle")
     {
       Mouse.press(MOUSE_MIDDLE);
-      //SendData(command);
     } 
   else if (cmd=="mouserelease")
     {
       Mouse.release();
-      //SendData(command);
     }     
   else if (cmd=="keyboardpress")
     {
@@ -128,22 +120,18 @@ void executecommand()
       if (str3!="") Keyboard.press(char(str3.toInt()));
       delay(str4.toInt());
       Keyboard.releaseAll();
-      //SendData(command);
     }  
   else if (cmd=="keyboardprint")
     {
       Keyboard.print(str1);
-      //SendData(command);
     }  
   else if (cmd=="keyboardprintln")
     {
       Keyboard.println(str1);
-      //SendData(command);
     }  
   else if (cmd=="keyboardwrite")
     {
       Keyboard.write(char(str1.toInt()));
-      //SendData(command);
     }      
   else 
     {
