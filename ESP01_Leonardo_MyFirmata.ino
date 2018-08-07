@@ -101,14 +101,14 @@ void executecommand()
     }    
   else if (cmd=="resetwifi")
     {
-      Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
+      if (debug == true) Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
       delay(3000);
       SendData("AT+CWQAP",2000);
       SendData("AT+CWJAP_CUR=\""+str1+"\",\""+str2+"\"",5000);
     }
   else if (cmd=="restart")
     {
-      Feedback(CID,"<html>"+command+"</html>",3);
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);
       delay(3000);
       SendData("AT+RST",2000);
       delay(2000);
@@ -117,14 +117,14 @@ void executecommand()
     }    
   else if (cmd=="at")      //  ?cmd=str1 -> ?at=AT+RST
     {
-      Feedback(CID,"<html>"+WaitReply(3000)+"</html>",3);
+      if (debug == true) Feedback(CID,"<html>"+WaitReply(3000)+"</html>",3);
       delay(1000);
       mySerial.println(str1);
       mySerial.flush();
     }    
   else if (cmd=="tcp")      //  ?tcp=domain;port;request
     {
-      Feedback(CID,"<html>"+command+"</html>",3);
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);
       delay(1000);               
       String Domain=str1;
       /*
