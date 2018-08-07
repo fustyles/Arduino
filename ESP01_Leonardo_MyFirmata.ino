@@ -86,10 +86,10 @@ void executecommand()
     {
       //you can do anything
       
-      //Feedback(CID,"<font color=\"red\">"+cmd+"="+str1+";"+str2+";"+str3+"</font>",0);  --> HTML
-      //Feedback(CID,cmd+"="+str1+";"+str2+";"+str3,1);  --> XML
-      //Feedback(CID,cmd+"="+str1+";"+str2+";"+str3,2);  --> JSON
-      //Feedback(CID,"<html>"+cmd+"="+str1+";"+str2+";"+str3+"</html>",3);  --> Custom definition
+      //if (debug == true) Feedback(CID,"<font color=\"red\">"+cmd+"="+str1+";"+str2+";"+str3+"</font>",0);  --> HTML
+      //if (debug == true) Feedback(CID,cmd+"="+str1+";"+str2+";"+str3,1);  --> XML
+      //if (debug == true) Feedback(CID,cmd+"="+str1+";"+str2+";"+str3,2);  --> JSON
+      //if (debug == true) Feedback(CID,"<html>"+cmd+"="+str1+";"+str2+";"+str3+"</html>",3);  --> Custom definition
     } 
   else if (cmd=="ip")
     {
