@@ -76,8 +76,6 @@ void loop()
     String field2=String(SensorHumidity);
     /*
     If request length is too long, it can't work!
-    Expanding Arduino Serial Port Buffer Size
-    https://internetofhomethings.com/homethings/?p=927
     If you change buffer size to 256 bytes, request length must be less than or equal to 128.
     */
     String request="GET /update?api_key="+key+"&field1="+field1+"&field2="+field2+" HTTP/1.1\r\nHost: "+domain+"\r\n\r\n";
