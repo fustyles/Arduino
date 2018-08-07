@@ -49,7 +49,7 @@ void executecommand()
   if (cmd=="yourcmd")
     {
       //you can do anything
-      //SendData(cmd+"="+str1+";"+str2);
+      //if (debug == true) SendData(cmd+"="+str1+";"+str2);
     } 
   else if (cmd=="inputpullup")
     {
