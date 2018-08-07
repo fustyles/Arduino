@@ -1,7 +1,7 @@
 /*
 Arduino Uno + Bluetooth
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-05 22:00 
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-07 13:00 
 
 Uart Command Format : 
 ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -15,11 +15,11 @@ Uart Command Format :
 ?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 */
 
-
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11);  // Bluetooth TX->pin10, RX->pin11 
 
 String ReceiveData="", command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
+boolean debug = false;
 
 void executecommand()
 {
@@ -32,23 +32,23 @@ void executecommand()
   if (cmd=="yourcmd")
     {
       //you can do anything
-      //SendData(cmd+"="+str1+";"+str2);
+      //if (debug == true) SendData(cmd+"="+str1+";"+str2);
     } 
   else if (cmd=="inputpullup")
     {
       pinMode(str1.toInt(), INPUT_PULLUP);
-      SendData(command); 
+      if (debug == true) SendData(command); 
     }  
   else if (cmd=="pinmode")
     {
       pinMode(str1.toInt(), str2.toInt());
-      SendData(command); 
+      if (debug == true) SendData(command); 
     }        
   else if (cmd=="digitalwrite")
     {
       pinMode(str1.toInt(), OUTPUT);
       digitalWrite(str1.toInt(),str2.toInt());
-      SendData(command);
+      if (debug == true) SendData(command);
     }   
   else if (cmd=="digitalread")
     {
@@ -58,7 +58,7 @@ void executecommand()
     {
       pinMode(str1.toInt(), OUTPUT);
       analogWrite(str1.toInt(),str2.toInt());
-      SendData(command); 
+      if (debug == true) SendData(command); 
     }       
   else if (cmd=="analogread")
     {
