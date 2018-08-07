@@ -1,7 +1,7 @@
 /* 
 Arduino Leonardo (keyboard,mouse) + ESP-01 (AT Command)
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-05 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-07 13:00
 
 Page
 https://github.com/fustyles/Arduino/blob/master/ESP8266_MyFirmata.html
@@ -72,6 +72,7 @@ String AP_PWD = "12345678";         //AP password require at least 8 characters.
 
 String ReceiveData="", command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 String APIP="",APMAC="",STAIP="",STAMAC="",CID="";
+boolean debug = false;
 
 void executecommand()
 {
@@ -143,18 +144,18 @@ void executecommand()
   else if (cmd=="inputpullup")
     {
       pinMode(str1.toInt(), INPUT_PULLUP);
-      Feedback(CID,"<html>"+command+"</html>",3);  
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
     }  
   else if (cmd=="pinmode")
     {
       pinMode(str1.toInt(), str2.toInt());
-      Feedback(CID,"<html>"+command+"</html>",3); 
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
     }        
   else if (cmd=="digitalwrite")
     {
       pinMode(str1.toInt(), OUTPUT);
       digitalWrite(str1.toInt(),str2.toInt());
-      Feedback(CID,"<html>"+command+"</html>",3);  
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
     }   
   else if (cmd=="digitalread")
     {
@@ -164,7 +165,7 @@ void executecommand()
     {
       pinMode(str1.toInt(), OUTPUT);
       analogWrite(str1.toInt(),str2.toInt());
-      Feedback(CID,"<html>"+command+"</html>",3); 
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);   
     }       
   else if (cmd=="analogread")
     {
@@ -173,34 +174,42 @@ void executecommand()
   else if (cmd=="mousemove")
     {
       Mouse.move(str1.toInt(), str2.toInt(), str3.toInt());
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
     }  
   else if (cmd=="mouseclickleft")
     {
       Mouse.click(MOUSE_LEFT);
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
     } 
   else if (cmd=="mouseclickright")
     {
       Mouse.click(MOUSE_RIGHT);
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
     } 
   else if (cmd=="mouseclickmiddle")
     {
       Mouse.click(MOUSE_MIDDLE);
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
     }     
   else if (cmd=="mousepressleft")
     {
       Mouse.press(MOUSE_LEFT);
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
     } 
   else if (cmd=="mousepressright")
     {
       Mouse.press(MOUSE_RIGHT);
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
     } 
   else if (cmd=="mousepressmiddle")
     {
       Mouse.press(MOUSE_MIDDLE);
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
     } 
   else if (cmd=="mouserelease")
     {
       Mouse.release();
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
     }     
   else if (cmd=="keyboardpress")
     {
@@ -209,18 +218,22 @@ void executecommand()
       if (str3!="") Keyboard.press(char(str3.toInt()));
       delay(str4.toInt());
       Keyboard.releaseAll();
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
     }  
   else if (cmd=="keyboardprint")
     {
       Keyboard.print(str1);
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
     }  
   else if (cmd=="keyboardprintln")
     {
       Keyboard.println(str1);
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
     }  
   else if (cmd=="keyboardwrite")
     {
       Keyboard.write(char(str1.toInt()));
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
     }      
   else 
     {
