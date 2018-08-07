@@ -1,7 +1,7 @@
 /* 
 ESP-01 + Arduino Uno (AT Command)
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-05 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-07 13:00
 
 Update AT Firmware(V2.0_AT_Firmware)
 https://www.youtube.com/watch?v=QVhWVu8NnZc
@@ -53,6 +53,7 @@ SoftwareSerial mySerial(10, 11);  // ESP01 TX->D10, RX->D11
 
 String ReceiveData="", command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 String APIP="",APMAC="",STAIP="",STAMAC="",CID="";
+boolean debug = false;
 
 void executecommand()
 {
@@ -66,10 +67,10 @@ void executecommand()
     {
       //you can do anything
       
-      //Feedback(CID,"<font color=\"red\">"+cmd+"="+str1+";"+str2+";"+str3+"</font>",0);  --> HTML
-      //Feedback(CID,cmd+"="+str1+";"+str2+";"+str3,1);  --> XML
-      //Feedback(CID,cmd+"="+str1+";"+str2+";"+str3,2);  --> JSON
-      //Feedback(CID,"<html>"+cmd+"="+str1+";"+str2+";"+str3+"</html>",3);  --> Custom definition
+      //if (debug == true) Feedback(CID,"<font color=\"red\">"+cmd+"="+str1+";"+str2+";"+str3+"</font>",0);  --> HTML
+      //if (debug == true) Feedback(CID,cmd+"="+str1+";"+str2+";"+str3,1);  --> XML
+      //if (debug == true) Feedback(CID,cmd+"="+str1+";"+str2+";"+str3,2);  --> JSON
+      //if (debug == true) Feedback(CID,"<html>"+cmd+"="+str1+";"+str2+";"+str3+"</html>",3);  --> Custom definition
     } 
   else if (cmd=="ip")
     {
@@ -81,14 +82,14 @@ void executecommand()
     }    
   else if (cmd=="resetwifi")
     {
-      Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
+      if (debug == true) Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
       delay(3000);
       SendData("AT+CWQAP",2000);
       SendData("AT+CWJAP_CUR=\""+str1+"\",\""+str2+"\"",5000);
     }
   else if (cmd=="restart")
     {
-      Feedback(CID,"<html>"+command+"</html>",3);
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);
       delay(3000);
       SendData("AT+RST",2000);
       delay(2000);
@@ -97,14 +98,14 @@ void executecommand()
     }    
   else if (cmd=="at")      //  ?cmd=str1 -> ?at=AT+RST
     {
-      Feedback(CID,"<html>"+WaitReply(3000)+"</html>",3);
+      if (debug == true) Feedback(CID,"<html>"+WaitReply(3000)+"</html>",3);
       delay(1000);
       mySerial.println(str1);
       mySerial.flush();
     }    
   else if (cmd=="tcp")
     {
-      Feedback(CID,"<html>"+command+"</html>",3);
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);
       delay(1000);               
       String Domain=str1;
       /*
@@ -124,18 +125,18 @@ void executecommand()
   else if (cmd=="inputpullup")
     {
       pinMode(str1.toInt(), INPUT_PULLUP);
-      Feedback(CID,"<html>"+command+"</html>",3);
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);
     }  
   else if (cmd=="pinmode")
     {
       pinMode(str1.toInt(), str2.toInt());
-      Feedback(CID,"<html>"+command+"</html>",3);
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);
     }        
   else if (cmd=="digitalwrite")
     {
       pinMode(str1.toInt(), OUTPUT);
       digitalWrite(str1.toInt(),str2.toInt());
-      Feedback(CID,"<html>"+command+"</html>",3);
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);
     }   
   else if (cmd=="digitalread")
     {
@@ -145,7 +146,7 @@ void executecommand()
     {
       pinMode(str1.toInt(), OUTPUT);
       analogWrite(str1.toInt(),str2.toInt());
-      Feedback(CID,"<html>"+command+"</html>",3);
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);
     }       
   else if (cmd=="analogread")
     {
