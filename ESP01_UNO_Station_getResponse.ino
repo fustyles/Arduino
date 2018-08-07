@@ -70,8 +70,6 @@ void loop()
     String request = "GET / HTTP/1.1\r\nHost: "+Domain+"\r\n\r\n";
     /*
     If request length is too long, it can't work! (Arduino Uno)
-    Expanding Arduino Serial Port Buffer Size
-    https://internetofhomethings.com/homethings/?p=927
     If you change buffer size to 256 bytes, request length must be less than or equal to 128.
     */    
     SendData("AT+CIPSTART=\"TCP\",\""+Domain+"\",80", 4000);
