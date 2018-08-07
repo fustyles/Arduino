@@ -2,7 +2,7 @@
 /*
 Arduino Leonardo (keyboard,mouse) + Bluetooth
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-05 22:00 
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-07 13:00 
 
 Uart Command Format : 
 ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -37,6 +37,7 @@ SoftwareSerial mySerial(10, 11); // Bluetooth TX->D10, RX->D11
 #include <Mouse.h>
 
 String ReceiveData="", command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
+boolean debug = false;
 
 void executecommand()
 {
@@ -54,18 +55,18 @@ void executecommand()
   else if (cmd=="inputpullup")
     {
       pinMode(str1.toInt(), INPUT_PULLUP);
-      SendData(command);
+      if (debug == true) SendData(command);
     }  
   else if (cmd=="pinmode")
     {
       pinMode(str1.toInt(), str2.toInt());
-      SendData(command);
+      if (debug == true) SendData(command);
     }        
   else if (cmd=="digitalwrite")
     {
       pinMode(str1.toInt(), OUTPUT);
       digitalWrite(str1.toInt(),str2.toInt());
-      SendData(command);
+      if (debug == true) SendData(command);
     }   
   else if (cmd=="digitalread")
     {
@@ -75,7 +76,7 @@ void executecommand()
     {
       pinMode(str1.toInt(), OUTPUT);
       analogWrite(str1.toInt(),str2.toInt());
-      SendData(command);
+      if (debug == true) SendData(command);
     }       
   else if (cmd=="analogread")
     {
@@ -84,34 +85,42 @@ void executecommand()
   else if (cmd=="mousemove")
     {
       Mouse.move(str1.toInt(), str2.toInt(), str3.toInt());
+      if (debug == true) SendData(command);
     }  
   else if (cmd=="mouseclickleft")
     {
       Mouse.click(MOUSE_LEFT);
+      if (debug == true) SendData(command);
     } 
   else if (cmd=="mouseclickright")
     {
       Mouse.click(MOUSE_RIGHT);
+      if (debug == true) SendData(command);
     } 
   else if (cmd=="mouseclickmiddle")
     {
       Mouse.click(MOUSE_MIDDLE);
+      if (debug == true) SendData(command);
     }     
   else if (cmd=="mousepressleft")
     {
       Mouse.press(MOUSE_LEFT);
+      if (debug == true) SendData(command);
     } 
   else if (cmd=="mousepressright")
     {
       Mouse.press(MOUSE_RIGHT);
+      if (debug == true) SendData(command);
     } 
   else if (cmd=="mousepressmiddle")
     {
       Mouse.press(MOUSE_MIDDLE);
+      if (debug == true) SendData(command);
     } 
   else if (cmd=="mouserelease")
     {
       Mouse.release();
+      if (debug == true) SendData(command);
     }     
   else if (cmd=="keyboardpress")
     {
@@ -120,18 +129,22 @@ void executecommand()
       if (str3!="") Keyboard.press(char(str3.toInt()));
       delay(str4.toInt());
       Keyboard.releaseAll();
+      if (debug == true) SendData(command);
     }  
   else if (cmd=="keyboardprint")
     {
       Keyboard.print(str1);
+      if (debug == true) SendData(command);
     }  
   else if (cmd=="keyboardprintln")
     {
       Keyboard.println(str1);
+      if (debug == true) SendData(command);
     }  
   else if (cmd=="keyboardwrite")
     {
       Keyboard.write(char(str1.toInt()));
+      if (debug == true) SendData(command);
     }      
   else 
     {
