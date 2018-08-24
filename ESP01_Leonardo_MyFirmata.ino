@@ -1,7 +1,7 @@
 /* 
 Arduino Leonardo (keyboard,mouse) + ESP-01 (AT Command)
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-07 13:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-24 20:30
 
 Page
 https://github.com/fustyles/Arduino/blob/master/ESP8266_MyFirmata.html
@@ -281,6 +281,7 @@ void loop()
   if ((ReceiveData.indexOf("/?")!=-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
   {
     CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
+    if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     executecommand();
   }
   else if ((ReceiveData.indexOf("/?")!=-1)&&(ReceiveData.indexOf(" HTTP")==-1))
