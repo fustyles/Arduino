@@ -196,6 +196,7 @@ void loop()
   if ((ReceiveData.indexOf("/?")!=-1)&&(ReceiveData.indexOf(" HTTP")!=-1))
   {
     CID=String(ReceiveData.charAt(ReceiveData.indexOf("+IPD,")+5));
+    //if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     executecommand();
   }
   else if ((ReceiveData.indexOf("/?")!=-1)&&(ReceiveData.indexOf(" HTTP")==-1))
