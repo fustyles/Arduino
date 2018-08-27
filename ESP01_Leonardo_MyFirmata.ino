@@ -144,18 +144,21 @@ void executecommand()
   else if (cmd=="inputpullup")
     {
       pinMode(str1.toInt(), INPUT_PULLUP);
-      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     }  
   else if (cmd=="pinmode")
     {
       pinMode(str1.toInt(), str2.toInt());
-      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3); 
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     }        
   else if (cmd=="digitalwrite")
     {
       pinMode(str1.toInt(), OUTPUT);
       digitalWrite(str1.toInt(),str2.toInt());
-      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
+      if (debug == true) Feedback(CID,"<html>"+command+"</html>",3); 
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     }   
   else if (cmd=="digitalread")
     {
@@ -166,6 +169,7 @@ void executecommand()
       pinMode(str1.toInt(), OUTPUT);
       analogWrite(str1.toInt(),str2.toInt());
       if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);   
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     }       
   else if (cmd=="analogread")
     {
@@ -175,41 +179,49 @@ void executecommand()
     {
       Mouse.move(str1.toInt(), str2.toInt(), str3.toInt());
       if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     }  
   else if (cmd=="mouseclickleft")
     {
       Mouse.click(MOUSE_LEFT);
       if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     } 
   else if (cmd=="mouseclickright")
     {
       Mouse.click(MOUSE_RIGHT);
       if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     } 
   else if (cmd=="mouseclickmiddle")
     {
       Mouse.click(MOUSE_MIDDLE);
       if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     }     
   else if (cmd=="mousepressleft")
     {
       Mouse.press(MOUSE_LEFT);
       if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     } 
   else if (cmd=="mousepressright")
     {
       Mouse.press(MOUSE_RIGHT);
       if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     } 
   else if (cmd=="mousepressmiddle")
     {
       Mouse.press(MOUSE_MIDDLE);
       if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     } 
   else if (cmd=="mouserelease")
     {
       Mouse.release();
       if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     }     
   else if (cmd=="keyboardpress")
     {
@@ -219,21 +231,25 @@ void executecommand()
       delay(str4.toInt());
       Keyboard.releaseAll();
       if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     }  
   else if (cmd=="keyboardprint")
     {
       Keyboard.print(str1);
       if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     }  
   else if (cmd=="keyboardprintln")
     {
       Keyboard.println(str1);
       if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     }  
   else if (cmd=="keyboardwrite")
     {
       Keyboard.write(char(str1.toInt()));
       if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);  
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     }      
   else 
     {
