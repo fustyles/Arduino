@@ -102,6 +102,7 @@ void executecommand()
   else if (cmd=="resetwifi")
     {
       if (debug == true) Feedback(CID,"<html>"+str1+","+str2+"</html>",3);
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
       delay(3000);
       SendData("AT+CWQAP",2000);
       SendData("AT+CWJAP_CUR=\""+str1+"\",\""+str2+"\"",5000);
@@ -109,6 +110,7 @@ void executecommand()
   else if (cmd=="restart")
     {
       if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
       delay(3000);
       SendData("AT+RST",2000);
       delay(2000);
@@ -118,6 +120,7 @@ void executecommand()
   else if (cmd=="at")      //  ?cmd=str1 -> ?at=AT+RST
     {
       if (debug == true) Feedback(CID,"<html>"+WaitReply(3000)+"</html>",3);
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
       delay(1000);
       mySerial.println(str1);
       mySerial.flush();
