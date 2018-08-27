@@ -1,7 +1,7 @@
 /* 
 ESP-01 + Arduino Uno (AT Command)
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-24 20:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-27 22:30
 
 Update AT Firmware(V2.0_AT_Firmware)
 https://www.youtube.com/watch?v=QVhWVu8NnZc
@@ -76,6 +76,7 @@ void executecommand()
   else if (cmd=="restart")
     {
       if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
       delay(3000);
       SendData("AT+RST",2000);
       delay(2000);
@@ -84,6 +85,7 @@ void executecommand()
   else if (cmd=="at")      //  ?cmd=str1 -> ?at=AT+RST
     {
       if (debug == true) Feedback(CID,"<html>"+WaitReply(3000)+"</html>",3);
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
       delay(1000);
       mySerial.println(str1);
       mySerial.flush();
@@ -92,17 +94,20 @@ void executecommand()
     {
       pinMode(str1.toInt(), INPUT_PULLUP);
       if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     }  
   else if (cmd=="pinmode")
     {
       pinMode(str1.toInt(), str2.toInt());
       if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     }        
   else if (cmd=="digitalwrite")
     {
       pinMode(str1.toInt(), OUTPUT);
       digitalWrite(str1.toInt(),str2.toInt());
       if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     }   
   else if (cmd=="digitalread")
     {
@@ -113,6 +118,7 @@ void executecommand()
       pinMode(str1.toInt(), OUTPUT);
       analogWrite(str1.toInt(),str2.toInt());
       if (debug == true) Feedback(CID,"<html>"+command+"</html>",3);
+      if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     }       
   else if (cmd=="analogread")
     {
