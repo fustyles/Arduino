@@ -25,6 +25,56 @@ WiFiServer server(80);
 String Feedback="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
+void ExecuteCommand()
+{
+  Serial.println("");
+  Serial.println("Command: "+Command);
+  Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
+  Serial.println("");
+  
+  if (cmd=="yourcmd")
+  {
+    // You can do anything
+    //Feedback="<font color=\"red\">Hello World</font>";
+  }
+  else if (cmd=="resetwifi")
+  {
+    WiFi.begin(str1.c_str(), str2.c_str());
+    Serial.print("Connecting to ");
+    Serial.println(str1);
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) 
+    {
+        delay(500);
+        if ((StartTime+10000) < millis()) break;
+    } 
+    Serial.println("");
+    Serial.println("STAIP: "+WiFi.localIP().toString()); 
+    /*
+    if (WiFi.localIP().toString()!="0.0.0.0") 
+    {
+      cmd="ifttt";
+      str1="eventname";
+      str2="key";
+      str3=WiFi.localIP().toString();
+      ExecuteCommand();
+    }
+    */
+    Feedback="STAIP: "+WiFi.localIP().toString();
+  }     
+  else if (cmd=="ifttt")
+  {
+    String domain="maker.ifttt.com";
+    String request = "/trigger/" + str1 + "/with/key/" + str2;
+    request += "?value1="+str3+"&value2="+str4+"&value3="+str5;
+    tcp(domain,request,80);
+  }  
+  else 
+  {
+    Feedback="Command is not defined";
+  }
+}
+
 void setup()
 {
     Serial.begin(115200);
@@ -134,56 +184,6 @@ void loop()
     }
     delay(1);
     client.stop();
-  }
-}
-
-void ExecuteCommand()
-{
-  Serial.println("");
-  Serial.println("Command: "+Command);
-  Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
-  Serial.println("");
-  
-  if (cmd=="yourcmd")
-  {
-    // You can do anything
-    //Feedback="<font color=\"red\">Hello World</font>";
-  }
-  else if (cmd=="resetwifi")
-  {
-    WiFi.begin(str1.c_str(), str2.c_str());
-    Serial.print("Connecting to ");
-    Serial.println(str1);
-    long int StartTime=millis();
-    while (WiFi.status() != WL_CONNECTED) 
-    {
-        delay(500);
-        if ((StartTime+10000) < millis()) break;
-    } 
-    Serial.println("");
-    Serial.println("STAIP: "+WiFi.localIP().toString()); 
-    /*
-    if (WiFi.localIP().toString()!="0.0.0.0") 
-    {
-      cmd="ifttt";
-      str1="eventname";
-      str2="key";
-      str3=WiFi.localIP().toString();
-      ExecuteCommand();
-    }
-    */
-    Feedback="STAIP: "+WiFi.localIP().toString();
-  }     
-  else if (cmd=="ifttt")
-  {
-    String domain="maker.ifttt.com";
-    String request = "/trigger/" + str1 + "/with/key/" + str2;
-    request += "?value1="+str3+"&value2="+str4+"&value3="+str5;
-    tcp(domain,request,80);
-  }  
-  else 
-  {
-    Feedback="Command is not defined";
   }
 }
 
