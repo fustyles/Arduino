@@ -47,7 +47,7 @@ void setup()
 
 void loop()
 {
-  String request ="",response="",data;
+  String request ="",response="",data="";
   
   //Update a Channel Feed
   int temperature = random(100);
