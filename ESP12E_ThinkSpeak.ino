@@ -54,7 +54,6 @@ void loop()
   int humidity = random(100);
   request = "/update?api_key=UOJGVW3F98OFF5MB&field1="+String(temperature)+"&field2="+String(humidity);
   tcp("api.thingspeak.com",request,80,0);
-  delay(5000);
 
   //Get a Channel Field
   request = "/channels/463224/feeds.json?results=1";
@@ -64,7 +63,7 @@ void loop()
   Serial.println("");
   Serial.println(data);
   Serial.println("");
-  delay(10000);
+  delay(15000);
 }
 
 String tcp(String domain,String request,int port,byte wait)
