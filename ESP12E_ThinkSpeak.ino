@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP12E)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-04 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-05 00:00
 */
 
 #include <ESP8266WiFi.h>     //ESP12E
