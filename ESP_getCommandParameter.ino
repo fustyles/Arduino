@@ -1,6 +1,6 @@
 /* 
 ESP8266
-Author : ChungYi Fu (Taiwan)  2018-05-06 20:00
+Author : ChungYi Fu (Taiwan)  2018-10-05 20:00
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -10,12 +10,12 @@ STAIP：
 http://192.168.4.1/?resetwifi=ssid;password
 */
 
-#include <ESP8266WiFi.h>    // ESP12
-//#include <WiFi.h>         // ESP32
+//#include <ESP8266WiFi.h>    // ESP12
+#include <WiFi.h>         // ESP32
 
 // Enter your WiFi ssid and password
-const char* ssid     = "";   //your network SSID
-const char* password = "";   //your network password
+const char* ssid     = "xxxxx";   //your network SSID
+const char* password = "xxxxx";   //your network password
 
 const char* apssid = "MyFirmata ESP";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
@@ -67,7 +67,7 @@ void ExecuteCommand()
     String domain="maker.ifttt.com";
     String request = "/trigger/" + str1 + "/with/key/" + str2;
     request += "?value1="+str3+"&value2="+str4+"&value3="+str5;
-    tcp(domain,request,80);
+    tcp(domain,request,80,0);
   }  
   else 
   {
@@ -216,7 +216,7 @@ void getCommand(char c)
   }
 }
 
-void tcp(String domain,String request,int port)
+void tcp(String domain,String request,int port,byte wait)
 {
     WiFiClient client_tcp;
     
@@ -246,7 +246,8 @@ void tcp(String domain,String request,int port)
               getResponse += String(c);
             if (state==true) Feedback += String(c);
          }
-         if ((state==true)&&(Feedback.length()!= 0)) break;
+         if (wait==0)
+          if ((state==true)&&(Feedback.length()!= 0)) break;
       }
       Serial.println(Feedback);
       client_tcp.stop();
