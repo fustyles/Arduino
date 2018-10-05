@@ -79,6 +79,7 @@ void loop()
   Serial.println("field7="+field7);
   String field8 = data.substring(data.indexOf("field8,")+7,data.length());
   Serial.println("field8="+field8);  
+  Serial.println();
     
   delay(15000);
 }
