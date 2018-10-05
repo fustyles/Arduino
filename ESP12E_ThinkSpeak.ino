@@ -59,12 +59,16 @@ void loop()
   request = "/channels/463224/feeds.json?results=1";
   response = tcp("api.thingspeak.com",request,80,1);
   //Serial.println(response);
+    
   data = getJsonData(response);
   Serial.println(data);
+    
   field1 = data.substring(data.indexOf("field1")+7,data.indexOf(",field2"));
   Serial.println("field1="+field1);
+    
   field2 = data.substring(data.indexOf("field2")+7,data.indexOf(",field3"));
   Serial.println("field2="+field2);
+    
   delay(15000);
 }
 
