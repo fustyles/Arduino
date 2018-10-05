@@ -16,7 +16,7 @@ void setup()
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password);
     delay(1000);
-    Serial.println("");
+    Serial.println();
     Serial.print("Connecting to ");
     Serial.println(ssid);
     
@@ -39,10 +39,10 @@ void setup()
       }
     }  
 
-    Serial.println("");
+    Serial.println();
     Serial.println("STAIP address: ");
     Serial.println(WiFi.localIP());
-    Serial.println("");
+    Serial.println();
 }
 
 void loop()
