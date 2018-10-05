@@ -1,5 +1,5 @@
 /* 
-NodeMCU (ESP12E)
+NodeMCU (ESP32)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-05 22:00
 */
 
