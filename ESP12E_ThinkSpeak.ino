@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP12E)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-05 18:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-05 22:00
 */
 
 #include <ESP8266WiFi.h>     //ESP12E
@@ -47,7 +47,7 @@ void setup()
 
 void loop()
 {
-  String request ="",response="",data="";
+  String request ="",response="",data="",field1="",field2="";
   
   //Update a Channel Feed
   int temperature = random(100);
@@ -60,10 +60,11 @@ void loop()
   response = tcp("api.thingspeak.com",request,80,1);
   //Serial.println(response);
   data = getJsonData(response);
-  Serial.println("");
   Serial.println(data);
-  Serial.println("");
-    
+  field1 = data.substring(data.indexOf("field1")+7,data.indexOf(",field2"));
+  Serial.println("field1="+field1);
+  field2 = data.substring(data.indexOf("field2")+7,data.indexOf(",field3"));
+  Serial.println("field2="+field2);
   delay(15000);
 }
 
