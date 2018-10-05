@@ -67,7 +67,7 @@ void ExecuteCommand()
     String domain="maker.ifttt.com";
     String request = "/trigger/" + str1 + "/with/key/" + str2;
     request += "?value1="+str3+"&value2="+str4+"&value3="+str5;
-    tcp(domain,request,80,0);
+    tcp(domain,request,80);
   }  
   else 
   {
@@ -216,7 +216,7 @@ void getCommand(char c)
   }
 }
 
-void tcp(String domain,String request,int port,byte wait)
+void tcp(String domain,String request,int port)
 {
     WiFiClient client_tcp;
     
@@ -246,8 +246,7 @@ void tcp(String domain,String request,int port,byte wait)
               getResponse += String(c);
             if (state==true) Feedback += String(c);
          }
-         if (wait==0)
-          if ((state==true)&&(Feedback.length()!= 0)) break;
+         if ((state==true)&&(Feedback.length()!= 0)) break;
       }
       Serial.println(Feedback);
       client_tcp.stop();
