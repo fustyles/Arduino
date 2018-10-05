@@ -47,7 +47,7 @@ void setup()
 
 void loop()
 {
-  String request ="",response="",data="",field1="",field2="";
+  String request ="",response="";
   
   //Update a Channel Feed
   int temperature = random(100);
@@ -60,13 +60,12 @@ void loop()
   response = tcp("api.thingspeak.com",request,80,1);
   //Serial.println(response);
     
-  data = getJsonData(response);
+  String data = getJsonData(response);
   Serial.println(data);
     
-  field1 = data.substring(data.indexOf("field1")+7,data.indexOf(",field2"));
+  String field1 = data.substring(data.indexOf("field1,")+7,data.indexOf(",field2"));
   Serial.println("field1="+field1);
-    
-  field2 = data.substring(data.indexOf("field2")+7,data.indexOf(",field3"));
+  String field2 = data.substring(data.indexOf("field2,")+7,data.indexOf(",field3"));
   Serial.println("field2="+field2);
     
   delay(15000);
