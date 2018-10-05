@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP12E)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-05 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-05 18:00
 */
 
 #include <ESP8266WiFi.h>     //ESP12E
@@ -114,6 +114,7 @@ String getJsonData(String data)
     String data_sub = data.substring(s+9,e);
     data_sub.replace("\":","\",");
     data_sub.replace("\"","");
+    data_sub.replace("},{",",");
     return data_sub;
   }
   else 
