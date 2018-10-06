@@ -37,12 +37,14 @@ void setup()
         digitalWrite(2,LOW);
         delay(100);
       }
+        
+      Serial.println();
+      Serial.println("STAIP address: ");
+      Serial.println(WiFi.localIP());
+      Serial.println();     
     }  
-
-    Serial.println();
-    Serial.println("STAIP address: ");
-    Serial.println(WiFi.localIP());
-    Serial.println();
+    else
+       Serial.println("Unable to connect!"); 
 }
 
 void loop()
