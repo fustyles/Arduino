@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP12E)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-06 15:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-06 17:00
 */
 
 #include <ESP8266WiFi.h>     //ESP12E
@@ -63,47 +63,47 @@ void loop()
   String data = getJsonData(response);
   Serial.println(data);
     
-  if (data.lastIndexOf(",field1")!=-1) {
+  if (data.lastIndexOf("field1,")!=-1) {
     data = data.substring(data.lastIndexOf("field1,")+7);
     String field1 = data.substring(0,data.indexOf(","));
     Serial.println("field1="+field1);
   }
-  if (data.lastIndexOf(",field2")!=-1) {
+  if (data.lastIndexOf("field2,")!=-1) {
     data = data.substring(data.lastIndexOf("field2,")+7);
     String field2 = data.substring(0,data.indexOf(","));
     Serial.println("field2="+field2);
   }
-  if (data.lastIndexOf(",field3")!=-1) {
+  if (data.lastIndexOf("field3,")!=-1) {
     data = data.substring(data.lastIndexOf("field3,")+7);
     String field3 = data.substring(0,data.indexOf(","));
     Serial.println("field3="+field3);
   }
-  if (data.lastIndexOf(",field4")!=-1) {
+  if (data.lastIndexOf("field4,")!=-1) {
     data = data.substring(data.lastIndexOf("field4,")+7);
     String field4 = data.substring(0,data.indexOf(","));
     Serial.println("field4="+field4);
   }
-  if (data.lastIndexOf(",field5")!=-1) {
+  if (data.lastIndexOf("field5,")!=-1) {
     data = data.substring(data.lastIndexOf("field5,")+7);
     String field5 = data.substring(0,data.indexOf(","));
     Serial.println("field5="+field5);
   }
-  if (data.lastIndexOf(",field6")!=-1) {
+  if (data.lastIndexOf("field6,")!=-1) {
     data = data.substring(data.lastIndexOf("field6,")+7);
     String field6 = data.substring(0,data.indexOf(","));
     Serial.println("field6="+field6);
   }
-  if (data.lastIndexOf(",field7")!=-1) {
+  if (data.lastIndexOf("field7,")!=-1) {
     data = data.substring(data.lastIndexOf("field7,")+7);
     String field7 = data.substring(0,data.indexOf(","));
     Serial.println("field7="+field7);
   }
-  if (data.lastIndexOf(",field8")!=-1) {
+  if (data.lastIndexOf("field8,")!=-1) {
     data = data.substring(data.lastIndexOf("field8,")+7);
     String field8 = data.substring(0,data.indexOf(","));
     Serial.println("field8="+field8); 
   }
-  Serial.println(); 
+  Serial.println();
     
   delay(15000);
 }
