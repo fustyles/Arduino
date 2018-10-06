@@ -123,7 +123,7 @@ String tcp(String domain,String request,int port,byte wait)
 
       String getResponse="",Feedback="";
       boolean state = false;
-      int waitTime = 4000;   // wait for 4 seconds
+      int waitTime = 1000;   // wait for 1 seconds
       long startTime = millis();
       while ((startTime + waitTime) > millis())
       {
@@ -138,6 +138,8 @@ String tcp(String domain,String request,int port,byte wait)
             else if (c != '\r')
               getResponse += String(c);
             if (state==true) Feedback += String(c);
+            if (wait==1)
+              startTime = millis();
          }
          if (wait==0)
           if ((state==true)&&(Feedback.length()!= 0)) break;
