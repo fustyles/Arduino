@@ -332,18 +332,19 @@ void loop()
     delay(1);
     client.stop();
   }
-  
-  //if (SensorValue>LimitValue)
-  //{
-  //  cmd="yourcmd";
-  //  str1="yourstr1";
-  //  str2="yourstr2";
-  //  str3="yourstr3";
-  //  ...
-  //  str9="yourstr9";
-  //  ExecuteCommand();
-  //  delay(10000);
-  //}
+  /*
+  if (SensorValue>LimitValue)
+  {
+    cmd="yourcmd";
+    str1="yourstr1";
+    str2="yourstr2";
+    str3="yourstr3";
+    ...
+    str9="yourstr9";
+    ExecuteCommand();
+    delay(10000);
+  }
+  */
 }
 
 void getCommand(char c)
