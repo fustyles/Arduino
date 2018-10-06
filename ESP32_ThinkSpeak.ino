@@ -123,8 +123,9 @@ String tcp(String domain,String request,int port,byte wait)
 
       String getResponse="",Feedback="";
       boolean state = false;
-      long StartTime = millis();
-      while ((StartTime+4000) > millis())
+      int waitTime = 4000;   // wait for 4 seconds
+      long startTime = millis();
+      while ((startTime + waitTime) > millis())
       {
         while (client_tcp.available()) 
         {
