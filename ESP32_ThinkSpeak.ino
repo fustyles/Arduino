@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-06 17:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-06 19:00
 */
 
 #include <WiFi.h>     //ESP32
@@ -123,7 +123,7 @@ String tcp(String domain,String request,int port,byte wait)
 
       String getResponse="",Feedback="";
       boolean state = false;
-      int waitTime = 2000;   // timeout 2 seconds
+      int waitTime = 3000;   // timeout 3 seconds
       long startTime = millis();
       while ((startTime + waitTime) > millis())
       {
