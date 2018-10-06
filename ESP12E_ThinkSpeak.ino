@@ -123,7 +123,7 @@ String tcp(String domain,String request,int port,byte wait)
 
       String getResponse="",Feedback="";
       boolean state = false;
-      int waitTime = 1000;   // wait for 1 seconds
+      int waitTime = 2000;   // timeout 2 seconds
       long startTime = millis();
       while ((startTime + waitTime) > millis())
       {
