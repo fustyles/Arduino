@@ -33,8 +33,8 @@ https://github.com/fustyles/Arduino/blob/master/ESP8266_MyFirmata.html
 #include <ESP8266WiFi.h>
 
 // Enter your WiFi ssid and password
-const char* ssid     = "";   //your network SSID
-const char* password = "";   //your network password
+const char* ssid     = "xxxxx";   //your network SSID
+const char* password = "xxxxx";   //your network password
 
 const char* apssid = "MyFirmata ESP12E";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
