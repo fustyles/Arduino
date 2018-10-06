@@ -64,21 +64,21 @@ void loop()
   Serial.println(data);
     
   String field1 = data.substring(data.lastIndexOf("field1,")+7,data.lastIndexOf(",field2"));
-  Serial.println("field1="+field1);
+  if (data.lastIndexOf(",field1")!=-1) Serial.println("field1="+field1);
   String field2 = data.substring(data.lastIndexOf("field2,")+7,data.lastIndexOf(",field3"));
-  Serial.println("field2="+field2);
+  if (data.lastIndexOf(",field2")!=-1) Serial.println("field2="+field2);
   String field3 = data.substring(data.lastIndexOf("field3,")+7,data.lastIndexOf(",field4"));
-  Serial.println("field3="+field3);
+  if (data.lastIndexOf(",field3")!=-1) Serial.println("field3="+field3);
   String field4 = data.substring(data.lastIndexOf("field4,")+7,data.lastIndexOf(",field5"));
-  Serial.println("field4="+field4);
+  if (data.lastIndexOf(",field4")!=-1) Serial.println("field4="+field4);
   String field5 = data.substring(data.lastIndexOf("field5,")+7,data.lastIndexOf(",field6"));
-  Serial.println("field5="+field5);
+  if (data.lastIndexOf(",field5")!=-1) Serial.println("field5="+field5);
   String field6 = data.substring(data.lastIndexOf("field6,")+7,data.lastIndexOf(",field7"));
-  Serial.println("field6="+field6);
+  if (data.lastIndexOf(",field6")!=-1) Serial.println("field6="+field6);
   String field7 = data.substring(data.lastIndexOf("field7,")+7,data.lastIndexOf(",field8"));
-  Serial.println("field7="+field7);
+  if (data.lastIndexOf(",field7")!=-1) Serial.println("field7="+field7);
   String field8 = data.substring(data.lastIndexOf("field8,")+7,data.length());
-  Serial.println("field8="+field8);  
+  if (data.lastIndexOf(",field8")!=-1) Serial.println("field8="+field8);  
   Serial.println(); 
     
   delay(15000);
