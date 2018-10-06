@@ -62,7 +62,7 @@ void loop()
   response = tcp("api.thingspeak.com",request,80,1);
   //Serial.println(response);
     
-  String data = transJsonData(response);
+  String data = transJSONtoCSV(response);
   Serial.println(data);
     
   String data_tmp="";
@@ -153,7 +153,7 @@ String tcp(String domain,String request,int port,byte wait)
       return "Connection failed";  
 }
 
-String transJsonData(String data)
+String transJSONtoCSV(String data)
 {
   int s = data.indexOf("feeds");
   int e = data.indexOf("}]}");
