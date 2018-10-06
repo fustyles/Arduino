@@ -131,7 +131,7 @@ String getJsonData(String data)
     String data_sub = data.substring(s+9,e);
     data_sub.replace("\":","\",");
     data_sub.replace("\"","");
-    data_sub.replace("},{",",");
+    data_sub.replace("},{","\n");
     return data_sub;
   }
   else 
