@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP12E)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-05 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-06 15:00
 */
 
 #include <ESP8266WiFi.h>     //ESP12E
@@ -116,8 +116,8 @@ String tcp(String domain,String request,int port,byte wait)
          if (wait==0)
           if ((state==true)&&(Feedback.length()!= 0)) break;
       }
-      return Feedback;
       client_tcp.stop();
+      return Feedback;
     }
     else
       return "Connection failed";  
