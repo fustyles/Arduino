@@ -1,7 +1,7 @@
 /* 
 Arduino Uno + NodeMCU (ESP12E) (without using AT Command)
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-05 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-07 10:00
 
 Wifi Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -21,9 +21,10 @@ http://192.168.4.1/?digitalwrite=pin;value
 http://192.168.4.1/?analogwrite=pin;value
 http://192.168.4.1/?digitalread=pin
 http://192.168.4.1/?analogread=pin
-http://192.168.4.1/?tcp=domain;port;request
+http://192.168.4.1/?tcp=domain;port;request;wait
 http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
+http://192.168.4.1/?thingspeakread=request
 
 STAIP：
 Query： http://192.168.4.1/?ip
@@ -39,8 +40,8 @@ SoftwareSerial mySerial(13, 15); // RX(D7,gpio13), TX(D8,gpio15) ->  Arduino Uno
 #include <ESP8266WiFi.h>
 
 // Enter your WiFi ssid and password
-const char* ssid     = "";   //your network SSID
-const char* password = "";   //your network password
+const char* ssid     = "xxxxx";   //your network SSID
+const char* password = "xxxxx";   //your network password
 
 const char* apssid = "MyFirmata ESP12E";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
@@ -90,6 +91,7 @@ void ExecuteCommand()
     } 
     Serial.println("");
     Serial.println("STAIP: "+WiFi.localIP().toString());
+    Feedback="STAIP: "+WiFi.localIP().toString();
     /*
     if (WiFi.localIP().toString()!="0.0.0.0") 
     {
@@ -100,7 +102,6 @@ void ExecuteCommand()
       ExecuteCommand();
     }
     */
-    Feedback="STAIP: "+WiFi.localIP().toString();
   }    
   else if (cmd=="inputpullup")
   {
@@ -138,25 +139,31 @@ void ExecuteCommand()
   else if (cmd=="tcp")
   {
     String domain=str1;
-    String request ="/" + str3;
     int port=str2.toInt();
-    int waitstate=str4.toInt();
-    tcp(domain,request,port);
+    String request=str3;
+    int wait=str4.toInt();    // wait = 0 or 1
+    Feedback=tcp(domain,request,port,wait);
   }
   else if (cmd=="ifttt")
   {
     String domain="maker.ifttt.com";
     String request = "/trigger/" + str1 + "/with/key/" + str2;
     request += "?value1="+str3+"&value2="+str4+"&value3="+str5;
-    tcp(domain,request,80);
+    Feedback=tcp(domain,request,80,0);
   }
   else if (cmd=="thingspeakupdate")
   {
     String domain="api.thingspeak.com";
     String request = "/update?api_key=" + str1;
     request += "&field1="+str2+"&field2="+str3+"&field3="+str4+"&field4="+str5+"&field5="+str6+"&field6="+str7+"&field7="+str8+"&field8="+str9;
-    tcp(domain,request,80);
+    Feedback=tcp(domain,request,80,0);
   }    
+  else if (cmd=="thingspeakread")
+  {
+    String domain="api.thingspeak.com";
+    String request = str1;
+    Feedback=tcp(domain,request,80,1);
+  }   
   else 
   {
     mySerial.println(Command);  // Send command to Arduino Uno
@@ -305,6 +312,7 @@ void loop()
             Feedback+="<option value=\"tcp\">tcp</option>";
             Feedback+="<option value=\"ifttt\">ifttt</option>";
             Feedback+="<option value=\"thingspeakupdate\">thingspeakupdate</option>";
+            Feedback+="<option value=\"thingspeakread\">thingspeakread</option>";
             Feedback+="</select>";
             Feedback+="<br><br>str1:"; 
             Feedback+="<input type=\"text\" name=\"str1\" id=\"str1\" size=\"20\">";      
@@ -312,8 +320,10 @@ void loop()
             Feedback+="<input type=\"text\" name=\"str2\" id=\"str2\" size=\"20\">";  
             Feedback+="<br><br>str3:";
             Feedback+="<input type=\"text\" name=\"str3\" id=\"str3\" size=\"20\">";  
-            Feedback+="<br>(str3;str4;str5;str6;str7;str8;str9)<br><br>";           
-            Feedback+="<input type=\"button\" value=\"Send\" onclick=\"location.href='?'+cmd.value+'='+str1.value+';'+str2.value+';'+str3.value\">"; 
+            Feedback+="<br><br>str4:";
+            Feedback+="<input type=\"text\" name=\"str4\" id=\"str4\" size=\"20\">"; 
+            Feedback+="<br>(str4;str5;str6;str7;str8;str9)<br><br>";           
+            Feedback+="<input type=\"button\" value=\"Send\" onclick=\"location.href='?'+cmd.value+'='+str1.value+';'+str2.value+';'+str3.value+';'+str4.value\">"; 
             Feedback+="</form>";
 
             client.println("HTTP/1.1 200 OK");
@@ -398,7 +408,7 @@ void getCommand(char c)
   }
 }
 
-void tcp(String domain,String request,int port)
+String tcp(String domain,String request,int port,byte wait)
 {
     WiFiClient client_tcp;
     
@@ -410,11 +420,11 @@ void tcp(String domain,String request,int port)
       client_tcp.println("Connection: close");
       client_tcp.println();
 
-      String getResponse="";
-      Feedback="";
+      String getResponse="",Feedback="";
       boolean state = false;
-      long StartTime = millis();
-      while ((StartTime+4000) > millis())
+      int waitTime = 3000;   // timeout 3 seconds
+      long startTime = millis();
+      while ((startTime + waitTime) > millis())
       {
         while (client_tcp.available()) 
         {
@@ -427,14 +437,17 @@ void tcp(String domain,String request,int port)
             else if (c != '\r')
               getResponse += String(c);
             if (state==true) Feedback += String(c);
+            if (wait==1)
+              startTime = millis();
          }
-         if ((state==true)&&(Feedback.length()!= 0)) break;
+         if (wait==0)
+          if ((state==true)&&(Feedback.length()!= 0)) break;
       }
-      Serial.println(Feedback);
       client_tcp.stop();
+      return Feedback;
     }
     else
-      Feedback="Connection failed";  
+      return "Connection failed";  
 }
 
 /*
