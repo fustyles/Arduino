@@ -89,6 +89,16 @@ void ExecuteCommand()
     Serial.println("");
     Serial.println("STAIP: "+WiFi.localIP().toString());   
     Feedback="STAIP: "+WiFi.localIP().toString();
+    /*
+    if (WiFi.localIP().toString()!="0.0.0.0") 
+    {
+      cmd="ifttt";
+      str1="eventname";
+      str2="key";
+      str3=WiFi.localIP().toString();
+      ExecuteCommand();
+    }
+    */    
   }    
   else if (cmd=="inputpullup")
   {
