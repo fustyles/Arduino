@@ -20,7 +20,7 @@ Link：http://192.168.4.1/?resetwifi=ssid;password
 */
 
 #include <ESP8266WiFi.h>    // ESP01, ESP12E
-//#include <WiFi.h>         // ESP32 (If you use ESP32, you must modify the line number 21,22,255,256 in the code.)
+//#include <WiFi.h>         // ESP32 (If you use ESP32, you must modify the line number 22,23,255,256 in the code.)
 
 // Enter your WiFi ssid and password
 const char* ssid     = "xxxxx";   //your network SSID
