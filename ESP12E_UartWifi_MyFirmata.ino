@@ -27,7 +27,7 @@ http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;fiel
 http://192.168.4.1/?thingspeakread=request
 
 STAIP：
-Query： http://192.168.4.1/?ip
+Query：http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
 
 Control Page (http)
