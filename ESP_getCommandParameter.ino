@@ -18,8 +18,8 @@ STAIP：
 http://192.168.4.1/?resetwifi=ssid;password
 */
 
-//#include <ESP8266WiFi.h>    // ESP12
-#include <WiFi.h>         // ESP32
+#include <ESP8266WiFi.h>    // ESP12
+//#include <WiFi.h>         // ESP32
 
 // Enter your WiFi ssid and password
 const char* ssid     = "xxxxx";   //your network SSID
