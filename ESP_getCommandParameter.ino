@@ -6,6 +6,14 @@ Command Format :
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
+Default APIP： 192.168.4.1
+http://192.168.4.1/?ip
+http://192.168.4.1/?mac
+http://192.168.4.1/?restart
+http://192.168.4.1/?resetwifi=ssid;password
+http://192.168.4.1/?tcp=domain;port;request;wait
+http://192.168.4.1/?ifttt=event;key;value1;value2;value3
+
 STAIP：
 http://192.168.4.1/?resetwifi=ssid;password
 */
@@ -37,6 +45,21 @@ void ExecuteCommand()
     // You can do anything
     //Feedback="<font color=\"red\">Hello World</font>";
   }
+  else if (cmd=="ip")
+  {
+    Feedback="AP IP: "+WiFi.softAPIP().toString();    
+    Feedback+=", ";
+    Feedback+="STA IP: "+WiFi.localIP().toString();
+  }  
+  else if (cmd=="mac")
+  {
+    Feedback+="STA MAC: "+WiFi.macAddress();
+  }  
+  else if (cmd=="restart")
+  {
+    setup();
+    Feedback=Command;
+  }    
   else if (cmd=="resetwifi")
   {
     WiFi.begin(str1.c_str(), str2.c_str());
