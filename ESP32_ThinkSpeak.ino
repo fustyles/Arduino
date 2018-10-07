@@ -62,24 +62,24 @@ void loop()
   response = tcp("api.thingspeak.com",request,80,1);
   //Serial.println(response);
     
-  String data = transJSONtoCSV(response);
-  Serial.println(data);
+  String data_csv = transJSONtoCSV(response);
+  Serial.println(data_csv);
     
-  String field1 = getField(data,"field1");
+  String field1 = getField(data_csv,"field1");
   Serial.println("field1="+field1);
-  String field2 = getField(data,"field2");
+  String field2 = getField(data_csv,"field2");
   Serial.println("field2="+field2);
-  String field3 = getField(data,"field3");
+  String field3 = getField(data_csv,"field3");
   Serial.println("field3="+field3);
-  String field4 = getField(data,"field4");
+  String field4 = getField(data_csv,"field4");
   Serial.println("field4="+field4);  
-  String field5 = getField(data,"field5");
+  String field5 = getField(data_csv,"field5");
   Serial.println("field5="+field5);
-  String field6 = getField(data,"field6");
+  String field6 = getField(data_csv,"field6");
   Serial.println("field6="+field6);
-  String field7 = getField(data,"field7");
+  String field7 = getField(data_csv,"field7");
   Serial.println("field7="+field7);
-  String field8 = getField(data,"field8");
+  String field8 = getField(data_csv,"field8");
   Serial.println("field8="+field8); 
   Serial.println();
     
