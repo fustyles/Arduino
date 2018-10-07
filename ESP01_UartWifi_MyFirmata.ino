@@ -106,6 +106,12 @@ void ExecuteCommand()
     request += "&field1="+str2+"&field2="+str3+"&field3="+str4+"&field4="+str5+"&field5="+str6+"&field6="+str7+"&field7="+str8+"&field8="+str9;
     Feedback=tcp(domain,request,80,0);
   }    
+  else if (cmd=="thingspeakread")
+  {
+    String domain="api.thingspeak.com";
+    String request = str1;
+    Feedback=tcp(domain,request,80,1);
+  }     
   else 
   {
     mySerial.println(Command);  // Send command to Arduino Uno
@@ -238,6 +244,7 @@ void loop()
             Feedback+="<option value=\"tcp\">tcp</option>";
             Feedback+="<option value=\"ifttt\">ifttt</option>";
             Feedback+="<option value=\"thingspeakupdate\">thingspeakupdate</option>";
+            Feedback+="<option value=\"thingspeakread\">thingspeakread</option>";
             Feedback+="</select>";
             Feedback+="<br><br>str1:"; 
             Feedback+="<input type=\"text\" name=\"str1\" id=\"str1\" size=\"20\">";      
