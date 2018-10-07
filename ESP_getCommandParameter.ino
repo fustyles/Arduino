@@ -15,7 +15,8 @@ http://192.168.4.1/?tcp=domain;port;request;wait
 http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 
 STAIP：
-http://192.168.4.1/?resetwifi=ssid;password
+Query： http://192.168.4.1/?ip
+Link：http://192.168.4.1/?resetwifi=ssid;password
 */
 
 #include <ESP8266WiFi.h>    // ESP01, ESP12E
