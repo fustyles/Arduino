@@ -22,9 +22,10 @@ http://192.168.4.1/?analogwrite=pin;value
 http://192.168.4.1/?digitalread=pin
 http://192.168.4.1/?analogread=pin
 http://192.168.4.1/?touchread=pin
-http://192.168.4.1/?tcp=domain;port;request
+http://192.168.4.1/?tcp=domain;port;request;wait
 http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
+http://192.168.4.1/?thingspeakread=request
 
 STAIP：
 Query：http://192.168.4.1/?ip
