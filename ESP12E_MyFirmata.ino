@@ -296,8 +296,10 @@ void loop()
             Feedback+="<input type=\"text\" name=\"str2\" id=\"str2\" size=\"20\">";  
             Feedback+="<br><br>str3:";
             Feedback+="<input type=\"text\" name=\"str3\" id=\"str3\" size=\"20\">";  
-            Feedback+="<br>(str3;str4;str5;str6;str7;str8;str9)<br><br>";           
-            Feedback+="<input type=\"button\" value=\"Send\" onclick=\"location.href='?'+cmd.value+'='+str1.value+';'+str2.value+';'+str3.value\">"; 
+            Feedback+="<br><br>str4:";
+            Feedback+="<input type=\"text\" name=\"str4\" id=\"str4\" size=\"20\">"; 
+            Feedback+="<br>(str4;str5;str6;str7;str8;str9)<br><br>";           
+            Feedback+="<input type=\"button\" value=\"Send\" onclick=\"location.href='?'+cmd.value+'='+str1.value+';'+str2.value+';'+str3.value+';'+str4.value\">"; 
             Feedback+="</form>";
 
             client.println("HTTP/1.1 200 OK");
