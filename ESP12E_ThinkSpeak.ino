@@ -145,8 +145,8 @@ String transJSONtoCSV(String data)
 
 String getField(String data, String field) {
   if (data.lastIndexOf(field+",")!=-1) {
-    String data_tmp = data.substring(data.lastIndexOf(field+",")+7);
-    return data_tmp.substring(0,data_tmp.indexOf(","));
+    String data_sub = data.substring(data.lastIndexOf(field+",")+7);
+    return data_sub.substring(0,data_sub.indexOf(","));
   }  
   else
     return "";
