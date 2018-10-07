@@ -1,12 +1,9 @@
 /* 
 NodeMCU (ESP12E)
-
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-05 22:00
-
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-07 10:00
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
-
 Default APIP： 192.168.4.1
 http://192.168.4.1/?ip
 http://192.168.4.1/?mac
@@ -18,14 +15,12 @@ http://192.168.4.1/?digitalwrite=pin;value
 http://192.168.4.1/?analogwrite=pin;value
 http://192.168.4.1/?digitalread=pin
 http://192.168.4.1/?analogread=pin
-http://192.168.4.1/?tcp=domain;port;request
+http://192.168.4.1/?tcp=domain;port;request;wait
 http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
-
 STAIP：
 Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
-
 Control Page (http)
 https://github.com/fustyles/Arduino/blob/master/ESP8266_MyFirmata.html
 */
@@ -84,6 +79,7 @@ void ExecuteCommand()
     } 
     Serial.println("");
     Serial.println("STAIP: "+WiFi.localIP().toString());
+    Feedback="STAIP: "+WiFi.localIP().toString();
     /*
     if (WiFi.localIP().toString()!="0.0.0.0") 
     {
@@ -94,7 +90,6 @@ void ExecuteCommand()
       ExecuteCommand();
     }
     */
-    Feedback="STAIP: "+WiFi.localIP().toString();
   }    
   else if (cmd=="inputpullup")
   {
@@ -132,25 +127,31 @@ void ExecuteCommand()
   else if (cmd=="tcp")
   {
     String domain=str1;
-    String request ="/" + str3;
     int port=str2.toInt();
-    int waitstate=str4.toInt();
-    tcp(domain,request,port);
+    String request=str3;
+    int wait=str4.toInt();
+    Feedback=tcp(domain,request,port,wait);
   }
   else if (cmd=="ifttt")
   {
     String domain="maker.ifttt.com";
     String request = "/trigger/" + str1 + "/with/key/" + str2;
     request += "?value1="+str3+"&value2="+str4+"&value3="+str5;
-    tcp(domain,request,80);
+    Feedback=tcp(domain,request,80,0);
   }
   else if (cmd=="thingspeakupdate")
   {
     String domain="api.thingspeak.com";
     String request = "/update?api_key=" + str1;
     request += "&field1="+str2+"&field2="+str3+"&field3="+str4+"&field4="+str5+"&field5="+str6+"&field6="+str7+"&field7="+str8+"&field8="+str9;
-    tcp(domain,request,80);
+    Feedback=tcp(domain,request,80,0);
   }    
+  else if (cmd=="thingspeakread")
+  {
+    String domain="api.thingspeak.com";
+    String request = str1;
+    Feedback=tcp(domain,request,80,1);
+  }   
   else 
   {
     Feedback="Command is not defined";
@@ -376,7 +377,7 @@ void getCommand(char c)
   }
 }
 
-void tcp(String domain,String request,int port)
+String tcp(String domain,String request,int port,byte wait)
 {
     WiFiClient client_tcp;
     
@@ -388,11 +389,11 @@ void tcp(String domain,String request,int port)
       client_tcp.println("Connection: close");
       client_tcp.println();
 
-      String getResponse="";
-      Feedback="";
+      String getResponse="",Feedback="";
       boolean state = false;
-      long StartTime = millis();
-      while ((StartTime+4000) > millis())
+      int waitTime = 3000;   // timeout 3 seconds
+      long startTime = millis();
+      while ((startTime + waitTime) > millis())
       {
         while (client_tcp.available()) 
         {
@@ -405,12 +406,15 @@ void tcp(String domain,String request,int port)
             else if (c != '\r')
               getResponse += String(c);
             if (state==true) Feedback += String(c);
+            if (wait==1)
+              startTime = millis();
          }
-         if ((state==true)&&(Feedback.length()!= 0)) break;
+         if (wait==0)
+          if ((state==true)&&(Feedback.length()!= 0)) break;
       }
-      Serial.println(Feedback);
       client_tcp.stop();
+      return Feedback;
     }
     else
-      Feedback="Connection failed";  
+      return "Connection failed";  
 }
