@@ -18,7 +18,7 @@ STAIP：
 http://192.168.4.1/?resetwifi=ssid;password
 */
 
-#include <ESP8266WiFi.h>    // ESP12
+#include <ESP8266WiFi.h>    // ESP01, ESP12
 //#include <WiFi.h>         // ESP32
 
 // Enter your WiFi ssid and password
@@ -251,7 +251,8 @@ String tcp(String domain,String request,int port,byte wait)
 {
     WiFiClient client_tcp;
     
-    if (client_tcp.connect(domain, port)) 
+    if (client_tcp.connect(domain, port))   // ESP01, ESP12E
+    //if (client_tcp.connect(domain.c_str(), port))   // ESP32
     {
       Serial.println("GET " + request);
       client_tcp.println("GET " + request + " HTTP/1.1");
