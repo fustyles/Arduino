@@ -49,7 +49,7 @@ void setup()
 
 void loop()
 {
-  String request ="",response="";
+  String request ="";
   
   //Update a Channel Feed
   int temperature = random(100);
@@ -59,7 +59,7 @@ void loop()
 
   //Get a Channel Field
   request = "/channels/463224/feeds.json?results=1";
-  response = tcp("api.thingspeak.com",request,80,1);
+  String response = tcp("api.thingspeak.com",request,80,1);
   //Serial.println(response);
     
   String data_csv = transJSONtoCSV(response);
