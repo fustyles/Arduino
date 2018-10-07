@@ -1,7 +1,7 @@
 /* 
 NodeMCU (ESP32)
  
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-05 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-07 10:00
 
 Wifi Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -46,8 +46,8 @@ BluetoothSerial SerialBT;
 #include <WiFi.h>
 
 // Enter your WiFi ssid and password
-const char* ssid     = "";   //your network SSID
-const char* password = "";   //your network password
+const char* ssid     = "xxxxx";   //your network SSID
+const char* password = "xxxxx";   //your network password
 
 const char* apssid = "MyFirmata ESP32";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
