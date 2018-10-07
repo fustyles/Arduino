@@ -1,6 +1,6 @@
 /* 
 ESP8266
-Author : ChungYi Fu (Taiwan)  2018-10-05 20:00
+Author : ChungYi Fu (Taiwan)  2018-10-07 10:00
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -67,7 +67,7 @@ void ExecuteCommand()
     String domain="maker.ifttt.com";
     String request = "/trigger/" + str1 + "/with/key/" + str2;
     request += "?value1="+str3+"&value2="+str4+"&value3="+str5;
-    tcp(domain,request,80);
+    Feedback=tcp(domain,request,80,0);
   }  
   else 
   {
@@ -216,7 +216,7 @@ void getCommand(char c)
   }
 }
 
-void tcp(String domain,String request,int port)
+String tcp(String domain,String request,int port,byte wait)
 {
     WiFiClient client_tcp;
     
@@ -228,11 +228,11 @@ void tcp(String domain,String request,int port)
       client_tcp.println("Connection: close");
       client_tcp.println();
 
-      String getResponse="";
-      Feedback="";
+      String getResponse="",Feedback="";
       boolean state = false;
-      long StartTime = millis();
-      while ((StartTime+4000) > millis())
+      int waitTime = 3000;   // timeout 3 seconds
+      long startTime = millis();
+      while ((startTime + waitTime) > millis())
       {
         while (client_tcp.available()) 
         {
@@ -245,12 +245,15 @@ void tcp(String domain,String request,int port)
             else if (c != '\r')
               getResponse += String(c);
             if (state==true) Feedback += String(c);
+            if (wait==1)
+              startTime = millis();
          }
-         if ((state==true)&&(Feedback.length()!= 0)) break;
+         if (wait==0)
+          if ((state==true)&&(Feedback.length()!= 0)) break;
       }
-      Serial.println(Feedback);
       client_tcp.stop();
+      return Feedback;
     }
     else
-      Feedback="Connection failed";  
+      return "Connection failed";  
 }
