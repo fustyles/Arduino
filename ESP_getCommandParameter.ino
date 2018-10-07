@@ -1,5 +1,5 @@
 /* 
-ESP8266
+ESP8266 (ESP01, ESP12E, ESP32)
 Author : ChungYi Fu (Taiwan)  2018-10-07 10:00
 
 Command Format :  
