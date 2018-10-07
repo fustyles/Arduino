@@ -88,7 +88,7 @@ void ExecuteCommand()
   {
     String domain=str1;
     int port=str2.toInt();
-    String request ="/" + str3;
+    String request=str3;
     int wait=str4.toInt();      // wait = 0 or 1
     Feedback=tcp(domain,request,port,wait);   
   }
