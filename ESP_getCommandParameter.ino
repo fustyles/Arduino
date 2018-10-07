@@ -251,7 +251,7 @@ String tcp(String domain,String request,int port,byte wait)
 {
     WiFiClient client_tcp;
     
-    if (client_tcp.connect(domain.c_str(), port)) 
+    if (client_tcp.connect(domain, port)) 
     {
       Serial.println("GET " + request);
       client_tcp.println("GET " + request + " HTTP/1.1");
