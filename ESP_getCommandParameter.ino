@@ -62,6 +62,14 @@ void ExecuteCommand()
     */
     Feedback="STAIP: "+WiFi.localIP().toString();
   }     
+  else if (cmd=="tcp")
+  {
+    String domain=str1;
+    int port=str2.toInt();
+    String request=str3;
+    int wait=str4.toInt();      // wait = 0 or 1
+    Feedback=tcp(domain,request,port,wait);
+  }  
   else if (cmd=="ifttt")
   {
     String domain="maker.ifttt.com";
