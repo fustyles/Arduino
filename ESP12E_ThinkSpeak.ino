@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP12E)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-06 19:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-07 13:00
 */
 
 #include <ESP8266WiFi.h>     //ESP12E
@@ -65,47 +65,22 @@ void loop()
   String data = transJSONtoCSV(response);
   Serial.println(data);
     
-  String data_tmp="";
-  if (data.lastIndexOf("field1,")!=-1) {
-    data_tmp = data.substring(data.lastIndexOf("field1,")+7);
-    String field1 = data_tmp.substring(0,data_tmp.indexOf(","));
-    Serial.println("field1="+field1);
-  }
-  if (data.lastIndexOf("field2,")!=-1) {
-    data_tmp = data.substring(data.lastIndexOf("field2,")+7);
-    String field2 = data_tmp.substring(0,data_tmp.indexOf(","));
-    Serial.println("field2="+field2);
-  }
-  if (data.lastIndexOf("field3,")!=-1) {
-    data_tmp = data.substring(data.lastIndexOf("field3,")+7);
-    String field3 = data_tmp.substring(0,data_tmp.indexOf(","));
-    Serial.println("field3="+field3);
-  }
-  if (data.lastIndexOf("field4,")!=-1) {
-    data_tmp = data.substring(data.lastIndexOf("field4,")+7);
-    String field4 = data_tmp.substring(0,data_tmp.indexOf(","));
-    Serial.println("field4="+field4);
-  }
-  if (data.lastIndexOf("field5,")!=-1) {
-    data_tmp = data.substring(data.lastIndexOf("field5,")+7);
-    String field5 = data_tmp.substring(0,data_tmp.indexOf(","));
-    Serial.println("field5="+field5);
-  }
-  if (data.lastIndexOf("field6,")!=-1) {
-    data_tmp = data.substring(data.lastIndexOf("field6,")+7);
-    String field6 = data_tmp.substring(0,data_tmp.indexOf(","));
-    Serial.println("field6="+field6);
-  }
-  if (data.lastIndexOf("field7,")!=-1) {
-    data_tmp = data.substring(data.lastIndexOf("field7,")+7);
-    String field7 = data_tmp.substring(0,data_tmp.indexOf(","));
-    Serial.println("field7="+field7);
-  }
-  if (data.lastIndexOf("field8,")!=-1) {
-    data_tmp = data.substring(data.lastIndexOf("field8,")+7);
-    String field8 = data_tmp.substring(0,data_tmp.indexOf(","));
-    Serial.println("field8="+field8); 
-  }
+  String field1 = getField(data,"field1");
+  Serial.println("field1="+field1);
+  String field2 = getField(data,"field2");
+  Serial.println("field2="+field2);
+  String field3 = getField(data,"field3");
+  Serial.println("field3="+field3);
+  String field4 = getField(data,"field4");
+  Serial.println("field4="+field4);  
+  String field5 = getField(data,"field5");
+  Serial.println("field5="+field5);
+  String field6 = getField(data,"field6");
+  Serial.println("field6="+field6);
+  String field7 = getField(data,"field7");
+  Serial.println("field7="+field7);
+  String field8 = getField(data,"field8");
+  Serial.println("field8="+field8); 
   Serial.println();
     
   delay(15000);
@@ -165,5 +140,14 @@ String transJSONtoCSV(String data)
     return data_sub;
   }
   else 
+    return "";
+}
+
+String getField(String data, String field) {
+  if (data.lastIndexOf(field+",")!=-1) {
+    String data_tmp = data.substring(data.lastIndexOf(field+",")+7);
+    return data_tmp.substring(0,data_tmp.indexOf(","));
+  }  
+  else
     return "";
 }
