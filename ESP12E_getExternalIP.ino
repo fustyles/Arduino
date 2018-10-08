@@ -59,8 +59,9 @@ String getExternalIP()
   
   int s = response.indexOf("Your IP is");
   if (s!=-1)  {
-    String data_sub = response.substring(s+25,s+50);
-    return data_sub.substring(0,data_sub.indexOf("<BR>"));
+    String data_sub = response.substring(s);
+    s = data_sub.indexOf("<td>");
+    return data_sub.substring(s+4,data_sub.indexOf("<BR>"));
   }
   else 
     return "";
