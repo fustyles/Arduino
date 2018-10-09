@@ -48,7 +48,7 @@ void setup()
     request = "/feeds/cells/" + key + "/1/public/values?alt=json-in-script&callback=doData";
     String response = tcp(domain,request,80,1);  
     //Serial.println(response);
-    String A1 = getGoogleSheet(response,1,1);
+    String A1 = getGoogleSheetField(response,1,1);
     Serial.println("Get Data = " + A1);
   }  
   else
@@ -59,7 +59,7 @@ void loop()
 {
 }
 
-String getGoogleSheet(String data, int row, int col)
+String getGoogleSheetField(String data, int row, int col)
 {
   String s = "\"row\":\"" + String(row) + "\",\"col\":\"" + String(col) + "\"";
   String data_sub = data.substring(data.indexOf(s));
