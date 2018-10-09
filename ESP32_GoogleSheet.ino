@@ -31,7 +31,7 @@ void setup()
   if (WiFi.localIP().toString()!="0.0.0.0")
   {   
     // IFTTT - Webhooks + Google Sheet
-    String cmd = "on";
+    String cmd = "Hello\%20World";
     Serial.println("Write Data = " + cmd);
     String domain="maker.ifttt.com";
     String event="spreadsheet";
