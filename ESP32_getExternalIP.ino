@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-08 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-09 18:00
 */
 
 #include <WiFi.h>     //ESP32
@@ -57,11 +57,9 @@ String getExternalIP()
   String response = tcp(domain,request,80,1);
   //Serial.println(response);
   
-  int s = response.indexOf("Your IP is");
-  if (s!=-1)  {
-    String data_sub = response.substring(s);
-    s = data_sub.indexOf("<td>");
-    return data_sub.substring(s+4,data_sub.indexOf("<BR>"));
+  String data_sub = response.substring(response.indexOf("Your IP is"));
+  if (data_sub!="")  {
+    return data_sub.substring(data_sub.indexOf("<td>")+4,data_sub.indexOf("<BR>"));
   }
   else 
     return "";
