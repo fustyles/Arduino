@@ -4,9 +4,6 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-12 21:00
 
 Uart Command Format : 
 ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
-
-Expanding Arduino Serial Port Buffer Size
-https://internetofhomethings.com/homethings/?p=927
 */
 
 #include <SoftwareSerial.h>
