@@ -4,6 +4,12 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-12 21:00
 
 Uart Command Format : 
 ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
+
+?restart
+?resetwifi=ssid;password
+?tcp=domain;port;request;wait
+?ifttt=event;key;value1;value2;value3
+?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
 */
 
 #include <SoftwareSerial.h>
