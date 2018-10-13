@@ -47,6 +47,7 @@ WiFiServer server(80);
 
 String Feedback="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
+boolean debug = false;
 
 void ExecuteCommand()
 {
@@ -125,11 +126,19 @@ void ExecuteCommand()
   }     
   else 
   {
+    Feedback="Command is not defined";
     mySerial.println(Command);  // Send command to Arduino Uno
     mySerial.flush();
     delay(10); 
-    Feedback="Command is not defined";
   }
+  
+  if (debug==true)
+  {
+    Serial.println(Feedback);
+    mySerial.println(Feedback);  // Send Feedback to Arduino Uno
+    mySerial.flush();
+    delay(10); 
+  }  
 }
 
 void setup()
@@ -190,7 +199,19 @@ void loop()
 {
   Command="";cmd="";str1="";str2="";str3="";str4="";str5="";str6="";str7="";str8="";str9="";
   ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
-
+  
+  if (Serial.available())
+  {
+    while (Serial.available())
+    {
+      char c=Serial.read();
+      Serial.print(String(c));
+      getCommand(c);
+      delay(1);
+    }
+    if (cmd!="") ExecuteCommand();
+  }
+  
   if (mySerial.available())
   {
     while (mySerial.available())
