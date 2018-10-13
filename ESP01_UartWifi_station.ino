@@ -23,7 +23,7 @@ const char* password = "xxxxx";   //your network password
 
 String Feedback="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
-boolean debug = false;
+boolean debug = true;
 
 void ExecuteCommand()
 {
@@ -82,6 +82,7 @@ void ExecuteCommand()
   
   if (debug==true)
   {
+    Serial.println(Feedback);
     mySerial.println(Feedback);  // Send Feedback to Arduino Uno
     mySerial.flush();
     delay(10); 
@@ -136,6 +137,18 @@ void loop()
   Command="";cmd="";str1="";str2="";str3="";str4="";str5="";str6="";str7="";str8="";str9="";
   ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
+  if (Serial.available())
+  {
+    while (Serial.available())
+    {
+      char c=Serial.read();
+      Serial.print(String(c));
+      getCommand(c);
+      delay(1);
+    }
+    if (cmd!="") ExecuteCommand();
+  }
+  
   if (mySerial.available())
   {
     while (mySerial.available())
@@ -224,13 +237,11 @@ Arduino Uno
 
 Uart Command Format:
 ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
-
 ?restart
 ?resetwifi=ssid;password
 ?tcp=domain;port;request;wait
 ?ifttt=event;key;value1;value2;value3
 ?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
-
 
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11);  // ESP01 TX(gpio2)->D10, RX(gpio0)->D11
