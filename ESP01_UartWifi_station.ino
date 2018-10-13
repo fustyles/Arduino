@@ -23,6 +23,7 @@ const char* password = "xxxxx";   //your network password
 
 String Feedback="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
+boolean debug = false;
 
 void ExecuteCommand()
 {
@@ -77,6 +78,13 @@ void ExecuteCommand()
   else 
   {
     Feedback="Command is not defined";
+  }
+  
+  if (debug==true)
+  {
+    mySerial.println(Feedback);  // Send Feedback to Arduino Uno
+    mySerial.flush();
+    delay(10); 
   }
 }
 
