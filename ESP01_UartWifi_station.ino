@@ -1,6 +1,6 @@
 /* 
 ESP-01 + Arduino Uno (without using AT Command)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-12 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-13 15:00
 
 Uart Command Format : 
 ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -23,7 +23,7 @@ const char* password = "xxxxx";   //your network password
 
 String Feedback="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
-boolean debug = true;
+boolean debug = false;
 
 void ExecuteCommand()
 {
@@ -234,9 +234,9 @@ String tcp(String domain,String request,int port,byte wait)
 
 /*
 Arduino Uno
-
 Uart Command Format:
 ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
+
 ?restart
 ?resetwifi=ssid;password
 ?tcp=domain;port;request;wait
@@ -245,6 +245,7 @@ Uart Command Format:
 
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11);  // ESP01 TX(gpio2)->D10, RX(gpio0)->D11
+
 void setup()
 {
   Serial.begin(9600);
