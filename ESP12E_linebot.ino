@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP12E)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-16 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-16 20:00
 */
 
 #include <ESP8266WiFi.h>     //ESP12E
@@ -48,18 +48,27 @@ void setup()
 
   if (WiFi.localIP().toString()!="0.0.0.0")
   {
-    // IFTTT (webhooks + webhooks) + Google Apps Script + Line Bot
     String domain="maker.ifttt.com";
-    String request = "";
+    String key="dwGDpfZMocgp179E5zpZwuxxx";
+    String request="";
     
     String text = WiFi.localIP().toString();
-    request = "/trigger/linebot_text/with/key/xxxdwGDpfZMocgp179E5zpZwu?value1="+text;
+    request = "/trigger/linebot_text/with/key/"+key+"?value1="+text;
     Serial.println(tcp(domain,request,80,0));
+    Serial.println();
 
     delay(5000);
 
-    request = "/trigger/linebot_sticker/with/key/xxxdwGDpfZMocgp179E5zpZwu?value1=1&value2=2";
+    request = "/trigger/linebot_sticker/with/key/"+key+"?value1=1&value2=2";
     Serial.println(tcp(domain,request,80,0));
+    Serial.println();
+
+    delay(5000);
+
+    String originalContentUrl = "https://video.nextmag.com.tw/photo/2016/04/25/1461565395_f66f-tile_1461575684432_555961_ver1.0.jpg";
+    String previewImageUrl = "https://video.nextmag.com.tw/photo/2016/01/26/B766ENT02-01_1453804306593_487920_ver1.0.jpg";
+    request = "/trigger/linebot_image/with/key/"+key+"?value1="+originalContentUrl+"&value2="+previewImageUrl;
+    Serial.println(tcp(domain,request,80,0));    
   }
 }
 
