@@ -69,7 +69,10 @@ void setup()
     String originalContentUrl = "https://video.nextmag.com.tw/photo/2016/04/25/1461565395_f66f-tile_1461575684432_555961_ver1.0.jpg";
     String previewImageUrl = "https://video.nextmag.com.tw/photo/2016/01/26/B766ENT02-01_1453804306593_487920_ver1.0.jpg";
     request = "/trigger/linebot_image/with/key/"+key+"?value1="+originalContentUrl+"&value2="+previewImageUrl;
-    Serial.println(tcp(domain,request,80,0));    
+    Serial.println(tcp(domain,request,80,0)); 
+    Serial.println();
+    
+    delay(5000);
   }
 }
 
