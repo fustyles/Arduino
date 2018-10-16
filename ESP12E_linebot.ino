@@ -58,7 +58,7 @@ void setup()
 
     delay(5000);
 
-    request = "/trigger/linebot_image/with/key/xxxdwGDpfZMocgp179E5zpZwu?value1=1&value2=2";
+    request = "/trigger/linebot_sticker/with/key/xxxdwGDpfZMocgp179E5zpZwu?value1=1&value2=2";
     Serial.println(tcp(domain,request,80,0));
   }
 }
