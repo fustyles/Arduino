@@ -53,12 +53,12 @@ void setup()
     String request = "";
     
     String text = WiFi.localIP().toString();
-    request = "/trigger/linebot_text/with/key/dwGDpfZMocgp179E5zpZwu?value1="+text;
+    request = "/trigger/linebot_text/with/key/xxxdwGDpfZMocgp179E5zpZwu?value1="+text;
     Serial.println(tcp(domain,request,80,0));
 
     delay(5000);
 
-    request = "/trigger/linebot_image/with/key/dwGDpfZMocgp179E5zpZwu?value1=1&value2=2";
+    request = "/trigger/linebot_image/with/key/xxxdwGDpfZMocgp179E5zpZwu?value1=1&value2=2";
     Serial.println(tcp(domain,request,80,0));
   }
 }
