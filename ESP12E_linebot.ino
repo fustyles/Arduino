@@ -51,24 +51,30 @@ void setup()
     // IFTTT (webhooks+webhooks) + Google Apps Script + Line Bot
     String domain="maker.ifttt.com";
     String key="dwGDpfZMocgp179E5zpZwuxxx";
+    String event="",value1="",value2="",value3="";
     String request="";
     
-    String text = WiFi.localIP().toString();
-    request = "/trigger/linebot_text/with/key/"+key+"?value1="+text;
+    event="linebot_text";
+    value1=WiFi.localIP().toString();
+    request = "/trigger/"+event+"/with/key/"+key+"?value1="+value1;
     Serial.println(tcp(domain,request,80,0));
     Serial.println();
 
     delay(5000);
 
-    request = "/trigger/linebot_sticker/with/key/"+key+"?value1=1&value2=2";
+    event="linebot_sticker";
+    value1="1";
+    value2="2";
+    request = "/trigger/"+event+"/with/key/"+key+"?value1="+value1+"&value2="+value2;
     Serial.println(tcp(domain,request,80,0));
     Serial.println();
 
     delay(5000);
 
-    String originalContentUrl = "https://video.nextmag.com.tw/photo/2016/04/25/1461565395_f66f-tile_1461575684432_555961_ver1.0.jpg";
-    String previewImageUrl = "https://video.nextmag.com.tw/photo/2016/01/26/B766ENT02-01_1453804306593_487920_ver1.0.jpg";
-    request = "/trigger/linebot_image/with/key/"+key+"?value1="+originalContentUrl+"&value2="+previewImageUrl;
+    event="linebot_image";
+    value1 = "https://video.nextmag.com.tw/photo/2016/04/25/1461565395_f66f-tile_1461575684432_555961_ver1.0.jpg";
+    value2 = "https://video.nextmag.com.tw/photo/2016/01/26/B766ENT02-01_1453804306593_487920_ver1.0.jpg";
+    request = "/trigger/linebot_image/with/key/"+key+"?value1="+value1+"&value2="+value2;
     Serial.println(tcp(domain,request,80,0)); 
     Serial.println();
     
