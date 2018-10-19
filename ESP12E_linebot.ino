@@ -48,7 +48,7 @@ void setup()
 
   if (WiFi.localIP().toString()!="0.0.0.0")
   {
-    // IFTTT (webhooks+webhooks) + Google Apps Script + Line Bot
+    // IFTTT (this: Webhooks, that: Webhooks) + Google Apps Script + Line Bot
     String domain="maker.ifttt.com";
     String key="dwGDpfZMocgp179E5zpZwuxxx";
     String event="",value1="",value2="",value3="";
