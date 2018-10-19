@@ -54,6 +54,7 @@ void setup()
     String event="",value1="",value2="",value3="";
     String request="";
     
+    // text
     event="linebot_text";
     value1=WiFi.localIP().toString();
     request = "/trigger/"+event+"/with/key/"+key+"?value1="+value1;
@@ -62,6 +63,7 @@ void setup()
 
     delay(5000);
 
+    // sticker
     event="linebot_sticker";
     value1="1";
     value2="2";
@@ -71,6 +73,7 @@ void setup()
 
     delay(5000);
 
+    // image
     event="linebot_image";
     value1 = "https://video.nextmag.com.tw/photo/2016/04/25/1461565395_f66f-tile_1461575684432_555961_ver1.0.jpg";
     value2 = "https://video.nextmag.com.tw/photo/2016/01/26/B766ENT02-01_1453804306593_487920_ver1.0.jpg";
@@ -79,6 +82,10 @@ void setup()
     Serial.println();
     
     delay(5000);
+    
+    // vedio
+    
+    // location
   }
 }
 
