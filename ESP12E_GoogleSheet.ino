@@ -43,7 +43,7 @@ void setup()
 
     delay(5000);
 
-    // Get data from Google Sheet
+    // Get data from Google Sheet (Publish to the web)
     domain="spreadsheets.google.com";
     key="1bG9wDbyY0Rx1D3ayZN-vwq8ijCc3qOyTdPi92fEs8wQ";
     request = "/feeds/cells/" + key + "/1/public/values?alt=json-in-script&callback=doData";
