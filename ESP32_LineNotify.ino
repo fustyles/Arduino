@@ -42,7 +42,7 @@ void setup() {
   else
      Serial.println("Unable to connect!"); 
 
-  //LineNotify push a message
+  //Push a message to LineNotify
   if (WiFi.localIP().toString()!="0.0.0.0") {
     String request = "message=Hello&stickerPackageId=1&stickerId=2";
     String Response = LineNotify(token, request, 1);
