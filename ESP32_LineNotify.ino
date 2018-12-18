@@ -1,4 +1,4 @@
-#include <WiFi.h>
+#include <WiFi.h>             //ESP32
 #include "WiFiClientSecure.h"
 
 const char* ssid     = "";   // your network SSID
