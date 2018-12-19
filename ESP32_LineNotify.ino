@@ -46,6 +46,8 @@ void setup() {
   if (WiFi.localIP().toString()!="0.0.0.0") {
     String request = "message=Taiwan\nI love you!&stickerPackageId=1&stickerId=2";
     request.replace(" ","%20");
+    request.replace("&","%20");
+    request.replace("#","%20");
     request.replace("\'","%27");
     request.replace("\"","%22");
     request.replace("\n","%0D%0A");
