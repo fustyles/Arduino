@@ -45,6 +45,8 @@ void setup() {
   //Push a message to LineNotify
   if (WiFi.localIP().toString()!="0.0.0.0") {
     String request = "message=Hello&stickerPackageId=1&stickerId=2";
+    request.replace(" ","%20");
+    request.replace("\n","%0D%0A");
     String Response = LineNotify(token, request, 1);
     Serial.println(Response);
   }
