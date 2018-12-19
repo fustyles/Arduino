@@ -45,8 +45,10 @@ void setup() {
 
   //LineNotify push a message
   if (WiFi.localIP().toString()!="0.0.0.0") {
-    String message = "Taiwan\nI love you!";
+    String message = "Taiwan\nI\'m a \"Maker\"";
     message.replace(" ","%20");
+    message.replace("\'","%27");
+    message.replace("\"","%22");
     message.replace("\n","%0D%0A");
     LineNotify(token, message);
   }
