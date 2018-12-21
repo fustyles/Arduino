@@ -47,6 +47,7 @@ void setup() {
   //LineNotify push a message
   if (WiFi.localIP().toString()!="0.0.0.0") {
     String message = "Taiwan\nI'm a \"Maker\"";
+    
     //LineNotify_http_get(token, message);
     LineNotify_https_post(message);
   }
@@ -72,7 +73,6 @@ String LineNotify_https_post(String message)
   http.addHeader("Connection", "close");
 
   int httpCode = http.POST("message="+message);
-  //http.writeToStream(&Serial);
   http.end();
   
   if(httpCode > 0) {
