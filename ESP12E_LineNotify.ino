@@ -48,7 +48,7 @@ void setup() {
   if (WiFi.localIP().toString()!="0.0.0.0") {
     String message = "Taiwan\nI'm a \"Maker\"";
     
-    //LineNotify_http_get(token, message);
+    //LineNotify_http_get(message);
     LineNotify_https_post(message);
   }
 }
