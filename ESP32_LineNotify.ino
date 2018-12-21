@@ -51,7 +51,7 @@ void setup() {
     request.replace("\'","%27");
     request.replace("\"","%22");
     request.replace("\n","%0D%0A");
-    String Response = LineNotify(token, request, 1);
+    String Response = LineNotify(request, 1);
     Serial.println(Response);
   }
 }
@@ -60,7 +60,7 @@ void loop()
 {
 }
 
-String LineNotify(String token, String request, byte wait)
+String LineNotify(String request, byte wait)
 {
   WiFiClientSecure client_tcp;
   
