@@ -48,7 +48,7 @@ void setup() {
   if (WiFi.localIP().toString()!="0.0.0.0") {
     String message = "Taiwan\nI'm a \"Maker\"";
     //LineNotify_http_get(token, message);
-    LineNotify_https_post(token, message);
+    LineNotify_https_post(message);
   }
 }
 
@@ -56,7 +56,7 @@ void loop()
 {
 }
 
-String LineNotify_https_post(String token, String message)
+String LineNotify_https_post(String message)
 {
   message.replace(" ","%20");
   message.replace("&","%20");
@@ -82,7 +82,7 @@ String LineNotify_https_post(String token, String message)
       Serial.println("Connection Error!");
 }
 
-String LineNotify_http_get(String token, String message)
+String LineNotify_http_get(String message)
 {
   message.replace(" ","%20");
   message.replace("&","%20");
