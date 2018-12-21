@@ -53,10 +53,10 @@ void setup() {
     //request.replace("\'","%27");
     request.replace("\"","%22");
     request.replace("\n","%0D%0A");
+    
     request += "&stickerPackageId=1&stickerId=2";
-    LineNotify(request, 1);
-    //String Response = LineNotify(request, 1);
-    //Serial.println(Response);
+    String Response = LineNotify(request, 1);
+    Serial.println(Response);
   }
 }
 
