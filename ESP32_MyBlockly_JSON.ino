@@ -361,19 +361,6 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
     delay(1);
     client.stop();
   }
-  /*
-  if (SensorValue>LimitValue)
-  {
-    cmd="yourcmd";
-    str1="yourstr1";
-    str2="yourstr2";
-    str3="yourstr3";
-    ...
-    str9="yourstr9";
-    ExecuteCommand();
-    delay(10000);
-  }
-  */
 }
 
 void getCommand(char c)
