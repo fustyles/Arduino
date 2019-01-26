@@ -125,7 +125,6 @@ void ExecuteCommand()
     int port=str2.toInt();
     String request=str3;
     int wait=str4.toInt();      // wait = 0 or 1
-
     if ((port==443)||(domain.indexOf("https")==0)||(domain.indexOf("HTTPS")==0))
       Feedback="{\"data\":\""+tcp_https(domain,request,port,wait)+"\"}";
     else
