@@ -29,8 +29,8 @@ Control Page (http)
 https://github.com/fustyles/Arduino/blob/master/ESP8266_MyFirmata.html
 */
 
-#include <Wire.h> 
-#include <LiquidCrystal_I2C.h>
+//#include <Wire.h> 
+//#include <LiquidCrystal_I2C.h>
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -244,6 +244,7 @@ void ExecuteCommand()
       }        
     }
   } 
+  /*
   else if (cmd=="i2cLcd") {
     LiquidCrystal_I2C lcd(P1.toInt(),16,2);
     lcd.begin(P2.toInt(), P3.toInt());
@@ -255,6 +256,7 @@ void ExecuteCommand()
     lcd.print(P5);
     Feedback="{\"data\":\""+Command+"\"}";
   }
+  */
   else {
     Feedback="{\"data\":\"Command is not defined\"}";
   }
