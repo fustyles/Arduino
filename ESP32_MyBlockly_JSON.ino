@@ -335,7 +335,10 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
             client.println("Access-Control-Allow-Origin: *");
             //client.println("Connection: close");
             client.println();
-            client.println("["+Feedback+"]");
+            if (Feedback=="")
+              client.println("[{\"data\":\"Welcome to myBlockly\"}]");
+            else
+              client.println("["+Feedback+"]");
             client.println();
             
             Feedback="";
