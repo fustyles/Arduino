@@ -516,6 +516,12 @@ String LineNotify(String token, String request, byte wait)
   //request.replace("\'","%27");
   request.replace("\"","%22");
   request.replace("\n","%0D%0A");
+  request.replace("%3Cbr%3E","%0D%0A");
+  request.replace("%3Cbr/%3E","%0D%0A");
+  request.replace("%3Cbr%20/%3E","%0D%0A");
+  request.replace("%3CBR%3E","%0D%0A");
+  request.replace("%3CBR/%3E","%0D%0A");
+  request.replace("%3CBR%20/%3E>","%0D%0A");     
   
   WiFiClientSecure client_tcp;
   
