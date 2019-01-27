@@ -521,7 +521,9 @@ String LineNotify(String token, String request, byte wait)
   request.replace("%3Cbr%20/%3E","%0D%0A");
   request.replace("%3CBR%3E","%0D%0A");
   request.replace("%3CBR/%3E","%0D%0A");
-  request.replace("%3CBR%20/%3E","%0D%0A");     
+  request.replace("%3CBR%20/%3E","%0D%0A"); 
+  request.replace("%20stickerPackageId","&stickerPackageId");
+  request.replace("%20stickerId","&stickerId");    
   
   WiFiClientSecure client_tcp;
   
