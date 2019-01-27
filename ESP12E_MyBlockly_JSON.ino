@@ -29,9 +29,9 @@ Control Page (http)
 https://github.com/fustyles/Arduino/blob/master/ESP8266_MyFirmata.html
 */
 
-//https://github.com/fdebrabander/Arduino-LiquidCrystal-I2C-library
-//#include <Wire.h> 
-//#include <LiquidCrystal_I2C.h>
+//Library : https://github.com/fdebrabander/Arduino-LiquidCrystal-I2C-library
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
 
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
