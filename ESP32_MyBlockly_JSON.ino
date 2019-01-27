@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-1-26 18:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-1-27 16:00
 Command Format :  
 http://APIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://STAIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
@@ -21,7 +21,7 @@ http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
 http://192.168.4.1/?thingspeakread=request
 http://192.168.4.1/?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
-http://192.168.4.1/?i2cLcd=address;pinSDA;pinSCL;text1;text2
+http://192.168.4.1/?i2cLcd=address;gpioSDA;gpioSCL;text1;text2
 STAIP：
 Query：http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
