@@ -380,6 +380,12 @@ String LineNotify(String token, String message, byte wait)
   //message.replace("\'","%27");
   message.replace("\"","%22");
   message.replace("\n","%0D%0A");
+  message.replace("%3Cbr%3E","%0D%0A");
+  message.replace("%3Cbr/%3E","%0D%0A");
+  message.replace("%3Cbr%20/%3E","%0D%0A");
+  message.replace("%3CBR%3E","%0D%0A");
+  message.replace("%3CBR/%3E","%0D%0A");
+  message.replace("%3CBR%20/%3E>","%0D%0A");     
   
   http.begin("http://linenotify.com/notify.php?token="+token+"&"+message);
   int httpCode = http.GET();
