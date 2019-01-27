@@ -150,7 +150,6 @@ void ExecuteCommand()
     String request = P2;
     Feedback="{\"data\":\""+LineNotify(token,request,1)+"\"}";
   } 
-  /*
   else if (cmd=="i2cLcd") {
     LiquidCrystal_I2C lcd(P1.toInt(),16,2);
     Wire.begin(P2.toInt(), P3.toInt());
@@ -163,7 +162,6 @@ void ExecuteCommand()
     lcd.print(P5);
     Feedback="{\"data\":\""+Command+"\"}";
   }
-  */
   else {
     Feedback="{\"data\":\"Command is not defined\"}";
   }
