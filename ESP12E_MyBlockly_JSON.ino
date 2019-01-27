@@ -160,7 +160,7 @@ void ExecuteCommand()
     lcd.print(P4);
     lcd.setCursor(0,1);
     lcd.print(P5);
-    Feedback="{\"data\":\""+Command+"\"}";
+    Feedback="{\"data\":\""+P4+"\"},{\"data\":\""+P5+"\"}";
   }
   else {
     Feedback="{\"data\":\"Command is not defined\"}";
