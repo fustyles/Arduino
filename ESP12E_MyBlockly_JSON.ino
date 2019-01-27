@@ -29,7 +29,7 @@ Control Page (http)
 https://github.com/fustyles/Arduino/blob/master/ESP8266_MyFirmata.html
 */
 
-//https://github.com/agnunez/ESP8266-I2C-LCD1602
+//https://github.com/fdebrabander/Arduino-LiquidCrystal-I2C-library
 //#include <Wire.h> 
 //#include <LiquidCrystal_I2C.h>
 
