@@ -386,6 +386,8 @@ String LineNotify(String token, String message, byte wait)
   message.replace("%3CBR%3E","%0D%0A");
   message.replace("%3CBR/%3E","%0D%0A");
   message.replace("%3CBR%20/%3E","%0D%0A");     
+  message.replace("%20stickerPackageId","&stickerPackageId");
+  message.replace("%20stickerId","&stickerId");    
   
   http.begin("http://linenotify.com/notify.php?token="+token+"&"+message);
   int httpCode = http.GET();
