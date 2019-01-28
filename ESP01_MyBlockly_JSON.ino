@@ -404,8 +404,7 @@ String LineNotify(String token, String message, byte wait)
   http.begin("http://linenotify.com/notify.php?token="+token+"&"+message);
   int httpCode = http.GET();
   if(httpCode > 0) {
-      if(httpCode == 200) 
-        return http.getString();
+      return http.getString();
   } else 
       return "Connection Error!";
 }
