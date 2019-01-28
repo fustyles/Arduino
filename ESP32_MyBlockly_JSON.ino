@@ -152,7 +152,8 @@ void ExecuteCommand()
   else if (cmd=="thingspeakread") {
     String domain="api.thingspeak.com";
     String request = P1;
-    Feedback=tcp_https(domain,request,443,1);
+    Feedback=tcp(domain,request,80,1);
+    Serial.println(Feedback);
     int s=Feedback.indexOf("feeds");
     Feedback=Feedback.substring(s+8);
     int e=Feedback.indexOf("]");
@@ -166,6 +167,8 @@ void ExecuteCommand()
     Feedback.replace("}","");
     Feedback.replace("[","");
     Feedback.replace("]","");
+    Feedback.replace(",\"",",");
+    Feedback.replace("\":",",");
     Feedback="{\"data\":\""+Feedback+"\"}";
   } 
   else if (cmd=="linenotify") {
