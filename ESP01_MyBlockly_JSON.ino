@@ -18,6 +18,7 @@ http://192.168.4.1/?analogread=pin
 http://192.168.4.1/?tcp=domain;port;request;wait
 http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
+http://192.168.4.1/?thingspeakread=request
 http://192.168.4.1/?linenotify=token;request
 http://192.168.4.1/?i2cLcd=address;gpioSDA;gpioSCL;text1;text2
 STAIP：
@@ -138,6 +139,11 @@ void ExecuteCommand()
     request += "&field1="+P2+"&field2="+P3+"&field3="+P4+"&field4="+P5+"&field5="+P6+"&field6="+P7+"&field7="+P8+"&field8="+P9;
     Feedback="{\"data\":\""+tcp(domain,request,80,0)+"\"}";
   }    
+  else if (cmd=="thingspeakread") {
+    String domain="api.thingspeak.com";
+    String request = P1;
+    Feedback="{\"data\":\""+tcp(domain,request,80,1)+"\"}";
+  }   
   else if (cmd=="linenotify") {
     String token = P1;
     String request = P2;
