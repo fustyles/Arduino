@@ -1,6 +1,6 @@
 /* 
 ESP01
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-1-28 10:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-1-28 21:30
 Command Format :  
 http://APIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://STAIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
@@ -143,6 +143,7 @@ void ExecuteCommand()
     String domain="api.thingspeak.com";
     String request = P1;
     Feedback=tcp(domain,request,80,1);
+    Serial.println(Feedback);
     int s=Feedback.indexOf("feeds");
     Feedback=Feedback.substring(s+8);
     int e=Feedback.indexOf("]");
@@ -156,6 +157,8 @@ void ExecuteCommand()
     Feedback.replace("}","");
     Feedback.replace("[","");
     Feedback.replace("]","");
+    Feedback.replace(",\"",",");
+    Feedback.replace("\":",",");
     Feedback="{\"data\":\""+Feedback+"\"}";
   }  
   else if (cmd=="linenotify") {
