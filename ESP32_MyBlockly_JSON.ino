@@ -170,7 +170,17 @@ void ExecuteCommand()
   else if (cmd=="linenotify") {
     String token = P1;
     String request = P2;
-    Feedback="{\"data\":\""+LineNotify(token,request,1)+"\"}";
+    Feedback=LineNotify(token,request,1);
+    if (Feedback.indexOf("status")!=-1) {
+      int s=Feedback.indexOf("{");
+      Feedback=Feedback.substring(s);
+      int e=Feedback.indexOf("}");
+      Feedback=Feedback.substring(0,e);
+      Feedback.replace("\"","");
+      Feedback.replace("{","");
+      Feedback.replace("}","");
+    }
+    Feedback="{\"data\":\""+Feedback+"\"}";
   } 
   else if (cmd=="car") {
     ledcAttachPin(P1.toInt(), 1);
@@ -578,11 +588,7 @@ String LineNotify(String token, String request, byte wait)
         if ((state==true)&&(Feedback.length()!= 0)) break;
     }
     client_tcp.stop();
-    Serial.println(Feedback);
-    if (Feedback.indexOf("ok")!=-1)
-      return "LineNotify success.";
-    else
-      return "LineNotify error.";
+    return Feedback;
   }
   else
     return "Connection failed";  
