@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-1-27 16:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-1-28 09:30
 Command Format :  
 http://APIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://STAIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
@@ -152,8 +152,21 @@ void ExecuteCommand()
   else if (cmd=="thingspeakread") {
     String domain="api.thingspeak.com";
     String request = P1;
-    Feedback="{\"data\":\""+tcp_https(domain,request,443,1)+"\"}";
-  } 
+    Feedback=tcp_https(domain,request,443,1);
+    int s=Feedback.indexOf("feeds");
+    Feedback=Feedback.substring(s+8);
+    int e=Feedback.indexOf("]");
+    Feedback=Feedback.substring(0,e);
+    Feedback.replace("\":\"",",");
+    Feedback.replace("\":",",");
+    Feedback.replace("\",\"",","); 
+    Feedback.replace("\"","");
+    Feedback.replace("{","");
+    Feedback.replace("}","");
+    Feedback.replace("[","");
+    Feedback.replace("]","");
+    Feedback="{\"data\":\""+Feedback+"\"}";
+  }
   else if (cmd=="linenotify") {
     String token = P1;
     String request = P2;
