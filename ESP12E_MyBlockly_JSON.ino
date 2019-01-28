@@ -171,10 +171,7 @@ void ExecuteCommand()
       Feedback=Feedback.substring(0,e);
       Feedback.replace("\n","");
       Feedback.replace(" ","");
-      Feedback.replace(":",",");
-      Feedback.replace("=",",");
     }
-    Serial.println(Feedback);
     Feedback="{\"data\":\""+Feedback+"\"}";  
   } 
   else if (cmd=="i2cLcd") {
