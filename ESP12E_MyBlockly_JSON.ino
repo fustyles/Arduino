@@ -163,7 +163,19 @@ void ExecuteCommand()
   else if (cmd=="linenotify") {
     String token = P1;
     String request = P2;
-    Feedback="{\"data\":\""+LineNotify(token,request,1)+"\"}";
+    Feedback=LineNotify(token,request,1);
+    if (Feedback.indexOf("status")!=-1) {
+      int s=Feedback.indexOf("status");
+      Feedback=Feedback.substring(s);
+      int e=Feedback.indexOf("</body>");
+      Feedback=Feedback.substring(0,e);
+      Feedback.replace("\n","");
+      Feedback.replace(" ","");
+      Feedback.replace(":",",");
+      Feedback.replace("=",",");
+    }
+    Serial.println(Feedback);
+    Feedback="{\"data\":\""+Feedback+"\"}";  
   } 
   else if (cmd=="i2cLcd") {
     LiquidCrystal_I2C lcd(P1.toInt(),16,2);
