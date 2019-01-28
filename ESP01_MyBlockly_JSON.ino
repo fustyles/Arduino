@@ -147,6 +147,7 @@ void ExecuteCommand()
     Feedback=Feedback.substring(s+8);
     int e=Feedback.indexOf("]");
     Feedback=Feedback.substring(0,e);
+    Feedback.replace("},{",";");
     Feedback.replace("\":\"",",");
     Feedback.replace("\":",",");
     Feedback.replace("\",\"",","); 
