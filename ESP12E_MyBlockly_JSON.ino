@@ -149,6 +149,7 @@ void ExecuteCommand()
     Feedback=Feedback.substring(s+8);
     int e=Feedback.indexOf("]");
     Feedback=Feedback.substring(0,e);
+    Feedback.replace("},{",";");
     Feedback.replace("\":\"",",");
     Feedback.replace("\":",",");
     Feedback.replace("\",\"",","); 
@@ -158,7 +159,7 @@ void ExecuteCommand()
     Feedback.replace("[","");
     Feedback.replace("]","");
     Feedback="{\"data\":\""+Feedback+"\"}";
-  }
+  } 
   else if (cmd=="linenotify") {
     String token = P1;
     String request = P2;
