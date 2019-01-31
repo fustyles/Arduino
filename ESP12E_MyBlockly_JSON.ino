@@ -85,8 +85,7 @@ void ExecuteCommand()
     Serial.println("STAIP: "+WiFi.localIP().toString());
     Feedback="{\"data\":\""+WiFi.softAPIP().toString()+"\"},{\"data\":\""+WiFi.localIP().toString()+"\"}";
     /*
-    if (WiFi.localIP().toString()!="0.0.0.0") 
-    {
+    if (WiFi.localIP().toString()!="0.0.0.0") {
       cmd="linenotify";
       P1 = "yourToken";
       P2 = "message="+WiFi.localIP().toString();
