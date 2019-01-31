@@ -1,3 +1,8 @@
+/* 
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-1-1 21:00
+https://www.facebook.com/francefu
+*/
+
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
 
