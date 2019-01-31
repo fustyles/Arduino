@@ -84,12 +84,10 @@ void ExecuteCommand()
     Serial.println("STAIP: "+WiFi.localIP().toString());
     Feedback="{\"data\":\""+WiFi.softAPIP().toString()+"\"},{\"data\":\""+WiFi.localIP().toString()+"\"}";
     /*
-    if (WiFi.localIP().toString()!="0.0.0.0") 
-    {
-      cmd="ifttt";
-      P1="eventname";
-      P2="key";
-      P3=WiFi.localIP().toString();
+    if (WiFi.localIP().toString()!="0.0.0.0") {
+      cmd="linenotify";
+      P1 = "yourToken";
+      P2 = "message="+WiFi.localIP().toString();
       ExecuteCommand();
     }
     */
@@ -332,10 +330,9 @@ void setup()
     {
       WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
       /*
-      cmd="ifttt";
-      P1="eventname";
-      P2="key";
-      P3=WiFi.localIP().toString();
+      cmd="linenotify";
+      P1 = "yourToken";
+      P2 = "message="+WiFi.localIP().toString();
       ExecuteCommand();
       */
     }
@@ -408,19 +405,6 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
     delay(1);
     client.stop();
   }
-  /*
-  if (SensorValue>LimitValue)
-  {
-    cmd="yourcmd";
-    P1="yourP1";
-    P2="yourP2";
-    P3="yourP3";
-    ...
-    P9="yourP9";
-    ExecuteCommand();
-    delay(10000);
-  }
-  */
 }
 
 void getCommand(char c)
