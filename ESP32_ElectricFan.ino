@@ -3,6 +3,7 @@ Electric Fan (NodeMCU ESP32)
 You must provide stable and large enough current for ESP or the fan will not work properly.
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-05 22:00
+https://www.facebook.com/francefu
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
