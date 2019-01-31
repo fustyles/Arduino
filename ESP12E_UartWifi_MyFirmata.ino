@@ -2,6 +2,7 @@
 Arduino Uno + NodeMCU (ESP12E) (without using AT Command)
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-13 17:00
+https://www.facebook.com/francefu
 
 Wifi Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
