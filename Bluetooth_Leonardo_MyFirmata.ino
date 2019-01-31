@@ -2,6 +2,7 @@
 Arduino Leonardo (keyboard,mouse) + Bluetooth
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-07 13:00 
+https://www.facebook.com/francefu
 
 Uart Command Format : 
 ?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
