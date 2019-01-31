@@ -87,10 +87,9 @@ void ExecuteCommand()
     /*
     if (WiFi.localIP().toString()!="0.0.0.0") 
     {
-      cmd="ifttt";
-      P1="eventname";
-      P2="key";
-      P3=WiFi.localIP().toString();
+      cmd="linenotify";
+      P1 = "yourToken";
+      P2 = "message="+WiFi.localIP().toString();
       ExecuteCommand();
     }
     */
@@ -237,10 +236,9 @@ void setup()
     {
       WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
       /*
-      cmd="ifttt";
-      str1="eventname";
-      str2="key";
-      str3=WiFi.localIP().toString();
+      cmd="linenotify";
+      P1 = "yourToken";
+      P2 = "message="+WiFi.localIP().toString();
       ExecuteCommand();
       */
     }
