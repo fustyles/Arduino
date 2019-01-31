@@ -4,10 +4,6 @@ ESP-01 + Arduino Uno (AT Command)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-05 22:00 
 https://www.facebook.com/francefu
 
-nodemcu-flasher
-https://github.com/nodemcu/nodemcu-flasher
-(Baudrate:115200, Flash size:1MByte, Flash speed:26.7MHz, SPI Mode:QIO)
-
 Expanding Arduino Serial Port Buffer Size
 https://internetofhomethings.com/homethings/?p=927
 https://www.facebook.com/francefu/videos/10211231615856099/
