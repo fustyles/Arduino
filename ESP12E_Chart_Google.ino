@@ -2,6 +2,7 @@
 NodeMCU ESP12E Chart (Google)
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-05 22:00
+https://www.facebook.com/francefu
 
 Command Format :  
 http://STAIP   (default:LineChart)
