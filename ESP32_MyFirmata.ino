@@ -1,6 +1,7 @@
 /* 
 NodeMCU (ESP32)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-07 10:00
+https://www.facebook.com/francefu
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
