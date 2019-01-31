@@ -2,14 +2,7 @@
 Arduino Uno + ESP-01 (AT Command)
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-07 22:00
-
-Update AT Firmware(V2.0_AT_Firmware)
-https://www.youtube.com/watch?v=QVhWVu8NnZc
-http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
-
-nodemcu-flasher
-https://github.com/nodemcu/nodemcu-flasher
-(Baudrate:115200, Flash size:1MByte, Flash speed:26.7MHz, SPI Mode:QIO)
+https://www.facebook.com/francefu
 
 Expanding Arduino Serial Port Buffer Size
 https://internetofhomethings.com/homethings/?p=927
