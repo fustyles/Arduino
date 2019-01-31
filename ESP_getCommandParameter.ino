@@ -1,6 +1,7 @@
 /* 
 ESP8266 (ESP01, ESP12E, ESP32)
 Author : ChungYi Fu (Taiwan)  2018-10-07 10:00
+https://www.facebook.com/francefu
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
