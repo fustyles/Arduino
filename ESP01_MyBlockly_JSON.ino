@@ -143,7 +143,6 @@ void ExecuteCommand()
     String domain="api.thingspeak.com";
     String request = P1;
     Feedback=tcp(domain,request,80,1);
-    Serial.println(Feedback);
     int s=Feedback.indexOf("feeds");
     Feedback=Feedback.substring(s+8);
     int e=Feedback.indexOf("]");
