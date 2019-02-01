@@ -152,8 +152,7 @@ void ExecuteCommand()
   else if (cmd=="thingspeakread") {
     String domain="api.thingspeak.com";
     String request = P1;
-    Feedback=tcp_http(domain,request,80,1);
-    Serial.println(Feedback);
+    Feedback=tcp_https(domain,request,443,1);
     int s=Feedback.indexOf("feeds");
     Feedback=Feedback.substring(s+8);
     int e=Feedback.indexOf("]");
