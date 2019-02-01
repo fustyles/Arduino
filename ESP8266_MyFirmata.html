@@ -115,16 +115,16 @@ function wait()
     <td align="right"><input type="reset" value="Clear" height="50">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" id="Send" value="Send" onclick="SendCommand();">&nbsp;&nbsp;&nbsp;</td>
     </tr>
    </table><br>
-   <div id="ShowUrl"></div>
   </td>
   <td valign="top">
-   <iframe id="MyFirmata" width="320" height="370"></iframe><br>
+   <iframe id="MyFirmata" width="320" height="320"></iframe><br>
    Command Format：<br>
-   http://APIP/?cmd=P1;P2;P3;~~~;P7;P8;P9<br>
-   http://STAIP/?cmd=P1;P2;P3;~~~;P7;P8;P9
+   http://APIP/?cmd=P1;P2;P3;P4;P5;P6;;P7;P8;P9<br>
+   http://STAIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
   </td>
  </tr>
 </table>
 </form>
+<div id="ShowUrl"></div>
 </body>
 </html>
