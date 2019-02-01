@@ -22,7 +22,6 @@ var P6=document.getElementById("P6").value;
 var P7=document.getElementById("P7").value;
 var P8=document.getElementById("P8").value;
 var P9=document.getElementById("P9").value;
-
 var link=url+"?"+cmd+"="+P1+";"+P2+";"+P3+";"+P4+";"+P5+";"+P6+";"+P7+";"+P8+";"+P9;
 document.getElementById("ShowUrl").innerHTML="<font color=red>URL："+link+"</font>";
 document.getElementById("MyFirmata").src=link;
@@ -50,22 +49,22 @@ function wait()
     <option value="ip">ip</option>
     <option value="mac">mac</option>
     <option value="restart">restart</option>
-    <option value="resetwifi">resetwifi</option>
+    <option value="resetwifi">resetwifi(ssid,password)</option>
     <option value="at">at</option>
     <option value="inputpullup">inputpullup</option>
     <option value="pinmode">pinmode</option>
-    <option value="digitalwrite">digitalwrite</option>
+    <option value="digitalwrite">digitalwrite(pin,value)</option>
     <option value="analogwrite">analogwrite</option>
-    <option value="digitalread">digitalread</option>
-    <option value="analogread">analogread</option>
-    <option value="touchread">touchread(esp32)</option>
-    <option value="tcp">tcp</option>
-    <option value="ifttt">ifttt</option>
-    <option value="thingspeakupdate">thingspeakupdate</option>
-    <option value="thingspeakread">thingspeakread</option>
-    <option value="linenotify">linenotify</option>
-    <option value="car">car</option>
-    <option value="i2cLcd">i2cLcd</option>
+    <option value="digitalread">digitalread(pin)</option>
+    <option value="analogread">analogread(pin)</option>
+    <option value="touchread">touchread(pin) for ESP32</option>
+    <option value="tcp">tcp(domain,port,request,wait)</option>
+    <option value="ifttt">ifttt(event,key,value1,value2\,value3)</option>
+    <option value="thingspeakupdate">thingspeakupdate(key,field1,field2,field3,field4,field5,field6,field7,field8)</option>
+    <option value="thingspeakread">thingspeakread(request)</option>
+    <option value="linenotify">linenotify(token,request)</option>
+    <option value="car">car(pinL1,pinL2,pinR1,pinR2,L_speed,R_speed,Delay,state)</option>
+    <option value="i2cLcd">i2cLcd(address,gpioSDA,gpioSCL,text1,text2)</option>
     <option value="mousemove">mousemove(Leonardo)</option>
     <option value="mouseclickleft">mouseclickleft(Leonardo)</option>
     <option value="mouseclickright">mouseclickright(Leonardo)</option>
