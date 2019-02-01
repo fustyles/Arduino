@@ -60,10 +60,10 @@ function wait()
     <option value="touchread">touchread(pin) for ESP32</option>
     <option value="tcp">tcp(domain,port,request,wait)</option>
     <option value="ifttt">ifttt(event,key,value1,value2\,value3)</option>
-    <option value="thingspeakupdate">thingspeakupdate(key,field1,field2,field3,field4,field5,field6,field7,field8)</option>
+    <option value="thingspeakupdate">thingspeakupdate(key,field1~field8)</option>
     <option value="thingspeakread">thingspeakread(request)</option>
     <option value="linenotify">linenotify(token,request)</option>
-    <option value="car">car(pinL1,pinL2,pinR1,pinR2,L_speed,R_speed,Delay,state)</option>
+    <option value="car">car(L1,L2,R1,R2,Lspeed,Rspeed,Delay,state)</option>
     <option value="i2cLcd">i2cLcd(address,gpioSDA,gpioSCL,text1,text2)</option>
     <option value="mousemove">mousemove(Leonardo)</option>
     <option value="mouseclickleft">mouseclickleft(Leonardo)</option>
@@ -111,7 +111,7 @@ function wait()
     <td>P9：<input type="text" name="P9" id="P9" size="30" onclick="this.select()"></td>
     </tr>
     <tr>
-    <td align="right"><input type="reset" value="Clear" height="50">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" id="Send" value="Send" onclick="SendCommand();">&nbsp;&nbsp;&nbsp;</td>
+    <td align="center"><input type="reset" value="Clear" height="50">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" id="Send" value="Send" onclick="SendCommand();">&nbsp;&nbsp;&nbsp;</td>
     </tr>
    </table><br>
   </td>
