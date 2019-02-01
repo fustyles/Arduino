@@ -187,6 +187,8 @@ void ExecuteCommand()
     Feedback="{\"data\":\""+Feedback+"\"}";
   } 
   else if (cmd=="car") {
+    Feedback="{\"data\":\""+Command+"\"}";
+    
     ledcAttachPin(P1.toInt(), 1);
     ledcSetup(1, 5000, 8);
     ledcWrite(1,0);
