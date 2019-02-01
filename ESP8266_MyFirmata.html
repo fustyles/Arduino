@@ -8,18 +8,24 @@
 function SendCommand()
 {
 document.getElementById("Send").disabled=true;
-var ip=document.getElementById("ip").value;
+var url=document.getElementById("url").value;
 if (document.getElementById("choice1").checked)
     var cmd=document.getElementById("cmd1").value;
 else
     var cmd=document.getElementById("cmd2").value;
-var str1=document.getElementById("str1").value;
-var str2=document.getElementById("str2").value;
-var str3=document.getElementById("str3").value;
-var str4=document.getElementById("str4").value;
-var url=ip+"?"+cmd+"="+str1+";"+str2+";"+str3+";"+str4;
-document.getElementById("ShowUrl").innerHTML="<font color=red>URL："+url+"</font>";
-document.getElementById("MyFirmata").src=url;
+var P1=document.getElementById("P1").value;
+var P2=document.getElementById("P2").value;
+var P3=document.getElementById("P3").value;
+var P4=document.getElementById("P4").value;
+var P5=document.getElementById("P5").value;
+var P6=document.getElementById("P6").value;
+var P7=document.getElementById("P7").value;
+var P8=document.getElementById("P8").value;
+var P9=document.getElementById("P9").value;
+
+var link=url+"?"+cmd+"="+P1+";"+P2+";"+P3+";"+P4+";"+P5+";"+P6+";"+P7+";"+P8+";"+P9;
+document.getElementById("ShowUrl").innerHTML="<font color=red>URL："+link+"</font>";
+document.getElementById("MyFirmata").src=link;
 setTimeout(wait,1000);
 }
 function wait()
@@ -28,77 +34,97 @@ function wait()
 }
 </script>
 <body>
-<div id="ShowUrl"></div>
+
 <form onreset="document.getElementById('MyFirmata').src='about:blank';">
 <table>
-<tr><td>ESP8266&nbsp;&nbsp;IP：<input type="text" name="ip" id="ip" size="26" value="http://192.168.4.1"></td></tr>
-<tr><td>Command</td></tr>
-<tr>
-<td>
-<input type="radio" name="choice" id="choice1" checked>
-<select name="cmd1" id="cmd1">
-<option value="ip">ip</option>
-<option value="mac">mac</option>
-<option value="restart">restart</option>
-<option value="resetwifi">resetwifi</option>
-<option value="at">at</option>
-<option value="inputpullup">inputpullup</option>
-<option value="pinmode">pinmode</option>
-<option value="digitalwrite">digitalwrite</option>
-<option value="analogwrite">analogwrite</option>
-<option value="digitalread">digitalread</option>
-<option value="analogread">analogread</option>
-<option value="touchread">touchread(esp32)</option>
-<option value="tcp">tcp</option>
-<option value="ifttt">ifttt</option>
-<option value="thingspeakupdate">thingspeakupdate</option>
-<option value="thingspeakread">thingspeakread</option>
-<option value="linenotify">linenotify</option>
-<option value="car">car</option>
-<option value="i2cLcd">i2cLcd</option>
-<option value="mousemove">mousemove(Leonardo)</option>
-<option value="mouseclickleft">mouseclickleft(Leonardo)</option>
-<option value="mouseclickright">mouseclickright(Leonardo)</option>
-<option value="mouseclickmiddle"> mouseclickmiddle(Leonardo)</option>
-<option value="mousepressleft">mousepressleft(Leonardo)</option>
-<option value="mousepressright">mousepressright(Leonardo)</option>
-<option value="mousepressmiddle">mousepressmiddle(Leonardo)</option>
-<option value="mouserelease">mouserelease(Leonardo)</option>
-<option value="keyboardpress">keyboardpress(Leonardo)</option>
-<option value="keyboardprint">keyboardprint(Leonardo)</option>
-<option value="keyboardprintln">keyboardprintln(Leonardo)</option>
-<option value="keyboardwrite">keyboardwrite(Leonardo)</option>
-</select>
-<br>
-<input type="radio" name="choice" id="choice2">
-<input type="text" name="cmd2" id="cmd2" size="23">
-</td>
-</tr>
-<tr>
-<td>str1：<input type="text" name="str1" id="str1" size="30" onclick="this.select()"></td>
-</tr>
-<tr>
-<td>str2：<input type="text" name="str2" id="str2" size="30" onclick="this.select()"></td>
-</tr>
-<tr>
-<td>str3：<input type="text" name="str3" id="str3" size="30" onclick="this.select()"></td>
-</tr>
-<tr>
-<td>str4：<input type="text" name="str4" id="str4" size="30" onclick="this.select()"></td>
-</tr>
-<tr>
-<td align="right"><input type="reset" value="Clear" height="50">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" id="Send" value="Send" onclick="SendCommand();">&nbsp;&nbsp;&nbsp;</td>
-</tr>
-<tr>
-<td><font color="red">If request length is too long, ESP-01 can't work.</font></td>
-</tr>
-<tr>
-<td><iframe id="MyFirmata" width="320" height="200"></iframe></td>
-</tr>    
+	<tr>
+		<td valign="top">
+			<table >
+				<tr><td>ESP8266 (ESP01, ESP12E, ESP32)</td></tr>
+				<tr><td>IP：<input type="text" name="url" id="url" size="26" value="http://192.168.4.1"></td></tr>
+				<tr><td>Command</td></tr>
+				<tr>
+				<td>
+				<input type="radio" name="choice" id="choice1" checked>
+				<select name="cmd1" id="cmd1">
+				<option value="ip">ip</option>
+				<option value="mac">mac</option>
+				<option value="restart">restart</option>
+				<option value="resetwifi">resetwifi</option>
+				<option value="at">at</option>
+				<option value="inputpullup">inputpullup</option>
+				<option value="pinmode">pinmode</option>
+				<option value="digitalwrite">digitalwrite</option>
+				<option value="analogwrite">analogwrite</option>
+				<option value="digitalread">digitalread</option>
+				<option value="analogread">analogread</option>
+				<option value="touchread">touchread(esp32)</option>
+				<option value="tcp">tcp</option>
+				<option value="ifttt">ifttt</option>
+				<option value="thingspeakupdate">thingspeakupdate</option>
+				<option value="thingspeakread">thingspeakread</option>
+				<option value="linenotify">linenotify</option>
+				<option value="car">car</option>
+				<option value="i2cLcd">i2cLcd</option>
+				<option value="mousemove">mousemove(Leonardo)</option>
+				<option value="mouseclickleft">mouseclickleft(Leonardo)</option>
+				<option value="mouseclickright">mouseclickright(Leonardo)</option>
+				<option value="mouseclickmiddle"> mouseclickmiddle(Leonardo)</option>
+				<option value="mousepressleft">mousepressleft(Leonardo)</option>
+				<option value="mousepressright">mousepressright(Leonardo)</option>
+				<option value="mousepressmiddle">mousepressmiddle(Leonardo)</option>
+				<option value="mouserelease">mouserelease(Leonardo)</option>
+				<option value="keyboardpress">keyboardpress(Leonardo)</option>
+				<option value="keyboardprint">keyboardprint(Leonardo)</option>
+				<option value="keyboardprintln">keyboardprintln(Leonardo)</option>
+				<option value="keyboardwrite">keyboardwrite(Leonardo)</option>
+				</select>
+				<br>
+				<input type="radio" name="choice" id="choice2">
+				<input type="text" name="cmd2" id="cmd2" size="23">
+				</td>
+				</tr>
+				<tr>
+				<td>P1：<input type="text" name="P1" id="P1" size="30" onclick="this.select()"></td>
+				</tr>
+				<tr>
+				<td>P2：<input type="text" name="P2" id="P2" size="30" onclick="this.select()"></td>
+				</tr>
+				<tr>
+				<td>P3：<input type="text" name="P3" id="P3" size="30" onclick="this.select()"></td>
+				</tr>
+				<tr>
+				<td>P4：<input type="text" name="P4" id="P4" size="30" onclick="this.select()"></td>
+				</tr>
+				<tr>
+				<td>P5：<input type="text" name="P5" id="P5" size="30" onclick="this.select()"></td>
+				</tr>
+				<tr>
+				<td>P6：<input type="text" name="P6" id="P6" size="30" onclick="this.select()"></td>
+				</tr>
+				<tr>
+				<td>P7：<input type="text" name="P7" id="P7" size="30" onclick="this.select()"></td>
+				</tr>
+				<tr>
+				<td>P8：<input type="text" name="P8" id="P8" size="30" onclick="this.select()"></td>
+				</tr>
+				<tr>
+				<td>P9：<input type="text" name="P9" id="P9" size="30" onclick="this.select()"></td>
+				</tr>
+				<tr>
+				<td align="right"><input type="reset" value="Clear" height="50">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" id="Send" value="Send" onclick="SendCommand();">&nbsp;&nbsp;&nbsp;</td>
+				</tr>
+			</table><br>
+			<div id="ShowUrl"></div>
+		</td>
+		<td valign="top">
+			<iframe id="MyFirmata" width="320" height="370"></iframe><br>
+			Command Format：<br>
+			http://APIP/?cmd=P1;P2;P3;~~~;P7;P8;P9<br>
+			http://STAIP/?cmd=P1;P2;P3;~~~;P7;P8;P9
+		</td>
+	</tr>
 </table>
 </form>
-Format：<br>
-http://APIP/?cmd=str1;str2;str3;~~~;str7;str8;str9<br>
-http://STAIP/?cmd=str1;str2;str3;~~~;str7;str8;str9
 </body>
 </html>
