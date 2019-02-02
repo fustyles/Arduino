@@ -284,7 +284,7 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
             client.println("Connection: close");
             client.println();
             if (Feedback=="")
-              client.println("[{\"data\":\"Welcome to Taiwan\"}]");
+              client.println("[{\"data\":\"Hello World\"}]");
             else
               client.println("["+Feedback+"]");
             client.println();
