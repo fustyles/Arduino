@@ -24,37 +24,37 @@ void loop()
   if (cmd=="yourcmd")
     {
       //you can do anything
-      //if (debug == true) SendData("{\"data\":\""+Command+"\"}");
+      //if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
     } 
   else if (cmd=="inputpullup")
     {
       pinMode(P1.toInt(), INPUT_PULLUP);
-      if (debug == true) SendData("{\"data\":\""+Command+"\"}");
+      if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
     }  
   else if (cmd=="pinmode")
     {
       pinMode(P1.toInt(), P2.toInt());
-      if (debug == true) SendData("{\"data\":\""+Command+"\"}");
+      if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
     }        
   else if (cmd=="digitalwrite")
     {
       pinMode(P1.toInt(), OUTPUT);
       digitalWrite(P1.toInt(),P2.toInt());
-      if (debug == true) SendData("{\"data\":\""+Command+"\"}");
+      if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
     }   
   else if (cmd=="digitalread")
     {
-      SendData("{\"data\":\""+String(digitalRead(P1.toInt()))+"\"}");
+      SendData("[{\"data\":\""+String(digitalRead(P1.toInt()))+"\"}]");
     }    
   else if (cmd=="analogwrite")
     {
       pinMode(P1.toInt(), OUTPUT);
       analogWrite(P1.toInt(),P2.toInt());
-      if (debug == true) SendData("{\"data\":\""+Command+"\"}");
+      if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
     }       
   else if (cmd=="analogread")
     {
-      SendData("{\"data\":\""+String(analogRead(P1.toInt()))+"\"}");
+      SendData("[{\"data\":\""+String(analogRead(P1.toInt()))+"\"}]");
     } 
    else if (cmd=="i2cLcd") {
     P1.toLowerCase();
@@ -70,11 +70,11 @@ void loop()
     lcd.print(P4);
     lcd.setCursor(0,1);
     lcd.print(P5);
-    if (debug == true) SendData("{\"data\":\""+P4+"\"},{\"data\":\""+P5+"\"}");
+    if (debug == true) SendData("[{\"data\":\""+P4+"\"},{\"data\":\""+P5+"\"}]");
   }
   else 
     {
-      SendData("{\"data\":\"Command is not defined\"}");
+      SendData("[{\"data\":\"Command is not defined\"}]");
     }  
   }
 }
