@@ -54,8 +54,8 @@ void loop()
       SendData(String(analogRead(str1.toInt())));
     }    
   else if (cmd=="i2cLcd") {
-    if (P1=="0x27") P1="39";
-    if (P1=="0x3F") P1="63";
+    if (P1toLowerCase()=="0x27") P1="39";
+    if (P1toLowerCase()=="0x3f") P1="63";
     LiquidCrystal_I2C lcd(P1.toInt(),16,2);
     lcd.begin();
     lcd.backlight();
