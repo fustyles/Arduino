@@ -70,7 +70,7 @@ void loop()
     lcd.print(P4);
     lcd.setCursor(0,1);
     lcd.print(P5);
-    if (debug == true) SendData(P4+"<br>"+P5);
+    if (debug == true) SendData("{\"data\":\""+P4+"\"},{\"data\":\""+P5+"\"}");
   }
   else 
     {
