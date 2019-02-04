@@ -53,6 +53,17 @@ void loop()
     {
       SendData(String(analogRead(str1.toInt())));
     }    
+  else if (cmd=="i2cLcd") {
+    LiquidCrystal_I2C lcd(P1.toInt(),16,2);
+    lcd.begin();
+    lcd.backlight();
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print(P4);
+    lcd.setCursor(0,1);
+    lcd.print(P5);
+    if (debug == true) SendData(P4+"<br>"+P5);
+  }    
   else 
     {
       SendData("command is not defined");
