@@ -12,7 +12,7 @@ void setup()
 {
   while (!Serial) {;}
   Serial.begin(9600);
-  SendData("Arduino is Connected.");
+  SendData("Device is Connected.");
 }
 
 void loop() 
