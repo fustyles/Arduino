@@ -12,7 +12,7 @@ void setup()
 {
   while (!Serial) {;}
   Serial.begin(9600);
-  SendData("Sketch begins.");
+  SendData("Arduino is Connected.");
 }
 
 void loop() 
