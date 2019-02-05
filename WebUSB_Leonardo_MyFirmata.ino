@@ -58,10 +58,12 @@ void loop()
     } 
    else if (cmd=="i2cLcd") {
     P1.toLowerCase();
+    //You must convert hex value(P1) to decimal value.
     if (P1=="0x27") 
       P1="39";
     else if (P1=="0x3f") 
       P1="63";
+     
     LiquidCrystal_I2C lcd(P1.toInt(),16,2);
     lcd.begin();
     lcd.backlight();
