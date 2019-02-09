@@ -1,5 +1,5 @@
 #include <WebUSB.h>
-WebUSB WebUSBSerial(1 /* https:// */, "fustyles.github.io/webduino/myBlockly");
+WebUSB WebUSBSerial(1 /* https:// */, "fustyles.github.io/webduino/myBlockly/");
 #define Serial WebUSBSerial
 
 #include <Wire.h>
