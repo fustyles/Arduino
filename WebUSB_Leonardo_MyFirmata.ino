@@ -87,73 +87,73 @@ void loop()
   }
   else if (cmd=="car")    // ?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
     {
-      pinMode(str1.toInt(), OUTPUT);
-      pinMode(str2.toInt(), OUTPUT);
-      pinMode(str3.toInt(), OUTPUT);
-      pinMode(str4.toInt(), OUTPUT);
-      digitalWrite(str1.toInt(), 0);
-      digitalWrite(str2.toInt(), 0);
-      digitalWrite(str3.toInt(), 0);
-      digitalWrite(str4.toInt(), 0);
+      pinMode(P1.toInt(), OUTPUT);
+      pinMode(P2.toInt(), OUTPUT);
+      pinMode(P3.toInt(), OUTPUT);
+      pinMode(P4.toInt(), OUTPUT);
+      digitalWrite(P1.toInt(), 0);
+      digitalWrite(P2.toInt(), 0);
+      digitalWrite(P3.toInt(), 0);
+      digitalWrite(P4.toInt(), 0);
       delay(10);
     
-      if (str8=="S")
+      if (P8=="S")
       {
         //
       }
-      else if  (str8=="F")
+      else if  (P8=="F")
       {
-        analogWrite(str1.toInt(),str5.toInt());
-        analogWrite(str2.toInt(),0);
-        analogWrite(str3.toInt(),0);
-        analogWrite(str4.toInt(),str6.toInt());       
-        if ((str7!="")&&(str7!="0"))
+        analogWrite(P1.toInt(),P5.toInt());
+        analogWrite(P2.toInt(),0);
+        analogWrite(P3.toInt(),0);
+        analogWrite(P4.toInt(),P6.toInt());       
+        if ((P7!="")&&(P7!="0"))
         {
-          delay(str7.toInt());
-          analogWrite(str1.toInt(),0);
-          analogWrite(str4.toInt(),0);          
+          delay(P7.toInt());
+          analogWrite(P1.toInt(),0);
+          analogWrite(P4.toInt(),0);          
         }     
       }
-      else if  (str8=="B")
+      else if  (P8=="B")
       {
-        analogWrite(str1.toInt(),0);
-        analogWrite(str2.toInt(),str5.toInt());
-        analogWrite(str3.toInt(),str6.toInt());
-        analogWrite(str4.toInt(),0);  
-        if ((str7!="")&&(str7!="0"))
+        analogWrite(P1.toInt(),0);
+        analogWrite(P2.toInt(),P5.toInt());
+        analogWrite(P3.toInt(),P6.toInt());
+        analogWrite(P4.toInt(),0);  
+        if ((P7!="")&&(P7!="0"))
         {
-          delay(str7.toInt());
-          analogWrite(str2.toInt(),0);
-          analogWrite(str3.toInt(),0);         
+          delay(P7.toInt());
+          analogWrite(P2.toInt(),0);
+          analogWrite(P3.toInt(),0);         
         }     
       }
-      else if  (str8=="L")
+      else if  (P8=="L")
       {
-        analogWrite(str1.toInt(),0);
-        analogWrite(str2.toInt(),str5.toInt());
-        analogWrite(str3.toInt(),0);
-        analogWrite(str4.toInt(),str6.toInt());         
-        if ((str7!="")&&(str7!="0"))
+        analogWrite(P1.toInt(),0);
+        analogWrite(P2.toInt(),P5.toInt());
+        analogWrite(P3.toInt(),0);
+        analogWrite(P4.toInt(),P6.toInt());         
+        if ((P7!="")&&(P7!="0"))
         {
-          delay(str7.toInt());
-          analogWrite(str2.toInt(),0);
-          analogWrite(str4.toInt(),0);          
+          delay(P7.toInt());
+          analogWrite(P2.toInt(),0);
+          analogWrite(P4.toInt(),0);          
         }
       }
-      else if  (str8=="R")
+      else if  (P8=="R")
       {
-        analogWrite(str1.toInt(),str5.toInt());
-        analogWrite(str2.toInt(),0);
-        analogWrite(str3.toInt(),str6.toInt());
-        analogWrite(str4.toInt(),0);
-        if ((str7!="")&&(str7!="0"))
+        analogWrite(P1.toInt(),P5.toInt());
+        analogWrite(P2.toInt(),0);
+        analogWrite(P3.toInt(),P6.toInt());
+        analogWrite(P4.toInt(),0);
+        if ((P7!="")&&(P7!="0"))
         {
-          delay(str7.toInt());
-          analogWrite(str1.toInt(),0);
-          analogWrite(str3.toInt(),0);       
+          delay(P7.toInt());
+          analogWrite(P1.toInt(),0);
+          analogWrite(P3.toInt(),0);       
         }        
       }
-    }        
+    }    
   else 
     {
       SendData("[{\"data\":\"Command is not defined\"}]");
