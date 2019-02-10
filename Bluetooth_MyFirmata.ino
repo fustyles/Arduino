@@ -1,7 +1,7 @@
 /*
 Arduino Uno + Bluetooth
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-07 13:00 
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-02-11 00:00 
 https://www.facebook.com/francefu
 
 Uart Command Format : 
@@ -133,6 +133,7 @@ void executecommand()
           analogWrite(str3.toInt(),0);        
         }        
       }
+      if (debug == true) SendData(command);
     }    
   else 
     {
