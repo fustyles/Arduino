@@ -79,10 +79,7 @@ void executecommand()
     
       if (str8=="S")
       {
-        analogWrite(str1.toInt(),0);
-        analogWrite(str2.toInt(),0);
-        analogWrite(str3.toInt(),0);
-        analogWrite(str4.toInt(),0);
+        //
       }
       else if  (str8=="F")
       {
@@ -94,8 +91,6 @@ void executecommand()
         {
           delay(str7.toInt());
           analogWrite(str1.toInt(),0);
-          analogWrite(str2.toInt(),0);
-          analogWrite(str3.toInt(),0);
           analogWrite(str4.toInt(),0);          
         }     
       }
@@ -108,10 +103,8 @@ void executecommand()
         if ((str7!="")&&(str7!="0"))
         {
           delay(str7.toInt());
-          analogWrite(str1.toInt(),0);
           analogWrite(str2.toInt(),0);
-          analogWrite(str3.toInt(),0);
-          analogWrite(str4.toInt(),0);          
+          analogWrite(str3.toInt(),0);         
         }     
       }
       else if  (str8=="L")
@@ -123,9 +116,7 @@ void executecommand()
         if ((str7!="")&&(str7!="0"))
         {
           delay(str7.toInt());
-          analogWrite(str1.toInt(),0);
           analogWrite(str2.toInt(),0);
-          analogWrite(str3.toInt(),0);
           analogWrite(str4.toInt(),0);          
         }
       }
@@ -139,9 +130,7 @@ void executecommand()
         {
           delay(str7.toInt());
           analogWrite(str1.toInt(),0);
-          analogWrite(str2.toInt(),0);
-          analogWrite(str3.toInt(),0);
-          analogWrite(str4.toInt(),0);          
+          analogWrite(str3.toInt(),0);        
         }        
       }
     }    
