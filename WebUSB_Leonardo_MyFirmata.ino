@@ -1,4 +1,5 @@
 /*
+https://webusb.github.io/arduino/
 The WebUSB library provides all the extra low-level USB code necessary for WebUSB support except for one thing: 
 Your device must be upgraded from USB 2.0 to USB 2.1. 
 To do this go into the SDK installation directory and open hardware/arduino/avr/cores/arduino/USBCore.h. 
