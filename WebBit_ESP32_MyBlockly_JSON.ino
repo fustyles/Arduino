@@ -1,6 +1,6 @@
 /* 
 WebBit (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-22 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-22 21:30
 https://www.facebook.com/francefu
 
 Command Format :  
@@ -25,6 +25,7 @@ http://192.168.4.1/?thingspeakread=request
 http://192.168.4.1/?linenotify=token;request
 http://192.168.4.1/?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 http://192.168.4.1/?i2cLcd=address;gpioSDA;gpioSCL;text1;text2
+[WebBit]
 http://192.168.4.1/?rgb=number;rrggbb
 http://192.168.4.1/?matrixled=rrggbb......rrggbb
 http://192.168.4.1/?buttonA
