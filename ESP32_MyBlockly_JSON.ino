@@ -125,8 +125,7 @@ void ExecuteCommand()
     pinMode(P1.toInt(), INPUT);
     Feedback="{\"data\":\""+String(analogRead(P1.toInt()))+"\"}";
   }
-  else if (cmd=="touchread") {
-    pinMode(P1.toInt(), INPUT);    
+  else if (cmd=="touchread") {  
     Feedback="{\"data\":\""+String(touchRead(P1.toInt()))+"\"}";
   }  
   else if (cmd=="tcp") {
