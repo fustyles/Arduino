@@ -333,6 +333,7 @@ void ExecuteCommand()
     Feedback="{\"data\":\""+String(analogRead(39))+"\"}";
   }     
   else if (cmd=="rgb") {
+    p2.toLowerCase();    
     int R = HextoRGB(p2[0])*16+HextoRGB(p2[1]);
     int G = HextoRGB(p2[2])*16+HextoRGB(p2[3]);
     int B = HextoRGB(p2[4])*16+HextoRGB(p2[5]);
@@ -341,6 +342,7 @@ void ExecuteCommand()
     Feedback="{\"data\":\""+Command+"\"}";    
   }  
   else if (cmd=="matrixled") {
+    p1.toLowerCase();    
     int R,G,B;
     for (int i=0;i<p1.length()/6;i++) {
       R = HextoRGB(p1[i*6])*16+HextoRGB(p1[i*6+1]);
