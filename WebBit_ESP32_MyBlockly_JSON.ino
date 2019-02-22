@@ -1,6 +1,6 @@
 /* 
 WebBit (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-22 21:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-23 00:30
 https://www.facebook.com/francefu
 
 Command Format :  
@@ -353,14 +353,31 @@ void ExecuteCommand()
     strip.Show();
     Feedback="{\"data\":\""+Command+"\"}";    
   }  
-  else if (cmd=="buzzer") {
+else if (cmd=="buzzer") {
     int freq = 2000;
     int channel = 0;
     int resolution = 8;
     ledcSetup(channel, freq, resolution);
     ledcAttachPin(25, channel);
-    ledcWriteTone(channel, p1.toInt());
-    delay(p2.toInt());
+    String f="",d="",split=",";
+    int s1=0;
+    p1+=",";
+    p2+=",";
+    for (int i=0;i<p1.length();i++) {
+      if (p1[i]==split[0]) {
+        f=p1.substring(s1,i);
+        s1=i+1;
+        for (int j=0;j<p2.length();j++) {
+          if (p2[j]==split[0]) {
+            d=p2.substring(0,j);
+            ledcWriteTone(channel, f.toInt());
+            delay(d.toInt());
+            p2=p2.substring(j+1);
+            break;
+          }
+        }
+      }
+    }
     ledcWriteTone(channel, 0);
 
     Feedback="{\"data\":\""+Command+"\"}";    
