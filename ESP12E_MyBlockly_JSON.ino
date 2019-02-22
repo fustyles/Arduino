@@ -112,7 +112,6 @@ void ExecuteCommand()
     Feedback="{\"data\":\""+Command+"\"}";
   }   
   else if (cmd=="digitalread") {
-    pinMode(P1.toInt(), INPUT);    
     Feedback="{\"data\":\""+String(digitalRead(P1.toInt()))+"\"}";
   }
   else if (cmd=="analogwrite") {
@@ -120,8 +119,7 @@ void ExecuteCommand()
     analogWrite(P1.toInt(),P2.toInt());
     Feedback="{\"data\":\""+Command+"\"}";
   }       
-  else if (cmd=="analogread") {
-    pinMode(P1.toInt(), INPUT);    
+  else if (cmd=="analogread") {  
     Feedback="{\"data\":\""+String(analogRead(P1.toInt()))+"\"}";
   }
   else if (cmd=="tcp") {
