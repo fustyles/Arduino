@@ -25,9 +25,8 @@ http://192.168.4.1/?thingspeakread=request
 http://192.168.4.1/?linenotify=token;request
 http://192.168.4.1/?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 http://192.168.4.1/?i2cLcd=address;gpioSDA;gpioSCL;text1;text2
-[WebBit]
 http://192.168.4.1/?rgb=number;rrggbb
-http://192.168.4.1/?matrixled=rrggbbrrggbb......rrggbbrrggbb   (0~24)
+http://192.168.4.1/?matrixled=rrggbb......rrggbb
 http://192.168.4.1/?buttonA
 http://192.168.4.1/?buttonB
 http://192.168.4.1/?buttonAB
@@ -35,7 +34,6 @@ http://192.168.4.1/?temperature
 http://192.168.4.1/?lumL
 http://192.168.4.1/?lumR
 http://192.168.4.1/?buzzer=frequency;delay
-
 STAIP：
 Query：http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
@@ -489,6 +487,11 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
 
         if ((currentLine.indexOf("/?")!=-1)&&(currentLine.indexOf(" HTTP")!=-1))
         {
+          if (Command.indexOf("stop")!=-1) {
+            client.println();
+            client.println();
+            client.stop();
+          }
           currentLine="";
           Feedback="";
           ExecuteCommand();
