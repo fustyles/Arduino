@@ -137,7 +137,6 @@ void ExecuteCommand()
   }
   else if (cmd=="touchread")
   {
-    pinMode(str1.toInt(), INPUT);    
     Feedback=String(touchRead(str1.toInt()));
   }  
   else if (cmd=="tcp")
