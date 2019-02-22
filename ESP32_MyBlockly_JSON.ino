@@ -123,7 +123,7 @@ void ExecuteCommand()
   else if (cmd=="analogread") {
     Feedback="{\"data\":\""+String(analogRead(P1.toInt()))+"\"}";
   }
-  else if (cmd=="touchread") {  
+  else if (cmd=="touchread") {
     Feedback="{\"data\":\""+String(touchRead(P1.toInt()))+"\"}";
   }  
   else if (cmd=="tcp") {

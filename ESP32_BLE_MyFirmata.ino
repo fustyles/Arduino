@@ -55,9 +55,13 @@ void executecommand()
       SendData(command);
     }   
   else if (cmd=="digitalread")
-    { 
+    {
       SendData(String(digitalRead(str1.toInt())));
     }   
+  else if (cmd=="touchread")
+    {
+      SendData(String(touchRead(str1.toInt())));
+    }  
   else if (cmd=="analogwrite")
     {
       ledcAttachPin(str1.toInt(), 1);
@@ -66,13 +70,9 @@ void executecommand()
       SendData(command);
     }       
   else if (cmd=="analogread")
-    {  
+    {
       SendData(String(analogRead(str1.toInt())));
     }  
-  else if (cmd=="touchread")
-    {  
-      SendData(String(touchRead(str1.toInt())));
-    }    
   else 
     {
       SendData("command is not defined");

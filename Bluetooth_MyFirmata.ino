@@ -1,7 +1,7 @@
 /*
 Arduino Uno + Bluetooth
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-02-11 00:00 
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-07 13:00 
 https://www.facebook.com/francefu
 
 Uart Command Format : 
@@ -53,7 +53,6 @@ void executecommand()
     }   
   else if (cmd=="digitalread")
     {
-      pinMode(str1.toInt(), INPUT);
       SendData(String(digitalRead(str1.toInt())));
     }    
   else if (cmd=="analogwrite")
@@ -64,7 +63,6 @@ void executecommand()
     }       
   else if (cmd=="analogread")
     {
-      pinMode(str1.toInt(), INPUT);
       SendData(String(analogRead(str1.toInt())));
     }  
   else if (cmd=="car")    // ?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
@@ -81,7 +79,10 @@ void executecommand()
     
       if (str8=="S")
       {
-        //
+        analogWrite(str1.toInt(),0);
+        analogWrite(str2.toInt(),0);
+        analogWrite(str3.toInt(),0);
+        analogWrite(str4.toInt(),0);
       }
       else if  (str8=="F")
       {
@@ -93,6 +94,8 @@ void executecommand()
         {
           delay(str7.toInt());
           analogWrite(str1.toInt(),0);
+          analogWrite(str2.toInt(),0);
+          analogWrite(str3.toInt(),0);
           analogWrite(str4.toInt(),0);          
         }     
       }
@@ -105,8 +108,10 @@ void executecommand()
         if ((str7!="")&&(str7!="0"))
         {
           delay(str7.toInt());
+          analogWrite(str1.toInt(),0);
           analogWrite(str2.toInt(),0);
-          analogWrite(str3.toInt(),0);         
+          analogWrite(str3.toInt(),0);
+          analogWrite(str4.toInt(),0);          
         }     
       }
       else if  (str8=="L")
@@ -118,7 +123,9 @@ void executecommand()
         if ((str7!="")&&(str7!="0"))
         {
           delay(str7.toInt());
+          analogWrite(str1.toInt(),0);
           analogWrite(str2.toInt(),0);
+          analogWrite(str3.toInt(),0);
           analogWrite(str4.toInt(),0);          
         }
       }
@@ -132,10 +139,11 @@ void executecommand()
         {
           delay(str7.toInt());
           analogWrite(str1.toInt(),0);
-          analogWrite(str3.toInt(),0);        
+          analogWrite(str2.toInt(),0);
+          analogWrite(str3.toInt(),0);
+          analogWrite(str4.toInt(),0);          
         }        
       }
-      if (debug == true) SendData(command);
     }    
   else 
     {

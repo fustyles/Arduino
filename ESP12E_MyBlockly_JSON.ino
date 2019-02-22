@@ -119,7 +119,7 @@ void ExecuteCommand()
     analogWrite(P1.toInt(),P2.toInt());
     Feedback="{\"data\":\""+Command+"\"}";
   }       
-  else if (cmd=="analogread") {  
+  else if (cmd=="analogread") {
     Feedback="{\"data\":\""+String(analogRead(P1.toInt()))+"\"}";
   }
   else if (cmd=="tcp") {

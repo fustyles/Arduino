@@ -10,8 +10,8 @@ https://www.facebook.com/francefu/videos/10211231615856099/
 */
 
 // Enter your WiFi ssid and password
-String WIFI_SSID = "xxxxx";   //your network SSID
-String WIFI_PWD  = "xxxxx";    //your network password
+String WIFI_SSID = "";   //your network SSID
+String WIFI_PWD  = "";    //your network password
 
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // ESP01 TX->D10, RX->D11 

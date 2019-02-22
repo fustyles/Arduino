@@ -138,7 +138,7 @@ void executecommand()
       if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     }   
   else if (cmd=="digitalread")
-    {  
+    {
       Feedback(CID,"<html>"+String(digitalRead(str1.toInt()))+"</html>",3);
     }    
   else if (cmd=="analogwrite")
@@ -149,7 +149,7 @@ void executecommand()
       if (debug == false) SendData("AT+CIPCLOSE="+CID,0);
     }       
   else if (cmd=="analogread")
-    {   
+    {
       Feedback(CID,"<html>"+String(analogRead(str1.toInt()))+"</html>",3);
     }  
   else 

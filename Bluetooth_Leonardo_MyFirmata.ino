@@ -70,7 +70,6 @@ void executecommand()
     }   
   else if (cmd=="digitalread")
     {
-      pinMode(str1.toInt(), INPUT);
       SendData(String(digitalRead(str1.toInt())));
     }    
   else if (cmd=="analogwrite")
@@ -81,7 +80,6 @@ void executecommand()
     }       
   else if (cmd=="analogread")
     {
-      pinMode(str1.toInt(), INPUT);
       SendData(String(analogRead(str1.toInt())));
     }  
   else if (cmd=="mousemove")

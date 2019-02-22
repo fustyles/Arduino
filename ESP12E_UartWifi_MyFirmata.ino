@@ -125,7 +125,7 @@ void ExecuteCommand()
     Feedback=Command;
   }   
   else if (cmd=="digitalread")
-  {   
+  {
     Feedback=String(digitalRead(str1.toInt()));
   }
   else if (cmd=="analogwrite")
@@ -135,7 +135,7 @@ void ExecuteCommand()
     Feedback=Command;
   }       
   else if (cmd=="analogread")
-  {    
+  {
     Feedback=String(analogRead(str1.toInt()));
   }
   else if (cmd=="tcp")

@@ -146,7 +146,7 @@ void ExecuteCommand()
     Feedback=String(analogRead(str1.toInt()));
   }
   else if (cmd=="touchread")
-  { 
+  {
     Feedback=String(touchRead(str1.toInt()));
   }  
   else if (cmd=="tcp")
