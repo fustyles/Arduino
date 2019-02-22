@@ -112,6 +112,7 @@ void ExecuteCommand()
     Feedback="{\"data\":\""+Command+"\"}";
   }   
   else if (cmd=="digitalread") {
+    pinMode(P1.toInt(), INPUT);
     Feedback="{\"data\":\""+String(digitalRead(P1.toInt()))+"\"}";
   }
   else if (cmd=="analogwrite") {
@@ -121,6 +122,7 @@ void ExecuteCommand()
     Feedback="{\"data\":\""+Command+"\"}";
   }       
   else if (cmd=="analogread") {
+    pinMode(P1.toInt(), INPUT);
     Feedback="{\"data\":\""+String(analogRead(P1.toInt()))+"\"}";
   }
   else if (cmd=="touchread") {
