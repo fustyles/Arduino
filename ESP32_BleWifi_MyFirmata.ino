@@ -148,8 +148,7 @@ void ExecuteCommand()
     Feedback=String(analogRead(str1.toInt()));
   }
   else if (cmd=="touchread")
-  {
-    pinMode(str1.toInt(), INPUT);   
+  { 
     Feedback=String(touchRead(str1.toInt()));
   }  
   else if (cmd=="tcp")
