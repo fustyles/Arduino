@@ -227,7 +227,13 @@ void loop()
 
         if ((currentLine.indexOf("/?")!=-1)&&(currentLine.indexOf(" HTTP")!=-1))
         {
-          //if (Command.indexOf("stop")!=-1) client.stop();
+          /*
+          if (Command.indexOf("stop")!=-1) {
+            client.println();
+            client.println();
+            client.stop();
+          }
+          */
           currentLine="";
           Feedback="";
           ExecuteCommand();
