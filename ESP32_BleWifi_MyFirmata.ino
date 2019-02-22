@@ -132,7 +132,6 @@ void ExecuteCommand()
   }   
   else if (cmd=="digitalread")
   {
-    pinMode(str1.toInt(), INPUT);
     Feedback=String(digitalRead(str1.toInt()));
   }
   else if (cmd=="analogwrite")
@@ -144,7 +143,6 @@ void ExecuteCommand()
   }       
   else if (cmd=="analogread")
   {
-    pinMode(str1.toInt(), INPUT);   
     Feedback=String(analogRead(str1.toInt()));
   }
   else if (cmd=="touchread")
