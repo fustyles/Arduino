@@ -53,6 +53,7 @@ void executecommand()
     }   
   else if (cmd=="digitalread")
     {
+      pinMode(str1.toInt(), INPUT);
       SendData(String(digitalRead(str1.toInt())));
     }    
   else if (cmd=="analogwrite")
@@ -63,6 +64,7 @@ void executecommand()
     }       
   else if (cmd=="analogread")
     {
+      pinMode(str1.toInt(), INPUT);
       SendData(String(analogRead(str1.toInt())));
     }  
   else if (cmd=="car")    // ?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
