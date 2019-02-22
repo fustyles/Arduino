@@ -166,6 +166,7 @@ void executecommand()
     }   
   else if (cmd=="digitalread")
     {
+      pinMode(str1.toInt(), INPUT);
       Feedback(CID,"<html>"+String(digitalRead(str1.toInt()))+"</html>",3);
     }    
   else if (cmd=="analogwrite")
@@ -177,6 +178,7 @@ void executecommand()
     }       
   else if (cmd=="analogread")
     {
+      pinMode(str1.toInt(), INPUT);
       Feedback(CID,"<html>"+String(analogRead(str1.toInt()))+"</html>",3);
     }  
   else if (cmd=="mousemove")
