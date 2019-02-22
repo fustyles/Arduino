@@ -26,9 +26,9 @@ http://192.168.4.1/?linenotify=token;request
 http://192.168.4.1/?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 http://192.168.4.1/?i2cLcd=address;gpioSDA;gpioSCL;text1;text2
 [WebBit]
-http://192.168.4.1/?rgb=number;rrggbb;stop   (number:0~24)
-http://192.168.4.1/?matrixled=rrggbbrrggbb......rrggbbrrggbb;stop   (0~24)
-http://192.168.4.1/?buzzer=frequency;delay;stop
+http://192.168.4.1/?rgb=number;rrggbb   (number:0~24)
+http://192.168.4.1/?matrixled=rrggbbrrggbb......rrggbbrrggbb   (0~24)
+http://192.168.4.1/?buzzer=frequency;delay
 http://192.168.4.1/?buttonA
 http://192.168.4.1/?buttonB
 http://192.168.4.1/?buttonAB
