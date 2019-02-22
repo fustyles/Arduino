@@ -441,6 +441,7 @@ void loop()
 
         if ((currentLine.indexOf("/?")!=-1)&&(currentLine.indexOf(" HTTP")!=-1))
         {
+          //if (Command.indexOf("stop")!=-1) client.stop();
           currentLine="";
           Feedback="";
           ExecuteCommand();
