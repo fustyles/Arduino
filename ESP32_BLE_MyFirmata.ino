@@ -59,11 +59,6 @@ void executecommand()
       pinMode(str1.toInt(), INPUT);     
       SendData(String(digitalRead(str1.toInt())));
     }   
-  else if (cmd=="touchread")
-    {
-      pinMode(str1.toInt(), INPUT);    
-      SendData(String(touchRead(str1.toInt())));
-    }  
   else if (cmd=="analogwrite")
     {
       ledcAttachPin(str1.toInt(), 1);
@@ -76,6 +71,10 @@ void executecommand()
       pinMode(str1.toInt(), INPUT);    
       SendData(String(analogRead(str1.toInt())));
     }  
+  else if (cmd=="touchread")
+    {  
+      SendData(String(touchRead(str1.toInt())));
+    }    
   else 
     {
       SendData("command is not defined");
