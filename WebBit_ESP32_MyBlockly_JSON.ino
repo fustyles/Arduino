@@ -1,6 +1,6 @@
 /* 
 WebBit (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-22 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-22 21:00
 https://www.facebook.com/francefu
 
 Command Format :  
@@ -18,11 +18,6 @@ http://192.168.4.1/?analogwrite=pin;value
 http://192.168.4.1/?digitalread=pin
 http://192.168.4.1/?analogread=pin
 http://192.168.4.1/?touchread=pin
-http://192.168.4.1/?rgb=number;rrggbb
-http://192.168.4.1/?matrixled=rrggbb......rrggbb
-http://192.168.4.1/?buttonA
-http://192.168.4.1/?buttonB
-http://192.168.4.1/?buttonAB
 http://192.168.4.1/?tcp=domain;port;request;wait
 http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
@@ -30,6 +25,17 @@ http://192.168.4.1/?thingspeakread=request
 http://192.168.4.1/?linenotify=token;request
 http://192.168.4.1/?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 http://192.168.4.1/?i2cLcd=address;gpioSDA;gpioSCL;text1;text2
+[WebBit]
+http://192.168.4.1/?rgb=number;rrggbb
+http://192.168.4.1/?matrixled=rrggbbrrggbb......rrggbbrrggbb   (0~24)
+http://192.168.4.1/?buttonA
+http://192.168.4.1/?buttonB
+http://192.168.4.1/?buttonAB
+http://192.168.4.1/?temperature
+http://192.168.4.1/?lumL
+http://192.168.4.1/?lumR
+http://192.168.4.1/?buzzer=frequency;delay
+
 STAIP：
 Query：http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
@@ -122,25 +128,8 @@ void ExecuteCommand()
     Feedback="{\"data\":\""+Command+"\"}";
   }   
   else if (cmd=="digitalread") {
-    pinMode(p1.toInt(), INPUT);
     Feedback="{\"data\":\""+String(digitalRead(p1.toInt()))+"\"}";
   }
-  else if (cmd=="buttonA") {
-    pinMode(35, INPUT);
-    Feedback="{\"data\":\""+String(digitalRead(35))+"\"}";
-  }  
-  else if (cmd=="buttonB") {
-    pinMode(27, INPUT);
-    Feedback="{\"data\":\""+String(digitalRead(27))+"\"}";
-  }   
-  else if (cmd=="buttonAB") {
-    pinMode(27, INPUT);
-    pinMode(35, INPUT);
-    if (digitalRead(27)==0&&digitalRead(35)==0)
-      Feedback="{\"data\":\"1\"}";
-    else
-      Feedback="{\"data\":\"0\"}";
-  }  
   else if (cmd=="analogwrite") {
     ledcAttachPin(p1.toInt(), 1);
     ledcSetup(1, 5000, 8);
@@ -148,31 +137,10 @@ void ExecuteCommand()
     Feedback="{\"data\":\""+Command+"\"}";
   }       
   else if (cmd=="analogread") {
-    pinMode(p1.toInt(), INPUT);
     Feedback="{\"data\":\""+String(analogRead(p1.toInt()))+"\"}";
   }
   else if (cmd=="touchread") {
-    pinMode(p1.toInt(), INPUT);
     Feedback="{\"data\":\""+String(touchRead(p1.toInt()))+"\"}";
-  }  
-  else if (cmd=="rgb") {
-    int R = HextoRGB(p2[0])*16+HextoRGB(p2[1]);
-    int G = HextoRGB(p2[2])*16+HextoRGB(p2[3]);
-    int B = HextoRGB(p2[4])*16+HextoRGB(p2[5]);
-    strip.SetPixelColor(p1.toInt(), RgbColor(R, G, B));
-    strip.Show();
-    Feedback="{\"data\":\""+Command+"\"}";    
-  }  
-  else if (cmd=="matrixled") {
-    int R,G,B;
-    for (int i=0;i<p1.length()/6;i++) {
-      R = HextoRGB(p1[i*6])*16+HextoRGB(p1[i*6+1]);
-      G = HextoRGB(p1[i*6+2])*16+HextoRGB(p1[i*6+3]);
-      B = HextoRGB(p1[i*6+4])*16+HextoRGB(p1[i*6+5]);
-      strip.SetPixelColor(i, RgbColor(R, G, B));
-    }
-    strip.Show();
-    Feedback="{\"data\":\""+Command+"\"}";    
   }    
   else if (cmd=="tcp") {
     String domain=p1;
@@ -331,6 +299,69 @@ void ExecuteCommand()
     lcd.setCursor(0,1);
     lcd.print(p5);
     Feedback="{\"data\":\""+p4+"\"},{\"data\":\""+p5+"\"}";
+  }
+  else if (cmd=="buttonA") {
+    pinMode(35, INPUT);
+    Feedback="{\"data\":\""+String(digitalRead(35))+"\"}";
+  }  
+  else if (cmd=="buttonB") {
+    pinMode(27, INPUT);
+    Feedback="{\"data\":\""+String(digitalRead(27))+"\"}";
+  }   
+  else if (cmd=="buttonAB") {
+    pinMode(27, INPUT);
+    pinMode(35, INPUT);
+    if (digitalRead(27)==0&&digitalRead(35)==0)
+      Feedback="{\"data\":\"1\"}";
+    else
+      Feedback="{\"data\":\"0\"}";
+  }  
+  else if (cmd=="temperature") {
+    pinMode(34, INPUT);
+    double Temp_Value = analogRead(34);
+    double voltageValue = (Temp_Value / 4095) * 3.3;
+    double Rt = ((3.3 - voltageValue) * 5.1) / voltageValue;
+    double temperature = ((298.15 * 3950) / (3950 + 298.15 * log(Rt / 10))) - 273.15;
+    Feedback="{\"data\":\""+String(temperature)+"\"}";
+  }    
+  else if (cmd=="lumL") {
+    pinMode(36, INPUT);    
+    Feedback="{\"data\":\""+String(analogRead(36))+"\"}";
+  }  
+  else if (cmd=="lumR") {
+    pinMode(39, INPUT);    
+    Feedback="{\"data\":\""+String(analogRead(39))+"\"}";
+  }     
+  else if (cmd=="rgb") {
+    int R = HextoRGB(p2[0])*16+HextoRGB(p2[1]);
+    int G = HextoRGB(p2[2])*16+HextoRGB(p2[3]);
+    int B = HextoRGB(p2[4])*16+HextoRGB(p2[5]);
+    strip.SetPixelColor(p1.toInt(), RgbColor(R, G, B));
+    strip.Show();
+    Feedback="{\"data\":\""+Command+"\"}";    
+  }  
+  else if (cmd=="matrixled") {
+    int R,G,B;
+    for (int i=0;i<p1.length()/6;i++) {
+      R = HextoRGB(p1[i*6])*16+HextoRGB(p1[i*6+1]);
+      G = HextoRGB(p1[i*6+2])*16+HextoRGB(p1[i*6+3]);
+      B = HextoRGB(p1[i*6+4])*16+HextoRGB(p1[i*6+5]);
+      strip.SetPixelColor(i, RgbColor(R, G, B));
+    }
+    strip.Show();
+    Feedback="{\"data\":\""+Command+"\"}";    
+  }  
+  else if (cmd=="buzzer") {
+    int freq = 2000;
+    int channel = 0;
+    int resolution = 8;
+    ledcSetup(channel, freq, resolution);
+    ledcAttachPin(25, channel);
+    ledcWriteTone(channel, p1.toInt());
+    delay(p2.toInt());
+    ledcWriteTone(channel, 0);
+
+    Feedback="{\"data\":\""+Command+"\"}";    
   }
   else {
     Feedback="{\"data\":\"Command is not defined\"}";
