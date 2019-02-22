@@ -19,6 +19,10 @@ http://192.168.4.1/?digitalread=pin
 http://192.168.4.1/?analogread=pin
 http://192.168.4.1/?touchread=pin
 http://192.168.4.1/?rgb=number;rrggbb
+http://192.168.4.1/?matrixled=rrggbb......rrggbb
+http://192.168.4.1/?buttonA
+http://192.168.4.1/?buttonB
+http://192.168.4.1/?buttonAB
 http://192.168.4.1/?tcp=domain;port;request;wait
 http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
@@ -118,8 +122,25 @@ void ExecuteCommand()
     Feedback="{\"data\":\""+Command+"\"}";
   }   
   else if (cmd=="digitalread") {
+    pinMode(p1.toInt(), INPUT);
     Feedback="{\"data\":\""+String(digitalRead(p1.toInt()))+"\"}";
   }
+  else if (cmd=="buttonA") {
+    pinMode(35, INPUT);
+    Feedback="{\"data\":\""+String(digitalRead(35))+"\"}";
+  }  
+  else if (cmd=="buttonB") {
+    pinMode(27, INPUT);
+    Feedback="{\"data\":\""+String(digitalRead(27))+"\"}";
+  }   
+  else if (cmd=="buttonAB") {
+    pinMode(27, INPUT);
+    pinMode(35, INPUT);
+    if (digitalRead(27)==0&&digitalRead(35)==0)
+      Feedback="{\"data\":\"1\"}";
+    else
+      Feedback="{\"data\":\"0\"}";
+  }  
   else if (cmd=="analogwrite") {
     ledcAttachPin(p1.toInt(), 1);
     ledcSetup(1, 5000, 8);
@@ -127,9 +148,11 @@ void ExecuteCommand()
     Feedback="{\"data\":\""+Command+"\"}";
   }       
   else if (cmd=="analogread") {
+    pinMode(p1.toInt(), INPUT);
     Feedback="{\"data\":\""+String(analogRead(p1.toInt()))+"\"}";
   }
   else if (cmd=="touchread") {
+    pinMode(p1.toInt(), INPUT);
     Feedback="{\"data\":\""+String(touchRead(p1.toInt()))+"\"}";
   }  
   else if (cmd=="rgb") {
@@ -140,6 +163,17 @@ void ExecuteCommand()
     strip.Show();
     Feedback="{\"data\":\""+Command+"\"}";    
   }  
+  else if (cmd=="matrixled") {
+    int R,G,B;
+    for (int i=0;i<p1.length()/6;i++) {
+      R = HextoRGB(p1[i*6])*16+HextoRGB(p1[i*6+1]);
+      G = HextoRGB(p1[i*6+2])*16+HextoRGB(p1[i*6+3]);
+      B = HextoRGB(p1[i*6+4])*16+HextoRGB(p1[i*6+5]);
+      strip.SetPixelColor(i, RgbColor(R, G, B));
+    }
+    strip.Show();
+    Feedback="{\"data\":\""+Command+"\"}";    
+  }    
   else if (cmd=="tcp") {
     String domain=p1;
     int port=p2.toInt();
