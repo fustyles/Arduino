@@ -10,6 +10,7 @@ https://github.com/Makuna/NeoPixelBus
 Command Format :  
 http://APIP/?cmd=p1;p2;p3;p4;p5;p6;p7;p8;p9
 http://STAIP/?cmd=p1;p2;p3;p4;p5;p6;p7;p8;p9
+
 Default APIP： 192.168.4.1
 http://192.168.4.1/?ip
 http://192.168.4.1/?mac
@@ -43,8 +44,12 @@ http://192.168.4.1/?lumR
 STAIP：
 Query：http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
+
 Control Page (http)
+Source
 https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
+Page
+https://fustyles.github.io/webduino/ESP8266_MyFirmata.html
 */
 
 #include <NeoPixelBus.h>
