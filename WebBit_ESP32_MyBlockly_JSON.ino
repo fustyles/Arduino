@@ -1,11 +1,12 @@
 /* 
 WebBit (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-23 00:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-23 18:00
 https://www.facebook.com/francefu
 
 Library
 https://github.com/nhatuan84/esp32-lcd
 https://github.com/Makuna/NeoPixelBus
+https://github.com/asukiaaa/MPU9250_asukiaaa
 
 Command Format :  
 http://APIP/?cmd=p1;p2;p3;p4;p5;p6;p7;p8;p9
@@ -51,6 +52,11 @@ https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 Page
 https://fustyles.github.io/webduino/ESP8266_MyFirmata.html
 */
+
+#include <MPU9250_asukiaaa.h>
+MPU9250 mySensor;
+uint8_t sensorId;
+float aX, aY, aZ, aSqrt, gX, gY, gZ, mDirection, mX, mY, mZ;
 
 #include <NeoPixelBus.h>
 const uint16_t PixelCount = 25; // this example assumes 4 pixels, making it smaller will cause a failure
@@ -391,6 +397,29 @@ else if (cmd=="buzzer") {
 
     Feedback="{\"data\":\""+Command+"\"}";    
   }
+  else if (cmd=="accel") {
+    mySensor.accelUpdate();
+    aX = mySensor.accelX();
+    aY = mySensor.accelY();
+    aZ = mySensor.accelZ();
+    aSqrt = mySensor.accelSqrt();   
+    Feedback="{\"data\":\""+String(aX)+","+String(aY)+","+String(aZ)+","+String(aSqrt)+"\"}";
+  } 
+  else if (cmd=="gyro") {
+    mySensor.gyroUpdate();
+    gX = mySensor.gyroX();
+    gY = mySensor.gyroY();
+    gZ = mySensor.gyroZ();  
+    Feedback="{\"data\":\""+String(gX)+","+String(gY)+","+String(gZ)+"\"}";
+  }
+  else if (cmd=="mag") {
+    mySensor.magUpdate();
+    mX = mySensor.magX();
+    mY = mySensor.magY();
+    mZ = mySensor.magZ(); 
+    mDirection = mySensor.magHorizDirection(); 
+    Feedback="{\"data\":\""+String(mX)+","+String(mY)+","+String(mZ)+","+String(mDirection)+"\"}";
+  }  
   else {
     Feedback="{\"data\":\"Command is not defined\"}";
   }
@@ -410,6 +439,18 @@ void setup()
   digitalWrite(LED_POWER, HIGH);
   Serial.begin(115200);
   while (!Serial); // wait for serial attach
+  
+  Wire.begin(21, 22);
+  mySensor.setWire(&Wire);
+  mySensor.beginAccel();
+  mySensor.beginGyro();
+  mySensor.beginMag();
+  // You can set your own offset for mag values
+  // mySensor.magXOffset = -50;
+  // mySensor.magYOffset = -55;
+  // mySensor.magZOffset = -10;  
+  sensorId = mySensor.readId();
+  
   strip.Begin();
   strip.Show();
     
