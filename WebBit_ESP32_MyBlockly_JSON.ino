@@ -1,6 +1,6 @@
 /* 
 WebBit (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-23 18:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-23 20:00
 https://www.facebook.com/francefu
 
 Library
@@ -402,15 +402,33 @@ else if (cmd=="buzzer") {
     aX = mySensor.accelX();
     aY = mySensor.accelY();
     aZ = mySensor.accelZ();
-    aSqrt = mySensor.accelSqrt();   
-    Feedback="{\"data\":\""+String(aX)+","+String(aY)+","+String(aZ)+","+String(aSqrt)+"\"}";
+    aSqrt = mySensor.accelSqrt(); 
+    p1.toLowerCase();
+    if (p1=="x")
+      Feedback="{\"data\":\""+String(aX)+"\"}";
+    else if (p1=="y")
+      Feedback="{\"data\":\""+String(aY)+"\"}";
+    else if (p1=="z")
+      Feedback="{\"data\":\""+String(aZ)+"\"}";
+    else if (p1=="s")
+      Feedback="{\"data\":\""+String(aSqrt)+"\"}";      
+    else
+      Feedback="{\"data\":\""+String(aX)+","+String(aY)+","+String(aZ)+","+String(aSqrt)+"\"}";
   } 
   else if (cmd=="gyro") {
     mySensor.gyroUpdate();
     gX = mySensor.gyroX();
     gY = mySensor.gyroY();
     gZ = mySensor.gyroZ();  
-    Feedback="{\"data\":\""+String(gX)+","+String(gY)+","+String(gZ)+"\"}";
+    p1.toLowerCase();
+    if (p1=="x")
+      Feedback="{\"data\":\""+String(gX)+"\"}";
+    else if (p1=="y")
+      Feedback="{\"data\":\""+String(gY)+"\"}";
+    else if (p1=="z")
+      Feedback="{\"data\":\""+String(gZ)+"\"}";    
+    else
+      Feedback="{\"data\":\""+String(gX)+","+String(gY)+","+String(gZ)+"\"}";
   }
   else if (cmd=="mag") {
     mySensor.magUpdate();
@@ -418,7 +436,17 @@ else if (cmd=="buzzer") {
     mY = mySensor.magY();
     mZ = mySensor.magZ(); 
     mDirection = mySensor.magHorizDirection(); 
-    Feedback="{\"data\":\""+String(mX)+","+String(mY)+","+String(mZ)+","+String(mDirection)+"\"}";
+    p1.toLowerCase();
+    if (p1=="x")
+      Feedback="{\"data\":\""+String(mX)+"\"}";
+    else if (p1=="y")
+      Feedback="{\"data\":\""+String(mY)+"\"}";
+    else if (p1=="z")
+      Feedback="{\"data\":\""+String(mZ)+"\"}";
+    else if (p1=="d")
+      Feedback="{\"data\":\""+String(mDirection)+"\"}";      
+    else
+      Feedback="{\"data\":\""+String(mX)+","+String(mY)+","+String(mZ)+","+String(mDirection)+"\"}";      
   }  
   else {
     Feedback="{\"data\":\"Command is not defined\"}";
