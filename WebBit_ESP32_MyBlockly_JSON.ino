@@ -3,7 +3,7 @@ WebBit (ESP32)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-23 00:30
 https://www.facebook.com/francefu
 
-Arduino IDE Library
+Library
 https://github.com/nhatuan84/esp32-lcd
 https://github.com/Makuna/NeoPixelBus
 
