@@ -41,7 +41,10 @@ http://192.168.4.1/?buttonAB
 http://192.168.4.1/?temperature
 http://192.168.4.1/?lumL
 http://192.168.4.1/?lumR
-
+http://192.168.4.1/?accel=[ ,x,y,z,s]
+http://192.168.4.1/?gyro=[ ,x,y,z]
+http://192.168.4.1/?mag=[ ,x,y,z,d]
+    
 STAIP：
 Query：http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
