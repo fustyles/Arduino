@@ -1,6 +1,6 @@
 /* 
 WebBit (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-23 20:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-24 13:00
 https://www.facebook.com/francefu
 
 Library
@@ -31,7 +31,9 @@ http://192.168.4.1/?thingspeakread=request
 http://192.168.4.1/?linenotify=token;request
 http://192.168.4.1/?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 http://192.168.4.1/?i2cLcd=address;gpioSDA;gpioSCL;text1;text2
+
 [WebBit]
+http://192.168.4.1/?brightness=value (0~1)
 http://192.168.4.1/?rgb=number;rrggbb   (number:0~24)
 http://192.168.4.1/?matrixled=rrggbbrrggbb......rrggbbrrggbb   (0~24)
 http://192.168.4.1/?buzzer=frequency;delay
@@ -84,6 +86,7 @@ WiFiServer server(80);
 
 String Feedback="", Command="",cmd="",p1="",p2="",p3="",p4="",p5="",p6="",p7="",p8="",p9="";
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
+float brightness = 1;
 
 void ExecuteCommand()
 {
@@ -318,6 +321,13 @@ void ExecuteCommand()
     lcd.print(p5);
     Feedback="{\"data\":\""+p4+"\"},{\"data\":\""+p5+"\"}";
   }
+  else if (cmd=="brightness") {
+    brightness = p1.toFloat();
+    if (brightness>1) brightness=1;
+    if (brightness<0) brightness=0.5;
+    Serial.println(String(brightness));
+    Feedback="{\"data\":\""+Command+"\"}";   
+  }   
   else if (cmd=="buttonA") {
     pinMode(35, INPUT);
     Feedback="{\"data\":\""+String(digitalRead(35))+"\"}";
@@ -352,9 +362,10 @@ void ExecuteCommand()
   }     
   else if (cmd=="rgb") {
     p2.toLowerCase();    
-    int R = HextoRGB(p2[0])*16+HextoRGB(p2[1]);
-    int G = HextoRGB(p2[2])*16+HextoRGB(p2[3]);
-    int B = HextoRGB(p2[4])*16+HextoRGB(p2[5]);
+    int R = (HextoRGB(p2[0])*16+HextoRGB(p2[1]))*brightness;
+    int G = (HextoRGB(p2[2])*16+HextoRGB(p2[3]))*brightness;
+    int B = (HextoRGB(p2[4])*16+HextoRGB(p2[5]))*brightness;
+    Serial.println(String(R)+", "+String(G)+", "+String(B));
     strip.SetPixelColor(p1.toInt(), RgbColor(R, G, B));
     strip.Show();
     Feedback="{\"data\":\""+Command+"\"}";    
@@ -363,9 +374,9 @@ void ExecuteCommand()
     p1.toLowerCase();    
     int R,G,B;
     for (int i=0;i<p1.length()/6;i++) {
-      R = HextoRGB(p1[i*6])*16+HextoRGB(p1[i*6+1]);
-      G = HextoRGB(p1[i*6+2])*16+HextoRGB(p1[i*6+3]);
-      B = HextoRGB(p1[i*6+4])*16+HextoRGB(p1[i*6+5]);
+      R = (HextoRGB(p1[i*6])*16+HextoRGB(p1[i*6+1]))*brightness;
+      G = (HextoRGB(p1[i*6+2])*16+HextoRGB(p1[i*6+3]))*brightness;
+      B = (HextoRGB(p1[i*6+4])*16+HextoRGB(p1[i*6+5]))*brightness;
       strip.SetPixelColor(i, RgbColor(R, G, B));
     }
     strip.Show();
@@ -503,18 +514,6 @@ void setup()
       if ((StartTime+10000) < millis()) break;
   } 
 
-  if (WiFi.localIP().toString()!="0.0.0.0")
-  {
-    pinMode(2, OUTPUT);
-    for (int i=0;i<5;i++)
-    {
-      digitalWrite(2,HIGH);
-      delay(100);
-      digitalWrite(2,LOW);
-      delay(100);
-    }
-  }  
-
   Serial.println("");
   Serial.println("STAIP address: ");
   Serial.println(WiFi.localIP());
@@ -571,7 +570,7 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
             client.println("Connection: close");
             client.println();
             if (Feedback=="")
-              client.println("[{\"data\":\"Hello World\"}]");
+              client.println("[{\"data\":\"WebBit\"}]");
             else
               client.println("["+Feedback+"]");
             client.println();
