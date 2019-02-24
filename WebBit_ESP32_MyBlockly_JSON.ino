@@ -86,7 +86,7 @@ WiFiServer server(80);
 
 String Feedback="", Command="",cmd="",p1="",p2="",p3="",p4="",p5="",p6="",p7="",p8="",p9="";
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
-float brightness = 1;
+float brightness = 0.5;
 
 void ExecuteCommand()
 {
