@@ -1,6 +1,6 @@
 /* 
 WebBit (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-24 13:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-25 20:30
 https://www.facebook.com/francefu
 
 Library
@@ -365,7 +365,6 @@ void ExecuteCommand()
     int R = (HextoRGB(p2[0])*16+HextoRGB(p2[1]))*brightness;
     int G = (HextoRGB(p2[2])*16+HextoRGB(p2[3]))*brightness;
     int B = (HextoRGB(p2[4])*16+HextoRGB(p2[5]))*brightness;
-    Serial.println(String(R)+", "+String(G)+", "+String(B));
     strip.SetPixelColor(p1.toInt(), RgbColor(R, G, B));
     strip.Show();
     Feedback="{\"data\":\""+Command+"\"}";    
@@ -469,9 +468,7 @@ else if (cmd=="buzzer") {
 
 int HextoRGB(char val) {
   String hex ="0123456789abcdef";
-  for (int i=0;i<16;i++) {
-    if (hex[i]==val) return i;
-  }
+  return hex.indexOf(val);
 }
 
 void setup()
