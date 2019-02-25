@@ -1,6 +1,6 @@
 /* 
 WebBit (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-25 20:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-26 00:00
 https://www.facebook.com/francefu
 
 Library
@@ -426,7 +426,7 @@ else if (cmd=="buzzer") {
     else if (p1=="s")
       Feedback="{\"data\":\""+String(aSqrt)+"\"}";      
     else
-      Feedback="{\"data\":\""+String(aX)+","+String(aY)+","+String(aZ)+","+String(aSqrt)+"\"}";
+      Feedback="{\"data\":\""+String(aX)+"\"},{\"data\":\""+String(aY)+"\"},{\"data\":\""+String(aZ)+"\"},{\"data\":\""+String(aSqrt)+"\"}";
   } 
   else if (cmd=="gyro") {
     mySensor.gyroUpdate();
@@ -441,7 +441,7 @@ else if (cmd=="buzzer") {
     else if (p1=="z")
       Feedback="{\"data\":\""+String(gZ)+"\"}";    
     else
-      Feedback="{\"data\":\""+String(gX)+","+String(gY)+","+String(gZ)+"\"}";
+      Feedback="{\"data\":\""+String(gX)+"\"},{\"data\":\""+String(gY)+"\"},{\"data\":\""+String(gZ)+"\"}";
   }
   else if (cmd=="mag") {
     mySensor.magUpdate();
@@ -459,7 +459,7 @@ else if (cmd=="buzzer") {
     else if (p1=="d")
       Feedback="{\"data\":\""+String(mDirection)+"\"}";      
     else
-      Feedback="{\"data\":\""+String(mX)+","+String(mY)+","+String(mZ)+","+String(mDirection)+"\"}";      
+      Feedback="{\"data\":\""+String(mX)+"\"},{\"data\":\""+String(mY)+"\"},{\"data\":\""+String(mZ)+"\"},{\"data\":\""+String(mDirection)+"\"}";    
   }  
   else {
     Feedback="{\"data\":\"Command is not defined\"}";
