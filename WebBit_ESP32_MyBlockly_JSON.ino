@@ -17,19 +17,19 @@ http://192.168.4.1/?ip
 http://192.168.4.1/?mac
 http://192.168.4.1/?restart
 http://192.168.4.1/?resetwifi=ssid;password
-http://192.168.4.1/?inputpullup=pin
-http://192.168.4.1/?pinmode=pin;value
-http://192.168.4.1/?digitalwrite=pin;value
-http://192.168.4.1/?analogwrite=pin;value
-http://192.168.4.1/?digitalread=pin
-http://192.168.4.1/?analogread=pin
-http://192.168.4.1/?touchread=pin
+http://192.168.4.1/?inputpullup=gpio
+http://192.168.4.1/?pinmode=gpio;value
+http://192.168.4.1/?digitalwrite=gpio;value
+http://192.168.4.1/?analogwrite=gpio;value
+http://192.168.4.1/?digitalread=gpio
+http://192.168.4.1/?analogread=gpio
+http://192.168.4.1/?touchread=gpio
 http://192.168.4.1/?tcp=domain;port;request;wait
 http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
 http://192.168.4.1/?thingspeakread=request
 http://192.168.4.1/?linenotify=token;request
-http://192.168.4.1/?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
+http://192.168.4.1/?car=gpioL1;gpioL2;gpioR1;gpioR2;L_speed;R_speed;Delay;state
 http://192.168.4.1/?i2cLcd=address;gpioSDA;gpioSCL;text1;text2
 
 [WebBit]
