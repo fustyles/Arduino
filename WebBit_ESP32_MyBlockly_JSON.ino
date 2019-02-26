@@ -1,6 +1,6 @@
 /* 
 WebBit (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-26 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-26 16:00
 https://www.facebook.com/francefu
 
 Library
@@ -34,7 +34,7 @@ http://192.168.4.1/?i2cLcd=address;gpioSDA;gpioSCL;text1;text2
 
 [WebBit]
 http://192.168.4.1/?brightness=value (0~1)
-http://192.168.4.1/?rgb=number;rrggbb   (number:0~24)
+http://192.168.4.1/?led=number;rrggbb   (number:0~24)
 http://192.168.4.1/?matrixled=rrggbbrrggbb......rrggbbrrggbb   (0~24)
 http://192.168.4.1/?buzzer=frequency;delay
 http://192.168.4.1/?buttonA
