@@ -360,7 +360,7 @@ void ExecuteCommand()
     pinMode(39, INPUT);    
     Feedback="{\"data\":\""+String(analogRead(39))+"\"}";
   }     
-  else if (cmd=="rgb") {
+  else if (cmd=="led") {
     p2.toLowerCase();    
     int R = (HextoRGB(p2[0])*16+HextoRGB(p2[1]))*brightness;
     int G = (HextoRGB(p2[2])*16+HextoRGB(p2[3]))*brightness;
