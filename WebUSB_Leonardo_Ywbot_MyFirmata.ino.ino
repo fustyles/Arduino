@@ -204,10 +204,7 @@ void loop()
   }  
 
   getCommand();
-  
-  if (ReceiveData.indexOf("?")==0) {
-    ExecuteCommand();
-  }
+  if (ReceiveData.indexOf("?")==0) ExecuteCommand();
 }
 
 void SendData(String data)
