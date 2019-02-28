@@ -14,6 +14,29 @@ https://github.com/adafruit/DHT-sensor-library
 https://github.com/z3t0/Arduino-IRremote
 
 Arduino Leonardo + Easy Module Shield V1 of Ywbot
+
+Command Format
+?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+
+?inputpullup=pin
+?pinMode=pin;value
+?digitalwrite=pin;value
+?digitalread=pin
+?analogwrite=pin;value   
+?analogread=pin
+?i2cLcd=address;text1;text2
+?SW1    
+?SW2
+?DHT11
+?Buzzer=frequency;delay 
+?IRReceiver
+?RGBLED=RedValue;GreenValue;BlueValue
+?LED1D=value  
+?LED2D=value
+?LED2A=value
+?Rotation
+?Light
+?LM35
 */
 
 #include <WebUSB.h>
