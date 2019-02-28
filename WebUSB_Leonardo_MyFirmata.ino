@@ -54,7 +54,7 @@ void loop()
     }   
   else if (cmd=="digitalread")
     {
-      pinMode(P1.toInt(), INPUT);    
+      pinMode(P1.toInt(), INPUT_PULLUP);    
       SendData("[{\"data\":\""+String(digitalRead(P1.toInt()))+"\"}]");
     }    
   else if (cmd=="analogwrite")
@@ -65,7 +65,7 @@ void loop()
     }       
   else if (cmd=="analogread")
     {
-      pinMode(P1.toInt(), INPUT);    
+      pinMode(P1.toInt(), INPUT_PULLUP);    
       SendData("[{\"data\":\""+String(analogRead(P1.toInt()))+"\"}]");
     } 
    else if (cmd=="i2cLcd") {
