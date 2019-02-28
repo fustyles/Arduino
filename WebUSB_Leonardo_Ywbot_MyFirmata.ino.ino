@@ -1,5 +1,5 @@
 /*
-Arduino Leonardo + Easy Module Shield V1 of Ywbot V1
+Arduino Leonardo + Easy Module Shield V1 of Ywbot
 
 https://webusb.github.io/arduino/
 The WebUSB library Provides all the extra low-level USB code necessary for WebUSB support except for one thing: 
