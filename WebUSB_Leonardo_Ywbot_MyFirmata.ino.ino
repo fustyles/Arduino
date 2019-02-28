@@ -1,4 +1,6 @@
 /*
+Arduino Leonardo + Easy Module Shield V1 of Ywbot V1
+
 https://webusb.github.io/arduino/
 The WebUSB library Provides all the extra low-level USB code necessary for WebUSB support except for one thing: 
 Your device must be upgraded from USB 2.0 to USB 2.1. 
@@ -12,8 +14,6 @@ https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads/
 https://github.com/adafruit/Adafruit_Sensor
 https://github.com/adafruit/DHT-sensor-library
 https://github.com/z3t0/Arduino-IRremote
-
-Arduino Leonardo + Easy Module Shield V1 of Ywbot
 
 Command Format
 ?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
