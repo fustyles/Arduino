@@ -63,34 +63,34 @@ boolean debug = true;
 void ExecuteCommand()
 {
   if (cmd=="yourcmd") {
-      //you can do anything
-      //if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+    //you can do anything
+    //if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
   } 
   else if (cmd=="inputpullup") {
-      pinMode(P1.toInt(), INPUT_PULLUP);
-      if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+    pinMode(P1.toInt(), INPUT_PULLUP);
+    if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
   }  
   else if (cmd=="pinMode") {
-      pinMode(P1.toInt(), P2.toInt());
-      if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+    pinMode(P1.toInt(), P2.toInt());
+    if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
   }        
   else if (cmd=="digitalwrite") {
-      pinMode(P1.toInt(), OUTPUT);
-      digitalWrite(P1.toInt(),P2.toInt());
-      if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+    pinMode(P1.toInt(), OUTPUT);
+    digitalWrite(P1.toInt(),P2.toInt());
+    if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
   }   
   else if (cmd=="digitalread") {
-      pinMode(P1.toInt(), INPUT_PULLUP);    
-      SendData("[{\"data\":\""+String(digitalRead(P1.toInt()))+"\"}]");
+    pinMode(P1.toInt(), INPUT_PULLUP);    
+    SendData("[{\"data\":\""+String(digitalRead(P1.toInt()))+"\"}]");
   }    
   else if (cmd=="analogwrite") {
-      pinMode(P1.toInt(), OUTPUT);
-      analogWrite(P1.toInt(),P2.toInt());
-      if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+    pinMode(P1.toInt(), OUTPUT);
+    analogWrite(P1.toInt(),P2.toInt());
+    if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
   }       
   else if (cmd=="analogread") {
-      pinMode(P1.toInt(), INPUT_PULLUP);    
-      SendData("[{\"data\":\""+String(analogRead(P1.toInt()))+"\"}]");
+    pinMode(P1.toInt(), INPUT_PULLUP);    
+    SendData("[{\"data\":\""+String(analogRead(P1.toInt()))+"\"}]");
   } 
   else if (cmd=="i2cLcd") {
     P1.toLowerCase();
@@ -145,9 +145,9 @@ void ExecuteCommand()
     if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
   } 
   else if (cmd=="IRReceiver") {
-     String result = ircode;
-     ircode = "";
-      SendData("[{\"data\":\""+String(result)+"\"}]");
+    String result = ircode;
+    ircode = "";
+    SendData("[{\"data\":\""+String(result)+"\"}]");
   } 
   else if (cmd=="RGBLED") {
     pinMode(9, OUTPUT); 
