@@ -1,6 +1,6 @@
 /* 
 WebBit (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-26 16:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-28 09:00
 https://www.facebook.com/francefu
 
 Library
@@ -43,9 +43,10 @@ http://192.168.4.1/?buttonAB
 http://192.168.4.1/?temperature
 http://192.168.4.1/?lumL
 http://192.168.4.1/?lumR
-http://192.168.4.1/?accel=[ ,x,y,z,s]
-http://192.168.4.1/?gyro=[ ,x,y,z]
-http://192.168.4.1/?mag=[ ,x,y,z,d]
+http://192.168.4.1/?MPU9250
+http://192.168.4.1/?accel
+http://192.168.4.1/?gyro
+http://192.168.4.1/?mag
     
 STAIP：
 Query：http://192.168.4.1/?ip
@@ -416,17 +417,7 @@ else if (cmd=="buzzer") {
     aY = mySensor.accelY();
     aZ = mySensor.accelZ();
     aSqrt = mySensor.accelSqrt(); 
-    p1.toLowerCase();
-    if (p1=="x")
-      Feedback="{\"data\":\""+String(aX)+"\"}";
-    else if (p1=="y")
-      Feedback="{\"data\":\""+String(aY)+"\"}";
-    else if (p1=="z")
-      Feedback="{\"data\":\""+String(aZ)+"\"}";
-    else if (p1=="s")
-      Feedback="{\"data\":\""+String(aSqrt)+"\"}";      
-    else
-      Feedback="{\"data\":\""+String(aX)+"\"},{\"data\":\""+String(aY)+"\"},{\"data\":\""+String(aZ)+"\"},{\"data\":\""+String(aSqrt)+"\"}";
+    Feedback="{\"data\":\""+String(aX)+"\"},{\"data\":\""+String(aY)+"\"},{\"data\":\""+String(aZ)+"\"},{\"data\":\""+String(aSqrt)+"\"}";
   } 
   else if (cmd=="gyro") {
     mySensor.gyroUpdate();
@@ -434,14 +425,7 @@ else if (cmd=="buzzer") {
     gY = mySensor.gyroY();
     gZ = mySensor.gyroZ();  
     p1.toLowerCase();
-    if (p1=="x")
-      Feedback="{\"data\":\""+String(gX)+"\"}";
-    else if (p1=="y")
-      Feedback="{\"data\":\""+String(gY)+"\"}";
-    else if (p1=="z")
-      Feedback="{\"data\":\""+String(gZ)+"\"}";    
-    else
-      Feedback="{\"data\":\""+String(gX)+"\"},{\"data\":\""+String(gY)+"\"},{\"data\":\""+String(gZ)+"\"}";
+    Feedback="{\"data\":\""+String(gX)+"\"},{\"data\":\""+String(gY)+"\"},{\"data\":\""+String(gZ)+"\"}";
   }
   else if (cmd=="mag") {
     mySensor.magUpdate();
@@ -449,18 +433,25 @@ else if (cmd=="buzzer") {
     mY = mySensor.magY();
     mZ = mySensor.magZ(); 
     mDirection = mySensor.magHorizDirection(); 
-    p1.toLowerCase();
-    if (p1=="x")
-      Feedback="{\"data\":\""+String(mX)+"\"}";
-    else if (p1=="y")
-      Feedback="{\"data\":\""+String(mY)+"\"}";
-    else if (p1=="z")
-      Feedback="{\"data\":\""+String(mZ)+"\"}";
-    else if (p1=="d")
-      Feedback="{\"data\":\""+String(mDirection)+"\"}";      
-    else
-      Feedback="{\"data\":\""+String(mX)+"\"},{\"data\":\""+String(mY)+"\"},{\"data\":\""+String(mZ)+"\"},{\"data\":\""+String(mDirection)+"\"}";    
+    Feedback="{\"data\":\""+String(mX)+"\"},{\"data\":\""+String(mY)+"\"},{\"data\":\""+String(mZ)+"\"},{\"data\":\""+String(mDirection)+"\"}";    
   }  
+  else if (cmd=="MPU9250") {
+    mySensor.accelUpdate();
+    aX = mySensor.accelX();
+    aY = mySensor.accelY();
+    aZ = mySensor.accelZ();
+    aSqrt = mySensor.accelSqrt(); 
+    mySensor.gyroUpdate();
+    gX = mySensor.gyroX();
+    gY = mySensor.gyroY();
+    gZ = mySensor.gyroZ();  
+    mySensor.magUpdate();
+    mX = mySensor.magX();
+    mY = mySensor.magY();
+    mZ = mySensor.magZ(); 
+    mDirection = mySensor.magHorizDirection(); 
+    Feedback="{\"data\":\""+String(aX)+"\"},{\"data\":\""+String(aY)+"\"},{\"data\":\""+String(aZ)+"\"},{\"data\":\""+String(aSqrt)+"\"},{\"data\":\""+String(gX)+"\"},{\"data\":\""+String(gY)+"\"},{\"data\":\""+String(gZ)+"\"},{\"data\":\""+String(mX)+"\"},{\"data\":\""+String(mY)+"\"},{\"data\":\""+String(mZ)+"\"},{\"data\":\""+String(mDirection)+"\"}";
+  }
   else {
     Feedback="{\"data\":\"Command is not defined\"}";
   }
