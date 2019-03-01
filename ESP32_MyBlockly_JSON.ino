@@ -527,7 +527,7 @@ String tcp_https(String domain,String request,int port,byte wait)
       return "Connection failed";  
 }
 
-String LineNotify(String token, String request, byte wait)
+String LineNotify(String token, String request, byte wait)  //message=xxx&stickerPackageId=xxx&stickerId=xxx
 {
   request.replace(" ","%20");
   request.replace("&","%20");
