@@ -162,7 +162,7 @@ void ExecuteCommand()
     Feedback.replace("\":",",");
     Feedback="{\"data\":\""+Feedback+"\"}";
   } 
-  else if (cmd=="linenotify") {
+  else if (cmd=="linenotify") {    //message=xxx&stickerPackageId=xxx&stickerId=xxx
     String token = P1;
     String request = P2;
     Feedback=LineNotify(token,request,1);
@@ -402,7 +402,7 @@ String tcp(String domain,String request,int port,byte wait)
       return "Connection failed";  
 }
 
-String LineNotify(String token, String message, byte wait)  //message=xxx&stickerPackageId=xxx&stickerId=xxx
+String LineNotify(String token, String message, byte wait)
 {
   message.replace(" ","%20");
   message.replace("&","%20");
