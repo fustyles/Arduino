@@ -6,6 +6,18 @@ To do this go into the SDK installation directory and open hardware/arduino/avr/
 Then find the line #define USB_VERSION 0x200 and change 0x200 to 0x210. That’s it!
 WebUSB Library
 https://github.com/webusb/arduino
+
+Command Format
+?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+
+?inputpullup=pin
+?pinMode=pin;value
+?digitalwrite=pin;value
+?digitalread=pin
+?analogwrite=pin;value   
+?analogread=pin
+?i2cLcd=address;pinSDA;pinSCL;text1;text2
+?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 */
 
 #include <WebUSB.h>
