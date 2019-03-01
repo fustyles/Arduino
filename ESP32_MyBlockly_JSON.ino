@@ -170,7 +170,7 @@ void ExecuteCommand()
     Feedback.replace("\":",",");
     Feedback="{\"data\":\""+Feedback+"\"}";
   } 
-  else if (cmd=="linenotify") {
+  else if (cmd=="linenotify") {    //message=xxx&stickerPackageId=xxx&stickerId=xxx
     String token = P1;
     String request = P2;
     Feedback=LineNotify(token,request,1);
@@ -527,7 +527,7 @@ String tcp_https(String domain,String request,int port,byte wait)
       return "Connection failed";  
 }
 
-String LineNotify(String token, String request, byte wait)  //message=xxx&stickerPackageId=xxx&stickerId=xxx
+String LineNotify(String token, String request, byte wait)
 {
   request.replace(" ","%20");
   request.replace("&","%20");
