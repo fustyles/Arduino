@@ -399,7 +399,7 @@ String tcp(String domain,String request,int port,byte wait)
       return "Connection failed";  
 }
 
-String LineNotify(String token, String message, byte wait)
+String LineNotify(String token, String message, byte wait)  //message=xxx&stickerPackageId=xxx&stickerId=xxx
 {
   message.replace(" ","%20");
   message.replace("&","%20");
