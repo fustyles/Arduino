@@ -1,5 +1,7 @@
 /*
-WebUSB + Arduino Leonardo   2019/3/1
+WebUSB + Arduino Leonardo
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-3-1 21:00
+https://www.facebook.com/francefu
 
 https://webusb.github.io/arduino/
 The WebUSB library provides all the extra low-level USB code necessary for WebUSB support except for one thing: 
