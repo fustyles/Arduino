@@ -1,6 +1,6 @@
 /*
-Arduino Leonardo + Easy Module Shield V1 of Ywbot  2019/2/28
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-28 09:00
+Arduino Leonardo + Easy Module Shield V1 of Ywbot
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-28 21:00
 https://www.facebook.com/francefu
 
 https://webusb.github.io/arduino/
