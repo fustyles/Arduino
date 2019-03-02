@@ -86,28 +86,6 @@ void ExecuteCommand()
     lcd.print(P3);
     if (debug == true) SendData("[{\"data\":\""+P2+"\"},{\"data\":\""+P3+"\"}]");
   }
-  // Library: https://github.com/fdebrabander/Arduino-LiquidCrystal-I2C-library
-  // ?i2cLcd=address;pinSDA;pinSCL;text1;text2
-  /*  
-  else if (cmd=="i2cLcd") {
-    P1.toLowerCase();
-    //You must convert hex value(P1) to decimal value.
-    if (P1=="0x27") 
-      P1="39";
-    else if (P1=="0x3f") 
-      P1="63";
-     
-    LiquidCrystal_I2C lcd(P1.toInt(),16,2);
-    lcd.begin();
-    lcd.backlight();
-    lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print(P4);
-    lcd.setCursor(0,1);
-    lcd.print(P5);
-    if (debug == true) SendData("[{\"data\":\""+P4+"\"},{\"data\":\""+P5+"\"}]");
-  } 
-  */
   else if (cmd=="car")  {  // ?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
     pinMode(P1.toInt(), OUTPUT);
     pinMode(P2.toInt(), OUTPUT);
