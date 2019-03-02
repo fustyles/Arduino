@@ -25,7 +25,7 @@ Command Format
 ?digitalread=pin
 ?analogwrite=pin;value   
 ?analogread=pin
-?i2cLcd=address;text1;text2
+?i2cLcd=address;text1;text2  (SDA:A4, SCL:A5)
 ?SW1    
 ?SW2
 ?DHT11
