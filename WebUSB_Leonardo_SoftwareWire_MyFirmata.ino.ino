@@ -72,8 +72,6 @@ void ExecuteCommand()
     pinMode(P1.toInt(), INPUT_PULLUP);    
     SendData("[{\"data\":\""+String(analogRead(P1.toInt()))+"\"}]");
   } 
-  // Library: https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads/
-  // ?i2cLcd=address;text1;text2
   else if (cmd=="i2cLcd") {
     P1.toLowerCase();
     //You must convert hex value(P1) to decimal value.
