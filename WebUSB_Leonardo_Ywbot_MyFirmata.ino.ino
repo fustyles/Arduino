@@ -11,7 +11,6 @@ Then find the line #define USB_VERSION 0x200 and change 0x200 to 0x210. That’s
 
 Library
 https://github.com/webusb/arduino
-https://github.com/fdebrabander/Arduino-LiquidCrystal-I2C-library
 https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads/
 https://github.com/adafruit/Adafruit_Sensor
 https://github.com/adafruit/DHT-sensor-library
