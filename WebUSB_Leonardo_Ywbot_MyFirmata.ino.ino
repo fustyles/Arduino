@@ -63,6 +63,11 @@ boolean debug = true;
 
 void ExecuteCommand()
 {
+  Serial.println("");
+  //Serial.println("Command: "+Command);
+  Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
+  Serial.println("");
+  
   if (cmd=="yourcmd") {
     //you can do anything
     //if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
