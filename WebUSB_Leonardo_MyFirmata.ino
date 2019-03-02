@@ -1,6 +1,6 @@
 /*
-WebUSB + Arduino Leonardo
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-3-1 21:00
+WebUSB + Arduino Leonardo  2019-3-2 18:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)
 https://www.facebook.com/francefu
 
 https://webusb.github.io/arduino/
@@ -8,19 +8,20 @@ The WebUSB library provides all the extra low-level USB code necessary for WebUS
 Your device must be upgraded from USB 2.0 to USB 2.1. 
 To do this go into the SDK installation directory and open hardware/arduino/avr/cores/arduino/USBCore.h. 
 Then find the line #define USB_VERSION 0x200 and change 0x200 to 0x210. That’s it!
-WebUSB Library
+
+Library
 https://github.com/webusb/arduino
+https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads/
 
 Command Format
 ?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
-
 ?inputpullup=pin
 ?pinMode=pin;value
 ?digitalwrite=pin;value
 ?digitalread=pin
 ?analogwrite=pin;value   
 ?analogread=pin
-?i2cLcd=address;pinSDA;pinSCL;text1;text2
+?i2cLcd=address;text1;text2
 ?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 */
 
@@ -34,57 +35,61 @@ WebUSB WebUSBSerial(1 /* https:// */, "fustyles.github.io/webduino/myBlockly/");
 String ReceiveData="", Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";
 boolean debug = true;
 
-void setup()
+void ExecuteCommand()
 {
-  while (!Serial) {;}
-  Serial.begin(9600);
-  SendData("Device is Connected.");
-}
-
-void loop() 
-{
-  getCommand();
-
-  if (ReceiveData.indexOf("?")==0)
-  {
-  if (cmd=="yourcmd")
-    {
-      //you can do anything
-      //if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
-    } 
-  else if (cmd=="inputpullup")
-    {
-      pinMode(P1.toInt(), INPUT_PULLUP);
-      if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
-    }  
-  else if (cmd=="pinmode")
-    {
-      pinMode(P1.toInt(), P2.toInt());
-      if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
-    }        
-  else if (cmd=="digitalwrite")
-    {
-      pinMode(P1.toInt(), OUTPUT);
-      digitalWrite(P1.toInt(),P2.toInt());
-      if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
-    }   
-  else if (cmd=="digitalread")
-    {
-      pinMode(P1.toInt(), INPUT_PULLUP);    
-      SendData("[{\"data\":\""+String(digitalRead(P1.toInt()))+"\"}]");
-    }    
-  else if (cmd=="analogwrite")
-    {
-      pinMode(P1.toInt(), OUTPUT);
-      analogWrite(P1.toInt(),P2.toInt());
-      if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
-    }       
-  else if (cmd=="analogread")
-    {
-      pinMode(P1.toInt(), INPUT_PULLUP);    
-      SendData("[{\"data\":\""+String(analogRead(P1.toInt()))+"\"}]");
-    } 
-   else if (cmd=="i2cLcd") {
+  if (cmd=="yourcmd")  {
+    //you can do anything
+    //if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+  } 
+  else if (cmd=="inputpullup")  {
+    pinMode(P1.toInt(), INPUT_PULLUP);
+    if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+  }  
+  else if (cmd=="pinmode")  {
+    pinMode(P1.toInt(), P2.toInt());
+    if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+  }        
+  else if (cmd=="digitalwrite")  {
+    pinMode(P1.toInt(), OUTPUT);
+    digitalWrite(P1.toInt(),P2.toInt());
+    if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+  }   
+  else if (cmd=="digitalread")  {
+    pinMode(P1.toInt(), INPUT_PULLUP);    
+    SendData("[{\"data\":\""+String(digitalRead(P1.toInt()))+"\"}]");
+  }    
+  else if (cmd=="analogwrite")  {
+    pinMode(P1.toInt(), OUTPUT);
+    analogWrite(P1.toInt(),P2.toInt());
+    if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+  }       
+  else if (cmd=="analogread")  {
+    pinMode(P1.toInt(), INPUT_PULLUP);    
+    SendData("[{\"data\":\""+String(analogRead(P1.toInt()))+"\"}]");
+  }
+  // Library: https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads/
+  // ?i2cLcd=address;text1;text2    
+  else if (cmd=="i2cLcd") {
+    P1.toLowerCase();
+    //You must convert hex value(P1) to decimal value.
+    if (P1=="0x27") 
+      P1="39";
+    else if (P1=="0x3f") 
+      P1="63";
+    LiquidCrystal_I2C lcd(P1.toInt(), 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
+    lcd.begin(16, 2);
+    lcd.backlight();
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print(P2);
+    lcd.setCursor(0,1);
+    lcd.print(P3);
+    if (debug == true) SendData("[{\"data\":\""+P2+"\"},{\"data\":\""+P3+"\"}]");
+  }
+  // Library: https://github.com/fdebrabander/Arduino-LiquidCrystal-I2C-library
+  // ?i2cLcd=address;pinSDA;pinSCL;text1;text2
+  /*  
+  else if (cmd=="i2cLcd") {
     P1.toLowerCase();
     //You must convert hex value(P1) to decimal value.
     if (P1=="0x27") 
@@ -101,82 +106,83 @@ void loop()
     lcd.setCursor(0,1);
     lcd.print(P5);
     if (debug == true) SendData("[{\"data\":\""+P4+"\"},{\"data\":\""+P5+"\"}]");
-  }
-  else if (cmd=="car")    // ?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
-    {
-      pinMode(P1.toInt(), OUTPUT);
-      pinMode(P2.toInt(), OUTPUT);
-      pinMode(P3.toInt(), OUTPUT);
-      pinMode(P4.toInt(), OUTPUT);
-      digitalWrite(P1.toInt(), 0);
-      digitalWrite(P2.toInt(), 0);
-      digitalWrite(P3.toInt(), 0);
-      digitalWrite(P4.toInt(), 0);
-      delay(10);
-    
-      if (P8=="S")
-      {
-        //
-      }
-      else if  (P8=="F")
-      {
-        analogWrite(P1.toInt(),P5.toInt());
-        analogWrite(P2.toInt(),0);
-        analogWrite(P3.toInt(),0);
-        analogWrite(P4.toInt(),P6.toInt());       
-        if ((P7!="")&&(P7!="0"))
-        {
-          delay(P7.toInt());
-          analogWrite(P1.toInt(),0);
-          analogWrite(P4.toInt(),0);          
-        }     
-      }
-      else if  (P8=="B")
-      {
+  } 
+  */
+  else if (cmd=="car")  {  // ?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
+    pinMode(P1.toInt(), OUTPUT);
+    pinMode(P2.toInt(), OUTPUT);
+    pinMode(P3.toInt(), OUTPUT);
+    pinMode(P4.toInt(), OUTPUT);
+    digitalWrite(P1.toInt(), 0);
+    digitalWrite(P2.toInt(), 0);
+    digitalWrite(P3.toInt(), 0);
+    digitalWrite(P4.toInt(), 0);
+    delay(10);
+  
+    if (P8=="S")  {
+      //
+    }
+    else if  (P8=="F")  {
+      analogWrite(P1.toInt(),P5.toInt());
+      analogWrite(P2.toInt(),0);
+      analogWrite(P3.toInt(),0);
+      analogWrite(P4.toInt(),P6.toInt());       
+      if ((P7!="")&&(P7!="0"))  {
+        delay(P7.toInt());
         analogWrite(P1.toInt(),0);
-        analogWrite(P2.toInt(),P5.toInt());
-        analogWrite(P3.toInt(),P6.toInt());
-        analogWrite(P4.toInt(),0);  
-        if ((P7!="")&&(P7!="0"))
-        {
-          delay(P7.toInt());
-          analogWrite(P2.toInt(),0);
-          analogWrite(P3.toInt(),0);         
-        }     
-      }
-      else if  (P8=="L")
-      {
-        analogWrite(P1.toInt(),0);
-        analogWrite(P2.toInt(),P5.toInt());
-        analogWrite(P3.toInt(),0);
-        analogWrite(P4.toInt(),P6.toInt());         
-        if ((P7!="")&&(P7!="0"))
-        {
-          delay(P7.toInt());
-          analogWrite(P2.toInt(),0);
-          analogWrite(P4.toInt(),0);          
-        }
-      }
-      else if  (P8=="R")
-      {
-        analogWrite(P1.toInt(),P5.toInt());
+        analogWrite(P4.toInt(),0);          
+      }     
+    }
+    else if  (P8=="B")  {
+      analogWrite(P1.toInt(),0);
+      analogWrite(P2.toInt(),P5.toInt());
+      analogWrite(P3.toInt(),P6.toInt());
+      analogWrite(P4.toInt(),0);  
+      if ((P7!="")&&(P7!="0"))  {
+        delay(P7.toInt());
         analogWrite(P2.toInt(),0);
-        analogWrite(P3.toInt(),P6.toInt());
-        analogWrite(P4.toInt(),0);
-        if ((P7!="")&&(P7!="0"))
-        {
-          delay(P7.toInt());
-          analogWrite(P1.toInt(),0);
-          analogWrite(P3.toInt(),0);       
-        }        
+        analogWrite(P3.toInt(),0);         
+      }     
+    }
+    else if  (P8=="L")  {
+      analogWrite(P1.toInt(),0);
+      analogWrite(P2.toInt(),P5.toInt());
+      analogWrite(P3.toInt(),0);
+      analogWrite(P4.toInt(),P6.toInt());         
+      if ((P7!="")&&(P7!="0"))  {
+        delay(P7.toInt());
+        analogWrite(P2.toInt(),0);
+        analogWrite(P4.toInt(),0);          
       }
-      if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
-    }    
-  else 
-    {
-      SendData("[{\"data\":\"Command is not defined\"}]");
-    }  
-  }
+    }
+    else if  (P8=="R")  {
+      analogWrite(P1.toInt(),P5.toInt());
+      analogWrite(P2.toInt(),0);
+      analogWrite(P3.toInt(),P6.toInt());
+      analogWrite(P4.toInt(),0);
+      if ((P7!="")&&(P7!="0"))  {
+        delay(P7.toInt());
+        analogWrite(P1.toInt(),0);
+        analogWrite(P3.toInt(),0);       
+      }        
+    }
+    if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+  }    
+  else
+    SendData("[{\"data\":\"Command is not defined\"}]");
+}
+
+void setup()
+{
+  while (!Serial) {;}
+  Serial.begin(9600);
+  SendData("Device is Connected.");
+}
+
+void loop() 
+{
+  getCommand();
+  if (ReceiveData.indexOf("?")==0) ExecuteCommand();
 }
 
 void SendData(String data)
