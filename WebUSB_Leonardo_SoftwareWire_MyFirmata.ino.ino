@@ -21,7 +21,7 @@ Command Format
 ?digitalread=pin
 ?analogwrite=pin;value   
 ?analogread=pin
-?i2cLcd=address;SDA;SCL;text1;text2  (SDA,SCL)=(2, 3) or (18, 19)
+?i2cLcd=address;SDA;SCL;text1;text2  (SDA, SCL) = (2, 3) or (18, 19)
 ?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 */
 
