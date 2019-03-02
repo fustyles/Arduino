@@ -21,7 +21,7 @@ Command Format
 ?digitalread=pin
 ?analogwrite=pin;value   
 ?analogread=pin
-?i2cLcd=address;text1;text2
+?i2cLcd=address;text1;text2  (SDA:A4, SCL:A5)
 ?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 */
 
