@@ -52,7 +52,7 @@ STAIP：
 Query：http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
 
-If you don't need to get response from WebBit(BPI-bit), 
+If you don't need to get response from WebBit(BPI-bit) and want to execute commands quickly, 
 you can append a parameter value "stop" at the end of command.
 For example:
 http://192.168.4.1/?buzzer=frequency;delay;stop
