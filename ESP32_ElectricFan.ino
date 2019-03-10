@@ -14,6 +14,12 @@ http://192.168.4.1
 
 STAIP：
 http://192.168.4.1/?resetwifi=ssid;password
+
+If you don't need to get response from ESP8266 and want to execute commands quickly, 
+you can append a parameter value "stop" at the end of command.
+For example:
+http://192.168.4.1/?digitalwrite=gpio;value;stop
+http://192.168.4.1/?restart=stop
 */
 
 #include <WiFi.h>
