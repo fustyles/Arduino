@@ -45,13 +45,11 @@ STAIP：
 Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
 
-Update AT Firmware
-https://www.youtube.com/watch?v=QVhWVu8NnZc
-http://www.electrodragon.com/w/File:V2.0_AT_Firmware(ESP).zip
-
-nodemcu-flasher
-https://github.com/nodemcu/nodemcu-flasher
-(Baudrate:115200, Flash size:1MByte, Flash speed:26.7MHz, SPI Mode:QIO)
+Control Page (http)
+Source
+https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
+Page
+https://fustyles.github.io/webduino/ESP8266_MyFirmata.html
 
 Expanding Arduino Serial Port Buffer Size
 https://internetofhomethings.com/homethings/?p=927
