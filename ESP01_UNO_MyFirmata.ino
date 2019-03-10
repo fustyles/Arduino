@@ -32,6 +32,12 @@ http://192.168.4.1/?analogread=pin
 STAIP：
 Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
+
+Control Page (http)
+Source
+https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
+Page
+https://fustyles.github.io/webduino/ESP8266_MyFirmata.html
 */
 
 // Enter your WiFi ssid and password
