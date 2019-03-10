@@ -6,6 +6,7 @@ https://www.facebook.com/francefu
 Command Format :  
 http://APIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://STAIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+
 Default APIP： 192.168.4.1
 http://192.168.4.1/?ip
 http://192.168.4.1/?mac
@@ -25,11 +26,22 @@ http://192.168.4.1/?thingspeakread=request
 http://192.168.4.1/?linenotify=token;request
 http://192.168.4.1/?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 http://192.168.4.1/?i2cLcd=address;gpioSDA;gpioSCL;text1;text2
+
 STAIP：
 Query：http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
+
+If you don't need to get response from ESP8266 and want to execute commands quickly, 
+you can append a parameter value "stop" at the end of command.
+For example:
+http://192.168.4.1/?digitalwrite=gpio;value;stop
+http://192.168.4.1/?restart=stop
+
 Control Page (http)
+Source
 https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
+Page
+https://fustyles.github.io/webduino/ESP8266_MyFirmata.html
 */
 
 //Library : https://github.com/fdebrabander/Arduino-LiquidCrystal-I2C-library
