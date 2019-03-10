@@ -27,6 +27,12 @@ http://192.168.4.1/?digitalwrite=pin;value
 http://192.168.4.1/?analogwrite=pin;value
 http://192.168.4.1/?digitalread=pin
 http://192.168.4.1/?analogread=pin
+
+Control Page (http)
+Source
+https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
+Page
+https://fustyles.github.io/webduino/ESP8266_MyFirmata.html
 */
 
 String AP_SSID = "MyFirmata ESP01";
