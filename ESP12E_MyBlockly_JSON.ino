@@ -42,9 +42,11 @@ Source
 https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 Page
 https://fustyles.github.io/webduino/ESP8266_MyFirmata.html
+
+CD LLibrary
+https://github.com/fdebrabander/Arduino-LiquidCrystal-I2C-library
 */
 
-//Library : https://github.com/fdebrabander/Arduino-LiquidCrystal-I2C-library
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h>
 
