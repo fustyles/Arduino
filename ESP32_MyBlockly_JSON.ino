@@ -42,9 +42,11 @@ Source
 https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 Page
 https://fustyles.github.io/webduino/ESP8266_MyFirmata.html
+
+LCD Library
+https://github.com/nhatuan84/esp32-lcd
 */
 
-//Library: https://github.com/nhatuan84/esp32-lcd
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h>
 
