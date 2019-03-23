@@ -40,9 +40,11 @@ Source
 https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 Page
 https://fustyles.github.io/webduino/ESP8266_MyFirmata.html
+
+CD LLibrary
+https://github.com/agnunez/ESP8266-I2C-LCD1602
 */
 
-//Library : https://github.com/agnunez/ESP8266-I2C-LCD1602
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h>
 
