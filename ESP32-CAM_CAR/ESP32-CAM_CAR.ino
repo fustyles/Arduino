@@ -17,8 +17,8 @@ https://www.facebook.com/francefu
 //#define CAMERA_MODEL_M5STACK_PSRAM
 #define CAMERA_MODEL_AI_THINKER
 
-const char* ssid = "webduino.io";
-const char* password = "webduino";
+const char* ssid = "xxxxx";
+const char* password = "xxxxx";
 
 
 #if defined(CAMERA_MODEL_WROVER_KIT)
