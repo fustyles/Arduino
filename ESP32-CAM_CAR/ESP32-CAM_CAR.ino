@@ -1,3 +1,9 @@
+/*
+ESP32-CAM Remote Control Car 
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-3-27 21:00
+https://www.facebook.com/francefu
+*/
+
 #include "esp_camera.h"
 #include <WiFi.h>
 
