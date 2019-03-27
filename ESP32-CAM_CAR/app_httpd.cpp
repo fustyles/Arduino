@@ -1,3 +1,9 @@
+/*
+ESP32-CAM Remote Control Car 
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-3-27 21:00
+https://www.facebook.com/francefu
+*/
+
 // Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
