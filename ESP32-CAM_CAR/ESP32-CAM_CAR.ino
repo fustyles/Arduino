@@ -1,11 +1,16 @@
 /*
 ESP32-CAM Remote Control Car 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-3-27 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-3-28 23:00
 https://www.facebook.com/francefu
+Motor Driver IC -> gpio12, gpio13, gpio15, gpio14
+Servo -> gpio2
 */
 
 #include "esp_camera.h"
 #include <WiFi.h>
+
+const char* ssid = "xxxxx";
+const char* password = "xxxxx";
 
 //
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
@@ -16,10 +21,6 @@ https://www.facebook.com/francefu
 //#define CAMERA_MODEL_WROVER_KIT
 //#define CAMERA_MODEL_M5STACK_PSRAM
 #define CAMERA_MODEL_AI_THINKER
-
-const char* ssid = "xxxxx";
-const char* password = "xxxxx";
-
 
 #if defined(CAMERA_MODEL_WROVER_KIT)
 #define PWDN_GPIO_NUM    -1
@@ -132,6 +133,9 @@ void setup() {
   sensor_t * s = esp_camera_sensor_get();
   s->set_framesize(s, FRAMESIZE_QVGA);
 
+  Serial.println("ssid: " + (String)ssid);
+  Serial.println("password: " + (String)password);
+  
   WiFi.begin(ssid, password);
 
   while (WiFi.status() != WL_CONNECTED) {
