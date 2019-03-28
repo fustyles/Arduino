@@ -538,9 +538,9 @@ static esp_err_t cmd_handler(httpd_req_t *req){
          val = 8000;
       else if (val < 1700)
         val = 1700;      
-      ledcAttachPin(2, 3);   // GPIO 2 assigned to channel 2
-      ledcSetup(3, 50, 16); // channel 1, 50 Hz, 16-bit width
-      ledcWrite(3, val); // Moved the servo
+      ledcAttachPin(2, 3);
+      ledcSetup(3, 50, 16);
+      ledcWrite(3, val);
       delay(50);
     }     
     else if(!strcmp(variable, "flash")) {
