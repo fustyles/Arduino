@@ -10,6 +10,9 @@ Servo -> gpio2
 #include "esp_camera.h"
 #include <WiFi.h>
 
+const char* ssid = "xxxx";
+const char* password = "xxxx";
+
 //
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
 //            or another board which has PSRAM enabled
@@ -19,10 +22,6 @@ Servo -> gpio2
 //#define CAMERA_MODEL_WROVER_KIT
 //#define CAMERA_MODEL_M5STACK_PSRAM
 #define CAMERA_MODEL_AI_THINKER
-
-const char* ssid = "xxxx";
-const char* password = "xxxx";
-
 
 #if defined(CAMERA_MODEL_WROVER_KIT)
 #define PWDN_GPIO_NUM    -1
