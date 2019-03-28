@@ -2,6 +2,9 @@
 ESP32-CAM Remote Control Car 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-3-28 23:00
 https://www.facebook.com/francefu
+
+Motor Driver IC -> gpio12, gpio13, gpio15, gpio14
+Servo -> gpio2
 */
 
 #include "esp_camera.h"
