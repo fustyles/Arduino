@@ -562,14 +562,16 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         digitalWrite(12, 1);   
         digitalWrite(13, 0);  
         digitalWrite(15, 1);  
-        digitalWrite(14, 0);  
+        digitalWrite(14, 0);
+        delay(200);
       }
       else if (val==2) {
         Serial.println("TurnLeft");        
         digitalWrite(12, 1);   
         digitalWrite(13, 0);  
         digitalWrite(15, 0);  
-        digitalWrite(14, 1);        
+        digitalWrite(14, 1);  
+        delay(100);              
       }
       else if (val==3) {
         Serial.println("Stop");        
@@ -583,15 +585,21 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         digitalWrite(12, 0);   
         digitalWrite(13, 1);  
         digitalWrite(15, 1);  
-        digitalWrite(14, 0);          
+        digitalWrite(14, 0); 
+        delay(100);              
       }
       else if (val==5) {
         Serial.println("Backward");         
         digitalWrite(12, 0);   
         digitalWrite(13, 1);  
         digitalWrite(15, 0);  
-        digitalWrite(14, 1);    
+        digitalWrite(14, 1);   
+        delay(200);              
       }
+      digitalWrite(12, 0);   
+      digitalWrite(13, 0);  
+      digitalWrite(15, 0);  
+      digitalWrite(14, 0);             
     }      
     else {
         res = -1;
