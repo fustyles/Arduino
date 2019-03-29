@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Remote Control Car 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-3-29 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-3-29 22:00
 https://www.facebook.com/francefu
 
 Motor Driver IC -> gpio12, gpio13, gpio15, gpio14
