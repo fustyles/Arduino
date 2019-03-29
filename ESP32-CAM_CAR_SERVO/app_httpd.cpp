@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Remote Control Car 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-3-29 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-3-29 21:30
 https://www.facebook.com/francefu
 
 Motor Driver IC -> gpio12, gpio13, gpio15, gpio14
@@ -538,7 +538,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
          val = 8000;
       else if (val < 1700)
         val = 1700;   
-      val = 1700 + (8000 - val);            
+      val = 1700 + (8000 - val);   
       ledcAttachPin(2, 3);
       ledcSetup(3, 50, 16);
       ledcWrite(3, val);
@@ -554,10 +554,6 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       //ledcDetachPin(13);
       //ledcDetachPin(15);
       //ledcDetachPin(14);                  
-      pinMode(12, OUTPUT);
-      pinMode(13, OUTPUT); 
-      pinMode(15, OUTPUT); 
-      pinMode(14, OUTPUT); 
       if (val==1) {
         Serial.println("Forward");        
         digitalWrite(12, 1);   
