@@ -640,7 +640,7 @@ static esp_err_t status_handler(httpd_req_t *req){
     return httpd_resp_send(req, json_response, strlen(json_response));
 }
 
-static const char PROGMEM INDEX2_HTML[] = R"rawliteral(
+static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 <!doctype html>
 <html>
     <head>
@@ -879,7 +879,7 @@ static esp_err_t index_handler(httpd_req_t *req){
     httpd_resp_set_type(req, "text/html");
     //httpd_resp_set_hdr(req, "Content-Encoding", "gzip");
     //return httpd_resp_send(req, (const char *)index_html_gz, index_html_gz_len);
-    return httpd_resp_send(req, (const char *)INDEX2_HTML, strlen(INDEX2_HTML));
+    return httpd_resp_send(req, (const char *)INDEX_HTML, strlen(INDEX_HTML));
 }
 
 void startCameraServer(){
