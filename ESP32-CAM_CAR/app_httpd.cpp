@@ -534,11 +534,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       ledcSetup(3, 5000, 8);
       ledcWrite(3,val);
     }      
-    else if(!strcmp(variable, "car")) {
-      //ledcDetachPin(12);
-      //ledcDetachPin(13);
-      //ledcDetachPin(15);
-      //ledcDetachPin(14);                  
+    else if(!strcmp(variable, "car")) {               
       pinMode(12, OUTPUT);
       pinMode(13, OUTPUT); 
       pinMode(15, OUTPUT); 
