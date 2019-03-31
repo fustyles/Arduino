@@ -690,7 +690,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <tr><td></td><td align="center"><button id="backward" onclick="fetch(document.location.origin+'/control?var=car&val=5');">Backward</button></td><td></td></tr>
                 <tr><td>Servo</td><td align="center" colspan="2"><input type="range" id="servo" min="1700" max="8000" step="35" value="4850" onchange="fetch(document.location.origin+'/control?var=servo&val='+this.value);"></td></tr>
                 <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="fetch(document.location.origin+'/control?var=flash&val='+this.value);"></td></tr>
-                <tr><td>Speed Adjust</td><td align="center" colspan="2"><input type="range" id="speed" min="0" max="255" value="255" onchange="fetch(document.location.origin+'/control?var=speed&val='+this.value);"></td></tr>
+                <tr><td>Adjust Speed</td><td align="center" colspan="2"><input type="range" id="speed" min="0" max="255" value="255" onchange="fetch(document.location.origin+'/control?var=speed&val='+this.value);"></td></tr>
                 </table>
             </section>         
             <div id="logo">
