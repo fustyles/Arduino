@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Remote Control Car 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-3-29 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-3-31 15:00
 https://www.facebook.com/francefu
 
 Motor Driver IC -> gpio12, gpio13, gpio15, gpio14
@@ -132,15 +132,15 @@ void setup() {
   //drop down frame size for higher initial frame rate
   sensor_t * s = esp_camera_sensor_get();
   s->set_framesize(s, FRAMESIZE_QVGA);
-  
-  pinMode(12, OUTPUT);
-  pinMode(13, OUTPUT); 
+
+  ledcAttachPin(12, 5);
+  ledcSetup(5, 5000, 8);      
+  ledcAttachPin(13, 6);
+  ledcSetup(6, 5000, 8);      
   pinMode(15, OUTPUT); 
   pinMode(14, OUTPUT); 
-  digitalWrite(12, 0);   
-  digitalWrite(13, 0);  
-  digitalWrite(15, 0);  
-  digitalWrite(14, 0);   
+
+  ledcWrite(6,0);
 
   Serial.println("ssid: " + (String)ssid);
   Serial.println("password: " + (String)password);

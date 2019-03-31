@@ -1,9 +1,12 @@
 /*
 ESP32-CAM Remote Control Car 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-3-29 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-3-31 15:00
 https://www.facebook.com/francefu
 Motor Driver IC -> gpio12, gpio13, gpio15, gpio14
 */
+
+int speed = 255;  //You can adjust the speed of the wheel. (gpio12, gpio13)
+int noStop = 0;
 
 // Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
 //
@@ -533,51 +536,64 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       ledcAttachPin(4, 3);
       ledcSetup(3, 5000, 8);
       ledcWrite(3,val);
+    }  
+    else if(!strcmp(variable, "speed")) {
+      if (val > 255)
+         val = 255;
+      else if (val < 0)
+        val = 0;       
+      speed = val;
     }      
-    else if(!strcmp(variable, "car")) {        
+    else if(!strcmp(variable, "nostop")) {
+      noStop = val;
+    }       
+    else if(!strcmp(variable, "car")) {  
+      //Don't use channel 1 and channel 2
       if (val==1) {
-        Serial.println("Forward");        
-        digitalWrite(12, 1);   
-        digitalWrite(13, 0);  
+        Serial.println("Forward");     
+        ledcWrite(5,speed);
+        ledcWrite(6,0);
         digitalWrite(15, 1);  
-        digitalWrite(14, 0);
+        digitalWrite(14, 0);   
         delay(200);
       }
       else if (val==2) {
-        Serial.println("TurnLeft");        
-        digitalWrite(12, 1);   
-        digitalWrite(13, 0);  
+        Serial.println("TurnLeft");     
+        ledcWrite(5,speed);
+        ledcWrite(6,0);
         digitalWrite(15, 0);  
-        digitalWrite(14, 1);  
+        digitalWrite(14, 1); 
         delay(100);              
       }
       else if (val==3) {
-        Serial.println("Stop");        
-        digitalWrite(12, 0);   
-        digitalWrite(13, 0);  
+        Serial.println("Stop");      
+        ledcWrite(5,0);
+        ledcWrite(6,0);
         digitalWrite(15, 0);  
         digitalWrite(14, 0);     
       }
       else if (val==4) {
         Serial.println("TurnRight");
-        digitalWrite(12, 0);   
-        digitalWrite(13, 1);  
+        ledcWrite(5,0);
+        ledcWrite(6,speed);
         digitalWrite(15, 1);  
         digitalWrite(14, 0); 
         delay(100);              
       }
       else if (val==5) {
-        Serial.println("Backward");         
-        digitalWrite(12, 0);   
-        digitalWrite(13, 1);  
+        Serial.println("Backward");      
+        ledcWrite(5,0);
+        ledcWrite(6,speed);
         digitalWrite(15, 0);  
-        digitalWrite(14, 1);   
+        digitalWrite(14, 1); 
         delay(200);              
       }
-      digitalWrite(12, 0);   
-      digitalWrite(13, 0);  
-      digitalWrite(15, 0);  
-      digitalWrite(14, 0);             
+      if (noStop!=1) {
+        ledcWrite(5, 0);
+        ledcWrite(6, 0);  
+        digitalWrite(15, 0);  
+        digitalWrite(14, 0);
+      }        
     }        
     else {
         res = -1;
@@ -654,10 +670,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             <section id="buttons">
                 <table>
                 <tr><td align="center"><button id="get-still">Get Still</button></td><td align="center"><button id="toggle-stream">Start Stream</button></td><td align="center"><button id="face_enroll" class="disabled" disabled="disabled">Enroll Face</button></td></tr>
-                <tr><td></td><td align="center"><button id="forward" onclick="fetch(document.location.origin+'/control?var=car&val=1');">Forward</button></td><td></td></tr>
+                <tr><td><input type="checkbox" id="nostop" onclick="var noStop=0;if (this.checked) noStop=1;fetch(document.location.origin+'/control?var=nostop&val='+noStop);">No Stop</td><td align="center"><button id="forward" onclick="fetch(document.location.origin+'/control?var=car&val=1');">Forward</button></td><td></td></tr>
                 <tr><td align="center"><button id="turnleft" onclick="fetch(document.location.origin+'/control?var=car&val=2');">TurnLeft</button></td><td align="center"><button id="stop" onclick="fetch(document.location.origin+'/control?var=car&val=3');">Stop</button></td><td align="center"><button id="turnright" onclick="fetch(document.location.origin+'/control?var=car&val=4');">TurnRight</button></td></tr>
                 <tr><td></td><td align="center"><button id="backward" onclick="fetch(document.location.origin+'/control?var=car&val=5');">Backward</button></td><td></td></tr>
                 <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="fetch(document.location.origin+'/control?var=flash&val='+this.value);"></td></tr>
+                <tr><td>Speed Adjust</td><td align="center" colspan="2"><input type="range" id="speed" min="0" max="255" value="255" onchange="fetch(document.location.origin+'/control?var=speed&val='+this.value);"></td></tr>                
                 </table>
             </section>         
             <div id="logo">
