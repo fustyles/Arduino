@@ -135,6 +135,10 @@ void setup() {
   s->set_framesize(s, FRAMESIZE_QVGA);
 
   // Remote Control Car
+  ledcAttachPin(2, 3);
+  ledcSetup(3, 50, 16);
+  ledcAttachPin(4, 4);
+  ledcSetup(4, 5000, 8);
   ledcAttachPin(12, 5);
   ledcSetup(5, 5000, 8);      
   ledcAttachPin(13, 6);
@@ -164,6 +168,13 @@ void setup() {
   char* apssid = "ESP32-CAM";
   char* appassword = "12345678";         //AP password require at least 8 characters.
   WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
+
+  for (int i=0;i<5;i++) {
+    ledcWrite(4,20);
+    delay(200);
+    ledcWrite(4,0);
+    delay(200);    
+  }
 }
 
 void loop() {

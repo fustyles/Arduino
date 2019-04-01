@@ -542,14 +542,10 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if (val < 1700)
         val = 1700;   
       val = 1700 + (8000 - val);   
-      ledcAttachPin(2, 3);
-      ledcSetup(3, 50, 16);
       ledcWrite(3, val);
       delay(50);
     }     
     else if(!strcmp(variable, "flash")) {
-      ledcAttachPin(4, 4);
-      ledcSetup(4, 5000, 8);
       ledcWrite(4,val);
     }  
     else if(!strcmp(variable, "speed")) {
