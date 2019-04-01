@@ -1,10 +1,13 @@
 /*
 ESP32-CAM Remote Control Car 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-3-31 15:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-4-1 20:00
 https://www.facebook.com/francefu
+
 Motor Driver IC -> gpio12, gpio13, gpio15, gpio14
+Servo -> gpio2
 */
 
+#include <esp32-hal-ledc.h>
 int speed = 255;  //You can adjust the speed of the wheel. (gpio12, gpio13)
 int noStop = 0;
 
@@ -490,7 +493,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     int val = atoi(value);
     sensor_t * s = esp_camera_sensor_get();
     int res = 0;
-
+    
     if(!strcmp(variable, "framesize")) {
         if(s->pixformat == PIXFORMAT_JPEG) res = s->set_framesize(s, (framesize_t)val);
     }
@@ -531,11 +534,9 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         }
     }
 
-    // Remote Control Car
+    // Remote Control Car   
     else if(!strcmp(variable, "flash")) {
-      ledcAttachPin(4, 3);
-      ledcSetup(3, 5000, 8);
-      ledcWrite(3,val);
+      ledcWrite(4,val);
     }  
     else if(!strcmp(variable, "speed")) {
       if (val > 255)
@@ -543,10 +544,10 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if (val < 0)
         val = 0;       
       speed = val;
-    }      
+    }     
     else if(!strcmp(variable, "nostop")) {
       noStop = val;
-    }       
+    }             
     else if(!strcmp(variable, "car")) {  
       //Don't use channel 1 and channel 2
       //If output PWM to GPIO 15 using ledcWrite, it will lose control.
@@ -594,7 +595,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         ledcWrite(6, 0);  
         digitalWrite(15, 0);  
         digitalWrite(14, 0);
-      }        
+      }         
     }        
     else {
         res = -1;
@@ -675,7 +676,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <tr><td align="center"><button id="turnleft" onclick="fetch(document.location.origin+'/control?var=car&val=2');">TurnLeft</button></td><td align="center"><button id="stop" onclick="fetch(document.location.origin+'/control?var=car&val=3');">Stop</button></td><td align="center"><button id="turnright" onclick="fetch(document.location.origin+'/control?var=car&val=4');">TurnRight</button></td></tr>
                 <tr><td></td><td align="center"><button id="backward" onclick="fetch(document.location.origin+'/control?var=car&val=5');">Backward</button></td><td></td></tr>
                 <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="fetch(document.location.origin+'/control?var=flash&val='+this.value);"></td></tr>
-                <tr><td>Speed(12,13)</td><td align="center" colspan="2"><input type="range" id="speed" min="0" max="255" value="255" onchange="fetch(document.location.origin+'/control?var=speed&val='+this.value);"></td></tr>                
+                <tr><td>Speed</td><td align="center" colspan="2"><input type="range" id="speed" min="0" max="255" value="255" onchange="fetch(document.location.origin+'/control?var=speed&val='+this.value);"></td></tr>
                 </table>
             </section>         
             <div id="logo">
