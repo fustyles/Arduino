@@ -1,16 +1,15 @@
 /*
 ESP32-CAM Remote Control Car 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-3-31 15:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-4-1 20:00
 https://www.facebook.com/francefu
 
 Motor Driver IC -> gpio12, gpio13, gpio15, gpio14
 Servo -> gpio2
 */
 
+#include <esp32-hal-ledc.h>
 int speed = 255;  //You can adjust the speed of the wheel. (gpio12, gpio13)
 int noStop = 0;
-
-#include <esp32-hal-ledc.h>
 
 // Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
 //
@@ -687,7 +686,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <tr><td></td><td align="center"><button id="backward" onclick="fetch(document.location.origin+'/control?var=car&val=5');">Backward</button></td><td></td></tr>
                 <tr><td>Servo</td><td align="center" colspan="2"><input type="range" id="servo" min="1700" max="8000" step="35" value="4850" onchange="fetch(document.location.origin+'/control?var=servo&val='+this.value);"></td></tr>
                 <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="fetch(document.location.origin+'/control?var=flash&val='+this.value);"></td></tr>
-                <tr><td>Speed(12,13)</td><td align="center" colspan="2"><input type="range" id="speed" min="0" max="255" value="255" onchange="fetch(document.location.origin+'/control?var=speed&val='+this.value);"></td></tr>
+                <tr><td>Speed</td><td align="center" colspan="2"><input type="range" id="speed" min="0" max="255" value="255" onchange="fetch(document.location.origin+'/control?var=speed&val='+this.value);"></td></tr>
                 </table>
             </section>         
             <div id="logo">

@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Remote Control Car 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-3-31 15:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-4-1 20:00
 https://www.facebook.com/francefu
 
 Motor Driver IC -> gpio12, gpio13, gpio15, gpio14
@@ -145,36 +145,49 @@ void setup() {
   ledcSetup(6, 5000, 8); 
   ledcWrite(6,0);   
   pinMode(15, OUTPUT); 
-  pinMode(14, OUTPUT); 
+  pinMode(14, OUTPUT);  
 
   Serial.println("ssid: " + (String)ssid);
   Serial.println("password: " + (String)password);
   
   WiFi.begin(ssid, password);
 
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("");
-  Serial.println("WiFi connected");
+  long int StartTime=millis();
+  while (WiFi.status() != WL_CONNECTED) 
+  {
+      delay(500);
+      if ((StartTime+10000) < millis()) break;
+  } 
 
   startCameraServer();
 
-  Serial.print("Camera Ready! Use 'http://");
-  Serial.print(WiFi.localIP());
-  Serial.println("' to connect");
-
-  char* apssid = "ESP32-CAM";
-  char* appassword = "12345678";         //AP password require at least 8 characters.
-  WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
+  if (WiFi.localIP().toString()!="0.0.0.0"){
+    Serial.println("");
+    Serial.println("WiFi connected");    
+    Serial.print("Camera Ready! Use 'http://");
+    Serial.print(WiFi.localIP());
+    Serial.println("' to connect");
+    char* apssid = "ESP32-CAM";
+    char* appassword = "12345678";         //AP password require at least 8 characters.
+    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);    
+  }
+  else {
+    Serial.println("");
+    Serial.println("WiFi disconnected");      
+    Serial.print("Camera Ready! Use 'http://");
+    Serial.print(WiFi.softAPIP());
+    Serial.println("' to connect");
+    char* apssid = "ESP32-CAM";
+    char* appassword = "12345678";         //AP password require at least 8 characters.
+    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);    
+  }
 
   for (int i=0;i<5;i++) {
-    ledcWrite(4,20);
+    ledcWrite(4,10);
     delay(200);
     ledcWrite(4,0);
     delay(200);    
-  }
+  }       
 }
 
 void loop() {
