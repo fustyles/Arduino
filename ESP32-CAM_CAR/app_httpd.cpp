@@ -549,6 +549,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     }       
     else if(!strcmp(variable, "car")) {  
       //Don't use channel 1 and channel 2
+      //If output PWM to GPIO 15 using ledcWrite, it will lose control.
       if (val==1) {
         Serial.println("Forward");     
         ledcWrite(5,speed);
