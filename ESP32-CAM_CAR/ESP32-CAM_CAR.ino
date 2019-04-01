@@ -133,14 +133,14 @@ void setup() {
   sensor_t * s = esp_camera_sensor_get();
   s->set_framesize(s, FRAMESIZE_QVGA);
 
+  // Remote Control Car
   ledcAttachPin(12, 5);
   ledcSetup(5, 5000, 8);      
   ledcAttachPin(13, 6);
-  ledcSetup(6, 5000, 8);      
+  ledcSetup(6, 5000, 8);  
+  ledcWrite(6,0);  
   pinMode(15, OUTPUT); 
   pinMode(14, OUTPUT); 
-
-  ledcWrite(6,0);
 
   Serial.println("ssid: " + (String)ssid);
   Serial.println("password: " + (String)password);
