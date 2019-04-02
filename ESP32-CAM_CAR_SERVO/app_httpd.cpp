@@ -533,8 +533,8 @@ static esp_err_t cmd_handler(httpd_req_t *req){
             detection_enabled = val;
         }
     }
-
-    // Remote Control Car
+    //Remote Control Car 
+    //Don't use channel 1 and channel 2
     else if(!strcmp(variable, "servo")) {
       if (val > 8000)
          val = 8000;
@@ -558,8 +558,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       noStop = val;
     }             
     else if(!strcmp(variable, "car")) {  
-      //Don't use channel 1 and channel 2
-      //If output PWM to GPIO 15 using ledcWrite, it will lose control.
+      //If you output PWM to GPIO 15 using ledcWrite, it will lose control.
       if (val==1) {
         Serial.println("Forward");     
         ledcWrite(5,speed);
