@@ -22,8 +22,8 @@ Uart Command Format :
 ?mousepressmiddle
 ?mouserelease   
 ?keyboardpress=keycode1;keycode2;keycode3;presstime
-?keyboardprint=str1
-?keyboardprintln=str1
+?keyboardprint=characters
+?keyboardprintln=characters
 ?keyboardwrite=keycode
 
 Keyboard Modifiers (keyboardpress)
