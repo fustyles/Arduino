@@ -31,7 +31,7 @@ https://www.arduino.cc/en/Reference/KeyboardModifiers
 */
 
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(10, 11); // Bluetooth TX->D10, RX->D11 
+SoftwareSerial mySerial(10, 11); // Bluetooth(or ESP8266) TX->D10, RX->D11 
 
 #include <Keyboard.h>
 #include <Mouse.h>
