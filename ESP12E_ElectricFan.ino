@@ -73,7 +73,7 @@ void setup()
   Serial.println("STAIP address: ");
   Serial.println(WiFi.localIP());
   
-  if (WiFi.localIP().toString()!="0.0.0.0")
+  if (WiFi.status() == WL_CONNECTED)
     WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
   else
     WiFi.softAP(apssid, appassword);
