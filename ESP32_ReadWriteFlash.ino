@@ -20,7 +20,7 @@ const char* appassword = "12345678";   //AP password require at least 8 characte
 char buff_ssid[64];
 char buff_password[64];
 const uint32_t addrstart = 0x3FA000; 
-const uint32_t addrend   = 0x3FB000;
+const uint32_t addrend   = 0x3FAFFF;
 
 void setup() {
   Serial.begin(115200);
