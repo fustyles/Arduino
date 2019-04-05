@@ -230,7 +230,7 @@ void setup()
         if ((StartTime+10000) < millis()) break;
     } 
   
-    if (WiFi.localIP().toString()!="0.0.0.0")
+    if (WiFi.status() == WL_CONNECTED)
     {
       pinMode(2, OUTPUT);
       for (int i=0;i<5;i++)
@@ -246,7 +246,7 @@ void setup()
     Serial.println("STAIP address: ");
     Serial.println(WiFi.localIP());
     
-    if (WiFi.localIP().toString()!="0.0.0.0")
+    if (WiFi.status() == WL_CONNECTED)
     {
       WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
       /*
