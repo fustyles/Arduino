@@ -29,7 +29,7 @@ void setup()
       if ((StartTime+10000) < millis()) break;
   } 
 
-  if (WiFi.localIP().toString()!="0.0.0.0")
+  if (WiFi.status() == WL_CONNECTED)
   {   
     String IP = getExternalIP();
     Serial.println("External IP is " + IP);
