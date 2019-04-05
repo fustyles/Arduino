@@ -1,6 +1,6 @@
 /* 
-NodeMCU (ESP32) Write WIFI SSID and password to SPI FLASH
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-4-5 14:30
+NodeMCU (ESP32) write WIFI SSID and password to SPI FLASH
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-4-5 17:00
 https://www.facebook.com/francefu
 
 Refer to 
