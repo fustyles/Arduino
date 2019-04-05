@@ -30,7 +30,7 @@ void setup() {
       if ((StartTime+10000) < millis()) break;
   } 
 
-  if (WiFi.localIP().toString()!="0.0.0.0")
+  if (WiFi.status() == WL_CONNECTED)
   {
     pinMode(2, OUTPUT);
     for (int i=0;i<5;i++)
@@ -50,7 +50,7 @@ void setup() {
      Serial.println("Unable to connect!"); 
 
   //LineNotify push a message
-  if (WiFi.localIP().toString()!="0.0.0.0") {
+  if (WiFi.status() == WL_CONNECTED) {
     String message = "Taiwan\nI'm a \"Maker\"";
     
     //LineNotify_http_get(message);
