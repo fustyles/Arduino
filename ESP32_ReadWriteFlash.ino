@@ -60,7 +60,7 @@ void connectWIFI(char* id, char* pwd) {
     if ((StartTime+10000) < millis()) break;
   } 
 
-  if (WiFi.localIP().toString()!="0.0.0.0") {
+  if (WiFi.status() == WL_CONNECTED) {
     Serial.println("");
     Serial.println("STAIP address: ");
     Serial.println(WiFi.localIP());    
