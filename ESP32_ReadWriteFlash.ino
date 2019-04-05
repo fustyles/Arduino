@@ -1,11 +1,11 @@
 /* 
+NodeMCU (ESP32) Write WIFI SSID and password to SPI FLASH
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-4-5 14:30
+https://www.facebook.com/francefu
+
 Refer to 
 http://ruten-proteus.blogspot.com/2016/12/ESP8266ArduinoQA-02.html
 http://wyj-learning.blogspot.com/2018/03/nodemcu-flash.html
-
-NodeMCU (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-4-5 14:30
-https://www.facebook.com/francefu
 */
 
 #include <WiFi.h>   
@@ -52,11 +52,12 @@ void connectWIFI(char* id, char* pwd) {
   Serial.println("");
   Serial.print("Connecting to ");
   Serial.println(ssid);
+  
   long int StartTime=millis();
-  while (WiFi.status() != WL_CONNECTED) 
-  {
-  delay(500);
-  if ((StartTime+10000) < millis()) break;
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");    
+    if ((StartTime+10000) < millis()) break;
   } 
 
   if (WiFi.localIP().toString()!="0.0.0.0") {
@@ -72,6 +73,7 @@ void connectWIFI(char* id, char* pwd) {
 
 void flashWrite() {
   flashErase();
+  
   uint32_t flash_address;
     
   flash_address = addrstart;
@@ -106,11 +108,10 @@ void flashRead() {
 }
 
 void flashErase() {
-  if( !ESP.flashEraseSector( addrstart >> 12 ) ) {
+  if( !ESP.flashEraseSector( addrstart >> 12 ) )
     Serial.println( "\nErase error");
-  } else {
+  else
     Serial.println( "\nErase OK");
-  }
 }
 
 /*
