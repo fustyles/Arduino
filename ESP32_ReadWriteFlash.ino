@@ -26,7 +26,7 @@ void setup() {
   Serial.begin(115200);
 
   /* Test
-  flashWrite();  // Write SSID and password to SPI FLASH
+  flashWrite();  // Write correct SSID and password to SPI FLASH
   delay(100);
   strcpy(ssid,"123");  // Set nonexistent SSID
   */
