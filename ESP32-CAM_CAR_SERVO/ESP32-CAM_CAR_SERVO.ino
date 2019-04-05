@@ -161,7 +161,7 @@ void setup() {
 
   startCameraServer();
 
-  if (WiFi.localIP().toString()!="0.0.0.0"){
+  if (WiFi.status() == WL_CONNECTED){
     Serial.println("");
     Serial.println("WiFi connected");    
     Serial.print("Camera Ready! Use 'http://");
