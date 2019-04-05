@@ -112,3 +112,9 @@ void flashErase() {
     Serial.println( "\nErase OK");
   }
 }
+
+/*
+bool flashEraseSector(uint32_t sector);
+bool flashWrite(uint32_t offset, uint32_t *data, size_t size);
+bool flashRead(uint32_t offset, uint32_t *data, size_t size);
+*/
