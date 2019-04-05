@@ -189,7 +189,7 @@ void setup()
         if ((StartTime+5000) < millis()) break;
     } 
   
-    if (WiFi.localIP().toString()!="0.0.0.0")
+    if (WiFi.status() == WL_CONNECTED)
     {
       pinMode(2, OUTPUT);
       for (int i=0;i<5;i++)
