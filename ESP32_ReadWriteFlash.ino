@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP32) write WIFI SSID and password to SPI FLASH and read from SPI FLASH.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-4-5 17:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-4-5 18:00
 https://www.facebook.com/francefu
 
 Refer to 
@@ -33,7 +33,6 @@ void setup() {
   connectWIFI(ssid, password);
   
   if (WiFi.localIP().toString()=="0.0.0.0") {
-    Serial.println("Connection Failed");
     Serial.println("\nRead SPI FLASH...");
     flashRead();
     connectWIFI(buff_ssid, buff_password);
@@ -66,8 +65,10 @@ void connectWIFI(char* id, char* pwd) {
     WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
     flashWrite();
   }
-  else
+  else {
+    Serial.println("\nConnection Failed");
     WiFi.softAP(apssid, appassword);  
+  }
 }
 
 void flashWrite() {
