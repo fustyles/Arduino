@@ -65,8 +65,8 @@ void setup()
   long int StartTime=millis();
   while (WiFi.status() != WL_CONNECTED) 
   {
-      delay(500);
-      if ((StartTime+5000) < millis()) break;
+    delay(500);
+    if ((StartTime+5000) < millis()) break;
   } 
   Serial.println("");
   Serial.println("STAIP address: ");
