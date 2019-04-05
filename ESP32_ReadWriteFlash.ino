@@ -27,7 +27,6 @@ void setup() {
 
   /* Test
   flashWrite();  // Write correct SSID and password to SPI FLASH
-  delay(10);
   strcpy(ssid,"test");  // Set nonexistent SSID
   */
   
