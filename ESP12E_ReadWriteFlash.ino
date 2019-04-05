@@ -106,7 +106,7 @@ void flashRead() {
 }
 
 void flashErase() {
-  if( !ESP.flashEraseSector( addrstart / SPI_FLASH_SEC_SIZE) )
+  if( !ESP.flashEraseSector( addrstart >> 12 ) )
     Serial.println( "\nErase error");
   else
     Serial.println( "\nErase OK");
