@@ -32,7 +32,7 @@ void setup() {
   
   connectWIFI(ssid, password);
   
-  if (WiFi.localIP().toString()=="0.0.0.0") {
+  if (WiFi.status() != WL_CONNECTED) {
     Serial.println("\nRead from SPI FLASH");
     flashRead();
     strcpy(ssid, buff_ssid);
