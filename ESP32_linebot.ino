@@ -28,7 +28,7 @@ void setup()
       if ((StartTime+10000) < millis()) break;
   } 
 
-  if (WiFi.localIP().toString()!="0.0.0.0")
+  if (WiFi.status() == WL_CONNECTED)
   {
     pinMode(2, OUTPUT);
     for (int i=0;i<5;i++)
@@ -47,7 +47,7 @@ void setup()
   else
      Serial.println("Unable to connect!"); 
 
-  if (WiFi.localIP().toString()!="0.0.0.0")
+  if (WiFi.status() == WL_CONNECTED)
   {
     // IFTTT (webhooks+webhooks) + Google Apps Script + Line Bot
     String domain="maker.ifttt.com";
