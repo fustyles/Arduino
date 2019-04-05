@@ -28,7 +28,7 @@ void setup()
       if ((StartTime+10000) < millis()) break;
   } 
 
-  if (WiFi.localIP().toString()!="0.0.0.0")
+  if (WiFi.status() == WL_CONNECTED)
   {
     pinMode(2, OUTPUT);
     for (int i=0;i<5;i++)
@@ -47,7 +47,7 @@ void setup()
   else
      Serial.println("Unable to connect!"); 
 
-  if (WiFi.localIP().toString()!="0.0.0.0")
+  if (WiFi.status() == WL_CONNECTED)
   {
     // IFTTT (this: Webhooks, that: Webhooks) -> Google Apps Script > Line Bot
     // Google Apps Script: https://github.com/fustyles/webduino/blob/gs/linebot_push_message.gs
