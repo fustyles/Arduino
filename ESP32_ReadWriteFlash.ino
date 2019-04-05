@@ -107,8 +107,8 @@ void flashRead() {
 
 void flashErase() {
   if( !ESP.flashEraseSector( addrstart >> 12 ) ) {
-      Serial.println( "\nErase error");
+    Serial.println( "\nErase error");
   } else {
-      Serial.println( "\nErase OK");
+    Serial.println( "\nErase OK");
   }
 }
