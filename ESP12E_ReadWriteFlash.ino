@@ -95,12 +95,12 @@ void flashRead() {
   uint32_t flash_address;
   
   flash_address = addrstart;
-  memset( buff_ssid, 0, sizeof( buff_ssid ) );
+  memset( buff_ssid, '\0', sizeof( buff_ssid ) );
   if ( ESP.flashRead( flash_address, (uint32_t*)buff_ssid, sizeof( buff_ssid ) ) )
     Serial.printf( "ssid = [%s] \n", buff_ssid );
   
   flash_address = addrstart + 64;
-  memset( buff_password, 0, sizeof( buff_password ) );
+  memset( buff_password, '\0', sizeof( buff_password ) );
   if ( ESP.flashRead( flash_address, (uint32_t*)buff_password, sizeof( buff_password ) ) )
     Serial.printf( "password = [%s] \n", buff_password );
 }
