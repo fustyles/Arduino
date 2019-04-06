@@ -5,7 +5,6 @@ https://www.facebook.com/francefu
 
 Refer to 
 http://ruten-proteus.blogspot.com/2016/12/ESP8266ArduinoQA-02.html
-http://wyj-learning.blogspot.com/2018/03/nodemcu-flash.html
 */
 
 #include <ESP8266WiFi.h>  
