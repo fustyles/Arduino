@@ -33,7 +33,7 @@ void setup() {
   connectWIFI(ssid, password);
   
   if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("\nRead from SPI FLASH");
+    Serial.println("\nRead settings from SPI FLASH");
     flashRead();
     connectWIFI(buff_ssid, buff_password);
   }
