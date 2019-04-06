@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP32) write WIFI SSID and password to SPI FLASH and read data from SPI FLASH.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-4-6 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-4-6 09:00
 https://www.facebook.com/francefu
 
 Refer to 
@@ -79,13 +79,13 @@ void flashWrite(char id[64], char pwd[64]) {
   uint32_t flash_address;
     
   flash_address = addrstart;
-  if( !ESP.flashWrite( flash_address, (uint32_t*)buff_ssid, sizeof(buff_ssid)-1 ) ) {
+  if( !ESP.flashWrite( flash_address, (uint32_t*)buff_ssid, sizeof(buff_ssid) ) ) {
       Serial.printf( "%2d: [error] write addr: %p\n", 0, flash_address );
   } else 
     Serial.printf( "%2d: addr: %p write [%s] OK\n", 0, flash_address, buff_ssid );
 
   flash_address = addrstart + 64;
-  if( !ESP.flashWrite( flash_address, (uint32_t*)buff_password, sizeof(buff_password)-1 ) ) {
+  if( !ESP.flashWrite( flash_address, (uint32_t*)buff_password, sizeof(buff_password) ) ) {
       Serial.printf( "%2d: [error] write addr: %p\n", 1, flash_address );
   } else 
     Serial.printf( "%2d: addr: %p write [%s] OK\n", 1, flash_address, buff_password );  
@@ -96,13 +96,13 @@ void flashRead() {
   
   flash_address = addrstart;
   memset( buff_ssid, 0, sizeof( buff_ssid ) );
-  if ( ESP.flashRead( flash_address, (uint32_t*)buff_ssid, sizeof( buff_ssid )-1) )
-    Serial.printf( "[ssid] = %s \n", buff_ssid );
+  if ( ESP.flashRead( flash_address, (uint32_t*)buff_ssid, sizeof( buff_ssid ) ) )
+    Serial.printf( "ssid = [%s] \n", buff_ssid );
   
   flash_address = addrstart + 64;
   memset( buff_password, 0, sizeof( buff_password ) );
-  if ( ESP.flashRead( flash_address, (uint32_t*)buff_password, sizeof( buff_password )-1) )
-    Serial.printf( "[password] = %s \n", buff_password );
+  if ( ESP.flashRead( flash_address, (uint32_t*)buff_password, sizeof( buff_password ) ) )
+    Serial.printf( "password = [%s] \n", buff_password );
 }
 
 void flashErase() {
