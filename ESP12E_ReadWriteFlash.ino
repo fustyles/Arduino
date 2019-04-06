@@ -63,7 +63,7 @@ void connectWIFI(char id[64], char pwd[64]) {
     Serial.println("STAIP address: ");
     Serial.println(WiFi.localIP());    
     WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
-    flashWrite(id, pwd);
+    flashWrite(id, pwd);  // Write SSID and password to SPI FLASH
   }
   else {
     Serial.println("\nConnection Failed");
