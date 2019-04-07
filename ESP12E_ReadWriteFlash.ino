@@ -103,7 +103,7 @@ void flashRead() {
   if (ESP.flashRead(flashAddress,(uint32_t*)buff_password, sizeof(buff_password)))
     Serial.printf("[password] %s \n", buff_password);
   else 
-    Serial.printf("[ssid] error \n"); 
+    Serial.printf("[password] error \n"); 
 }
 
 void flashErase() {
