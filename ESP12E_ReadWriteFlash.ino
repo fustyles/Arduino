@@ -76,15 +76,15 @@ void flashWrite(char id[len], char pwd[len]) {
   uint32_t flashAddress;
     
   flashAddress = addressStart + 0*len;
-  if (ESP.flashWrite(flashAddress,(uint32_t*)buff_ssid, sizeof(buff_ssid))) {
+  if (ESP.flashWrite(flashAddress,(uint32_t*)buff_ssid, sizeof(buff_ssid)))
     Serial.printf("address: %p write \"%s\" [ok]\n", flashAddress, buff_ssid);
-  } else 
+  else 
     Serial.printf("address: %p write \"%s\" [error]\n", flashAddress, buff_ssid);
 
   flashAddress = addressStart + 1*len;
-  if (ESP.flashWrite(flashAddress,(uint32_t*)buff_password, sizeof(buff_password))) {
+  if (ESP.flashWrite(flashAddress,(uint32_t*)buff_password, sizeof(buff_password)))
     Serial.printf("address: %p write \"%s\" [ok]\n", flashAddress, buff_password);
-  } else 
+  else 
     Serial.printf("address: %p write \"%s\" [error]\n", flashAddress, buff_password);
 }
 
@@ -95,11 +95,15 @@ void flashRead() {
   memset(buff_ssid, 0, sizeof(buff_ssid));
   if (ESP.flashRead(flashAddress,(uint32_t*)buff_ssid, sizeof(buff_ssid)))
     Serial.printf("[ssid] %s \n", buff_ssid);
+  else 
+    Serial.printf("[ssid] error \n"); 
   
   flashAddress = addressStart + 1*len;
   memset(buff_password, 0, sizeof(buff_password));
   if (ESP.flashRead(flashAddress,(uint32_t*)buff_password, sizeof(buff_password)))
     Serial.printf("[password] %s \n", buff_password);
+  else 
+    Serial.printf("[ssid] error \n"); 
 }
 
 void flashErase() {
