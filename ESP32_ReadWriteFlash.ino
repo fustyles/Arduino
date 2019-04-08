@@ -33,6 +33,8 @@ void setup() {
   
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("\nRead settings from SPI FLASH");
+    
+    // Read WIFI SSID and password from SPI FLASH.
     char buff_ssid[len];
     char buff_password[len];
     strcpy(buff_ssid, flashRead(0));
