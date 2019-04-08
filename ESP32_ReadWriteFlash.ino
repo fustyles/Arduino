@@ -25,6 +25,11 @@ void setup() {
     flashErase();
     flashWrite(ssid, 0);  
     flashWrite(password, 1);
+    
+    // Read SSID and password to SPI FLASH
+    Serial.printf("ssid: \"%s\"\n", flashRead(0));
+    Serial.printf("password: \"%s\"\n", flashRead(1));
+    
     // Set nonexistent SSID
     strcpy(ssid,"test");  
   */
