@@ -110,5 +110,4 @@ void flashErase() {
 bool flashEraseSector(uint32_t sector);
 bool flashWrite(uint32_t offset, uint32_t *data, size_t size);
 bool flashRead(uint32_t offset, uint32_t *data, size_t size);
-void *memset(void *str, int c, size_t n)
 */
