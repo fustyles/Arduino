@@ -1,6 +1,6 @@
 /* 
 NodeMCU(ESP32) write WIFI SSID and password to SPI FLASH and read data from SPI FLASH.
-Author : ChungYi Fu(Kaohsiung, Taiwan)  2019-4-7 12:00
+Author : ChungYi Fu(Kaohsiung, Taiwan)  2019-4-8 19:00
 https://www.facebook.com/francefu
 */
 
@@ -14,8 +14,6 @@ char password[len]    = "xxxxx";
 const char* apssid = "ESP32";
 const char* appassword = "12345678";   //AP password require at least 8 characters.
 
-char buff_ssid[len];
-char buff_password[len];
 const uint32_t addressStart = 0x3FA000; 
 const uint32_t addressEnd   = 0x3FAFFF;
 
@@ -23,15 +21,22 @@ void setup() {
   Serial.begin(115200);
 
   /* Test
-  flashWrite(ssid, password);  // Write correct SSID and password to SPI FLASH
-  strcpy(ssid,"test");  // Set nonexistent SSID
+    // Write correct SSID and password to SPI FLASH
+    flashErase();
+    flashWrite(ssid, 0);  
+    flashWrite(password, 1);
+    // Set nonexistent SSID
+    strcpy(ssid,"test");  
   */
   
   connectWIFI(ssid, password);
   
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("\nRead settings from SPI FLASH");
-    flashRead();
+    char buff_ssid[len];
+    char buff_password[len];
+    strcpy(buff_ssid, flashRead(0));
+    strcpy(buff_password, flashRead(1));
     connectWIFI(buff_ssid, buff_password);
   }
 }
@@ -60,7 +65,10 @@ void connectWIFI(char id[len], char pwd[len]) {
     Serial.println("STAIP address: ");
     Serial.println(WiFi.localIP());    
     WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
-    flashWrite(id, pwd);  // Write WIFI SSID and password to SPI FLASH
+    // Write WIFI SSID and password to SPI FLASH
+    flashErase();
+    flashWrite(id, 0);  
+    flashWrite(pwd, 1);
   }
   else {
     Serial.println("\nConnection Failed");
@@ -68,42 +76,26 @@ void connectWIFI(char id[len], char pwd[len]) {
   }
 }
 
-void flashWrite(char id[len], char pwd[len]) {
-  flashErase();
-  strcpy(buff_ssid, id);
-  strcpy(buff_password, pwd);
-  
+void flashWrite(char data[len], int i) {
+  char buff_write[len];
+  strcpy(buff_write, data);
   uint32_t flashAddress;
-    
-  flashAddress = addressStart + 0*len;
-  if (ESP.flashWrite(flashAddress,(uint32_t*)buff_ssid, sizeof(buff_ssid)))
-    Serial.printf("address: %p write \"%s\" [ok]\n", flashAddress, buff_ssid);
+  flashAddress = addressStart + i*len;
+  if (ESP.flashWrite(flashAddress,(uint32_t*)buff_write, sizeof(buff_write)))
+    Serial.printf("address: %p write \"%s\" [ok]\n", flashAddress, buff_write);
   else 
-    Serial.printf("address: %p write \"%s\" [error]\n", flashAddress, buff_ssid);
-
-  flashAddress = addressStart + 1*len;
-  if (ESP.flashWrite(flashAddress,(uint32_t*)buff_password, sizeof(buff_password)))
-    Serial.printf("address: %p write \"%s\" [ok]\n", flashAddress, buff_password);
-  else 
-    Serial.printf("address: %p write \"%s\" [error]\n", flashAddress, buff_password);
+    Serial.printf("address: %p write \"%s\" [error]\n", flashAddress, buff_write);
 }
 
-void flashRead() {
+char* flashRead(int i) {
   uint32_t flashAddress;
-  
-  flashAddress = addressStart + 0*len;
-  memset(buff_ssid, 0, sizeof(buff_ssid));
-  if (ESP.flashRead(flashAddress,(uint32_t*)buff_ssid, sizeof(buff_ssid)))
-    Serial.printf("[ssid] %s \n", buff_ssid);
-  else 
-    Serial.printf("[ssid] error \n");  
-  
-  flashAddress = addressStart + 1*len;
-  memset(buff_password, 0, sizeof(buff_password));
-  if (ESP.flashRead(flashAddress,(uint32_t*)buff_password, sizeof(buff_password)))
-    Serial.printf("[password] %s \n", buff_password);
-  else 
-    Serial.printf("[password] error \n");  
+  flashAddress = addressStart + i*len;
+  static char buff_read[len];
+  if (ESP.flashRead(flashAddress,(uint32_t*)buff_read, sizeof(buff_read))) {
+    Serial.printf("data: \"%s\"\n", buff_read);
+    return buff_read;
+  } else  
+    return "error";  
 }
 
 void flashErase() {
