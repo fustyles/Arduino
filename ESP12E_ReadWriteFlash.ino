@@ -7,7 +7,7 @@ https://www.facebook.com/francefu
 #include <ESP8266WiFi.h> 
 #include <ESP.h>
 
-const int len = 64;
+const int len = 64;    // flashWrite -> i = 0 ~ 63
 
 char ssid[len]    = "xxxxx";
 char password[len]    = "xxxxx";
