@@ -7,7 +7,7 @@ https://www.facebook.com/francefu
 #include <ESP8266WiFi.h> 
 #include <ESP.h>
 
-const int len = 64;    // flashWrite -> i = 0 ~ 63
+const int len = 64;    // flashWrite, flashRead -> i = 0 ~ 63
 
 char ssid[len]    = "xxxxx";
 char password[len]    = "xxxxx";
@@ -79,7 +79,7 @@ void connectWIFI(char id[len], char pwd[len]) {
   }
 }
 
-void flashWrite(char data[len], int i) {
+void flashWrite(char data[len], int i) {      // i = 0 ~ 63
   char buff_write[len];
   strcpy(buff_write, data);
   uint32_t flashAddress;
@@ -90,7 +90,7 @@ void flashWrite(char data[len], int i) {
     Serial.printf("address: %p write \"%s\" [error]\n", flashAddress, buff_write);
 }
 
-char* flashRead(int i) {
+char* flashRead(int i) {      // i = 0 ~ 63
   uint32_t flashAddress;
   flashAddress = addressStart + i*len;
   static char buff_read[len];
