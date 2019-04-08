@@ -26,7 +26,7 @@ void setup() {
     flashWrite(ssid, 0);  
     flashWrite(password, 1);
     
-    // Read SSID and password to SPI FLASH
+    // Read SSID and password from SPI FLASH
     Serial.printf("ssid: \"%s\"\n", flashRead(0));
     Serial.printf("password: \"%s\"\n", flashRead(1));
     
