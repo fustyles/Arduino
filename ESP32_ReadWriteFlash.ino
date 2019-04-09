@@ -87,9 +87,9 @@ void connectWIFI(char id[len], char pwd[len]) {
 }
 
 void flashWrite(char data[len], int i) {      // i = 0 ~ 63
+  uint32_t flashAddress = addressStart + i*len;
   char buff_write[len];
   strcpy(buff_write, data);
-  uint32_t flashAddress = addressStart + i*len;
   if (ESP.flashWrite(flashAddress,(uint32_t*)buff_write, sizeof(buff_write)))
     Serial.printf("address: %p write \"%s\" [ok]\n", flashAddress, buff_write);
   else 
