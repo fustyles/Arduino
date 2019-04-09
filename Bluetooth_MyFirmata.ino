@@ -1,5 +1,5 @@
 /*
-Arduino Uno + Bluetooth
+Arduino Uno + Bluetooth(or ESP8266)
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-07 13:00 
 https://www.facebook.com/francefu
@@ -17,7 +17,7 @@ Uart Command Format :
 */
 
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(10, 11);  // Bluetooth TX->pin10, RX->pin11 
+SoftwareSerial mySerial(10, 11);  //  Bluetooth(or ESP8266) TX->pin10, RX->pin11 
 
 String ReceiveData="", command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
 boolean debug = false;
