@@ -147,7 +147,7 @@ void executecommand()
     }    
   else 
     {
-      SendData("command is not defined");
+      if (debug == true) SendData("command is not defined");
     }   
 }
 
