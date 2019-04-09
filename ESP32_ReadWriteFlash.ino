@@ -7,7 +7,7 @@ https://www.facebook.com/francefu
 #include <WiFi.h>   
 #include <ESP.h>
 
-const int len = 64;    // flashWrite, flashRead -> i = 0 ~ 63
+const int len = 64;    // flashWrite, flashRead -> i = 0 to 63
 
 char ssid[len]    = "xxxxx";
 char password[len]    = "xxxxx";
