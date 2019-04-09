@@ -1,6 +1,6 @@
 /* 
 NodeMCU(ESP32) write WIFI SSID and password to SPI FLASH and read data from SPI FLASH.
-Author : ChungYi Fu(Kaohsiung, Taiwan)  2019-4-8 20:00
+Author : ChungYi Fu(Kaohsiung, Taiwan)  2019-4-9 20:00
 https://www.facebook.com/francefu
 */
 
