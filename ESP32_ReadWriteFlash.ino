@@ -27,8 +27,10 @@ void setup() {
     flashWrite(password, 1);
     
     // Read WIFI SSID and password from SPI FLASH
-    Serial.printf("ssid: \"%s\"\n", flashRead(0));
-    Serial.printf("password: \"%s\"\n", flashRead(1));
+    char buff_ssid[len], buff_password[len];
+    strcpy(buff_ssid, flashRead(0));
+    strcpy(buff_password, flashRead(1));
+    Serial.printf("ssid: \"%s\"\npassword: \"%s\"\n", buff_ssid, buff_password);
     
     // Set nonexistent SSID
     strcpy(ssid,"test");  
@@ -87,8 +89,7 @@ void connectWIFI(char id[len], char pwd[len]) {
 void flashWrite(char data[len], int i) {      // i = 0 ~ 63
   char buff_write[len];
   strcpy(buff_write, data);
-  uint32_t flashAddress;
-  flashAddress = addressStart + i*len;
+  uint32_t flashAddress = addressStart + i*len;
   if (ESP.flashWrite(flashAddress,(uint32_t*)buff_write, sizeof(buff_write)))
     Serial.printf("address: %p write \"%s\" [ok]\n", flashAddress, buff_write);
   else 
@@ -96,8 +97,7 @@ void flashWrite(char data[len], int i) {      // i = 0 ~ 63
 }
 
 char* flashRead(int i) {      // i = 0 ~ 63
-  uint32_t flashAddress;
-  flashAddress = addressStart + i*len;
+  uint32_t flashAddress = addressStart + i*len;
   static char buff_read[len];
   if (ESP.flashRead(flashAddress,(uint32_t*)buff_read, sizeof(buff_read))) {
     Serial.printf("data: \"%s\"\n", buff_read);
