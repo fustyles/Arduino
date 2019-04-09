@@ -42,8 +42,7 @@ void setup() {
     Serial.println("\nRead settings from SPI FLASH");
     
     // Read WIFI SSID and password from SPI FLASH.
-    char buff_ssid[len];
-    char buff_password[len];
+    char buff_ssid[len], buff_password[len];
     strcpy(buff_ssid, flashRead(0));
     strcpy(buff_password, flashRead(1));
     connectWIFI(buff_ssid, buff_password);
