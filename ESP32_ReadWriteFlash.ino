@@ -102,7 +102,7 @@ char* flashRead(int i) {      // i = 0 to 63
     //Serial.printf("data: \"%s\"\n", buff_read);
     return buff_read;
   } else  
-    return "error";  
+    return "";  
 }
 
 void flashErase() {
