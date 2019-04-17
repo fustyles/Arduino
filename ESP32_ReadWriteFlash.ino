@@ -89,7 +89,7 @@ void flashWrite(char data[len], int i) {      // i = 0 to 63
   uint32_t flashAddress = addressStart + i*len;
   char buff_write[len];
   strcpy(buff_write, data);
-  if (ESP.flashWrite(flashAddress,(uint32_t*)buff_write, sizeof(buff_write)))
+  if (ESP.flashWrite(flashAddress,(uint32_t*)buff_write, sizeof(buff_write)-1))
     Serial.printf("address: %p write \"%s\" [ok]\n", flashAddress, buff_write);
   else 
     Serial.printf("address: %p write \"%s\" [error]\n", flashAddress, buff_write);
@@ -98,7 +98,7 @@ void flashWrite(char data[len], int i) {      // i = 0 to 63
 char* flashRead(int i) {      // i = 0 to 63
   uint32_t flashAddress = addressStart + i*len;
   static char buff_read[len];
-  if (ESP.flashRead(flashAddress,(uint32_t*)buff_read, sizeof(buff_read))) {
+  if (ESP.flashRead(flashAddress,(uint32_t*)buff_read, sizeof(buff_read)-1)) {
     //Serial.printf("data: \"%s\"\n", buff_read);
     return buff_read;
   } else  
