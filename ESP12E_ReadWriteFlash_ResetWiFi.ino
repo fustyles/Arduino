@@ -91,16 +91,7 @@ void setup()
     if ((StartTime+5000) < millis()) break;
   } 
 
-  if (WiFi.status() == WL_CONNECTED) {
-    pinMode(2, OUTPUT);
-    for (int i=0;i<5;i++) {
-      digitalWrite(2,HIGH);
-      delay(100);
-      digitalWrite(2,LOW);
-      delay(100);
-    }
-  } 
-  else {
+  if (WiFi.status() != WL_CONNECTED) {
     // Read WIFI SSID and password from SPI FLASH.
     char buff_ssid[len], buff_password[len];
     strcpy(buff_ssid, flashRead(0));
