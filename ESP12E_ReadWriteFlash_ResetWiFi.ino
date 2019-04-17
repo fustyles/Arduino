@@ -13,7 +13,6 @@ http://STAIP/?resetwifi=ssid;password
 
 const int len = 64;    // flashWrite, flashRead -> i = 0 to 127
 
-// Enter your WiFi ssid and password
 char ssid[len]    = "";
 char password[len]    = "";
 
