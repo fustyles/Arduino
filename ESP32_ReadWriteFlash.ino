@@ -45,7 +45,8 @@ void setup() {
     char buff_ssid[len], buff_password[len];
     strcpy(buff_ssid, flashRead(0));
     strcpy(buff_password, flashRead(1));
-    connectWIFI(buff_ssid, buff_password);
+    //if ((buff_password[0]>=32)&&(buff_password[0]<=126))
+      connectWIFI(buff_ssid, buff_password);
   }
 }
 
