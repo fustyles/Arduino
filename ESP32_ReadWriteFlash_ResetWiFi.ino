@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-04-20 20:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-04-20 20:30
 https://www.facebook.com/francefu
 Command Format :  
 http://IP/?scanwifi
