@@ -109,7 +109,7 @@ void setup()
     char buff_ssid[len], buff_password[len];
     strcpy(buff_ssid, flashRead(0));
     strcpy(buff_password, flashRead(1));
-    if ((buff_password[0]>=32)&&(buff_password[0]<=126)) {
+    if ((buff_ssid[0]>=32)&&(buff_ssid[0]<=126)) {
       WiFi.begin(buff_ssid, buff_password);
       delay(1000);
       Serial.println("");
