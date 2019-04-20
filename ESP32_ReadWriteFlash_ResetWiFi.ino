@@ -5,6 +5,7 @@ https://www.facebook.com/francefu
 Command Format :  
 http://IP/?scanwifi
 http://IP/?resetwifi=ssid;password
+http://IP/?erasewifi
 */
 
 #include <WiFi.h>
@@ -56,7 +57,11 @@ void ExecuteCommand()
      
     restart = true;     
     Feedback="The ESP32 will retart to connect to "+ str1;
-  }    
+  }  
+  else if (cmd=="erasewifi") {
+    flashErase();
+    Feedback="Erase OK";
+  }
   else
     Feedback="Command is not defined";
 }
