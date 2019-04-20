@@ -56,7 +56,8 @@ void ExecuteCommand()
       flashErase();
       flashWrite(buff_ssid, 0);  
       flashWrite(buff_password, 1);
-      ESP.restart();
+      Feedback="Connected to "+ str1 +" successfully.";
+      //ESP.restart();
     }
     else {
       Serial.println("");
