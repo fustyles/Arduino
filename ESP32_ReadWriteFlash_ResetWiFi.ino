@@ -74,7 +74,7 @@ void ExecuteCommand()
     else {
       Serial.println("");
       Serial.println("Connection failed.");
-      Feedback="Connected to "+ str1 +" failed.";
+      Feedback="Connected to "+ str1 +" fail.";
     }
   }    
   else
