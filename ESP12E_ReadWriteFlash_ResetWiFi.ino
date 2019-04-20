@@ -1,10 +1,12 @@
 /* 
-NodeMCU (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-04-20 20:00
+NodeMCU (ESP12E)
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-04-20 20:30
 https://www.facebook.com/francefu
+
 Command Format :  
 http://IP/?scanwifi
 http://IP/?resetwifi=ssid;password
+http://IP/?erasewifi
 */
 
 #include <ESP8266WiFi.h> 
@@ -56,7 +58,11 @@ void ExecuteCommand()
      
     restart = true;     
     Feedback="The ESP12E will retart to connect to "+ str1;
-  }    
+  }  
+  else if (cmd=="erasewifi") {
+    flashErase();
+    Feedback="Erase OK";
+  }
   else
     Feedback="Command is not defined";
 }
