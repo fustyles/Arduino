@@ -46,7 +46,7 @@ void ExecuteCommand()
     while (WiFi.status() != WL_CONNECTED) {
       delay(500);
       Serial.print(".");
-      if ((StartTime+10000) < millis()) break;
+      if ((StartTime+5000) < millis()) break;
     } 
     
     if (WiFi.status() == WL_CONNECTED) {
