@@ -1,11 +1,10 @@
 /* 
 NodeMCU (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-04-20 08:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-04-20 20:00
 https://www.facebook.com/francefu
-
 Command Format :  
-http://APIP/?resetwifi=ssid;password
-http://STAIP/?resetwifi=ssid;password
+http://IP/?scanwifi
+http://IP/?resetwifi=ssid;password
 */
 
 #include <ESP8266WiFi.h> 
@@ -16,11 +15,13 @@ const int len = 64;    // flashWrite, flashRead -> i = 0 to 127
 char ssid[len]    = "";
 char password[len]    = "";
 
-const char* apssid = "MyFirmata ESP32";
+const char* apssid = "MyFirmata ESP12E";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 const uint32_t addressStart = 0x3FA000; 
 const uint32_t addressEnd   = 0x3FAFFF;
+
+boolean restart = false;
 
 WiFiServer server(80);
 
@@ -29,53 +30,32 @@ byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolon
 
 void ExecuteCommand()
 {
-  Serial.println("");
   //Serial.println("Command: "+Command);
-  Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
-  Serial.println("");
-  
+  Serial.println("\ncmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
+ 
   if (cmd=="your cmd") {
     // You can do anything
     // Feedback="<font color=\"red\">Hello World</font>";
   }
+  else if (cmd=="scanwifi") {
+    Feedback="<form id=\"resetwifi\" method=\"get\" action=\"\">";
+    Feedback+="<table><tr><td>SSID</td><td><select id =\"ssid\">";
+    byte numSsid = WiFi.scanNetworks();
+    for (int thisNet = 0; thisNet<numSsid; thisNet++) {
+      Feedback+="<option value=\""+WiFi.SSID(thisNet)+"\">"+WiFi.SSID(thisNet)+"</option>";
+    }
+    Feedback+="</select></td></tr><tr><td>PASSWORD</td><td><input type=\"text\" id=\"password\"></td></tr><tr><td colspan=\"2\"><input type=\"reset\" value=\"Reset\"><input type=\"button\" value=\"Send\" onclick=\"location.href=\'?resetwifi=\'+ssid.value+\';\'+password.value;\"></td></tr></table></form>";
+  }
   else if (cmd=="resetwifi") {
-    WiFi.begin(str1.c_str(), str2.c_str());
-    Serial.print("Connecting to ");
-    Serial.println(str1);
-    long int StartTime=millis();
-    while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
-      Serial.print(".");
-      if ((StartTime+5000) < millis()) break;
-    } 
-    
-    if (WiFi.status() == WL_CONNECTED) {
-      char buff_ssid[len], buff_password[len]; 
-      strcpy(buff_ssid, str1.c_str());
-      strcpy(buff_password, str2.c_str());
-      flashErase();
-      flashWrite(buff_ssid, 0);  
-      flashWrite(buff_password, 1); 
-      
-      Serial.println("");
-      Serial.println("STAIP address: ");
-      Serial.println(WiFi.localIP());      
-      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
-      pinMode(2, OUTPUT);
-      for (int i=0;i<5;i++) {
-        digitalWrite(2,HIGH);
-        delay(100);
-        digitalWrite(2,LOW);
-        delay(100);
-      }           
-      Feedback="Connected to "+ str1 +" successfully.";
-      //ESP.restart();
-    }
-    else {
-      Serial.println("");
-      Serial.println("Connection failed.");
-      Feedback="Connected to "+ str1 +" fail.";
-    }
+    char buff_ssid[len], buff_password[len]; 
+    strcpy(buff_ssid, str1.c_str());
+    strcpy(buff_password, str2.c_str());
+    flashErase();
+    flashWrite(buff_ssid, 0);  
+    flashWrite(buff_password, 1);   
+     
+    restart = true;     
+    Feedback="The ESP12E will retart to connect to "+ str1;
   }    
   else
     Feedback="Command is not defined";
@@ -88,32 +68,37 @@ void setup()
   
   WiFi.mode(WIFI_AP_STA);
 
+  //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
+  Serial.println("\nAPIP address: ");
+  Serial.println(WiFi.softAPIP());    
+
   //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
-
-  WiFi.begin(ssid, password);
-
-  delay(1000);
-  Serial.println("");
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
   
-  long int StartTime=millis();
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print("."); 
-    if ((StartTime+5000) < millis()) break;
-  } 
+  if ((ssid[0]>=32)&&(ssid[0]<=126)) {
+    WiFi.begin(ssid, password);
+  
+    delay(1000);
+    Serial.print("\nConnecting to ");
+    Serial.println(ssid);
+    
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      Serial.print("."); 
+      if ((StartTime+5000) < millis()) break;
+    } 
+  }
 
   if (WiFi.status() != WL_CONNECTED) {
     // Read WIFI SSID and password from SPI FLASH.
     char buff_ssid[len], buff_password[len];
     strcpy(buff_ssid, flashRead(0));
     strcpy(buff_password, flashRead(1));
+    Serial.printf("\nssid: \"%s\"\n", buff_ssid);
+    Serial.printf("password: \"%s\"\n", buff_password);
     if ((buff_ssid[0]>=32)&&(buff_ssid[0]<=126)) {
       WiFi.begin(buff_ssid, buff_password);
-      delay(1000);
-      Serial.println("");
-      Serial.print("Connecting to ");
+      Serial.print("\nConnecting to ");
       Serial.println(buff_ssid);
       
       long int StartTime=millis();
@@ -126,25 +111,22 @@ void setup()
   }
 
   if (WiFi.status() == WL_CONNECTED) {
-    Serial.println("");
-    Serial.println("STAIP address: ");
+    Serial.println("\nSTAIP address: ");
     Serial.println(WiFi.localIP());      
     WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
     pinMode(2, OUTPUT);
     for (int i=0;i<5;i++) {
       digitalWrite(2,HIGH);
-      delay(100);
+      delay(400);
       digitalWrite(2,LOW);
-      delay(100);
+      delay(400);
     }
   }
-  else
+  else {
+    Serial.println("\nConnection failed.");
     WiFi.softAP(apssid, appassword);
-    
-  //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
-  Serial.println("");
-  Serial.println("APIP address: ");
-  Serial.println(WiFi.softAPIP());    
+  }
+  
   server.begin(); 
 }
 
@@ -183,7 +165,7 @@ void loop()
             client.println(Feedback);
             client.println("</body></html>");
             client.println();
-                        
+
             Feedback="";
             break;
           } else {
@@ -210,6 +192,14 @@ void loop()
     }
     delay(1);
     client.stop();
+    
+    if (restart==true) {
+      delay(2000);
+      WiFi.disconnect();
+      delay(1000);
+      Serial.println("Restart");
+      ESP.restart();      
+    }   
   }
 }
 
