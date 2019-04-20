@@ -55,7 +55,19 @@ void ExecuteCommand()
       strcpy(buff_password, str2.c_str());
       flashErase();
       flashWrite(buff_ssid, 0);  
-      flashWrite(buff_password, 1);     
+      flashWrite(buff_password, 1); 
+      
+      Serial.println("");
+      Serial.println("STAIP address: ");
+      Serial.println(WiFi.localIP());      
+      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
+      pinMode(2, OUTPUT);
+      for (int i=0;i<5;i++) {
+        digitalWrite(2,HIGH);
+        delay(100);
+        digitalWrite(2,LOW);
+        delay(100);
+      }           
       Feedback="Connected to "+ str1 +" successfully.";
       //ESP.restart();
     }
