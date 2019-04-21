@@ -3,7 +3,8 @@ NodeMCU (ESP12E)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-04-21 09:30
 https://www.facebook.com/francefu
 
-Command Format :  
+Command Format 
+http://IP/?ip  
 http://IP/?scanwifi
 http://IP/?resetwifi=ssid;password
 http://IP/?erasewifi
