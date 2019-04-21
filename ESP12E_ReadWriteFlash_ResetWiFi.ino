@@ -12,7 +12,7 @@ http://IP/?erasewifi
 #include <ESP8266WiFi.h> 
 #include <ESP.h>
 
-const int len = 64;    // flashWrite, flashRead -> i = 0 to 127
+const int len = 64;    // flashWrite, flashRead -> i = 0 to 63
 
 char ssid[len]    = "";
 char password[len]    = "";
@@ -203,7 +203,7 @@ void loop()
       delay(2000);
       WiFi.disconnect();
       delay(1000);
-      Serial.println("Restart");
+      Serial.println("ESP32 restart");
       ESP.restart();      
     }   
   }
