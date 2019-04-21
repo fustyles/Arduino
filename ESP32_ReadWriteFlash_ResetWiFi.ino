@@ -131,9 +131,9 @@ void setup()
     
     pinMode(2, OUTPUT);
     for (int i=0;i<5;i++) {
-      digitalWrite(2,HIGH);
-      delay(400);
       digitalWrite(2,LOW);
+      delay(400);
+      digitalWrite(2,HIGH);
       delay(400);
     }
   }
