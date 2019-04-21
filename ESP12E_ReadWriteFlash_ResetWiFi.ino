@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP12E)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-04-20 20:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-04-21 08:30
 https://www.facebook.com/francefu
 
 Command Format :  
@@ -61,7 +61,7 @@ void ExecuteCommand()
   }  
   else if (cmd=="erasewifi") {
     flashErase();
-    Feedback="Erase OK";
+    Feedback="Erase [ok]";
   }
   else
     Feedback="Command is not defined";
@@ -120,6 +120,7 @@ void setup()
     Serial.println("\nSTAIP address: ");
     Serial.println(WiFi.localIP());      
     WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
+    
     pinMode(2, OUTPUT);
     for (int i=0;i<5;i++) {
       digitalWrite(2,HIGH);
