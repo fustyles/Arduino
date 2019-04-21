@@ -1,15 +1,14 @@
 /* 
-NodeMCU (ESP12E)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-04-21 08:30
+NodeMCU (ESP32)
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-04-21 09:30
 https://www.facebook.com/francefu
-
 Command Format :  
 http://IP/?scanwifi
 http://IP/?resetwifi=ssid;password
 http://IP/?erasewifi
 */
 
-#include <ESP8266WiFi.h> 
+#include <ESP8266WiFi.h>
 #include <ESP.h>
 
 const int len = 64;    // flashWrite, flashRead -> i = 0 to 63
@@ -27,13 +26,13 @@ boolean restart = false;
 
 WiFiServer server(80);
 
-String Feedback="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
+String Feedback="", Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
 void ExecuteCommand()
 {
   //Serial.println("Command: "+Command);
-  Serial.println("\ncmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
+  Serial.println("\ncmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
  
   if (cmd=="your cmd") {
     // You can do anything
@@ -41,23 +40,24 @@ void ExecuteCommand()
   }
   else if (cmd=="scanwifi") {
     Feedback="<form id=\"resetwifi\" method=\"get\" action=\"\">";
-    Feedback+="<table><tr><td>SSID</td><td><select id =\"ssid\">";
+    Feedback+="<table><tr><td>SSID</td><td><select onclick=\"ssid.value=this.value;\">";
     byte numSsid = WiFi.scanNetworks();
     for (int thisNet = 0; thisNet<numSsid; thisNet++) {
-      Feedback+="<option value=\""+WiFi.SSID(thisNet)+"\">"+WiFi.SSID(thisNet)+"</option>";
+      if (WiFi.SSID(thisNet)!="")
+        Feedback+="<option value=\""+WiFi.SSID(thisNet)+"\">"+WiFi.SSID(thisNet)+"</option>";
     }
-    Feedback+="</select></td></tr><tr><td>PASSWORD</td><td><input type=\"text\" id=\"password\"></td></tr><tr><td colspan=\"2\"><input type=\"reset\" value=\"Reset\"><input type=\"button\" value=\"Send\" onclick=\"location.href=\'?resetwifi=\'+ssid.value+\';\'+password.value;\"></td></tr></table></form>";
+    Feedback+="</select></td></tr><tr><td></td><td><input type=\"text\" id=\"ssid\"></td></tr><tr><td>PASSWORD</td><td><input type=\"text\" id=\"password\"></td></tr><tr><td colspan=\"2\"><input type=\"button\" value=\"Set\" onclick=\"location.href=\'?resetwifi=\'+ssid.value+\';\'+password.value;\"></td></tr></table></form>";
   }
   else if (cmd=="resetwifi") {
     char buff_ssid[len], buff_password[len]; 
-    strcpy(buff_ssid, str1.c_str());
-    strcpy(buff_password, str2.c_str());
+    strcpy(buff_ssid, P1.c_str());
+    strcpy(buff_password, P2.c_str());
     flashErase();
     flashWrite(buff_ssid, 0);  
     flashWrite(buff_password, 1);   
      
     restart = true;     
-    Feedback="The ESP12E will retart to connect to "+ str1;
+    Feedback="The ESP12E will retart to connect to "+ P1;
   }  
   else if (cmd=="erasewifi") {
     flashErase();
@@ -72,11 +72,11 @@ void setup()
   Serial.begin(115200);
   delay(10);
   
-  WiFi.mode(WIFI_AP_STA);
+  WiFi.mode(WIFI_AP_STA);  
 
   //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
   Serial.println("\nAPIP address: ");
-  Serial.println(WiFi.softAPIP());    
+  Serial.println(WiFi.softAPIP());      
 
   //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
   
@@ -139,7 +139,7 @@ void setup()
 
 void loop()
 {
-  Command="";cmd="";str1="";str2="";str3="";str4="";str5="";str6="";str7="";str8="";str9="";
+  Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
   ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
   WiFiClient client = server.available();
@@ -223,15 +223,15 @@ void getCommand(char c)
     if (c==';') strState++;
   
     if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
-    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) str1=str1+String(c);
-    if ((cmdState==0)&&(strState==2)&&(c!=';')) str2=str2+String(c);
-    if ((cmdState==0)&&(strState==3)&&(c!=';')) str3=str3+String(c);
-    if ((cmdState==0)&&(strState==4)&&(c!=';')) str4=str4+String(c);
-    if ((cmdState==0)&&(strState==5)&&(c!=';')) str5=str5+String(c);
-    if ((cmdState==0)&&(strState==6)&&(c!=';')) str6=str6+String(c);
-    if ((cmdState==0)&&(strState==7)&&(c!=';')) str7=str7+String(c);
-    if ((cmdState==0)&&(strState==8)&&(c!=';')) str8=str8+String(c);
-    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) str9=str9+String(c);
+    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) P1=P1+String(c);
+    if ((cmdState==0)&&(strState==2)&&(c!=';')) P2=P2+String(c);
+    if ((cmdState==0)&&(strState==3)&&(c!=';')) P3=P3+String(c);
+    if ((cmdState==0)&&(strState==4)&&(c!=';')) P4=P4+String(c);
+    if ((cmdState==0)&&(strState==5)&&(c!=';')) P5=P5+String(c);
+    if ((cmdState==0)&&(strState==6)&&(c!=';')) P6=P6+String(c);
+    if ((cmdState==0)&&(strState==7)&&(c!=';')) P7=P7+String(c);
+    if ((cmdState==0)&&(strState==8)&&(c!=';')) P8=P8+String(c);
+    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) P9=P9+String(c);
     
     if (c=='?') questionstate=1;
     if (c=='=') equalstate=1;
