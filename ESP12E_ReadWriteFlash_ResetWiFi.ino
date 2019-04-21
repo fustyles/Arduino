@@ -39,6 +39,12 @@ void ExecuteCommand()
     // You can do anything
     // Feedback="<font color=\"red\">Hello World</font>";
   }
+  else if (cmd=="ip")
+  {
+    Feedback="AP IP: "+WiFi.softAPIP().toString();    
+    Feedback+=", ";
+    Feedback+="STA IP: "+WiFi.localIP().toString();
+  }   
   else if (cmd=="scanwifi") {
     Feedback="<form id=\"resetwifi\" method=\"get\" action=\"\">";
     Feedback+="<table><tr><td>SSID</td><td><select onclick=\"ssid.value=this.value;\">";
