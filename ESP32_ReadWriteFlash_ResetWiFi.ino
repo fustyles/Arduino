@@ -47,7 +47,7 @@ void ExecuteCommand()
   }   
   else if (cmd=="scanwifi") {
     Feedback="<form id=\"resetwifi\" method=\"get\" action=\"\">";
-    Feedback+="<table><tr><td>SSID</td><td><select onclick=\"ssid.value=this.value;\">";
+    Feedback+="<table><tr><td>SSID</td><td><select onchange=\"ssid.value=this.value;\">";
     Feedback+="<option value=\"\"></option>";
     byte numSsid = WiFi.scanNetworks();
     for (int thisNet = 0; thisNet<numSsid; thisNet++) {
