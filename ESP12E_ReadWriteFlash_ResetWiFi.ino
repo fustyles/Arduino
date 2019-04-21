@@ -1,5 +1,5 @@
 /* 
-NodeMCU (ESP32)
+NodeMCU (ESP12E)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-04-21 09:30
 https://www.facebook.com/francefu
 Command Format :  
