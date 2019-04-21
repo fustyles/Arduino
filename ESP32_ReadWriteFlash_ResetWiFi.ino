@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-04-20 20:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-04-21 08:30
 https://www.facebook.com/francefu
 Command Format :  
 http://IP/?scanwifi
@@ -16,7 +16,7 @@ const int len = 64;    // flashWrite, flashRead -> i = 0 to 63
 char ssid[len]    = "";
 char password[len]    = "";
 
-const char* apssid = "MyFirmata ESP32";
+const char* apssid = "ESP32 SetWiFi";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 const uint32_t addressStart = 0x3FA000; 
@@ -119,6 +119,7 @@ void setup()
     Serial.println("\nSTAIP address: ");
     Serial.println(WiFi.localIP());      
     WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
+    
     pinMode(2, OUTPUT);
     for (int i=0;i<5;i++) {
       digitalWrite(2,HIGH);
@@ -202,7 +203,7 @@ void loop()
       delay(2000);
       WiFi.disconnect();
       delay(1000);
-      Serial.println("ESP12E restart");
+      Serial.println("ESP32 restart");
       ESP.restart();      
     }   
   }
