@@ -17,7 +17,7 @@ const int len = 64;    // flashWrite, flashRead -> i = 0 to 63
 char ssid[len]    = "";
 char password[len]    = "";
 
-const char* apssid = "MyFirmata ESP12E";
+const char* apssid = "ESP12E SetWiFi";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 const uint32_t addressStart = 0x3FA000; 
@@ -204,7 +204,7 @@ void loop()
       delay(2000);
       WiFi.disconnect();
       delay(1000);
-      Serial.println("ESP32 restart");
+      Serial.println("ESP12E restart");
       ESP.restart();      
     }   
   }
