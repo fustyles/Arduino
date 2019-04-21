@@ -40,8 +40,7 @@ void ExecuteCommand()
     // You can do anything
     // Feedback="<font color=\"red\">Hello World</font>";
   }
-  else if (cmd=="ip")
-  {
+  else if (cmd=="ip") {
     Feedback="AP IP: "+WiFi.softAPIP().toString();    
     Feedback+=", ";
     Feedback+="STA IP: "+WiFi.localIP().toString();
