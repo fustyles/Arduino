@@ -54,7 +54,7 @@ void ExecuteCommand()
       if (WiFi.SSID(thisNet)!="")
         Feedback+="<option value=\""+WiFi.SSID(thisNet)+"\">"+WiFi.SSID(thisNet)+"</option>";
     }
-    Feedback+="</select></td></tr><tr><td>(Enter in manually)</td><td><input type=\"text\" id=\"ssid\"></td></tr><tr><td>PASSWORD</td><td><input type=\"text\" id=\"password\"></td></tr><tr><td colspan=\"2\"><input type=\"button\" value=\"Set\" onclick=\"location.href=\'?resetwifi=\'+ssid.value+\';\'+password.value;\"></td></tr></table></form>";
+    Feedback+="</select></td></tr><tr><td></td><td><input type=\"text\" id=\"ssid\"><br>(Enter in manually)</td></tr><tr><td>PASSWORD</td><td><input type=\"text\" id=\"password\"></td></tr><tr><td colspan=\"2\"><input type=\"button\" value=\"Set\" onclick=\"location.href=\'?resetwifi=\'+ssid.value+\';\'+password.value;\"></td></tr></table></form>";
   }
   else if (cmd=="resetwifi") {
     char buff_ssid[len], buff_password[len]; 
