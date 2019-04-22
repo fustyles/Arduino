@@ -18,7 +18,7 @@ const int len = 64;    // flashWrite, flashRead -> i = 0 to 63
 char ssid[len]    = "";
 char password[len]    = "";
 
-const char* apssid = "ESP12E SetWiFi";
+const char* apssid = "ESP12E ResetWiFi";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 const uint32_t addressStart = 0x3FA000; 
