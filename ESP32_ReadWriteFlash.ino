@@ -35,6 +35,8 @@ void setup() {
 
   if ((buff_ssid[0]>=32)&&(buff_ssid[0]<=126))
     connectWIFI(buff_ssid, buff_password);
+  
+  server.begin();
 }
 
 void loop() {
@@ -66,8 +68,6 @@ void connectWIFI(char id[len], char pwd[len]) {
     Serial.println("\nConnection Failed");
     WiFi.softAP(apssid, appassword);  
   }
-  
-  server.begin();
 }
 
 void flashWrite(char data[len], int i) {      // i = 0 to 63
