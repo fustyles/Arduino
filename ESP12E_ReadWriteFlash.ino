@@ -17,6 +17,8 @@ const char* appassword = "12345678";   //AP password require at least 8 characte
 const uint32_t addressStart = 0x3FA000; 
 const uint32_t addressEnd   = 0x3FAFFF;
 
+WiFiServer server(80);
+
 void setup() {
   Serial.begin(115200);
 
@@ -64,6 +66,8 @@ void connectWIFI(char id[len], char pwd[len]) {
     Serial.println("\nConnection Failed");
     WiFi.softAP(apssid, appassword);  
   }
+  
+  server.begin();
 }
 
 void flashWrite(char data[len], int i) {      // i = 0 to 63
