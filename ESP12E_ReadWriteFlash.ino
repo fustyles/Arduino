@@ -20,34 +20,19 @@ const uint32_t addressEnd   = 0x3FAFFF;
 void setup() {
   Serial.begin(115200);
 
-  /* Test
-    // Write correct WIFI SSID and password to SPI FLASH
-    flashErase();
-    flashWrite(ssid, 0);  
-    flashWrite(password, 1);
-    
-    // Read WIFI SSID and password from SPI FLASH
-    char buff_ssid[len], buff_password[len];
-    strcpy(buff_ssid, flashRead(0));
-    strcpy(buff_password, flashRead(1));
-    Serial.printf("ssid: \"%s\"\npassword: \"%s\"\n", buff_ssid, buff_password);
-    
-    // Set nonexistent SSID
-    strcpy(ssid,"test");  
-  */
-  
-  connectWIFI(ssid, password);
-  
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("\nRead settings from SPI FLASH");
-    
-    // Read WIFI SSID and password from SPI FLASH.
-    char buff_ssid[len], buff_password[len];
-    strcpy(buff_ssid, flashRead(0));
-    strcpy(buff_password, flashRead(1));
-    //if ((buff_password[0]>=32)&&(buff_password[0]<=126))
-      connectWIFI(buff_ssid, buff_password);
-  }
+  // Write WIFI SSID and password to SPI FLASH
+  flashErase();
+  flashWrite(ssid, 0);  
+  flashWrite(password, 1);
+
+  // Read WIFI SSID and password from SPI FLASH
+  char buff_ssid[len], buff_password[len];
+  strcpy(buff_ssid, flashRead(0));
+  strcpy(buff_password, flashRead(1));
+  Serial.printf("ssid: \"%s\"\npassword: \"%s\"\n", buff_ssid, buff_password);
+
+  if ((buff_ssid[0]>=32)&&(buff_ssid[0]<=126))
+    connectWIFI(buff_ssid, buff_password);
 }
 
 void loop() {
