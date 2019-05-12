@@ -3,7 +3,7 @@ ESP32-CAM Remote Control Car
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-4-1 20:00
 https://www.facebook.com/francefu
 
-Motor Driver IC -> gpio12, gpio13, gpio15, gpio14
+Motor Driver IC -> gpio12, gpio13, gpio14, gpio15
 Servo -> VCC, GND, gpio2
 */
 
@@ -154,15 +154,14 @@ void setup() {
   WiFi.begin(ssid, password);
 
   long int StartTime=millis();
-  while (WiFi.status() != WL_CONNECTED) 
-  {
+  while (WiFi.status() != WL_CONNECTED) {
       delay(500);
       if ((StartTime+10000) < millis()) break;
   } 
 
   startCameraServer();
 
-  if (WiFi.status() == WL_CONNECTED){
+  if (WiFi.status() == WL_CONNECTED) {
     Serial.println("");
     Serial.println("WiFi connected");    
     Serial.print("Camera Ready! Use 'http://");
@@ -171,8 +170,7 @@ void setup() {
     char* apssid = "ESP32-CAM";
     char* appassword = "12345678";         //AP password require at least 8 characters.
     WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);    
-  }
-  else {
+  } else {
     Serial.println("");
     Serial.println("WiFi disconnected");      
     Serial.print("Camera Ready! Use 'http://");
