@@ -145,6 +145,7 @@ void setup() {
   ledcAttachPin(13, 6);
   ledcSetup(6, 5000, 8); 
   ledcWrite(6,0);   
+  //If you output PWM to GPIO 15 using ledcWrite, it will lose control.
   pinMode(15, OUTPUT); 
   pinMode(14, OUTPUT);  
 
