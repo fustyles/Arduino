@@ -5,6 +5,9 @@ https://www.facebook.com/francefu
 
 Motor Driver IC -> gpio12, gpio13, gpio14, gpio15
 Servo -> VCC, GND, gpio2
+
+http://APIP
+http://STAIP
 */
 
 #include "esp_camera.h"
