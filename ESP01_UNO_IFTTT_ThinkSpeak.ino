@@ -58,7 +58,7 @@ void loop()
   }
   else
   {
-    //Sensor Data
+    //Get sensor Data from Arduino Uno
     int SensorTemperature = rand()%40;    
     int SensorHumidity = rand()%100;  
 
