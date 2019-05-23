@@ -79,7 +79,7 @@ void loop()
     SendData(request, 4000);
     SendData("AT+CIPCLOSE",2000);
     
-    // alarm
+    // alarm (IFTTT: Webhooks+Line)
     if ((SensorTemperature<10)||(SensorHumidity<20))
     {  
       delay(1000);
