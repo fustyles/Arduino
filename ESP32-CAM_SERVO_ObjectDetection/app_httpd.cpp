@@ -7,8 +7,6 @@ Servo -> VCC, GND, gpio2
 */
 
 #include <esp32-hal-ledc.h>
-int speed = 255;  //You can adjust the speed of the wheel. (gpio12, gpio13)
-int noStop = 0;
 
 // Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
 //
@@ -840,6 +838,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     <!-- Object Detection -->    
     <script>
     var getStill = document.getElementById('get-still');
+    var toggleStream = document.getElementById('toggle-stream');
     var ShowImage = document.getElementById('stream');
     var canvas = document.getElementById("canvas");
     var context = canvas.getContext("2d");  
