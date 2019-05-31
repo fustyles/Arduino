@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Remote Control Car 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-4-1 20:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-1 02:00
 https://www.facebook.com/francefu
 
 Motor Driver IC -> gpio12, gpio13, gpio14, gpio15
@@ -684,9 +684,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <tr><td><input type="checkbox" id="nostop" onclick="var noStop=0;if (this.checked) noStop=1;fetch(document.location.origin+'/control?var=nostop&val='+noStop);">No Stop</td><td align="center"><button id="forward" onclick="fetch(document.location.origin+'/control?var=car&val=1');">Forward</button></td><td></td></tr>
                 <tr><td align="center"><button id="turnleft" onclick="fetch(document.location.origin+'/control?var=car&val=2');">TurnLeft</button></td><td align="center"><button id="stop" onclick="fetch(document.location.origin+'/control?var=car&val=3');">Stop</button></td><td align="center"><button id="turnright" onclick="fetch(document.location.origin+'/control?var=car&val=4');">TurnRight</button></td></tr>
                 <tr><td></td><td align="center"><button id="backward" onclick="fetch(document.location.origin+'/control?var=car&val=5');">Backward</button></td><td></td></tr>
-                <tr><td>Servo</td><td align="center" colspan="2"><input type="range" id="servo" min="1700" max="8000" step="35" value="4850" onchange="fetch(document.location.origin+'/control?var=servo&val='+this.value);"></td></tr>
-                <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="fetch(document.location.origin+'/control?var=flash&val='+this.value);"></td></tr>
-                <tr><td>Speed</td><td align="center" colspan="2"><input type="range" id="speed" min="0" max="255" value="255" onchange="fetch(document.location.origin+'/control?var=speed&val='+this.value);"></td></tr>
+                <tr><td>Servo</td><td align="center" colspan="2"><input type="range" id="servo" min="1700" max="8000" step="35" value="4850" onchange="try{fetch(document.location.origin+'/control?var=servo&val='+this.value);}catch(e){}"></td></tr>
+                <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}"></td></tr>
+                <tr><td>Speed</td><td align="center" colspan="2"><input type="range" id="speed" min="0" max="255" value="255" onchange="try{fetch(document.location.origin+'/control?var=speed&val='+this.value);}catch(e){}"></td></tr>
                 </table>
             </section>         
             <div id="logo">
