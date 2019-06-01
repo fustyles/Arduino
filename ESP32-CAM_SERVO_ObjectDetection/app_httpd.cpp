@@ -837,13 +837,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     <!-- Object Detection -->    
     <script>
     var getStill = document.getElementById('get-still');
-    var toggleStream = document.getElementById('toggle-stream');
     var ShowImage = document.getElementById('stream');
     var canvas = document.getElementById("canvas");
     var context = canvas.getContext("2d");  
     var result = document.getElementById('result');
     var Model;
-      
+
     function ObjectDetect() {
       result.innerHTML = "Please wait for loading model.";
       cocoSsd.load().then(cocoSsd_Model => {
@@ -852,7 +851,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         getStill.style.display = "block";
       }); 
     }
-      
+
     function DetectImage(Model) {
       Model.detect(ShowImage).then(Predictions => {
         //console.log('Predictions: ', Predictions);
@@ -860,7 +859,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         canvas.setAttribute("height", ShowImage.height);
         context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height); 
         var s = (ShowImage.width>ShowImage.height)?ShowImage.width:ShowImage.height;
-        
+
         if (Predictions.length>0) {
           result.innerHTML = "";
           for (var i=0;i<Predictions.length;i++) {
@@ -886,10 +885,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         getStill.click();
       });   
     }
-        
+
     ShowImage.onload = function (event) {
       if (Model) DetectImage(Model);
     }
+
     window.onload = function () { ObjectDetect(); }
     </script>
 
