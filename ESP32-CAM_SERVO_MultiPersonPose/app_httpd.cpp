@@ -841,7 +841,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var canvas = document.getElementById("canvas");
     var context = canvas.getContext("2d");  
     var result = document.getElementById('result');
-    var Model;
+    var imageScaleFactor = 0.75;
     
     function ObjectDetect() {
       result.innerHTML = "Please wait for loading model.";
@@ -853,7 +853,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     }
     
   async function DetectImage() {
-      const pose = await Model.estimateMultiplePoses(ShowImage, 0.75, false, 16, 10, 0.5, 20);
+      const pose = await Model.estimateMultiplePoses(ShowImage, imageScaleFactor, false, 16, 10, 0.5, 20);
       //console.log(pose.score);
       //console.log(pose.keypoints);
       
@@ -891,9 +891,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       if (Model) {
         try { 
           document.createEvent("TouchEvent");
-          setTimeout(function(){DetectImage();},250);
+          imageScaleFactor = 0.5;
+          setTimeout(function(){DetectImage();},100);
         }
         catch(e) { 
+          imageScaleFactor = 0.75;
           DetectImage();
         } 
       }
