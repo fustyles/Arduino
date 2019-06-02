@@ -892,7 +892,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         try { 
           document.createEvent("TouchEvent");
           imageScaleFactor = 0.5;
-          setTimeout(function(){DetectImage();},250);
+          setTimeout(function(){DetectImage();},200);
         }
         catch(e) { 
           imageScaleFactor = 0.75;
