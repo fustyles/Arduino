@@ -852,7 +852,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       });     
     }
     
-  async function DetectImage() {
+    async function DetectImage() {
       const pose = await Model.estimateMultiplePoses(ShowImage, imageScaleFactor, false, 16, 10, 0.5, 20);
       //console.log(pose.score);
       //console.log(pose.keypoints);
