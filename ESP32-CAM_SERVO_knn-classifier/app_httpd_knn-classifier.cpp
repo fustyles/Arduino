@@ -916,11 +916,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               let data = dataset[key].dataSync();
               myDataset[key] = Array.from(data);
             });
-            let jsonStr = JSON.stringify(myDataset)
+            let json = JSON.stringify(myDataset)
             
             var link = document.createElement('a');
             link.download="model.json";
-            link.href='data:text/text;charset=utf-8,' + encodeURIComponent(jsonStr);
+            link.href='data:text/text;charset=utf-8,' + encodeURIComponent(json);
             document.body.appendChild(link);
             link.click();
             link.remove();
