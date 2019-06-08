@@ -1,6 +1,6 @@
 /*
-ESP32-CAM knn-classifier
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-8 19:00
+ESP32-CAM OBJECT DETECTION (mobilenet)
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-4 19:00
 https://www.facebook.com/francefu
 
 Servo -> VCC, GND, gpio2
@@ -617,10 +617,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <section class="main">
             <section id="buttons">
                 <table>
-                <tr><td><button id="get-still">get-still</button></td><td align="center"><button id="addExample">Train Example</button></td><td align="center"><select id="Class"><option value="0" selected>0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select><span id="count" style="font-size::18px;color:red">0</span></td></tr>
                 <tr style="visibility:hidden"><td colspan="3"><button id="toggle-stream"></button><button id="face_enroll" class="disabled" disabled="disabled"></button></td></tr>
-                <tr><td>Servo</td><td align="center" colspan="2"><input type="range" id="servo" min="1700" max="8000" step="35" value="4850" onchange="try{fetch(document.location.origin+'/control?var=servo&val='+this.value);}catch(e){}"></td></tr>
-                <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}"></td></tr>
+                <tr><td><button onclick="saveModel();">Save Model</button></td><td colspan="2"><input type="file" id="getModel"></input></td></tr>
+                <tr><td><button id="addExample">Train</button></td><td><select id="Class"><option value="0" selected>0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select></td><td id="count" style="color:red">0</td></tr>
+                <tr><td colspan="3"><button id="get-still">get-still</button></td></tr>
+                <tr><td>Servo</td><td colspan="2"><input type="range" id="servo" min="1700" max="8000" step="35" value="4850" onchange="try{fetch(document.location.origin+'/control?var=servo&val='+this.value);}catch(e){}"></td></tr>
+                <tr><td>Flash</td><td colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}"></td></tr>
                 </table>
             </section>
             <figure>
@@ -907,9 +909,43 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             }
           }
 
-          stream.onload = function (event) {
-            setTimeout(function(){getStill.click();},100);
+          function saveModel() {
+            let dataset = classifier.getClassifierDataset();
+            let myDataset = {}
+            Object.keys(dataset).forEach((key) => {
+              let data = dataset[key].dataSync();
+              myDataset[key] = Array.from(data);
+            });
+            let jsonStr = JSON.stringify(myDataset)
+            
+            var link = document.createElement('a');
+            link.download="model.json";
+            link.href='data:text/text;charset=utf-8,' + encodeURIComponent(jsonStr);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
           }
+          
+          document.getElementById('getModel').onchange = function (event) {
+            var target = event.target || window.event.srcElement;
+            var files = target.files;
+            var fr = new FileReader();
+            if (files.length>0) {
+                fr.onload = function () {     
+                  var dataset = fr.result;
+                  var myDataset = JSON.parse(dataset)
+                  Object.keys(myDataset).forEach((key) => {
+                    myDataset[key] = tf.tensor(myDataset[key], [myDataset[key].length / 1024, 1024]);
+                  })
+                  classifier.setClassifierDataset(myDataset);
+                }
+                fr.readAsText(files[0]);
+              }
+            }
+      
+            stream.onload = function (event) {
+              setTimeout(function(){getStill.click();},100);
+            }
                    
         </script>
     </body>
