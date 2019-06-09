@@ -869,7 +869,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           function addExample_onclick (event) {
             context.drawImage(stream, 0, 0, stream.width, stream.height ,0 ,0 ,canvas.width, canvas.height);
             example.src = canvas.toDataURL('image/jpeg');
-            addExampleImage(example, Number(Class.value));
+            addExampleImage(example, Class.value);
             count.innerHTML = Number(count.innerHTML)+1;
           };
           addExample.addEventListener("click", addExample_onclick, true);
