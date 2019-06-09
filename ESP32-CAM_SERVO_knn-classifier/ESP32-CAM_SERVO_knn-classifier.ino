@@ -1,6 +1,6 @@
 /*
 ESP32-CAM knn-classifier
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-8 19:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-9 19:00
 https://www.facebook.com/francefu
 
 Servo -> VCC, GND, gpio2

@@ -1,6 +1,6 @@
 /*
-ESP32-CAM OBJECT DETECTION (mobilenet)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-9 11:00
+ESP32-CAM knn-classifier
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-9 19:00
 https://www.facebook.com/francefu
 
 Servo -> VCC, GND, gpio2
@@ -878,7 +878,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           // Load mobilenet.
           mobilenet.load().then(Module => {
             mobilenetModule = Module;
-            setInterval(function(){ predictClass_onclick(); }, 200);
             result.innerHTML = '';
             getStill.click();
           }); 
@@ -944,6 +943,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             }
       
             stream.onload = function (event) {
+              predictClass_onclick();
               if (mobilenetModule) {
                 try { 
                   document.createEvent("TouchEvent");
