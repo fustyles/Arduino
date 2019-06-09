@@ -944,7 +944,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             }
       
             stream.onload = function (event) {
-              setTimeout(function(){getStill.click();},100);
+              if (mobilenetModule) {
+                try { 
+                  document.createEvent("TouchEvent");
+                  setTimeout(function(){getStill.click();},250);
+                }
+                catch(e) { 
+                  setTimeout(function(){getStill.click();},100);
+                } 
+              }
             }
                    
         </script>
