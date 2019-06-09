@@ -619,7 +619,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <table>
                 <tr style="visibility:hidden"><td colspan="3"><button id="toggle-stream"></button><button id="face_enroll" class="disabled" disabled="disabled"></button></td></tr>
                 <tr><td><button onclick="saveModel();">Save Model</button></td><td colspan="2"><input type="file" id="getModel"></input></td></tr>
-                <tr><td><button id="addExample">Train</button></td><td><select id="Class"><option value="0" selected>0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select></td><td id="count" style="color:red">0</td></tr>
+                <tr><td><button id="clearAllClasses">Clear All Classes</button>&nbsp;&nbsp;<button id="addExample">Train</button></td><td><select id="Class"><option value="0" selected>0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select></td><td id="count" style="color:red">0</td></tr>
                 <tr><td colspan="3"><button id="get-still">get-still</button></td></tr>
                 <tr><td>Servo</td><td colspan="2"><input type="range" id="servo" min="1700" max="8000" step="35" value="4850" onchange="try{fetch(document.location.origin+'/control?var=servo&val='+this.value);}catch(e){}"></td></tr>
                 <tr><td>Flash</td><td colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}"></td></tr>
@@ -842,6 +842,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <script>
           var canvas = document.getElementById('canvas');
           var context = canvas.getContext("2d"); 
+          var clearAllClasses = document.getElementById('clearAllClasses');
           var addExample = document.getElementById('addExample');
           var stream = document.getElementById('stream');
           var example = document.getElementById('example');
@@ -857,6 +858,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             context.drawImage(stream, 0, 0, stream.width, stream.height ,0 ,0 ,canvas.width, canvas.height);
             example.src = canvas.toDataURL('image/jpeg');
           };    
+          
+          function clearAllClasses_onclick (event) {
+            result.innerHTML = '';
+            count.innerHTML = "0";
+            classifier.clearAllClasses();
+          };
+          clearAllClasses.addEventListener("click", clearAllClasses_onclick, true);           
           
           function addExample_onclick (event) {
             context.drawImage(stream, 0, 0, stream.width, stream.height ,0 ,0 ,canvas.width, canvas.height);
