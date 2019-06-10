@@ -1,6 +1,6 @@
 /*
 ESP32-CAM knn-classifier
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-9 19:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-10 21:00
 https://www.facebook.com/francefu
 
 Servo -> VCC, GND, gpio2
@@ -615,24 +615,25 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     </head>
     <body>
         <section class="main">
-            <section id="buttons">
-                <table>
-                <tr style="visibility:hidden"><td colspan="3"><button id="toggle-stream"></button><button id="face_enroll" class="disabled" disabled="disabled"></button></td></tr>
-                <tr><td><button onclick="saveModel();">Save Model</button></td><td colspan="2"><input type="file" id="getModel"></input></td></tr>
-                <tr><td><button id="clearAllClasses">Clear All Classes</button>&nbsp;&nbsp;<button id="addExample">Train</button></td><td><select id="Class"><option value="0" selected>0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select></td><td id="count" style="color:red">0</td></tr>
-                <tr><td colspan="3"><button id="get-still">get-still</button></td></tr>
-                <tr><td>Servo</td><td colspan="2"><input type="range" id="servo" min="1700" max="8000" step="35" value="4850" onchange="try{fetch(document.location.origin+'/control?var=servo&val='+this.value);}catch(e){}"></td></tr>
-                <tr><td>Flash</td><td colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}"></td></tr>
-                </table>
-            </section>
             <figure>
               <div id="stream-container" class="image-container hidden">
                 <div class="close" id="close-stream">×</div>
                 <img id="stream" src="">
                 <canvas id="canvas" width="320" height="240" style="background-color:#000000;display:none;">
                 <img id="example" width="320" height="240" style="display:none">
-              </div>
-            </figure>         
+              </div>             
+            </figure>          
+            <section id="buttons">
+                <table>
+                <tr style="visibility:hidden"><td><button id="toggle-stream"></button></td><td><button id="face_enroll" class="disabled" disabled="disabled"></button></td><td></td></tr>
+                <tr><td><button onclick="saveModel();">Save Model</button></td><td><input type="file" id="getModel"></input></td><td></td></tr>
+                <tr><td><button id="get-still">get-still</button></td><td><button id="clearAllClasses">Clear All Classes</button></td><td></td></tr>
+                <tr><td><button id="addExample">Train</button></td><td><select id="Class"><option value="0" selected>0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select></td><td id="count" style="color:red">0</td></tr>
+                <tr><td></td><td></td><td></td></tr>
+                <tr><td>Servo</td><td><input type="range" id="servo" min="1700" max="8000" step="35" value="4850" onchange="try{fetch(document.location.origin+'/control?var=servo&val='+this.value);}catch(e){}"></td><td></td></tr>
+                <tr><td>Flash</td><td><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}"></td><td></td></tr>
+                </table>
+            </section>          
             <div id="logo">
                 <label for="nav-toggle-cb" id="nav-toggle">&#9776;&nbsp;&nbsp;Toggle settings</label>
             </div>
@@ -850,6 +851,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           var result = document.getElementById('result');
           var count = document.getElementById('count');
           var getStill = document.getElementById('get-still');
+          var getModel = document.getElementById('getModel');
           
           function predictClass_onclick (event) {
             example.onload = function () {
@@ -883,6 +885,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           
           // Create the classifier.
           classifier = knnClassifier.create();
+          
           // Load mobilenet.
           mobilenet.load().then(Module => {
             mobilenetModule = Module;
@@ -898,21 +901,21 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           }
           
           async function predictClass(img) {
-            // Make a prediction.
-            try
-            {
+            try {
+              // Make a prediction.
               const Image = tf.browser.fromPixels(img);
               const xlogits = mobilenetModule.infer(Image, 'conv_preds');
               const predict = await classifier.predictClass(xlogits);
               //console.log(predict);
-              var msg = "<font color='red'>Result : class " + predict.label + "</font><br><br>";;
-              for (i=0;i<Class.length;i++) {
-                if (predict.confidences[i.toString()]>=0) msg += "[train "+i+"] " + predict.confidences[i.toString()] + "<br>";
+              if (predict.label) {
+                var msg = "<font color='red'>Result : class " + predict.label + "</font><br><br>";;
+                for (i=0;i<Class.length;i++) {
+                  if (predict.confidences[i.toString()]>=0) msg += "[train "+i+"] " + predict.confidences[i.toString()] + "<br>";
+                }
+                result.innerHTML = msg; 
               }
-              result.innerHTML = msg; 
             }
-            catch (e)
-            {
+            catch (e) {
             }
           }
 
@@ -933,7 +936,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             link.remove();
           }
           
-          document.getElementById('getModel').onchange = function (event) {
+          getModel.onchange = function (event) {
             var target = event.target || window.event.srcElement;
             var files = target.files;
             var fr = new FileReader();
