@@ -852,7 +852,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     }
     
     async function DetectImage() {
-      await Model.estimatePoses(video, {flipHorizontal: false, decodingMethod: 'multi-person', maxPoseDetections: 5, scoreThreshold: 0.5, nmsRadius: 20}).then(pose => {
+      await Model.estimatePoses(ShowImage, {flipHorizontal: false, decodingMethod: 'multi-person', maxPoseDetections: 5, scoreThreshold: 0.5, nmsRadius: 20}).then(pose => {
         //console.log(pose.score);
         //console.log(pose.keypoints);
 
