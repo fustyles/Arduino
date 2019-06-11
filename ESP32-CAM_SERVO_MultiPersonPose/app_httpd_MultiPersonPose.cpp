@@ -853,16 +853,16 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     }
     
     async function DetectImage() {
-      const pose = await Model.estimateMultiplePoses(ShowImage, imageScaleFactor, false, 16, 10, 0.5, 20);
+      await Model.estimatePoses(video, {flipHorizontal: false, decodingMethod: 'multi-person', maxPoseDetections: 5, scoreThreshold: 0.5, nmsRadius: 20}).then(pose => {
       //console.log(pose.score);
       //console.log(pose.keypoints);
-      
+
       result.innerHTML = "";
       canvas.setAttribute("width", ShowImage.width);
       canvas.setAttribute("height", ShowImage.height);
       context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height);   
       var s = (ShowImage.width>ShowImage.height)?ShowImage.width:ShowImage.height;
-    
+
       if (pose.length>0) {
           for (var n=0;n<pose.length;n++) {
             var k = pose[n].keypoints;
@@ -885,6 +885,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         else
           result.innerHTML = "Unrecognizable";  
         getStill.click();
+        });
     }
     
     ShowImage.onload = function (event) {
