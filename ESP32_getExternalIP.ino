@@ -1,4 +1,6 @@
 /* 
+The program is currently not working.
+
 NodeMCU (ESP32)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-09 18:00
 https://www.facebook.com/francefu
