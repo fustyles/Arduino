@@ -940,7 +940,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 result.innerHTML = msg; 
 
                 // Smart Car
-                if (document.getElementById('SmartGo').checked) {
+                if ((document.getElementById('SmartGo').checked)&&(predict.confidences[predict.label]==1)) {
                   if (predict.label=="1") 
                     document.getElementById('demo-area-05-btn1').click();
                   else if (predict.label=="2") 
@@ -1008,7 +1008,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <script id="jsbin-javascript">
           (async function () {
           var car;
-          var SmartID = "1f03ygbhY3rmbed";
+          var SmartID = "10y1b2Yrb3d";
           
           boardReady({board: 'Smart', device: SmartID, transport: 'mqtt'}, async function (board) {
             board.samplingInterval = 50;
