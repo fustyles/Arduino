@@ -888,7 +888,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           setTimeout(function(){DetectImage();},250);
         }
         catch(e) { 
-          setTimeout(function(){DetectImage();},100);
+          DetectImage();
         } 
       }
     }
