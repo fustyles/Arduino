@@ -625,7 +625,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             <figure>
               <div id="stream-container" class="image-container hidden">
                 <div class="close" id="close-stream">×</div>
-                <img id="stream" src="">
+                <img id="stream" src="" style="display:none">
               </div>
             </figure>         
             <div id="logo">
