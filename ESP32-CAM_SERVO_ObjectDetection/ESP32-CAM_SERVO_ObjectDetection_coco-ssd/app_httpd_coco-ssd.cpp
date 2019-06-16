@@ -1,6 +1,6 @@
 /*
 ESP32-CAM OBJECT DETECTION
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-2 19:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-17 00:00
 https://www.facebook.com/francefu
 Servo -> VCC, GND, gpio2
 */
@@ -625,7 +625,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             <figure>
               <div id="stream-container" class="image-container hidden">
                 <div class="close" id="close-stream">×</div>
-                <img id="stream" src="" style="display:none">
+                <img id="stream" src="">
               </div>
             </figure>         
             <div id="logo">
