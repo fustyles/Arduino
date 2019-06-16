@@ -850,11 +850,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     }
     function DetectImage() {
       Model.detect(ShowImage).then(Predictions => {
-        //console.log('Predictions: ', Predictions);
         canvas.setAttribute("width", ShowImage.width);
-        canvas.setAttribute("height", ShowImage.height);
+        canvas.setAttribute("height", ShowImage.height);      
         context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height); 
         var s = (ShowImage.width>ShowImage.height)?ShowImage.width:ShowImage.height;
+        
+        //console.log('Predictions: ', Predictions);
         if (Predictions.length>0) {
           result.innerHTML = "";
           for (var i=0;i<Predictions.length;i++) {
