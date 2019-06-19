@@ -635,9 +635,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <img id="stream" src="" style="display:none">
                 <form id="myForm" action="" method="post" target="sendcapturedimage">
                 <button onclick="SendCapturedImage();">Send Captured Image </button><input type="checkbox" id="myStartDetection" name="myStartDetection">Start Person Detection<br>
-                Google Script Url : <input type="text" id="myGoogleScript" name="myGoogleScript" value="https://script.google.com/macros/s/AKfycbxGJWiG4Zfaghvnyuz8ip4GEU-D-5PXv_4j80LZ/exec"><br>
+                Google Script Url : <input type="text" id="myGoogleScript" name="myGoogleScript" value=""><br>
                 Google Folder Name : <input type="text" id="myFoldername" name="myFoldername" value="ESP32-CAM"><br>
-                Line Notify Token : <input type="text" id="myToken" name="myToken" value="lHaUbj8vv1ZCvoxzwhpoarxNYR4PKYIHtVOS72qS6Lt"><br>
+                Line Notify Token : <input type="text" id="myToken" name="myToken" value=""><br>
                 <input type="text" id="myFilename" name="myFilename" style="display:none">
                 <textarea id="myFile" name="myFile" rows="10" cols="50" style="display:none"></textarea><br>
                 </form>                
