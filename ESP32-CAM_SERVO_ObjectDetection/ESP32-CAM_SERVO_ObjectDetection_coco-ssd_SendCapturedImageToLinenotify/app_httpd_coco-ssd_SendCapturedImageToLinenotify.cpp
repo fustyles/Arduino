@@ -634,7 +634,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <div class="close" id="close-stream">×</div>
                 <img id="stream" src="" style="display:none">
                 <form id="myForm" action="" method="post" target="sendcapturedimage">
-                <button onclick="SendCapturedImage();">Send Captured Image </button><input type="checkbox" id="myStartDetection" name="myStartDetection">Start Person Detection<br>
+                <button onclick="SendCapturedImage();">Send Captured Image </button><input type="checkbox" id="myStartDetection" name="myStartDetection">Start Person Detection (15s)<br>
                 Google Script Url : <input type="text" id="myGoogleScript" name="myGoogleScript" value=""><br>
                 Google Folder Name : <input type="text" id="myFoldername" name="myFoldername" value="ESP32-CAM"><br>
                 Line Notify Token : <input type="text" id="myToken" name="myToken" value=""><br>
