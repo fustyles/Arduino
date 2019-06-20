@@ -10,8 +10,8 @@ Servo -> VCC, GND, gpio2
 #include "esp_camera.h"
 #include <WiFi.h>
 
-const char* ssid = "xxxxx";
-const char* password = "xxxxx";
+const char* ssid = "Samyang";
+const char* password = "0978035822";
 
 //
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
