@@ -9,6 +9,10 @@ Google Script
 https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify.gs
 You should allow anyone to upload files to google drive folder and allow anyone to execute the google script.
 
+https://script.google.com/home
+https://script.google.com/home/executions
+https://drive.google.com/drive/my-drive
+
 How to enable WebGL in Chrome.
 https://superuser.com/questions/836832/how-can-i-enable-webgl-in-my-browser
 */
