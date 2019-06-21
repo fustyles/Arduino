@@ -17,8 +17,8 @@ How to enable WebGL in Chrome.
 https://superuser.com/questions/836832/how-can-i-enable-webgl-in-my-browser
 */
 
-const char* ssid = "webduino.io";
-const char* password = "webduino";
+const char* ssid = "xxxxx";
+const char* password = "xxxxx";
 
 #include "esp_camera.h"
 #include <WiFi.h>
