@@ -1,6 +1,6 @@
 /*
 ESP32-CAM OBJECT DETECTION (mobilenet)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-4 19:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-21 19:00
 https://www.facebook.com/francefu
 
 Servo -> VCC, GND, gpio2
