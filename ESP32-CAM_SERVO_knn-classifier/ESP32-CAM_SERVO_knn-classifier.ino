@@ -1,6 +1,6 @@
 /*
 ESP32-CAM knn-classifier
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-10 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-21 19:00
 https://www.facebook.com/francefu
 
 Servo -> VCC, GND, gpio2
@@ -91,7 +91,7 @@ const char* password = "xxxxx";
 void startCameraServer();
 
 void setup() {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
   
   Serial.begin(115200);
   Serial.setDebugOutput(true);
