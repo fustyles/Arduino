@@ -17,12 +17,11 @@ How to enable WebGL in Chrome.
 https://superuser.com/questions/836832/how-can-i-enable-webgl-in-my-browser
 */
 
-#include "esp_camera.h"
-#include <WiFi.h>
-
 const char* ssid = "xxxxx";
 const char* password = "xxxxx";
 
+#include "esp_camera.h"
+#include <WiFi.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
 
