@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Remote Control Car 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-4-1 20:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-21 19:00
 https://www.facebook.com/francefu
 
 Motor Driver IC -> gpio12, gpio13, gpio15, gpio14
@@ -89,7 +89,7 @@ const char* password = "xxxxx";
 void startCameraServer();
 
 void setup() {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
   
   Serial.begin(115200);
   Serial.setDebugOutput(true);
