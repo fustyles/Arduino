@@ -10,12 +10,11 @@ http://APIP
 http://STAIP
 */
 
-#include "esp_camera.h"
-#include <WiFi.h>
-
 const char* ssid = "xxxxx";
 const char* password = "xxxxx";
 
+#include "esp_camera.h"
+#include <WiFi.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
 
