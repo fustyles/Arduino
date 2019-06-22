@@ -645,7 +645,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 Line Notify Token : <input type="text" id="myToken" name="myToken" value=""><br>
                 <input type="text" id="myFilename" name="myFilename" style="display:none">
                 <textarea id="myFile" name="myFile" rows="10" cols="50" style="display:none"></textarea><br>
-                </form>                
+                </form>
+                <iframe id="sendcapturedimage" name="sendcapturedimage" style="display:none"></iframe>
               </div>
             </figure>         
             <div id="logo">
@@ -939,8 +940,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         var date = new Date();
         myFilename.value = date.getFullYear()+"_"+(date.getMonth()+1)+"_"+date.getDate()+"_"+date.getHours()+"_"+date.getMinutes()+"_"+date.getSeconds()+".png";
         myFile.value = canvas.toDataURL();
-        myToken.value = "lHaUbj8vv1ZCvoxzwhpoarxNYR4PKYIHtVOS72qS6Lt";
-        var myWindow = window.open("", "sendcapturedimage", "width=600,height=60");
         myForm.submit();
       }      
     </script>
