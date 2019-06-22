@@ -63,8 +63,8 @@ const char* appassword = "12345678";         //AP password require at least 8 ch
 
 const char *post_domain = "script.google.com";
 /*
-Create your Google Apps Script and replace the "post_path" value.
 https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify.gs
+Create your Google Apps Script and replace the "post_path" value.
 */
 String post_path = "/macros/s/AKfycbxQFDRkhSSsNp-3oL_TjcCStIykkLGb5n_MEPlS9dPw1053vUo123/exec" + "?myFoldername=TEST&myFilename=test&myToken=lHaUbj8vv1ZCvoxzwhpoarxNYR4PKYIHtVOS72qS6Lt&myFile=data:image/jpeg;base64,";
 
