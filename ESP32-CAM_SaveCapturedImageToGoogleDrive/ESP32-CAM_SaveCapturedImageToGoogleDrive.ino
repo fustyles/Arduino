@@ -168,13 +168,10 @@ void saveCapturedImage() {
     while (client.available()) {
       client.read();
     }
-    while (client.available()) {
-      client.read();
-    }    
     Serial.println("Finished");
   }
   else {
-    Serial.println("Connection failed. Reset...");
+    Serial.println("Connection failed. Restart...");
     client.stop();
     delay(1000);
     ESP.restart();
