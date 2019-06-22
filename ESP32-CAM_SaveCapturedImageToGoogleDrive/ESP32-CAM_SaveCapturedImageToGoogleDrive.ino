@@ -55,10 +55,10 @@ https://drive.google.com/drive/my-drive
 const char* ssid     = "xxxxx";   //your network SSID
 const char* password = "xxxxx";   //your network password
 
-const char *post_domain = "script.google.com";
-String post_path = "/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec?myFoldername=ESP32-CAM&myFilename=test&myToken=xxxxxxxxxxxxxxxxxxxxxxxxxxxxx&myFile=data:image/jpeg;base64,";
+const char* myDomain = "script.google.com";
+String myPath = "/macros/s/xxxxxxxxxxxxxxxx/exec?myFoldername=ESP32-CAM&myFilename=ESP32-CAM.jpg&myToken=xxxxxxxxxxxxxxx&myFile=data:image/jpeg;base64,";
 /*
-Create your Google Apps Script and replace the "post_path" value.
+Create your Google Apps Script and replace the "myPath" value.
 https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doGet.gs
 */
 
@@ -127,7 +127,7 @@ void setup()
 void loop()
 {
   saveCapturedImage();
-  delay(10000);
+  delay(15000);
 }
 
 void saveCapturedImage() {
@@ -141,15 +141,15 @@ void saveCapturedImage() {
   }
   
   int encodedLen = base64_enc_len(fb->len);
-  char post_file[encodedLen];
-  base64_encode(post_file, (char *)fb->buf, fb->len);
+  char myFile[encodedLen];
+  base64_encode(myFile, (char *)fb->buf, fb->len);
 
   WiFiClientSecure client;
 
-  if (client.connect(post_domain, 443)) {
+  if (client.connect(myDomain, 443)) {
     Serial.println("Save a captured image to Google Drive.");
-    String postDomain = String(post_domain);
-    String postData = post_path+urlencode(String(post_file));
+    String postDomain = String(myDomain);
+    String postData = myPath+urlencode(String(myFile));
     client.println("GET " + postData + " HTTP/1.1");
     client.println("Host: " + postDomain);
     client.println("Connection: close");
@@ -161,8 +161,10 @@ void saveCapturedImage() {
       Serial.print(".");
       delay(100);
       if ((StartTime+10000) < millis()) break;
-    }     
+    }  
+    Serial.println("");   
     while (client.available()) {
+      //Serial.print(char(client.read()));
       client.read();
     }
     Serial.println("Finished");
