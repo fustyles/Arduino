@@ -93,18 +93,6 @@ void setup()
       if ((StartTime+10000) < millis()) break;
   } 
 
-  if (WiFi.status() == WL_CONNECTED)
-  {
-    pinMode(2, OUTPUT);
-    for (int i=0;i<5;i++)
-    {
-      digitalWrite(2,HIGH);
-      delay(100);
-      digitalWrite(2,LOW);
-      delay(100);
-    }
-  }  
-
   Serial.println("");
   Serial.println("STAIP address: ");
   Serial.println(WiFi.localIP());
