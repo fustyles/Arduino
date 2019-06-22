@@ -169,7 +169,6 @@ void saveCapturedImage() {
     return;
   }
   
-  // encoding
   int encodedLen = base64_enc_len(fb->len);
   char post_file[encodedLen];
   base64_encode(post_file, (char *)fb->buf, fb->len);
