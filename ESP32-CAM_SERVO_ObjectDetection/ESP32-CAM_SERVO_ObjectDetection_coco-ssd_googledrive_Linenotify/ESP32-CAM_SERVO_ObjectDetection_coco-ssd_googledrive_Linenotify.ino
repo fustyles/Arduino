@@ -6,7 +6,7 @@ https://www.facebook.com/francefu
 Servo -> VCC, GND, gpio2
 
 Google Script
-https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify.gs
+https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doPost.gs
 You should allow anyone to execute the google script.
 
 https://script.google.com/home
