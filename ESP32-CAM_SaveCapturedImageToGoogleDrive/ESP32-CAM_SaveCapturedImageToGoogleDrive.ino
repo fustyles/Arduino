@@ -59,11 +59,11 @@ const char* apssid = "MyFirmata ESP32";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 const char *post_domain = "script.google.com";
-/*
-https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doGet.gs
-Create your Google Apps Script and replace the "post_path" value.
-*/
 String post_path = "/macros/s/AKfycbxQFDRkhSSsNp-3oL_TjcCStIykkLGb5n_MEPlS9dPw1053vUo123/exec?myFoldername=ESP32-CAM&myFilename=test&myToken=lHaUbj8vv1ZCvoxzwhpoarxNYR4PKYIHtVOS72qS6Lt&myFile=data:image/jpeg;base64,";
+/*
+Create your Google Apps Script and replace the "post_path" value.
+https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doGet.gs
+*/
 
 void setup()
 {
