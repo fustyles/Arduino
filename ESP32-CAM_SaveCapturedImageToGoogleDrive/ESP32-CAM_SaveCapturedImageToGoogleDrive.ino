@@ -185,7 +185,7 @@ void saveCapturedImage() {
     client.println("Host: " + postDomain);
     client.println("Connection: close");
     client.println();
-    Serial.println("Wait for response...");
+    Serial.println("Waiting for response");
     long int StartTime=millis();
     while (!client.available()) 
     {
