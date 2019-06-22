@@ -55,9 +55,6 @@ https://drive.google.com/drive/my-drive
 const char* ssid     = "xxxxx";   //your network SSID
 const char* password = "xxxxx";   //your network password
 
-const char* apssid = "MyFirmata ESP32";
-const char* appassword = "12345678";         //AP password require at least 8 characters.
-
 const char *post_domain = "script.google.com";
 String post_path = "/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec?myFoldername=ESP32-CAM&myFilename=test&myToken=xxxxxxxxxxxxxxxxxxxxxxxxxxxxx&myFile=data:image/jpeg;base64,";
 /*
