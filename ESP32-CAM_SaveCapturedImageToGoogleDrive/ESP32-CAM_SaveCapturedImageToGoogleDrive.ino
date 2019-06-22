@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Save a captured image to Google Drive
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-22 11:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-22 13:30
 https://www.facebook.com/francefu
 
 Google Script
@@ -51,8 +51,6 @@ https://drive.google.com/drive/my-drive
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
-WiFiServer server(80);
-
 // Enter your WiFi ssid and password
 const char* ssid     = "xxxxx";   //your network SSID
 const char* password = "xxxxx";   //your network password
@@ -70,44 +68,30 @@ String post_path = "/macros/s/AKfycbxQFDRkhSSsNp-3oL_TjcCStIykkLGb5n_MEPlS9dPw10
 void setup()
 {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
-
+  
   Serial.begin(115200);
   delay(10);
   
-  WiFi.mode(WIFI_AP_STA);
-
+  WiFi.mode(WIFI_STA);
   //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
 
-  WiFi.begin(ssid, password);
-
-  delay(1000);
   Serial.println("");
   Serial.print("Connecting to ");
   Serial.println(ssid);
+  WiFi.begin(ssid, password);  
   
   long int StartTime=millis();
   while (WiFi.status() != WL_CONNECTED) 
   {
-      delay(500);
-      if ((StartTime+10000) < millis()) break;
+    delay(500);
+    if ((StartTime+10000) < millis()) break;
   } 
 
   Serial.println("");
   Serial.println("STAIP address: ");
   Serial.println(WiFi.localIP());
-
-  if (WiFi.status() == WL_CONNECTED)
-  {
-    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
-  }
-  else
-    WiFi.softAP(apssid, appassword);
     
-  //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
   Serial.println("");
-  Serial.println("APIP address: ");
-  Serial.println(WiFi.softAPIP());    
-  server.begin(); 
 
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
@@ -134,10 +118,11 @@ void setup()
   config.jpeg_quality = 10;
   config.fb_count = 1;
   
-  // Init Camera
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
+    delay(1000);
+    ESP.restart();
     return;
   }
 }
@@ -153,6 +138,8 @@ void saveCapturedImage() {
   fb = esp_camera_fb_get();  
   if(!fb) {
     Serial.println("Camera capture failed");
+    delay(1000);
+    ESP.restart();
     return;
   }
   
@@ -181,10 +168,17 @@ void saveCapturedImage() {
     while (client.available()) {
       client.read();
     }
+    while (client.available()) {
+      client.read();
+    }    
     Serial.println("Finished");
   }
-  else
-    Serial.println("Connection failed.");
+  else {
+    Serial.println("Connection failed. Reset...");
+    client.stop();
+    delay(1000);
+    ESP.restart();
+  }
   client.stop();
 }
 
