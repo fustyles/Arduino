@@ -163,13 +163,12 @@ void loop()
 
 void saveCapturedImage() {
   camera_fb_t * fb = NULL;
-  
-  // Take Picture with Camera
   fb = esp_camera_fb_get();  
   if(!fb) {
     Serial.println("Camera capture failed");
     return;
   }
+  
   // encoding
   int encodedLen = base64_enc_len(fb->len);
   char post_file[encodedLen];
