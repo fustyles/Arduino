@@ -61,7 +61,7 @@ const char* password = "xxxxx";   //your network password
 const char* apssid = "MyFirmata ESP32";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
-const char *post_domain = "script.google.com"; // Location to send POSTed data
+const char *post_domain = "script.google.com";
 String post_path = "/macros/s/AKfycbxQFDRkhSSsNp-3oL_TjcCStIykkLGb5n_MEPlS9dPw1053vUo123/exec" + "?myFoldername=TEST&myFilename=test&myToken=lHaUbj8vv1ZCvoxzwhpoarxNYR4PKYIHtVOS72qS6Lt&myFile=data:image/jpeg;base64,";
 
 void setup()
