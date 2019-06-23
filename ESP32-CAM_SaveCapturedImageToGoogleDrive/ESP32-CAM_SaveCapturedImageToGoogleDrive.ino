@@ -173,10 +173,7 @@ void saveCapturedImage() {
     Serial.println("Finished");
   }
   else {
-    Serial.println("Connection failed. Restart...");
-    client.stop();
-    delay(1000);
-    ESP.restart();
+    Serial.println("Connection failed.");
   }
   client.stop();
 }
