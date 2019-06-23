@@ -74,7 +74,6 @@ void setup()
   delay(10);
   
   WiFi.mode(WIFI_STA);
-  //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
 
   Serial.println("");
   Serial.print("Connecting to ");
