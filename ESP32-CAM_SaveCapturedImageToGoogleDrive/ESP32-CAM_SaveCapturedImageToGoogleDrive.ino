@@ -185,7 +185,7 @@ void saveCapturedImage() {
     Serial.println("Finished");
   }
   else {
-    Serial.println("Connect to " + String(myDomain) + " failed.");
+    Serial.println("Connected to " + String(myDomain) + " failed.");
   }
   client.stop();
 }
