@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Save a captured image to Google Drive
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-23 10:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-23 16:30
 https://www.facebook.com/francefu
 Google Script
 https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doGet.gs
@@ -129,7 +129,6 @@ void setup()
     ESP.restart();
     return;
   }
-  delay(1000);
 }
 
 void loop()
