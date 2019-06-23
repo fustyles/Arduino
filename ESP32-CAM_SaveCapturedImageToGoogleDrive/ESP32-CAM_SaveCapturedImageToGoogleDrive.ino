@@ -57,7 +57,7 @@ const char* password = "xxxxxxxxxx";   //your network password
 
 /*
 Create your Google Apps Script and replace the "myScript" value.
-https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doGet.gs
+https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doPost.gs
 */
 const char* myDomain = "script.google.com";
 String myScript = "/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec";
