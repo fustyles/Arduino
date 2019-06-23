@@ -99,15 +99,16 @@ void setup()
     ESP.restart();
   }  
   else {
-    ledcAttachPin(4, 4);
-    ledcSetup(4, 5000, 8);
+    ledcAttachPin(4, 3);
+    ledcSetup(3, 5000, 8);
     for (int i=0;i<5;i++) {
-      ledcWrite(4,10);
+      ledcWrite(3,10);
       delay(200);
-      ledcWrite(4,0);
+      ledcWrite(3,0);
       delay(200);    
-    }      
-  }  
+    }
+    ledcDetachPin(3);      
+  }
 
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
