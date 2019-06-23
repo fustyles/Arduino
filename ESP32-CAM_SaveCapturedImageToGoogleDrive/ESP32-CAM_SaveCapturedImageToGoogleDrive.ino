@@ -2,11 +2,9 @@
 ESP32-CAM Save a captured image to Google Drive
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-23 10:30
 https://www.facebook.com/francefu
-
 Google Script
 https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doGet.gs
 You should allow anyone to execute the google script.
-
 https://script.google.com/home
 https://script.google.com/home/executions
 https://drive.google.com/drive/my-drive
@@ -52,16 +50,16 @@ https://drive.google.com/drive/my-drive
 #define PCLK_GPIO_NUM     22
 
 // Enter your WiFi ssid and password
-const char* ssid     = "xxxxx";   //your network SSID
-const char* password = "xxxxx";   //your network password
+const char* ssid     = "xxxxxxxxxx";   //your network SSID
+const char* password = "xxxxxxxxxx";   //your network password
 
 /*
 Create your Google Apps Script and replace the "myScript" value.
 https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doGet.gs
 */
 const char* myDomain = "script.google.com";
-String myScript = "/macros/s/xxxxxxxxxxxxxxxxxxxxxxxx/exec";
-String myLineNotifyToken = "&myToken=xxxxxxxxxxxxxxxxxxxxxxxxx";
+String myScript = "/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec";
+String myLineNotifyToken = "myToken=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 String myFoldername = "&myFoldername=ESP32-CAM";
 String myFilename = "&myFilename=ESP32-CAM.jpg";
 String myImage = "&myFile=data:image/jpeg;base64,";
@@ -93,6 +91,12 @@ void setup()
     
   Serial.println("");
 
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("Reset");
+    delay(1000);
+    ESP.restart();
+  }   
+
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
@@ -114,8 +118,8 @@ void setup()
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  config.frame_size = FRAMESIZE_QQVGA;
-  config.jpeg_quality = 10;
+  config.frame_size = FRAMESIZE_HQVGA; //FRAMESIZE_HQVGA or FRAMESIZE_QQVGA
+  config.jpeg_quality = 10;  //10~63
   config.fb_count = 1;
   
   esp_err_t err = esp_camera_init(&config);
@@ -125,6 +129,7 @@ void setup()
     ESP.restart();
     return;
   }
+  delay(1000);
 }
 
 void loop()
@@ -152,11 +157,16 @@ void saveCapturedImage() {
   if (client.connect(myDomain, 443)) {
     Serial.println("Save a captured image to Google Drive.");
     
-    String Data = myScript+"?"+myLineNotifyToken+myFoldername+myFilename+(myImage+urlencode(String(imageFile)));
-    client.println("GET " + Data + " HTTP/1.1");
+    String Data = myLineNotifyToken+myFoldername+myFilename+(myImage+urlencode(imageFile));
+
+    client.println("POST " + myScript + " HTTP/1.1");
     client.println("Host: " + String(myDomain));
-    client.println("Connection: close");
+    client.println("Content-Length: " + String(Data.length()));
+    client.println("Content-Type: application/x-www-form-urlencoded; charset=utf-8");
     client.println();
+    client.print(Data);
+    client.println();
+    
     Serial.println("Waiting for response");
     long int StartTime=millis();
     while (!client.available()) 
@@ -167,13 +177,14 @@ void saveCapturedImage() {
     }  
     Serial.println("");   
     while (client.available()) {
-      //Serial.print(char(client.read()));
-      client.read();
+      Serial.print(char(client.read()));
+      //client.read();
     }
+    Serial.println();
     Serial.println("Finished");
   }
   else {
-    Serial.println("Connection failed.");
+    Serial.println("Connect to " + String(myDomain) + " failed.");
   }
   client.stop();
 }
