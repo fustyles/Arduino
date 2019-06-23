@@ -55,12 +55,16 @@ https://drive.google.com/drive/my-drive
 const char* ssid     = "xxxxx";   //your network SSID
 const char* password = "xxxxx";   //your network password
 
-const char* myDomain = "script.google.com";
-String myPath = "/macros/s/xxxxxxxxxxxxxxxx/exec?myFoldername=ESP32-CAM&myFilename=ESP32-CAM.jpg&myToken=xxxxxxxxxxxxxxx&myFile=data:image/jpeg;base64,";
 /*
-Create your Google Apps Script and replace the "myPath" value.
+Create your Google Apps Script and replace the "myScript" value.
 https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doGet.gs
 */
+const char* myDomain = "script.google.com";
+String myScript = "/macros/s/xxxxxxxxxxxxxxxxxxxxxxxx/exec";
+String myLineNotifyToken = "&myToken=xxxxxxxxxxxxxxxxxxxxxxxxx";
+String myFoldername = "&myFoldername=ESP32-CAM";
+String myFilename = "&myFilename=ESP32-CAM.jpg";
+String myImage = "&myFile=data:image/jpeg;base64,";
 
 void setup()
 {
@@ -141,17 +145,17 @@ void saveCapturedImage() {
   }
   
   int encodedLen = base64_enc_len(fb->len);
-  char myFile[encodedLen];
-  base64_encode(myFile, (char *)fb->buf, fb->len);
+  char imageFile[encodedLen];
+  base64_encode(imageFile, (char *)fb->buf, fb->len);
 
   WiFiClientSecure client;
 
   if (client.connect(myDomain, 443)) {
     Serial.println("Save a captured image to Google Drive.");
-    String postDomain = String(myDomain);
-    String postData = myPath+urlencode(String(myFile));
-    client.println("GET " + postData + " HTTP/1.1");
-    client.println("Host: " + postDomain);
+    
+    String Data = myScript+"?"+myLineNotifyToken+myFoldername+myFilename+(myImage+urlencode(String(imageFile)));
+    client.println("GET " + Data + " HTTP/1.1");
+    client.println("Host: " + String(myDomain));
     client.println("Connection: close");
     client.println();
     Serial.println("Waiting for response");
