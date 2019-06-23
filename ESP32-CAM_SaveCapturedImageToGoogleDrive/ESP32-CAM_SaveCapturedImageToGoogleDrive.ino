@@ -3,7 +3,7 @@ ESP32-CAM Save a captured image to Google Drive
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-23 16:30
 https://www.facebook.com/francefu
 Google Script
-https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doGet.gs
+https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doPost.gs
 You should allow anyone to execute the google script.
 https://script.google.com/home
 https://script.google.com/home/executions
