@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Save a captured image to Google Drive
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-22 13:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-23 10:30
 https://www.facebook.com/francefu
 
 Google Script
