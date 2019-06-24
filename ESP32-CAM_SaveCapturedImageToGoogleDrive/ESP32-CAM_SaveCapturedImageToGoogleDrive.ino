@@ -202,7 +202,6 @@ void saveCapturedImage() {
     client.println("Connection: close");
     client.println();
     client.println(Data);
-    client.println();
     
     Serial.println("Waiting for response");
     long int StartTime=millis();
