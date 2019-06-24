@@ -160,7 +160,7 @@ void loop()
 
 void saveCapturedImage() {
   
-  Serial.println("Connected to " + String(myDomain));
+  Serial.println("Connect to " + String(myDomain));
   
   WiFiClientSecure client;
   if (client.connect(myDomain, 443)) {
