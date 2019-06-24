@@ -199,7 +199,7 @@ void saveCapturedImage() {
     client.println("Host: " + String(myDomain));
     client.println("Content-Length: " + String(Data.length()));
     client.println("Content-Type: application/x-www-form-urlencoded; charset=utf-8");
-    client.println("Connection: keep-alive");
+    client.println("Connection: close");
     client.println();
     client.println(Data);
     client.println();
