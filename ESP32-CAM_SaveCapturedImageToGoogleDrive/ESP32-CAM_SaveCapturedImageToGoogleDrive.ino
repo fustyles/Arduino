@@ -140,7 +140,7 @@ void setup()
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  config.frame_size = FRAMESIZE_QVGA;  // QVGA, HQVGA, QQVGA
+  config.frame_size = FRAMESIZE_QVGA;  // CIF, QVGA, HQVGA, QQVGA
   config.jpeg_quality = 10;  //10 ~ 63
   config.fb_count = 1;
   
