@@ -56,7 +56,7 @@ const char* ssid     = "xxxxxxxxxx";   //your network SSID
 const char* password = "xxxxxxxxxx";   //your network password
 
 /*
-Create your Google Apps Script and replace the "myScript" value.
+Create your Google Apps Script and replace the "myScript" link.
 https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doPost.gs
 */
 const char* myDomain = "script.google.com";
