@@ -140,8 +140,8 @@ void setup()
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  config.frame_size = FRAMESIZE_QVGA;  // CIF, QVGA, HQVGA, QQVGA
-  config.jpeg_quality = 10;  //10 ~ 63
+  config.frame_size = FRAMESIZE_CIF;  // VGA, CIF, QVGA, HQVGA, QQVGA
+  config.jpeg_quality = 10;
   config.fb_count = 1;
   
   esp_err_t err = esp_camera_init(&config);
@@ -160,8 +160,9 @@ void loop()
 
 void saveCapturedImage() {
   
+  Serial.println("Connected to " + String(myDomain));
+  
   WiFiClientSecure client;
-
   if (client.connect(myDomain, 443)) {
     
     camera_fb_t * fb = NULL;
