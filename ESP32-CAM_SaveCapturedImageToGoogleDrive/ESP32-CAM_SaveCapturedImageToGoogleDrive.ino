@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Save a captured image to Google Drive
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-23 16:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-24 21:30
 https://www.facebook.com/francefu
 
 Google Script
@@ -60,8 +60,8 @@ Create your Google Apps Script and replace the "myScript" path.
 https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doPost.gs
 */
 const char* myDomain = "script.google.com";
-String myScript = "/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec";
-String myLineNotifyToken = "myToken=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+String myScript = "/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec";
+String myLineNotifyToken = "myToken=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 String myFoldername = "&myFoldername=ESP32-CAM";
 String myFilename = "&myFilename=ESP32-CAM.jpg";
 String myImage = "&myFile=data:image/jpeg;base64,";
@@ -95,9 +95,18 @@ void setup()
 
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("Reset");
+    
+    ledcAttachPin(4, 3);
+    ledcSetup(3, 5000, 8);
+    ledcWrite(3,10);
+    delay(200);
+    ledcWrite(3,0);
+    delay(200);    
+    ledcDetachPin(3);
+        
     delay(1000);
     ESP.restart();
-  }  
+  }
   else {
     ledcAttachPin(4, 3);
     ledcSetup(3, 5000, 8);
@@ -131,8 +140,8 @@ void setup()
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  config.frame_size = FRAMESIZE_HQVGA; //FRAMESIZE_HQVGA or FRAMESIZE_QQVGA
-  config.jpeg_quality = 10;  //10~63
+  config.frame_size = FRAMESIZE_QVGA;  // QVGA, HQVGA, QQVGA
+  config.jpeg_quality = 10;  //10 ~ 63
   config.fb_count = 1;
   
   esp_err_t err = esp_camera_init(&config);
@@ -140,43 +149,56 @@ void setup()
     Serial.printf("Camera init failed with error 0x%x", err);
     delay(1000);
     ESP.restart();
-    return;
   }
 }
 
 void loop()
 {
   saveCapturedImage();
-  delay(15000);
+  delay(20000);
 }
 
 void saveCapturedImage() {
-  camera_fb_t * fb = NULL;
-  fb = esp_camera_fb_get();  
-  if(!fb) {
-    Serial.println("Camera capture failed");
-    delay(1000);
-    ESP.restart();
-    return;
-  }
   
-  int encodedLen = base64_enc_len(fb->len);
-  char imageFile[encodedLen];
-  base64_encode(imageFile, (char *)fb->buf, fb->len);
-
   WiFiClientSecure client;
 
   if (client.connect(myDomain, 443)) {
-    Serial.println("Save a captured image to Google Drive.");
     
-    String Data = myLineNotifyToken+myFoldername+myFilename+(myImage+urlencode(imageFile));
+    camera_fb_t * fb = NULL;
+    fb = esp_camera_fb_get();  
+    if(!fb) {
+      Serial.println("Camera capture failed");
+      delay(1000);
+      ESP.restart();
+      return;
+    }
 
+    char *input = (char *)fb->buf;
+    char aaa[base64_enc_len(3)];
+    String output = "";
+    for (int i=0;i<fb->len;i++) {
+      base64_encode(aaa, (input++), 3);
+      if (i%3==0) output += String(aaa);
+    }
+    String Data = myLineNotifyToken+myFoldername+myFilename+(myImage+urlencode(output));
+    
+    /*
+      // HQVGA, QQVGA
+      int encodedLen = base64_enc_len(fb->len);
+      char imageFile[encodedLen];    
+      base64_encode(imageFile, (char *)fb->buf, fb->len);
+      Serial.println(imageFile);
+      String Data = myLineNotifyToken+myFoldername+myFilename+(myImage+urlencode(imageFile));
+    */
+    
+    Serial.println("Upload a captured image to Google Drive.");
+    
     client.println("POST " + myScript + " HTTP/1.1");
     client.println("Host: " + String(myDomain));
     client.println("Content-Length: " + String(Data.length()));
     client.println("Content-Type: application/x-www-form-urlencoded; charset=utf-8");
     client.println();
-    client.print(Data);
+    client.println(Data);
     client.println();
     
     Serial.println("Waiting for response");
@@ -196,12 +218,20 @@ void saveCapturedImage() {
     Serial.println("Finished");
   }
   else {
+    ledcAttachPin(4, 3);
+    ledcSetup(3, 5000, 8);
+    ledcWrite(3,10);
+    delay(200);
+    ledcWrite(3,0);
+    delay(200);    
+    ledcDetachPin(3);
+          
     Serial.println("Connected to " + String(myDomain) + " failed.");
   }
   client.stop();
 }
 
-//From: https://github.com/zenmanenergy/ESP8266-Arduino-Examples
+//From: https://github.com/zenmanenergy/ESP8266-Arduino-Examples/
 String urlencode(String str)
 {
     String encodedString="";
