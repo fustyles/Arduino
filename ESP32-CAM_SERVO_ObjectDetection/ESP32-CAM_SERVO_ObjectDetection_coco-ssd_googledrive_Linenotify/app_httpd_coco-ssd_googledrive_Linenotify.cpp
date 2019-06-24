@@ -935,7 +935,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       window.onload = function () { ObjectDetect(); }
 
       function SendCapturedImage() {
-        // Upload captured image and send a message to LineNotify.
+        // Upload captured image to Google Drive and send a link message to LineNotify.
         myForm.action = myGoogleScript.value;
         var date = new Date();
         myFilename.value = date.getFullYear()+"_"+(date.getMonth()+1)+"_"+date.getDate()+"_"+date.getHours()+"_"+date.getMinutes()+"_"+date.getSeconds()+".png";
