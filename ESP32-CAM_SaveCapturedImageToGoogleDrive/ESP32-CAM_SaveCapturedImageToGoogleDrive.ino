@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Save a captured image to Google Drive
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-24 21:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-25 19:00
 https://www.facebook.com/francefu
 
 Google Script
@@ -140,7 +140,7 @@ void setup()
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  config.frame_size = FRAMESIZE_CIF;  // VGA|CIF|QVGA|HQVGA|QQVGA
+  config.frame_size = FRAMESIZE_CIF;  // CIF|QVGA|HQVGA|QQVGA
   config.jpeg_quality = 10;
   config.fb_count = 1;
   
