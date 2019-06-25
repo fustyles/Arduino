@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Save a captured image to Google Drive
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-25 19:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-25 20:00
 https://www.facebook.com/francefu
 
 Google Script
@@ -66,6 +66,8 @@ String myImage = "&myFile=data:image/jpeg;base64,";
 
 void setup()
 {
+  //WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+  
   Serial.begin(115200);
   delay(10);
   
@@ -151,7 +153,7 @@ void setup()
 void loop()
 {
   saveCapturedImage();
-  delay(20000);
+  delay(15000);
 }
 
 void saveCapturedImage() {
@@ -161,8 +163,6 @@ void saveCapturedImage() {
   if (client.connect(myDomain, 443)) {
     Serial.println("Connection successful");
     
-    Serial.println("Upload a captured image to Google Drive.");
-
     camera_fb_t * fb = NULL;
     fb = esp_camera_fb_get();  
     if(!fb) {
@@ -189,31 +189,34 @@ void saveCapturedImage() {
     base64_encode(imageFile, (char *)fb->buf, fb->len);
     //Serial.println(imageFile);
     String Data = myLineNotifyToken+myFoldername+myFilename+(myImage+urlencode(String(imageFile)));
-    */  
-
+    */ 
+    
+    Serial.println("Upload a captured image to Google Drive.");
+    
     client.println("POST " + myScript + " HTTP/1.1");
     client.println("Host: " + String(myDomain));
     client.println("Content-Length: " + String(Data.length()));
     client.println("Content-Type: application/x-www-form-urlencoded; charset=utf-8");
-    client.println("Connection: keep-alive");
     client.println();
     client.println(Data);
     
-    Serial.println("Waiting for response");
+    Serial.println("Waiting for response.");
     long int StartTime=millis();
     while (!client.available()) 
     {
       Serial.print(".");
       delay(100);
-      if ((StartTime+10000) < millis()) break;
+      if ((StartTime+20000) < millis()) {
+        Serial.println();
+        Serial.println("No response.");
+        break;
+      }
     }  
-    Serial.println("");   
+    Serial.println();   
     while (client.available()) {
       //Serial.print(char(client.read()));
       client.read();
     }
-    Serial.println();
-    Serial.println("Finished");
   }
   else {
     ledcAttachPin(4, 3);
