@@ -68,7 +68,7 @@ String myImage = "&myFile=data:image/jpeg;base64,";
 
 void setup()
 {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+  //WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
   
   Serial.begin(115200);
   delay(10);
@@ -140,7 +140,7 @@ void setup()
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  config.frame_size = FRAMESIZE_QVGA;  // CIF|QVGA|HQVGA|QQVGA
+  config.frame_size = FRAMESIZE_CIF;  // VGA|CIF|QVGA|HQVGA|QQVGA
   config.jpeg_quality = 10;
   config.fb_count = 1;
   
@@ -159,13 +159,14 @@ void loop()
 }
 
 void saveCapturedImage() {
-  
   Serial.println("Connect to " + String(myDomain));
-  
   WiFiClientSecure client;
+  
   if (client.connect(myDomain, 443)) {
     Serial.println("Connection successful");
     
+    Serial.println("Upload a captured image to Google Drive.");
+
     camera_fb_t * fb = NULL;
     fb = esp_camera_fb_get();  
     if(!fb) {
@@ -174,32 +175,31 @@ void saveCapturedImage() {
       ESP.restart();
       return;
     }
-
+  
+    // CIF|QVGA|HQVGA|QQVGA
     char *input = (char *)fb->buf;
-    char aaa[base64_enc_len(3)];
-    String output = "";
+    char output[base64_enc_len(3)];
+    String imageFile = "";
     for (int i=0;i<fb->len;i++) {
-      base64_encode(aaa, (input++), 3);
-      if (i%3==0) output += String(aaa);
+      base64_encode(output, (input++), 3);
+      if (i%3==0) imageFile += String(output);
     }
-    String Data = myLineNotifyToken+myFoldername+myFilename+(myImage+urlencode(output));
+    String Data = myLineNotifyToken+myFoldername+myFilename+(myImage+urlencode(imageFile));
     
     /*
-      // HQVGA, QQVGA
-      int encodedLen = base64_enc_len(fb->len);
-      char imageFile[encodedLen];    
-      base64_encode(imageFile, (char *)fb->buf, fb->len);
-      Serial.println(imageFile);
-      String Data = myLineNotifyToken+myFoldername+myFilename+(myImage+urlencode(imageFile));
-    */
-    
-    Serial.println("Upload a captured image to Google Drive.");
-    
+    // HQVGA|QQVGA
+    int encodedLen = base64_enc_len(fb->len);
+    char imageFile[encodedLen];    
+    base64_encode(imageFile, (char *)fb->buf, fb->len);
+    //Serial.println(imageFile);
+    String Data = myLineNotifyToken+myFoldername+myFilename+(myImage+urlencode(String(imageFile)));
+    */  
+
     client.println("POST " + myScript + " HTTP/1.1");
     client.println("Host: " + String(myDomain));
     client.println("Content-Length: " + String(Data.length()));
     client.println("Content-Type: application/x-www-form-urlencoded; charset=utf-8");
-    client.println("Connection: close");
+    client.println("Connection: keep-alive");
     client.println();
     client.println(Data);
     
