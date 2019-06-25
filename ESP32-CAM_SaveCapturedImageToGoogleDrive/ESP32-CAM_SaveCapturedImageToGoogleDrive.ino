@@ -14,8 +14,6 @@ https://drive.google.com/drive/my-drive
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
-#include "soc/soc.h"
-#include "soc/rtc_cntl_reg.h"
 #include "Base64.h"
 
 #include "esp_http_server.h"
@@ -68,8 +66,6 @@ String myImage = "&myFile=data:image/jpeg;base64,";
 
 void setup()
 {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
-  
   Serial.begin(115200);
   delay(10);
   
