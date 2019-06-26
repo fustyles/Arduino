@@ -191,12 +191,14 @@ void saveCapturedImage() {
     String Data = myLineNotifyToken+myFoldername+myFilename+(myImage+urlencode(String(imageFile)));
     */ 
     
-    Serial.println("Upload a captured image to Google Drive.");
+    Serial.println("Send a captured image to Google Drive.");
     
     client.println("POST " + myScript + " HTTP/1.1");
     client.println("Host: " + String(myDomain));
+    client.println("Cache-Control: no-cache");
     client.println("Content-Length: " + String(Data.length()));
     client.println("Content-Type: application/x-www-form-urlencoded; charset=utf-8");
+    client.println("Connection: keep-alive");
     client.println();
     client.println(Data);
     
