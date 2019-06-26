@@ -208,7 +208,7 @@ void saveCapturedImage() {
     {
       Serial.print(".");
       delay(100);
-      if ((StartTime+20000) < millis()) {
+      if ((StartTime+10000) < millis()) {
         Serial.println();
         Serial.println("No response.");
         break;
@@ -216,8 +216,8 @@ void saveCapturedImage() {
     }  
     Serial.println();   
     while (client.available()) {
-      //Serial.print(char(client.read()));
-      client.read();
+      Serial.print(char(client.read()));
+      //client.read();
     }
   }
   else {
