@@ -141,19 +141,22 @@ void setup() {
   sensor_t * s = esp_camera_sensor_get();
   s->set_framesize(s, FRAMESIZE_QVGA);
 
-  // Remote Control Car
-  ledcAttachPin(2, 3);
+  //ESP32-CAM Remote Control Car
+  //Don't use channel 1, 2
+  ledcAttachPin(2, 3);  //Servo
   ledcSetup(3, 50, 16);
   ledcWrite(3, 4850);
-  ledcAttachPin(4, 4);
+  
+  ledcAttachPin(4, 4);  //Flash
   ledcSetup(4, 5000, 8);
-  ledcAttachPin(12, 5);
+  
+  ledcAttachPin(12, 5);  //You can adjust the speed of the wheel. (gpio12, gpio13)
   ledcSetup(5, 5000, 8);      
   ledcAttachPin(13, 6);
   ledcSetup(6, 5000, 8); 
   ledcWrite(6,0);   
-  //If you output PWM to GPIO 15 using ledcWrite, it will lose control.
-  pinMode(15, OUTPUT); 
+  
+  pinMode(15, OUTPUT);  //If you output PWM to GPIO 15 using ledcWrite, it will lose control.
   pinMode(14, OUTPUT);  
 
   Serial.println("ssid: " + (String)ssid);
@@ -168,24 +171,19 @@ void setup() {
   } 
 
   startCameraServer();
-
+  
+  Serial.println("");
+  Serial.println("WiFi connected");    
+  Serial.print("Camera Ready! Use 'http://");
+  char* apssid = "ESP32-CAM";
+  char* appassword = "12345678";         //AP password require at least 8 characters.
   if (WiFi.status() == WL_CONNECTED) {
-    Serial.println("");
-    Serial.println("WiFi connected");    
-    Serial.print("Camera Ready! Use 'http://");
     Serial.print(WiFi.localIP());
     Serial.println("' to connect");
-    char* apssid = "ESP32-CAM";
-    char* appassword = "12345678";         //AP password require at least 8 characters.
     WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);    
   } else {
-    Serial.println("");
-    Serial.println("WiFi disconnected");      
-    Serial.print("Camera Ready! Use 'http://");
     Serial.print(WiFi.softAPIP());
     Serial.println("' to connect");
-    char* apssid = "ESP32-CAM";
-    char* appassword = "12345678";         //AP password require at least 8 characters.
     WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);    
   }
 
