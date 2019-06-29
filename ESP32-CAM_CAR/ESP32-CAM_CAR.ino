@@ -138,7 +138,8 @@ void setup() {
   sensor_t * s = esp_camera_sensor_get();
   s->set_framesize(s, FRAMESIZE_QVGA);
 
-  // Remote Control Car
+  //ESP32-CAM Remote Control Car
+  //Don't use channel 1, 2, 3
   ledcAttachPin(4, 4);  //Flash
   ledcSetup(4, 5000, 8);
   
