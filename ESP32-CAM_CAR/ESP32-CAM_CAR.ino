@@ -139,7 +139,7 @@ void setup() {
   s->set_framesize(s, FRAMESIZE_QVGA);
 
   //ESP32-CAM Remote Control Car
-  //Don't use channel 1, 2, 3
+  //Don't use channel 1, 2
   ledcAttachPin(4, 4);  //Flash
   ledcSetup(4, 5000, 8);
   
