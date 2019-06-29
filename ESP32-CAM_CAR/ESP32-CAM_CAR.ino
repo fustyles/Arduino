@@ -139,7 +139,7 @@ void setup() {
   s->set_framesize(s, FRAMESIZE_QVGA);
 
   //ESP32-CAM Remote Control Car
-  //Don't use channel 1, 2
+  //Don't use channel 1 and channel 2
   ledcAttachPin(4, 4);  //Flash
   ledcSetup(4, 5000, 8);
   
@@ -171,8 +171,7 @@ void setup() {
   Serial.println("");
   Serial.println("WiFi connected");    
   Serial.print("Camera Ready! Use 'http://");
-  
-  if (WiFi.status() == WL_CONNECTED){
+  if (WiFi.status() == WL_CONNECTED) {
     Serial.print(WiFi.localIP());
     Serial.println("' to connect");
     WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);    
