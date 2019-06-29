@@ -142,7 +142,7 @@ void setup() {
   s->set_framesize(s, FRAMESIZE_QVGA);
 
   //ESP32-CAM Remote Control Car
-  //Don't use channel 1, 2
+  //Don't use channel 1 and channel 2
   ledcAttachPin(2, 3);  //Servo
   ledcSetup(3, 50, 16);
   ledcWrite(3, 4850);
@@ -172,11 +172,11 @@ void setup() {
 
   startCameraServer();
   
+  char* apssid = "ESP32-CAM";
+  char* appassword = "12345678";         //AP password require at least 8 characters.
   Serial.println("");
   Serial.println("WiFi connected");    
   Serial.print("Camera Ready! Use 'http://");
-  char* apssid = "ESP32-CAM";
-  char* appassword = "12345678";         //AP password require at least 8 characters.
   if (WiFi.status() == WL_CONNECTED) {
     Serial.print(WiFi.localIP());
     Serial.println("' to connect");
