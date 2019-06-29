@@ -533,7 +533,6 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         }
     }
     //Remote Control Car 
-    //Don't use channel 1 and channel 2
     else if(!strcmp(variable, "flash")) {
       ledcWrite(4,val);
     }  
