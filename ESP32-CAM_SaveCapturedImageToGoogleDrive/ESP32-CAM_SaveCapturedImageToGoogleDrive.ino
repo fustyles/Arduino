@@ -216,8 +216,8 @@ void saveCapturedImage() {
     }  
     Serial.println();   
     while (client.available()) {
-      Serial.print(char(client.read()));
-      //client.read();
+      //Serial.print(char(client.read()));
+      client.read();
     }
   }
   else {
