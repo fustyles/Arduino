@@ -234,7 +234,7 @@ void saveCapturedImage() {
   client.stop();
 }
 
-//From: https://github.com/zenmanenergy/ESP8266-Arduino-Examples/
+//https://github.com/zenmanenergy/ESP8266-Arduino-Examples/
 String urlencode(String str)
 {
     String encodedString="";
