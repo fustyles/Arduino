@@ -175,19 +175,26 @@ void setup() {
     Serial.print(WiFi.localIP());
     Serial.println("' to connect");
     WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);    
+    
+    for (int i=0;i<5;i++) {
+      ledcWrite(4,10);
+      delay(200);
+      ledcWrite(4,0);
+      delay(200);    
+    }        
   }
   else {
     Serial.print(WiFi.softAPIP());
     Serial.println("' to connect");
     WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);    
-  }
-
-  for (int i=0;i<5;i++) {
-    ledcWrite(4,10);
-    delay(200);
-    ledcWrite(4,0);
-    delay(200);    
-  }       
+    
+    for (int i=0;i<2;i++) {
+      ledcWrite(4,10);
+      delay(1000);
+      ledcWrite(4,0);
+      delay(1000);    
+    }  
+  }     
 }
 
 void loop() {
