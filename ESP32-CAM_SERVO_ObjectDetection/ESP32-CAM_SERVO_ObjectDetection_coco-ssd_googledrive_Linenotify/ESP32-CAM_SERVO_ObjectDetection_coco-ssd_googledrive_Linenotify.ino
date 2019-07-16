@@ -169,33 +169,35 @@ void setup() {
 
   startCameraServer();
 
-  if (WiFi.status() == WL_CONNECTED){
-    Serial.println("");
-    Serial.println("WiFi connected");    
-    Serial.print("Camera Ready! Use 'http://");
+  char* apssid = "ESP32-CAM";
+  char* appassword = "12345678";         //AP password require at least 8 characters.
+  Serial.println("");
+  Serial.println("WiFi connected");    
+  Serial.print("Camera Ready! Use 'http://");
+  if (WiFi.status() == WL_CONNECTED) {
     Serial.print(WiFi.localIP());
     Serial.println("' to connect");
-    char* apssid = "ESP32-CAM";
-    char* appassword = "12345678";         //AP password require at least 8 characters.
     WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);    
+    
+    for (int i=0;i<5;i++) {
+      ledcWrite(4,10);
+      delay(200);
+      ledcWrite(4,0);
+      delay(200);    
+    }        
   }
   else {
-    Serial.println("");
-    Serial.println("WiFi disconnected");      
-    Serial.print("Camera Ready! Use 'http://");
     Serial.print(WiFi.softAPIP());
     Serial.println("' to connect");
-    char* apssid = "ESP32-CAM";
-    char* appassword = "12345678";         //AP password require at least 8 characters.
     WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);    
-  }
-
-  for (int i=0;i<5;i++) {
-    ledcWrite(4,10);
-    delay(200);
-    ledcWrite(4,0);
-    delay(200);    
-  }       
+    
+    for (int i=0;i<2;i++) {
+      ledcWrite(4,10);
+      delay(1000);
+      ledcWrite(4,0);
+      delay(1000);    
+    }  
+  }     
 }
 
 void loop() {
