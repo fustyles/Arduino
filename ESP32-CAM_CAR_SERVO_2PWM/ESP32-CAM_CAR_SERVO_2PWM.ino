@@ -103,11 +103,11 @@ void setup() {
   ledcAttachPin(4, 4);  //Flash
   ledcSetup(4, 5000, 8);
   
-  ledcAttachPin(12, 5);   //You can adjust the speed of the wheel. (gpio12, gpio13)
+  ledcAttachPin(12, 5);
   ledcSetup(5, 2000, 8);      
   ledcAttachPin(13, 6);
   ledcSetup(6, 2000, 8); 
-  ledcAttachPin(15, 7);   //You can adjust the speed of the wheel. (gpio14, gpio15)
+  ledcAttachPin(15, 7);  //If I output PWM to GPIO 15 using ledcWrite, it will lose control. Why?
   ledcSetup(7, 2000, 8);      
   ledcAttachPin(14, 8);
   ledcSetup(8, 2000, 8);  
