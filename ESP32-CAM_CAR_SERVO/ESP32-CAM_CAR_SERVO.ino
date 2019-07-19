@@ -94,20 +94,22 @@ void setup() {
   s->set_framesize(s, FRAMESIZE_QVGA);
 
   //ESP32-CAM Remote Control Car
-  //Don't use channel 1 and channel 2
-  ledcAttachPin(2, 3);  //Servo
+  
+  //Servo
+  ledcAttachPin(2, 3);  
   ledcSetup(3, 50, 16);
   ledcWrite(3, 4850);
   
-  ledcAttachPin(4, 4);  //Flash
+  //Flash
+  ledcAttachPin(4, 4);  
   ledcSetup(4, 5000, 8);
   
+  //Wheel
   ledcAttachPin(12, 5);  //You can adjust the speed of the wheel. (gpio12, gpio13)
   ledcSetup(5, 5000, 8);      
   ledcAttachPin(13, 6);
   ledcSetup(6, 5000, 8); 
   ledcWrite(6,0);   
-  
   pinMode(15, OUTPUT);  //If I output PWM to GPIO 15 using ledcWrite, it will lose control. Why?
   pinMode(14, OUTPUT);  
 
