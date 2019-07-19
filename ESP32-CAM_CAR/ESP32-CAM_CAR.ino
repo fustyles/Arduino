@@ -149,7 +149,7 @@ void setup() {
   ledcSetup(6, 5000, 8); 
   ledcWrite(6,0);   
   
-  pinMode(15, OUTPUT);  //If you output PWM to GPIO 15 using ledcWrite, it will lose control.
+  pinMode(15, OUTPUT);  //If I output PWM to GPIO 15 using ledcWrite, it will lose control. Why?
   pinMode(14, OUTPUT);  
 
   Serial.println("ssid: " + (String)ssid);
