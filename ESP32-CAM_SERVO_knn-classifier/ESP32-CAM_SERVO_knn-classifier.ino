@@ -7,6 +7,9 @@ Servo -> VCC, GND, gpio2
 
 How to enable WebGL in Chrome.
 https://superuser.com/questions/836832/how-can-i-enable-webgl-in-my-browser
+
+If the page can't load model due to the CORS policy, Use the Chrome extension Allow-Control-Allow-Origin: *
+https://chrome.google.com/webstore/detail/allow-control-allow-origi/nlfbmbojpeacfghkpbjhddihlkkiljbi
 */
 
 const char* ssid = "xxxxx";
