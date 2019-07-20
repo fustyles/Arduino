@@ -92,10 +92,12 @@ void setup() {
   sensor_t * s = esp_camera_sensor_get();
   s->set_framesize(s, FRAMESIZE_QVGA);
 
-  // Servo
+  //Servo
   ledcAttachPin(2, 3);
   ledcSetup(3, 50, 16);
   ledcWrite(3, 4850);
+  
+  //Falsh
   ledcAttachPin(4, 4);
   ledcSetup(4, 5000, 8);  
 
