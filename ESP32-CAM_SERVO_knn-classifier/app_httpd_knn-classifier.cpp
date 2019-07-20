@@ -4,6 +4,9 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-10 21:00
 https://www.facebook.com/francefu
 
 Servo -> VCC, GND, gpio2
+
+If the page can't load model due to the CORS policy, Use the Chrome extension Allow-Control-Allow-Origin: *
+https://chrome.google.com/webstore/detail/allow-control-allow-origi/nlfbmbojpeacfghkpbjhddihlkkiljbi
 */
 
 #include <esp32-hal-ledc.h>
