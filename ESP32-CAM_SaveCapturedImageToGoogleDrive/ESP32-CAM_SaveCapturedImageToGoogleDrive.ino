@@ -32,6 +32,10 @@ https://drive.google.com/drive/my-drive
 #include <string.h>
 #include <unistd.h>
 
+// WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
+//            or another board which has PSRAM enabled
+
+//CAMERA_MODEL_AI_THINKER
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
