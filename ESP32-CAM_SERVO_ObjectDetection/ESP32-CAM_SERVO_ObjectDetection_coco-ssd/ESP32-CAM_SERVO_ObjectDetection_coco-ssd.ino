@@ -5,6 +5,9 @@ https://www.facebook.com/francefu
 
 Servo -> VCC, GND, gpio2
 
+Class
+https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
+
 How to enable WebGL in Chrome.
 https://superuser.com/questions/836832/how-can-i-enable-webgl-in-my-browser
 */
