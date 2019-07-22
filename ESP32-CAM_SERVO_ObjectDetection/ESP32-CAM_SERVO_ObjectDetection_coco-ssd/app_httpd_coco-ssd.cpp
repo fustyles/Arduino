@@ -3,6 +3,8 @@ ESP32-CAM OBJECT DETECTION
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-17 00:00
 https://www.facebook.com/francefu
 Servo -> VCC, GND, gpio2
+
+https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
 */
 
 #include <esp32-hal-ledc.h>
@@ -876,7 +878,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             result.innerHTML+= "[ "+i+" ] "+Predictions[i].class+", "+Math.round(Predictions[i].score*100)+"%, "+Math.round(x)+", "+Math.round(y)+", "+Math.round(width)+", "+Math.round(height)+"<br>";
             
             /*
-              if (Predictions[i].class=="person") {   //
+              //https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
+              if (Predictions[i].class=="person") {   
                 try{
                   fetch(document.location.origin+'/control?var=flash&val=10');
                 }
