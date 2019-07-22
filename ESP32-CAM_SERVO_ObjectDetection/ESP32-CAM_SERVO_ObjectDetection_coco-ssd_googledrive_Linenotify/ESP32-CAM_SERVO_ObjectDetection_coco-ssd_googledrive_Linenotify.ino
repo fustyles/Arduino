@@ -5,6 +5,9 @@ https://www.facebook.com/francefu
 
 Servo -> VCC, GND, gpio2
 
+Class
+https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
+
 Google Script
 https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doPost.gs
 You must allow anyone and anonymous to execute the google script.
