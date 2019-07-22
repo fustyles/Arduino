@@ -874,6 +874,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             context.fillText(Predictions[i].class, x, y);
             //context.fillText(i, x, y);
             result.innerHTML+= "[ "+i+" ] "+Predictions[i].class+", "+Math.round(Predictions[i].score*100)+"%, "+Math.round(x)+", "+Math.round(y)+", "+Math.round(width)+", "+Math.round(height)+"<br>";
+            
+            /*
+              if (Predictions[i].class=="person") {   //
+                try{
+                  fetch(document.location.origin+'/control?var=flash&val=10');
+                }
+                catch(e){}
+              }             
+            */
           }
         }
         else
