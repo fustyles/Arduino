@@ -560,7 +560,6 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       
       //Stop shaking
       delay(700);
-      ledcDetachPin(3);
       SD_MMC.begin();
       SD_MMC.end();
     }      
