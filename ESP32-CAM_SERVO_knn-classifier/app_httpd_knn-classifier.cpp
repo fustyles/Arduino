@@ -914,6 +914,21 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               const predict = await classifier.predictClass(xlogits);
               //console.log(predict);
               if (predict.label) {
+                /*
+                  if (predict.label=="x") {     // predict.label -> 0 to 9
+                    try {
+                      fetch(document.location.origin+'/control?var=flash&val=10');
+                    }
+                    catch(e){}
+                  } 
+                  else (
+                    try {
+                      fetch(document.location.origin+'/control?var=flash&val=0');
+                    }
+                    catch(e){}
+                  )
+                */ 
+                
                 var msg = "<font color='red'>Result : class " + predict.label + "</font><br><br>";;
                 for (i=0;i<Class.length;i++) {
                   if (predict.confidences[i.toString()]>=0) msg += "[train "+i+"] " + predict.confidences[i.toString()] + "<br>";
