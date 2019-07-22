@@ -14,8 +14,6 @@ const char* password = "xxxxx";
 #include <WiFi.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
-#include "dl_lib.h"
-#include "driver/rtc_io.h"
 
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
 //            or another board which has PSRAM enabled
