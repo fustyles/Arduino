@@ -4,6 +4,7 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-17 00:00
 https://www.facebook.com/francefu
 Servo -> VCC, GND, gpio2
 
+Class
 https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
 */
 
