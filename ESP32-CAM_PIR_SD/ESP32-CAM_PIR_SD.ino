@@ -158,7 +158,7 @@ void saveCapturedImage(String filename) {
   Serial.println("File Size = " + String(file.size()));
   
   if (file.size()==0) {
-    Serial.println("Failed.");
+    Serial.println("Failed");
     file.close();
     
     Serial.println("Try again...");
@@ -171,15 +171,18 @@ void saveCapturedImage(String filename) {
       file = fs.open(path.c_str());
       Serial.println("File Size = " + String(file.size()));
       if (file.size()==0) {
-        Serial.println("Failed.");
+        Serial.println("Failed");
+      }
+      else {
+        Serial.println("Success");
       }
     }
     else {
-      Serial.println("Failed.");
+      Serial.println("Failed");
     }
   }
   else {
-    Serial.println("Success.");
+    Serial.println("Success");
   }
   file.close();
   SD_MMC.end();
