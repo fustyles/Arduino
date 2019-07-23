@@ -3,9 +3,6 @@ ESP32-CAM PIR Motion Sensor and Save to SD card
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-24 00:00
 https://www.facebook.com/francefu
 
-http://APIP
-http://STAIP
-
 PIR Motion Sensor -> GND, gpio13, 3.3V
 */
 
