@@ -1126,4 +1126,7 @@ void saveCapturedImage() {
   SD_MMC.end();
 
   Serial.println("");
+
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);
 }
