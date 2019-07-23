@@ -1,12 +1,12 @@
 /*
-ESP32-CAM Servo (Save a captured image to SD card) 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-23 01:00
+ESP32-CAM Save to SD card and control Servo
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-23 14:00
 https://www.facebook.com/francefu
 
 http://APIP
 http://STAIP
 
-Servo -> VCC, GND, gpio13
+Servo -> 3.3V, GND, gpio13
 */
 
 #include <esp32-hal-ledc.h>
@@ -560,7 +560,6 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       
       //Stop shaking
       delay(700);
-      ledcDetachPin(3);
       SD_MMC.begin();
       SD_MMC.end();
     }      
@@ -628,7 +627,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           body{font-family:Arial,Helvetica,sans-serif;background:#181818;color:#EFEFEF;font-size:16px}h2{font-size:18px}section.main{display:flex}#menu,section.main{flex-direction:column}#menu{display:none;flex-wrap:nowrap;min-width:340px;background:#363636;padding:8px;border-radius:4px;margin-top:-10px;margin-right:10px}#content{display:flex;flex-wrap:wrap;align-items:stretch}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}figure img{display:block;width:100%;height:auto;border-radius:4px;margin-top:8px}@media (min-width: 800px) and (orientation:landscape){#content{display:flex;flex-wrap:nowrap;align-items:stretch}figure img{display:block;max-width:100%;max-height:calc(100vh - 40px);width:auto;height:auto}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}}section#buttons{display:flex;flex-wrap:nowrap;justify-content:space-between}#nav-toggle{cursor:pointer;display:block}#nav-toggle-cb{outline:0;opacity:0;width:0;height:0}#nav-toggle-cb:checked+#menu{display:flex}.input-group{display:flex;flex-wrap:nowrap;line-height:22px;margin:5px 0}.input-group>label{display:inline-block;padding-right:10px;min-width:47%}.input-group input,.input-group select{flex-grow:1}.range-max,.range-min{display:inline-block;padding:0 5px}button{display:block;margin:5px;padding:0 12px;border:0;line-height:28px;cursor:pointer;color:#fff;background:#ff3034;border-radius:5px;font-size:16px;outline:0}button:hover{background:#ff494d}button:active{background:#f21c21}button.disabled{cursor:default;background:#a0a0a0}input[type=range]{-webkit-appearance:none;width:100%;height:22px;background:#363636;cursor:pointer;margin:0}input[type=range]:focus{outline:0}input[type=range]::-webkit-slider-runnable-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-webkit-slider-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;-webkit-appearance:none;margin-top:-11.5px}input[type=range]:focus::-webkit-slider-runnable-track{background:#EFEFEF}input[type=range]::-moz-range-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-moz-range-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer}input[type=range]::-ms-track{width:100%;height:2px;cursor:pointer;background:0 0;border-color:transparent;color:transparent}input[type=range]::-ms-fill-lower{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-fill-upper{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;height:2px}input[type=range]:focus::-ms-fill-lower{background:#EFEFEF}input[type=range]:focus::-ms-fill-upper{background:#363636}.switch{display:block;position:relative;line-height:22px;font-size:16px;height:22px}.switch input{outline:0;opacity:0;width:0;height:0}.slider{width:50px;height:22px;border-radius:22px;cursor:pointer;background-color:grey}.slider,.slider:before{display:inline-block;transition:.4s}.slider:before{position:relative;content:"";border-radius:50%;height:16px;width:16px;left:4px;top:3px;background-color:#fff}input:checked+.slider{background-color:#ff3034}input:checked+.slider:before{-webkit-transform:translateX(26px);transform:translateX(26px)}select{border:1px solid #363636;font-size:14px;height:22px;outline:0;border-radius:5px}.image-container{position:relative;min-width:160px}.close{position:absolute;right:5px;top:5px;background:#ff3034;width:16px;height:16px;border-radius:100px;color:#fff;text-align:center;line-height:18px;cursor:pointer}.hidden{display:none}
         </style>
     </head>
-    <body>
+    <body onload="try{fetch(document.location.origin+'/control?var=servo&val=4850');}catch(e){}">
     <figure>
       <div id="stream-container" class="image-container hidden">
         <div class="close" id="close-stream">×</div>
@@ -1105,6 +1104,7 @@ void saveCapturedImage() {
     Serial.println("Card Mount Failed");
     return;
   }
+
   uint8_t cardType = SD_MMC.cardType();
 
   if(cardType == CARD_NONE){
@@ -1113,6 +1113,7 @@ void saveCapturedImage() {
     return;
   }
 
+  /*
   Serial.print("SD_MMC Card Type: ");
   if(cardType == CARD_MMC){
       Serial.println("MMC");
@@ -1123,32 +1124,65 @@ void saveCapturedImage() {
   } else {
       Serial.println("UNKNOWN");
   }
-
-  uint64_t cardSize = SD_MMC.cardSize() / (1024 * 1024);
-  Serial.printf("SD_MMC Card Size: %lluMB\n", cardSize);
-
+  */
+  
   String path = "/"+timestamp+".jpg";
 
   fs::FS &fs = SD_MMC; 
   Serial.printf("Picture file name: %s\n", path.c_str());
-  
+
   File file = fs.open(path.c_str(), FILE_WRITE);
   if(!file){
     Serial.println("Failed to open file in writing mode");
   } 
   else {
-    file.write(fb->buf, fb->len); // payload (image), payload length
+    file.write(fb->buf, fb->len);
     Serial.printf("Saved file to path: %s\n", path.c_str());
   }
   file.close();
+  
+  file = fs.open(path.c_str());
+  Serial.println("File Size = " + String(file.size()));
+  
+  if (file.size()==0) {
+    Serial.println("Failed.");
+    /*
+    file.close();
+    
+    Serial.println("Try again...");
 
+    file = fs.open(path.c_str(), FILE_WRITE);
+    if (file) {
+      file.write(fb->buf, fb->len);
+      file.close();
+    
+      file = fs.open(path.c_str());
+      Serial.println("File Size = " + String(file.size()));
+      if (file.size()==0) {
+        Serial.println("Failed.");
+      }
+    }
+    else {
+      Serial.println("Failed.");
+    }
+    */
+  }
+  else {
+    Serial.println("Success.");
+  }
+  
+  file.close();
+
+  /*
+  Serial.printf("SD_MMC Card Size: %lluMB\n", SD_MMC.cardSize() / (1024 * 1024));
   Serial.printf("Total space: %lluMB\n", SD_MMC.totalBytes() / (1024 * 1024));
   Serial.printf("Used space: %lluMB\n", SD_MMC.usedBytes() / (1024 * 1024));
-
+  */
+  
   SD_MMC.end();
 
   Serial.println("");  
 
   pinMode(4, OUTPUT);
-  digitalWrite(4, LOW);
+  digitalWrite(4, LOW);  
 }

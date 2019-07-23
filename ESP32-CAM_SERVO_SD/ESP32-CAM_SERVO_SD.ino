@@ -1,12 +1,12 @@
 /*
-ESP32-CAM Servo (Save a captured image to SD card) 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-23 01:00
+ESP32-CAM Save to SD card and control Servo
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-23 14:00
 https://www.facebook.com/francefu
 
 http://APIP
 http://STAIP
 
-Servo -> VCC, GND, gpio13
+Servo -> 3.3V, GND, gpio13
 */
 
 const char* ssid = "xxxxx";
