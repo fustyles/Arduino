@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Save to SD card and control Servo
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-23 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-23 14:00
 https://www.facebook.com/francefu
 
 http://APIP
