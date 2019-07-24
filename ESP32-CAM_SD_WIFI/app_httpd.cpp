@@ -618,7 +618,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <section class="main">
             <section id="buttons">
                 <table>
-                <tr><td align="center"><button id="get-still">Save to SD</button></td><td align="center"><button id="toggle-stream">Start Stream</button></td><td align="center"><button id="face_enroll" class="disabled" disabled="disabled">Enroll Face</button></td></tr>
+                <tr><td align="center"><button id="get-still">Save Photo</button></td><td align="center"><button id="toggle-stream">Start Stream</button></td><td align="center"><button id="face_enroll" class="disabled" disabled="disabled">Enroll Face</button></td></tr>
                 </table>
             </section>         
             <div id="logo">
@@ -1090,7 +1090,8 @@ void saveCapturedImage() {
     Serial.println("No SD_MMC card attached");
     return;
   }
-
+  
+  /*
   Serial.print("SD_MMC Card Type: ");
   if(cardType == CARD_MMC){
       Serial.println("MMC");
@@ -1101,14 +1102,12 @@ void saveCapturedImage() {
   } else {
       Serial.println("UNKNOWN");
   }
-
-  uint64_t cardSize = SD_MMC.cardSize() / (1024 * 1024);
-  Serial.printf("SD_MMC Card Size: %lluMB\n", cardSize);
-
+  */
+  
   String path = "/"+timestamp+".jpg";
 
   fs::FS &fs = SD_MMC; 
-  Serial.printf("Picture file name: %s\n", path.c_str());
+  Serial.printf("\nPicture file name: %s\n", path.c_str());
   
   File file = fs.open(path.c_str(), FILE_WRITE);
   if(!file){
@@ -1120,6 +1119,7 @@ void saveCapturedImage() {
   }
   file.close();
 
+  Serial.printf("SD_MMC Card Size: %lluMB\n", SD_MMC.cardSize() / (1024 * 1024));
   Serial.printf("Total space: %lluMB\n", SD_MMC.totalBytes() / (1024 * 1024));
   Serial.printf("Used space: %lluMB\n", SD_MMC.usedBytes() / (1024 * 1024));
 
