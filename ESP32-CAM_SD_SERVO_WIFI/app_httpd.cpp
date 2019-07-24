@@ -1,8 +1,6 @@
 /*
-ESP32-CAM Save a captured photo to SD card and control Servo 
-(Sometimes the microcontroller saved the photos to SD card failed. Debugging...)
-
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-23 14:00
+ESP32-CAM Save to SD card and control Servo
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-25 02:00
 https://www.facebook.com/francefu
 
 http://APIP
@@ -20,6 +18,10 @@ void saveCapturedImage();
 String uint64ToString(uint64_t);
 
 String timestamp = "0";
+int angle0 = 4850;
+int angle = 4850;
+
+#define SDMMC_MAX_EVT_WAIT_DELAY_MS 2000
 
 // Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
 //
@@ -552,7 +554,10 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     else if(!strcmp(variable, "timestamp")) {
       timestamp = String(val);
     }
-    else if(!strcmp(variable, "servo")) { 
+    else if(!strcmp(variable, "servo")) {
+      angle0 = angle;
+      angle = val;
+      
       ledcAttachPin(13, 3);  
       ledcSetup(3, 50, 16);
       if (val > 8000)
@@ -563,7 +568,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       ledcWrite(3, val);
       
       //Stop shaking
-      delay(700);
+      delay(abs(angle-angle0)/10+50);
       SD_MMC.begin();
       SD_MMC.end();
       pinMode(4, OUTPUT);
@@ -1105,6 +1110,16 @@ String uint64ToString(uint64_t input) {
 }
 
 void saveCapturedImage() {
+  ledcAttachPin(13, 3);  
+  ledcSetup(3, 50, 16); 
+  ledcWrite(3, angle);
+  
+  //Stop shaking
+  SD_MMC.begin();
+  SD_MMC.end();
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);     
+    
   //SD Card
   if(!SD_MMC.begin()){
     Serial.println("Card Mount Failed");
