@@ -618,7 +618,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <section class="main">
             <section id="buttons">
                 <table>
-                <tr><td align="center"><button id="get-still">Save Captured Image</button></td><td align="center"><button id="toggle-stream">Start Stream</button></td><td align="center"><button id="face_enroll" class="disabled" disabled="disabled">Enroll Face</button></td></tr>
+                <tr><td align="center"><button id="get-still">Save to SD</button></td><td align="center"><button id="toggle-stream">Start Stream</button></td><td align="center"><button id="face_enroll" class="disabled" disabled="disabled">Enroll Face</button></td></tr>
                 </table>
             </section>         
             <div id="logo">
