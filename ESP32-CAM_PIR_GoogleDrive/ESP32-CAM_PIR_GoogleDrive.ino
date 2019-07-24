@@ -3,7 +3,7 @@ ESP32-CAM PIR (Save a captured image to Google Drive)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-21 13:00
 https://www.facebook.com/francefu
 
-PIR Motion Sensor -> gpio2, 3.3V, GND
+PIR Motion Sensor -> GND, gpio13, 3.3V
 
 Google Script
 https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doPost.gs
@@ -14,27 +14,25 @@ https://script.google.com/home/executions
 https://drive.google.com/drive/my-drive
 */
 
+// Enter your WiFi ssid and password
+const char* ssid     = "xxxxx";   //your network SSID
+const char* password = "xxxxx";   //your network password
+int gpioPIR = 13;   //PIR Motion Sensor
+
+const char* myDomain = "script.google.com";
+String myScript = "/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxx/exec";    //Create your Google Apps Script and replace the "myScript" path.
+String myLineNotifyToken = "myToken=xxxxxxxxxxxxxxxxxxxxxxxxx";
+String myFoldername = "&myFoldername=ESP32-CAM";
+String myFilename = "&myFilename=ESP32-CAM.jpg";
+String myImage = "&myFile=data:image/jpeg;base64,";
+
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
 #include "Base64.h"
 
-#include "esp_http_server.h"
-#include "esp_timer.h"
 #include "esp_camera.h"
-#include "img_converters.h"
-#include "Arduino.h"
-#include "fb_gfx.h"
-#include "fd_forward.h"
-#include "dl_lib.h"
-#include "fr_forward.h"
-
-#include <stdint.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
 
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
 //            or another board which has PSRAM enabled
@@ -57,25 +55,9 @@ https://drive.google.com/drive/my-drive
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
-// Enter your WiFi ssid and password
-const char* ssid     = "xxxxxxxxxx";   //your network SSID
-const char* password = "xxxxxxxxxx";   //your network password
-int gpioPIR = 2;   //PIR Motion Sensor
-
-/*
-Create your Google Apps Script and replace the "myScript" path.
-https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doPost.gs
-*/
-const char* myDomain = "script.google.com";
-String myScript = "/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec";
-String myLineNotifyToken = "myToken=xxxxxxxxxxxxxxxxxxxxxx";
-String myFoldername = "&myFoldername=ESP32-CAM";
-String myFilename = "&myFilename=ESP32-CAM.jpg";
-String myImage = "&myFile=data:image/jpeg;base64,";
-
 void setup()
 {
-  //WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
   
   Serial.begin(115200);
   delay(10);
