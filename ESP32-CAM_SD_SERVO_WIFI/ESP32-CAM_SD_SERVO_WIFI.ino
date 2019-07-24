@@ -1,5 +1,7 @@
 /*
-ESP32-CAM Save to SD card and control Servo (Something wrong, debug...)
+ESP32-CAM Save to SD card and control Servo 
+(Sometimes saved the photo to SD card failed. Debugging...)
+
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-23 14:00
 https://www.facebook.com/francefu
 
