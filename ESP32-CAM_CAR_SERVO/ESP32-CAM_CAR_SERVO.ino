@@ -3,7 +3,7 @@ ESP32-CAM Remote Control Car
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-21 19:00
 https://www.facebook.com/francefu
 
-Motor Driver IC -> gpio12, gpio13, gpio14, gpio15
+Motor Driver IC (L9110S) -> gpio12, gpio13, gpio14, gpio15
 Servo -> VCC, GND, gpio2
 
 http://APIP
