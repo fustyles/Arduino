@@ -21,7 +21,7 @@ int gpioPIR = 13;   //PIR Motion Sensor
 
 const char* myDomain = "script.google.com";
 String myScript = "/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxx/exec";    //Create your Google Apps Script and replace the "myScript" path.
-String myLineNotifyToken = "myToken=xxxxxxxxxxxxxxxxxxxxxxxxx";
+String myLineNotifyToken = "myToken=xxxxxxxxxxxxxxxxxxxxxxxxx";    //Line Notify Token
 String myFoldername = "&myFoldername=ESP32-CAM";
 String myFilename = "&myFilename=ESP32-CAM.jpg";
 String myImage = "&myFile=data:image/jpeg;base64,";
