@@ -1,5 +1,5 @@
 /*
-ESP32-CAM PIR Motion Sensor and Save a captured photo to SD card
+ESP32-CAM (PIR Motion Sensor & Save a captured photo to SD card)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-24 00:00
 https://www.facebook.com/francefu
 
