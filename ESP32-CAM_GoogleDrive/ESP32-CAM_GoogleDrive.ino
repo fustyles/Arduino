@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Save a captured image to Google Drive
+ESP32-CAM (Save a captured photo to Google Drive and LineNotify)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-25 20:00
 https://www.facebook.com/francefu
 
