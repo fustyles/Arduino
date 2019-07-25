@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Save to SD card and control Servo
+ESP32-CAM Save a captured photo to SD card and control a servo
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-25 02:00
 https://www.facebook.com/francefu
 
