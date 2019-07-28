@@ -1109,17 +1109,7 @@ String uint64ToString(uint64_t input) {
   return result;
 }
 
-void saveCapturedImage() {
-  ledcAttachPin(13, 3);  
-  ledcSetup(3, 50, 16); 
-  ledcWrite(3, angle);
-  
-  //Stop shaking
-  SD_MMC.begin();
-  SD_MMC.end();
-  pinMode(4, OUTPUT);
-  digitalWrite(4, LOW);     
-    
+void saveCapturedImage() {  
   //SD Card
   if(!SD_MMC.begin()){
     Serial.println("Card Mount Failed");
