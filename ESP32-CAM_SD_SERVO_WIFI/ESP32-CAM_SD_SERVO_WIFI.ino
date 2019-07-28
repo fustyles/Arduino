@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (Save a captured photo to SD card and control a servo)
-Sometimes saved the captured photo to SD card failed. Debugging...
+Sometimes saved captured photos to SD card failed. Keep debugging...
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-25 02:00
 https://www.facebook.com/francefu
