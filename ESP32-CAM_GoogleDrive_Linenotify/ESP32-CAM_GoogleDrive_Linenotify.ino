@@ -193,7 +193,6 @@ void saveCapturedImage() {
     for (Index = 0; Index < imageFile.length(); Index = Index+1000) {
       client.print(imageFile.substring(Index, Index+1000));
     }
-    client.print(imageFile.substring(Index));
     
     Serial.println("Waiting for response.");
     long int StartTime=millis();
