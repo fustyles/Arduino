@@ -129,7 +129,7 @@ void setup()
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  config.frame_size = FRAMESIZE_CIF;  // CIF|QVGA|HQVGA|QQVGA
+  config.frame_size = FRAMESIZE_SVGA;  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
   config.jpeg_quality = 10;
   config.fb_count = 1;
   
@@ -154,50 +154,55 @@ void loop()
 }
 
 void saveCapturedImage() {
-  camera_fb_t * fb = NULL;
-  fb = esp_camera_fb_get();  
-  if(!fb) {
-    Serial.println("Camera capture failed");
-    delay(1000);
-    ESP.restart();
-    return;
-  }
-
-  // CIF|QVGA|HQVGA|QQVGA
-  char *input = (char *)fb->buf;
-  char output[base64_enc_len(3)];
-  String imageFile = "";
-  for (int i=0;i<fb->len;i++) {
-    base64_encode(output, (input++), 3);
-    if (i%3==0) imageFile += String(output);
-  }
-  String Data = myLineNotifyToken+myFoldername+myFilename+(myImage+urlencode(imageFile));
-  
-  /*
-  // HQVGA|QQVGA
-  int encodedLen = base64_enc_len(fb->len);
-  char imageFile[encodedLen];    
-  base64_encode(imageFile, (char *)fb->buf, fb->len);
-  //Serial.println(imageFile);
-  String Data = myLineNotifyToken+myFoldername+myFilename+(myImage+urlencode(String(imageFile)));
-  */ 
-
   Serial.println("Connect to " + String(myDomain));
   WiFiClientSecure client;
   
   if (client.connect(myDomain, 443)) {
     Serial.println("Connection successful");
+    
+    camera_fb_t * fb = NULL;
+    fb = esp_camera_fb_get();  
+    if(!fb) {
+      Serial.println("Camera capture failed");
+      delay(1000);
+      ESP.restart();
+      return;
+    }
+  
+    // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+    char *input = (char *)fb->buf;
+    char output[base64_enc_len(3)];
+    String imageFile = "";
+    for (int i=0;i<fb->len;i++) {
+      base64_encode(output, (input++), 3);
+      if (i%3==0) imageFile += urlencode(String(output));
+    }
+    String Data = myLineNotifyToken+myFoldername+myFilename+myImage;
+    
+    /*
+    // HQVGA|QQVGA
+    int encodedLen = base64_enc_len(fb->len);
+    char imageFile[encodedLen];    
+    base64_encode(imageFile, (char *)fb->buf, fb->len);
+    //Serial.println(imageFile);
+    String Data = myLineNotifyToken+myFoldername+myFilename+(myImage+urlencode(String(imageFile)));
+    */ 
+    
     Serial.println("Send a captured image to Google Drive.");
     
     client.println("POST " + myScript + " HTTP/1.1");
     client.println("Host: " + String(myDomain));
-    client.println("Cache-Control: no-cache");
-    client.println("Content-Length: " + String(Data.length()));
-    client.println("Content-Type: application/x-www-form-urlencoded; charset=utf-8");
-    client.println("Connection: keep-alive");
+    client.println("Content-Length: " + String(Data.length()+imageFile.length()));
+    client.println("Content-Type: application/x-www-form-urlencoded");
     client.println();
-    client.println(Data);
-
+    
+    client.print(Data);
+    int Index;
+    for (Index = 0; Index < imageFile.length(); Index = Index+1000) {
+      client.print(imageFile.substring(Index, Index+1000));
+    }
+    client.print(imageFile.substring(Index));
+    
     Serial.println("Waiting for response.");
     long int StartTime=millis();
     while (!client.available()) 
@@ -209,13 +214,12 @@ void saveCapturedImage() {
         Serial.println("No response.");
         break;
       }
-    }  
+    }
     Serial.println();   
     while (client.available()) {
       Serial.print(char(client.read()));
       //client.read();
-    }
-    client.stop();
+    }  
   }
   else {
     ledcAttachPin(4, 3);
@@ -227,9 +231,8 @@ void saveCapturedImage() {
     ledcDetachPin(3);
           
     Serial.println("Connected to " + String(myDomain) + " failed.");
-    client.stop();
-    saveCapturedImage();
   }
+  client.stop();
 }
 
 //From: https://github.com/zenmanenergy/ESP8266-Arduino-Examples/
