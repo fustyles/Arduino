@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (Save a captured photo to Google Drive and LineNotify)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-25 20:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-31 23:00
 https://www.facebook.com/francefu
 
 Google Script
@@ -127,7 +127,7 @@ void setup()
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  config.frame_size = FRAMESIZE_CIF;  // CIF|QVGA|HQVGA|QQVGA
+  config.frame_size = FRAMESIZE_SVGA;  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
   config.jpeg_quality = 10;
   config.fb_count = 1;
   
@@ -161,15 +161,15 @@ void saveCapturedImage() {
       return;
     }
   
-    // CIF|QVGA|HQVGA|QQVGA
+    // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
     char *input = (char *)fb->buf;
     char output[base64_enc_len(3)];
     String imageFile = "";
     for (int i=0;i<fb->len;i++) {
       base64_encode(output, (input++), 3);
-      if (i%3==0) imageFile += String(output);
+      if (i%3==0) imageFile += urlencode(String(output));
     }
-    String Data = myLineNotifyToken+myFoldername+myFilename+(myImage+urlencode(imageFile));
+    String Data = myLineNotifyToken+myFoldername+myFilename+myImage;
     
     /*
     // HQVGA|QQVGA
@@ -184,12 +184,16 @@ void saveCapturedImage() {
     
     client.println("POST " + myScript + " HTTP/1.1");
     client.println("Host: " + String(myDomain));
-    client.println("Cache-Control: no-cache");
-    client.println("Content-Length: " + String(Data.length()));
-    client.println("Content-Type: application/x-www-form-urlencoded; charset=utf-8");
-    client.println("Connection: keep-alive");
+    client.println("Content-Length: " + String(Data.length()+imageFile.length()));
+    client.println("Content-Type: application/x-www-form-urlencoded");
     client.println();
-    client.println(Data);
+    
+    client.print(Data);
+    int Index;
+    for (Index = 0; Index < imageFile.length(); Index = Index+1000) {
+      client.print(imageFile.substring(Index, Index+1000));
+    }
+    client.print(imageFile.substring(Index));
     
     Serial.println("Waiting for response.");
     long int StartTime=millis();
@@ -202,12 +206,12 @@ void saveCapturedImage() {
         Serial.println("No response.");
         break;
       }
-    }  
+    }
     Serial.println();   
     while (client.available()) {
       Serial.print(char(client.read()));
       //client.read();
-    }
+    }  
   }
   else {
     ledcAttachPin(4, 3);
