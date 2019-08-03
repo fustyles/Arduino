@@ -179,7 +179,7 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
             client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
             client.println("Content-Type: application/json;charset=utf-8");
             client.println("Access-Control-Allow-Origin: *");
-            //client.println("Connection: close");
+            client.println("Connection: close");
             client.println();
             client.println("[{\"esp8266\":\""+Feedback+"\"}]");
             client.println();
@@ -191,7 +191,7 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
             client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
             client.println("Content-Type: text/xml; charset=utf-8");
             client.println("Access-Control-Allow-Origin: *");
-            //client.println("Connection: close");
+            client.println("Connection: close");
             client.println();
             client.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             client.println("<esp8266><feedback>"+Feedback+"</feedback></esp8266>");
