@@ -53,6 +53,7 @@ void ExecuteCommand()
   }
   else if (cmd=="speech")
   {
+    str1.replace("%20"," ");
     if (str1.indexOf("on")!=-1) {    //Turn on the light
       ledcDetachPin(2);
       pinMode(2, OUTPUT);
