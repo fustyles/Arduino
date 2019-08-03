@@ -206,7 +206,7 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
             client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
             client.println("Content-Type: text/html; charset=utf-8");
             client.println("Access-Control-Allow-Origin: *");
-            //client.println("Connection: close");
+            client.println("Connection: close");
             client.println();
             client.println("<!DOCTYPE HTML>");
             client.println("<html><head>");
