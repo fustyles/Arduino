@@ -12,7 +12,7 @@ http://192.168.4.1/?ip
 http://192.168.4.1/?mac
 http://192.168.4.1/?restart
 http://192.168.4.1/?resetwifi=ssid;password
-http://192.168.4.1/?speech=text
+http://192.168.4.1/?speech=text;language
 
 STAIP：
 Query：http://192.168.4.1/?ip
