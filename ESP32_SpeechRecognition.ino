@@ -198,8 +198,9 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
             client.println();
            */
 
-            Feedback+="<script>setTimeout(() => location.href =\"https://fustyles.github.io/webduino/ESP32_SpeechRecognition.html?"+WiFi.localIP().toString()+"\", 3000);</script>";
-
+            if (str2=="") str2="en-NZ";
+            Feedback+="<script>setTimeout(() => location.href =\"https://fustyles.github.io/webduino/ESP32_SpeechRecognition.html?"+WiFi.localIP().toString()+"&"+str2+"\", 3000);</script>";
+            
             client.println("HTTP/1.1 200 OK");
             client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
             client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
