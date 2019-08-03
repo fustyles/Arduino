@@ -57,14 +57,16 @@ void ExecuteCommand()
       ledcDetachPin(2);
       pinMode(2, OUTPUT);
       digitalWrite(2, 1);
+      Feedback="Turn On";
     }
     else if (str1.indexOf("off")!=-1) {    //Turn off the light
       ledcDetachPin(2);
       pinMode(2, OUTPUT);
       digitalWrite(2, 0);
+      Feedback="Turn Off";
     }
-     
-    Feedback="TEXT: " + str1;
+    else
+      Feedback="Command is not defined: " + str1;
   }  
   else if (cmd=="ip")
   {
