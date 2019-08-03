@@ -60,14 +60,14 @@ void ExecuteCommand()
   else if (cmd=="speech")
   {
     if (str1.indexOf("on")!=-1) {    //Turn on the light
-      ledcDetachPin(0);
-      pinMode(0, OUTPUT);
-      digitalWrite(0, 1);
+      ledcDetachPin(2);
+      pinMode(2, OUTPUT);
+      digitalWrite(2, 1);
     }
     else if (str1.indexOf("off")!=-1) {    //Turn off the light
-      ledcDetachPin(0);
-      pinMode(0, OUTPUT);
-      digitalWrite(0, 0);
+      ledcDetachPin(2);
+      pinMode(2, OUTPUT);
+      digitalWrite(2, 0);
     }
      
     Feedback="TEXT: " + str1;
