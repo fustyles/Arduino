@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP12E) (Open in Chrome)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-08-04 15:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-08-04 21:00
 https://www.facebook.com/francefu
 
 Command Format :  
@@ -47,7 +47,7 @@ void ExecuteCommand()
   }
   else if (cmd=="speech")
   {
-    str1.replace("%20"," ");
+    str1 = urldecode(str1);
     if (str1.indexOf("on")!=-1) {    //Turn on the light
       ledcDetachPin(2);
       pinMode(2, OUTPUT);
@@ -270,4 +270,47 @@ void getCommand(char c)
     if (c=='=') equalstate=1;
     if ((strState>=9)&&(c==';')) semicolonstate=1;
   }
+}
+
+//https://github.com/zenmanenergy/ESP8266-Arduino-Examples/blob/master/helloWorld_urlencoded/urlencode.ino
+String urldecode(String str)
+{
+    String encodedString="";
+    char c;
+    char code0;
+    char code1;
+    for (int i =0; i < str.length(); i++){
+        c=str.charAt(i);
+      if (c == '+'){
+        encodedString+=' ';  
+      }else if (c == '%') {
+        i++;
+        code0=str.charAt(i);
+        i++;
+        code1=str.charAt(i);
+        c = (h2int(code0) << 4) | h2int(code1);
+        encodedString+=c;
+      } else{
+        
+        encodedString+=c;  
+      }
+      
+      yield();
+    }
+    
+   return encodedString;
+}
+
+unsigned char h2int(char c)
+{
+    if (c >= '0' && c <='9'){
+        return((unsigned char)c - '0');
+    }
+    if (c >= 'a' && c <='f'){
+        return((unsigned char)c - 'a' + 10);
+    }
+    if (c >= 'A' && c <='F'){
+        return((unsigned char)c - 'A' + 10);
+    }
+    return(0);
 }
