@@ -1,6 +1,6 @@
 /* 
 ESP01 (Open in Chrome)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-08-04 08:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-08-04 15:00
 https://www.facebook.com/francefu
 
 Command Format :  
@@ -199,6 +199,7 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
            */
 
             if (str2=="") str2="en-US";
+            if (Feedback=="") Feedback="Redirect..."; 
             Feedback+="<script>setTimeout(() => location.href =\"https://fustyles.github.io/webduino/ESP32_SpeechRecognition.html?"+WiFi.localIP().toString()+"&"+str2+"\", 3000);</script>";
             
             client.println("HTTP/1.1 200 OK");
