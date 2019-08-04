@@ -49,20 +49,20 @@ void ExecuteCommand()
   }
   else if (cmd=="speech")
   {
-    if (str1.indexOf("on")!=-1||str1.indexOf("開")!=-1) {    //Turn on the light
+    if (str1.indexOf("on")!=-1||str1.indexOf("開")!=-1) {    //Turn on the LED
       ledcDetachPin(2);
       pinMode(2, OUTPUT);
       digitalWrite(2, 1);
-      Feedback="Turn On";
+      Feedback="Turn on the LED";
     }
-    else if (str1.indexOf("off")!=-1||str1.indexOf("關")!=-1) {    //Turn off the light
+    else if (str1.indexOf("off")!=-1||str1.indexOf("關")!=-1) {    //Turn off the LED
       ledcDetachPin(2);
       pinMode(2, OUTPUT);
       digitalWrite(2, 0);
-      Feedback="Turn Off";
+      Feedback="Turn off the LED";
     }
     else
-      Feedback="Command is not defined: " + str1;
+      Feedback="No defined: " + str1;
   } 
   else if (cmd=="ip")
   {
