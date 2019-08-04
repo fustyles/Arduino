@@ -35,9 +35,11 @@ byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolon
 
 void ExecuteCommand()
 {
+  str1 = urldecode(str1);
+  
   Serial.println("");
   //Serial.println("Command: "+Command);
-  Serial.println("cmd= "+cmd+" ,str1= "+urldecode(str1)+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
+  Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
   Serial.println("");
   
   if (cmd=="your cmd")
@@ -47,7 +49,6 @@ void ExecuteCommand()
   }
   else if (cmd=="speech")
   {
-    str1 = urldecode(str1);
     if (str1.indexOf("on")!=-1||str1.indexOf("開")!=-1) {    //Turn on the light
       ledcDetachPin(2);
       pinMode(2, OUTPUT);
