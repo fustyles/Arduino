@@ -1,5 +1,5 @@
 /* 
-NodeMCU (ESP01) (Open in Chrome)
+ESP01 (Open in Chrome)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-08-04 08:00
 https://www.facebook.com/francefu
 
