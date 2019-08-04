@@ -48,13 +48,13 @@ void ExecuteCommand()
   else if (cmd=="speech")
   {
     str1 = urldecode(str1);
-    if (str1.indexOf("on")!=-1) {    //Turn on the light
+    if (str1.indexOf("on")!=-1||str1.indexOf("開")!=-1) {    //Turn on the light
       ledcDetachPin(2);
       pinMode(2, OUTPUT);
       digitalWrite(2, 1);
       Feedback="Turn On";
     }
-    else if (str1.indexOf("off")!=-1) {    //Turn off the light
+    else if (str1.indexOf("off")!=-1||str1.indexOf("關")!=-1) {    //Turn off the light
       ledcDetachPin(2);
       pinMode(2, OUTPUT);
       digitalWrite(2, 0);
