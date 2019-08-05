@@ -51,17 +51,17 @@ void ExecuteCommand()
     if (str1.indexOf("on")!=-1||str1.indexOf("開")!=-1) {    //Turn on the LED
       ledcDetachPin(2);
       pinMode(2, OUTPUT);
-      digitalWrite(2, 0);
-      Feedback="Turn on the LED";
+      digitalWrite(2, 1);
+      Feedback="<font color=\"red\">Turn on the LED</font>";
     }
     else if (str1.indexOf("off")!=-1||str1.indexOf("關")!=-1) {    //Turn off the LED
       ledcDetachPin(2);
       pinMode(2, OUTPUT);
-      digitalWrite(2, 1);
-      Feedback="Turn off the LED";
+      digitalWrite(2, 0);
+      Feedback="<font color=\"red\">Turn off the LED</font>";
     }
     else
-      Feedback="No defined: " + str1;
+      Feedback="<font color=\"red\">No defined => "+str1+"</font>";
   } 
   else if (cmd=="ip") {
     Feedback="AP IP: "+WiFi.softAPIP().toString();    
