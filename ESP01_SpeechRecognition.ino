@@ -52,16 +52,16 @@ void ExecuteCommand()
       ledcDetachPin(2);
       pinMode(2, OUTPUT);
       digitalWrite(2, 1);
-      Feedback="Turn on the LED";
+      Feedback="<font color=\"red\">Turn on the LED</font>";
     }
     else if (str1.indexOf("off")!=-1||str1.indexOf("關")!=-1) {    //Turn off the LED
       ledcDetachPin(2);
       pinMode(2, OUTPUT);
       digitalWrite(2, 0);
-      Feedback="Turn off the LED";
+      Feedback="<font color=\"red\">Turn off the LED</font>";
     }
     else
-      Feedback="No defined: " + str1;
+      Feedback="<font color=\"red\">No defined => "+str1+"</font>";
   } 
   else if (cmd=="ip") {
     Feedback="AP IP: "+WiFi.softAPIP().toString();    
