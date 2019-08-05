@@ -24,8 +24,9 @@ Link：http://192.168.4.1/?resetwifi=ssid;password
 // Enter your WiFi ssid and password
 const char* ssid     = "xxxxx";   //your network SSID
 const char* password = "xxxxx";   //your network password
+const String page = "https://fustyles.github.io/webduino/ESP32_SpeechRecognition.html";
 
-const char* apssid = "MyFirmata ESP32";
+const char* apssid = "ESP32 SpeechRecognition";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 WiFiServer server(80);
@@ -42,13 +43,11 @@ void ExecuteCommand()
   Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
   Serial.println("");
   
-  if (cmd=="your cmd")
-  {
+  if (cmd=="your cmd") {
     // You can do anything
     // Feedback="<font color=\"red\">Hello World</font>";
   }
-  else if (cmd=="speech")
-  {
+  else if (cmd=="speech") {
     if (str1.indexOf("on")!=-1||str1.indexOf("開")!=-1) {    //Turn on the LED
       ledcDetachPin(2);
       pinMode(2, OUTPUT);
@@ -64,23 +63,19 @@ void ExecuteCommand()
     else
       Feedback="No defined: " + str1;
   } 
-  else if (cmd=="ip")
-  {
+  else if (cmd=="ip") {
     Feedback="AP IP: "+WiFi.softAPIP().toString();    
     Feedback+=", ";
     Feedback+="STA IP: "+WiFi.localIP().toString();
   }  
-  else if (cmd=="mac")
-  {
+  else if (cmd=="mac") {
     Feedback="STA MAC: "+WiFi.macAddress();
   }  
-  else if (cmd=="restart")
-  {
+  else if (cmd=="restart") {
     setup();
     Feedback=Command;
   }    
-  else if (cmd=="resetwifi")
-  {
+  else if (cmd=="resetwifi") {
     WiFi.begin(str1.c_str(), str2.c_str());
     Serial.print("Connecting to ");
     Serial.println(str1);
@@ -94,69 +89,74 @@ void ExecuteCommand()
     Serial.println("STAIP: "+WiFi.localIP().toString());
     Feedback="STAIP: "+WiFi.localIP().toString();
   }
-  else 
-  {
+  else {
     Feedback="Command is not defined";
   }
 }
 
 void setup()
 {
-    Serial.begin(115200);
-    delay(10);
+  Serial.begin(115200);
+  delay(10);
+  
+  WiFi.mode(WIFI_AP_STA);
+
+  //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
+
+  WiFi.begin(ssid, password);
+
+  delay(1000);
+  Serial.println("");
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+  
+  long int StartTime=millis();
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    if ((StartTime+10000) < millis()) break;
+  }  
+
+  Serial.println("");
+  Serial.println("STAIP address: ");
+  Serial.println(WiFi.localIP());
+
+  if (WiFi.status() == WL_CONNECTED)
+    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
+  else
+    WiFi.softAP(apssid, appassword);
     
-    WiFi.mode(WIFI_AP_STA);
-  
-    //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
+  //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
+  Serial.println("");
+  Serial.println("APIP address: ");
+  Serial.println(WiFi.softAPIP());    
+  server.begin(); 
 
-    WiFi.begin(ssid, password);
-
-    delay(1000);
-    Serial.println("");
-    Serial.print("Connecting to ");
-    Serial.println(ssid);
-    
-    long int StartTime=millis();
-    while (WiFi.status() != WL_CONNECTED) 
-    {
-        delay(500);
-        if ((StartTime+10000) < millis()) break;
-    } 
-  
-    if (WiFi.status() == WL_CONNECTED)
-    {
-      pinMode(2, OUTPUT);
-      for (int i=0;i<5;i++)
-      {
-        digitalWrite(2,HIGH);
-        delay(100);
-        digitalWrite(2,LOW);
-        delay(100);
-      }
-    }  
-
-    Serial.println("");
-    Serial.println("STAIP address: ");
-    Serial.println(WiFi.localIP());
-  
-    if (WiFi.status() == WL_CONNECTED)
-      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
-    else
-      WiFi.softAP(apssid, appassword);
-      
-    //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
-    Serial.println("");
-    Serial.println("APIP address: ");
-    Serial.println(WiFi.softAPIP());    
-    server.begin(); 
+  if (WiFi.status() == WL_CONNECTED) {
+    pinMode(2, OUTPUT);
+    for (int i=0;i<5;i++) {
+      digitalWrite(2,HIGH);
+      delay(100);
+      digitalWrite(2,LOW);
+      delay(100);
+    }
+  } 
+  else {
+    pinMode(2, OUTPUT);
+    for (int i=0;i<3;i++) {
+      digitalWrite(2,HIGH);
+      delay(500);
+      digitalWrite(2,LOW);
+      delay(500);
+    }
+  }
 }
 
 void loop()
 {
-Command="";cmd="";str1="";str2="";str3="";str4="";str5="";str6="";str7="";str8="";str9="";
-ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
+  Command="";cmd="";str1="";str2="";str3="";str4="";str5="";str6="";str7="";str8="";str9="";
+  ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
- WiFiClient client = server.available();
+  WiFiClient client = server.available();
 
   if (client) 
   { 
@@ -201,7 +201,7 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
 
             if (str2=="") str2="en-US";
             if (Feedback=="") Feedback="Redirect..."; 
-            Feedback+="<script>setTimeout(() => location.href =\"https://fustyles.github.io/webduino/ESP32_SpeechRecognition.html?"+WiFi.localIP().toString()+"&"+str2+"\", 3000);</script>";
+            Feedback+="<script>setTimeout(() => location.href = \""+page+"?"+WiFi.localIP().toString()+"&"+str2+"\", 3000);</script>";
             
             client.println("HTTP/1.1 200 OK");
             client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
