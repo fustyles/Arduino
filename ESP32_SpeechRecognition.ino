@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP32) (Open in Chrome)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-08-05 06:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-08-06 23:00
 https://www.facebook.com/francefu
 
 Command Format :  
@@ -26,7 +26,7 @@ const char* ssid     = "xxxxx";   //your network SSID
 const char* password = "xxxxx";   //your network password
 const String page = "https://fustyles.github.io/webduino/ESP32_SpeechRecognition.html";
 
-const char* apssid = "ESP32 SpeechRecognition";
+const char* apssid = "ESP32 Speech";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 WiFiServer server(80);
@@ -158,22 +158,17 @@ void loop()
 
   WiFiClient client = server.available();
 
-  if (client) 
-  { 
+  if (client) { 
     String currentLine = "";
 
-    while (client.connected()) 
-    {
-      if (client.available()) 
-      {
+    while (client.connected()) {
+      if (client.available()) {
         char c = client.read();             
         
         getCommand(c);
                 
-        if (c == '\n') 
-        {
-          if (currentLine.length() == 0) 
-          {          
+        if (c == '\n') {
+          if (currentLine.length() == 0) {          
             /*
             client.println("HTTP/1.1 200 OK");
             client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
@@ -201,7 +196,7 @@ void loop()
 
             if (str2=="") str2="en-US";
             if (Feedback=="") Feedback="Redirect..."; 
-            Feedback+="<script>setTimeout(() => location.href = \""+page+"?"+WiFi.localIP().toString()+"&"+str2+"\", 3000);</script>";
+            Feedback+="<script>setTimeout(() => location.href = \""+page+"?"+WiFi.localIP().toString()+"&"+str2+"&"+str3+"\", 3000);</script>";
             
             client.println("HTTP/1.1 200 OK");
             client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
@@ -226,13 +221,11 @@ void loop()
             currentLine = "";
           }
         } 
-        else if (c != '\r') 
-        {
+        else if (c != '\r') {
           currentLine += c;
         }
 
-        if ((currentLine.indexOf("/?")!=-1)&&(currentLine.indexOf(" HTTP")!=-1))
-        {
+        if ((currentLine.indexOf("/?")!=-1)&&(currentLine.indexOf(" HTTP")!=-1)) {
           currentLine="";
           Feedback="";
           ExecuteCommand();
