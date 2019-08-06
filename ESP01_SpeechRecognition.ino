@@ -26,7 +26,7 @@ const char* ssid     = "xxxxx";   //your network SSID
 const char* password = "xxxxx";   //your network password
 const String page = "https://fustyles.github.io/webduino/ESP32_SpeechRecognition.html";
 
-const char* apssid = "ESP32 Speech";
+const char* apssid = "ESP01 Speech";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 WiFiServer server(80);
