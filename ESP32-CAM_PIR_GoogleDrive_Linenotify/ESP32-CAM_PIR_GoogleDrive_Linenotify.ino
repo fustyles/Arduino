@@ -5,9 +5,11 @@ https://www.facebook.com/francefu
 
 PIR Motion Sensor -> GND, gpio13, 3.3V
 
-Google Script
+Google Apps Script
 https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doPost.gs
 You must allow anyone and anonymous to execute the google script.
+How to add a new script
+https://www.youtube.com/watch?v=f46VBqWwUuI
 
 https://script.google.com/home
 https://script.google.com/home/executions
