@@ -1,6 +1,6 @@
 /* 
 LinkIt 7697 (Open in Chrome)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-08-07 20:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-08-07 21:00
 https://www.facebook.com/francefu
 
 Command Format :  
