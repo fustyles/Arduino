@@ -3,9 +3,11 @@ ESP32-CAM (Save a captured photo to Google Drive and LineNotify)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-31 23:00
 https://www.facebook.com/francefu
 
-Google Script
+Google Apps Script
 https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doPost.gs
 You must allow anyone and anonymous to execute the google script.
+How to add a new script
+https://www.youtube.com/watch?v=f46VBqWwUuI
 
 https://script.google.com/home
 https://script.google.com/home/executions
