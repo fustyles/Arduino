@@ -4,7 +4,6 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-08-07 21:00
 https://www.facebook.com/francefu
 
 Command Format :  
-http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
 http://192.168.4.1/?speech=text;language;checkbox
