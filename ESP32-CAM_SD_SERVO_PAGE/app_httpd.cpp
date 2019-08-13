@@ -564,6 +564,9 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       val = 1700 + (8000 - val);   
       ledcWrite(3, val);    
     }      
+    else if(!strcmp(variable, "flash")) {
+      ledcWrite(4,val);
+    }         
     else {
         res = -1;
     }
