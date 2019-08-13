@@ -20,8 +20,6 @@ void saveCapturedImage();
 String uint64ToString(uint64_t);
 
 String timestamp = "0";
-int angle0 = 4850;
-int angle = 4850;
 
 #define SDMMC_MAX_EVT_WAIT_DELAY_MS 2000
 
@@ -557,9 +555,6 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       timestamp = String(val);
     }
     else if(!strcmp(variable, "servo")) {
-      angle0 = angle;
-      angle = val;
-      
       ledcAttachPin(13, 3);  
       ledcSetup(3, 50, 16);
       if (val > 8000)
@@ -567,14 +562,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if (val < 1700)
         val = 1700;   
       val = 1700 + (8000 - val);   
-      ledcWrite(3, val);
-      
-      //Stop shaking
-      delay(abs(angle-angle0)/10+50);
-      SD_MMC.begin();
-      SD_MMC.end();
-      pinMode(4, OUTPUT);
-      digitalWrite(4, LOW);      
+      ledcWrite(3, val);    
     }      
     else {
         res = -1;
