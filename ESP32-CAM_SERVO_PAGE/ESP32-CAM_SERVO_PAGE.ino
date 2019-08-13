@@ -16,8 +16,6 @@ const char* password = "xxxxx";
 #include <WiFi.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
-#include "FS.h"
-#include "SD_MMC.h"
 
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
 //            or another board which has PSRAM enabled
@@ -99,9 +97,6 @@ void setup() {
   ledcAttachPin(2, 3);  
   ledcSetup(3, 50, 16);
   ledcWrite(3, 4850);
-  //Stop shaking 
-  SD_MMC.begin();
-  SD_MMC.end();    
   
   //Flash
   ledcAttachPin(4, 4);  
