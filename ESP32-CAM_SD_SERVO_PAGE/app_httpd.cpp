@@ -640,6 +640,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <table>
                 <tr><td align="center"><button id="get-still">Save Photo</button></td><td align="center"><button id="toggle-stream">Start Stream</button></td><td align="center"><button id="face_enroll" class="disabled" disabled="disabled">Enroll Face</button></td></tr>
                 <tr><td>Servo</td><td align="center" colspan="2"><input type="range" id="servo" min="1700" max="8000" step="35" value="4850" onchange="try{fetch(document.location.origin+'/control?var=servo&val='+this.value);}catch(e){}"></td></tr>
+                <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}"></td></tr>
                 </table>
             </section>         
             <div id="logo">
