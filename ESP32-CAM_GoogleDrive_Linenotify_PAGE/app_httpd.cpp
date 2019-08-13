@@ -18,15 +18,13 @@ String uint64ToString(uint64_t);
 String urlencode(String);
 
 const char* myDomain = "script.google.com";
-String myScript = "/macros/s/xxxxxxxxxxxxxxx/exec";    //Create your Google Apps Script and replace the "myScript" path.
-String myLineNotifyToken = "myToken=xxxxxxxxxxxxxxx";    //Line Notify Token
+String myScript = "/macros/s/AKfycbyacDRLUMaOxoJ2IKR6_oqvah8-ma2YuwIW94q5Wn5ZxeHQsgw/exec";    //Create your Google Apps Script and replace the "myScript" path.
+String myLineNotifyToken = "myToken=lHaUbj8vv1ZCvoxzwhpoarxNYR4PKYIHtVOS72qS6Lt";    //Line Notify Token
 String myFoldername = "&myFoldername=ESP32-CAM";
 String myFilename;
 String myImage = "&myFile=data:image/jpeg;base64,";
 
 String timestamp = "0";
-int angle0 = 4850;
-int angle = 4850;
 
 // Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
 //
@@ -648,8 +646,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                                 <option value="10">UXGA(1600x1200)</option>
                                 <option value="9">SXGA(1280x1024)</option>
                                 <option value="8">XGA(1024x768)</option>
-                                <option value="7" selected="selected">SVGA(800x600)</option>
-                                <option value="6">VGA(640x480)</option>
+                                <option value="7">SVGA(800x600)</option>
+                                <option value="6" selected="selected">VGA(640x480)</option>
                                 <option value="5">CIF(400x296)</option>
                                 <option value="4">QVGA(320x240)</option>
                                 <option value="3">HQVGA(240x176)</option>
