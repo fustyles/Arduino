@@ -85,6 +85,11 @@ void setup() {
   //drop down frame size for higher initial frame rate
   sensor_t * s = esp_camera_sensor_get();
   s->set_framesize(s, FRAMESIZE_VGA);  //QQVGA|HQVGA|QVGA|CIF|VGA|SVGA|XGA|SXGA|UXGA
+  
+  //Servo
+  ledcAttachPin(13, 3);  
+  ledcSetup(3, 50, 16);
+  ledcWrite(3, 4850);
 
   Serial.println("ssid: " + (String)ssid);
   Serial.println("password: " + (String)password);
