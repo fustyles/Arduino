@@ -8,11 +8,6 @@ Servo -> VCC, GND, gpio2
 */
 
 #include <esp32-hal-ledc.h>
-#include "FS.h"
-#include "SD_MMC.h"
-
-int angle0 = 4850;
-int angle = 4850;
 
 // Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
 //
@@ -537,8 +532,6 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         }
     }
     else if(!strcmp(variable, "servo")) {
-      angle0 = angle;
-      angle = val;      
       ledcAttachPin(2, 3);  
       ledcSetup(3, 50, 16);      
       if (val > 8000)
@@ -546,13 +539,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if (val < 1700)
         val = 1700;   
       val = 1700 + (8000 - val);   
-      ledcWrite(3, val);
-      delay(abs(angle-angle0)/10+50);
-      //Stop shaking
-      SD_MMC.begin();
-      SD_MMC.end();
-      pinMode(4, OUTPUT);
-      digitalWrite(4, LOW);  
+      ledcWrite(3, val); 
     }     
     else if(!strcmp(variable, "flash")) {
       ledcWrite(4,val);
