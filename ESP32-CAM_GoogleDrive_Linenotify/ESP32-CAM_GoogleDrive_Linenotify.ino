@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (Save a captured photo to Google Drive and LineNotify)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-31 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-14 21:00
 https://www.facebook.com/francefu
 
 Google Apps Script
