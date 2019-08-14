@@ -26,7 +26,7 @@ String myScript = "/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxx/exec";    //Create your G
 String myLineNotifyToken = "myToken=xxxxxxxxxxxxxxxxxxxxxxxxx";    //Line Notify Token
 String myFoldername = "&myFoldername=ESP32-CAM";
 String myFilename = "&myFilename=ESP32-CAM.jpg";
-String myImage = "&myFile=data:image/jpeg;base64,";
+String myImage = "&myFile=";
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -174,7 +174,7 @@ void saveCapturedImage() {
     // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
     char *input = (char *)fb->buf;
     char output[base64_enc_len(3)];
-    String imageFile = "";
+    String imageFile = "data:image/jpeg;base64,";
     for (int i=0;i<fb->len;i++) {
       base64_encode(output, (input++), 3);
       if (i%3==0) imageFile += urlencode(String(output));
