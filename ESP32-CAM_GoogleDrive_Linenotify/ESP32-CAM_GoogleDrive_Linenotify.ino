@@ -173,6 +173,8 @@ void saveCapturedImage() {
     }
     String Data = myLineNotifyToken+myFoldername+myFilename+myImage;
     
+    esp_camera_fb_return(fb);
+    
     /*
     // HQVGA|QQVGA
     int encodedLen = base64_enc_len(fb->len);
