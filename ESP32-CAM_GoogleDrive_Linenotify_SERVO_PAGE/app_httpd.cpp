@@ -25,7 +25,7 @@ String myScript = "/macros/s/xxxxxxxxxxxxxxx/exec";    //Create your Google Apps
 String myLineNotifyToken = "myToken=xxxxxxxxxxxxxxx";    //Line Notify Token
 String myFoldername = "&myFoldername=ESP32-CAM";
 String myFilename;
-String myImage = "&myFile=data:image/jpeg;base64,";
+String myImage = "&myFile=";
 
 String timestamp = "0";
 int angle0 = 4850;
@@ -969,7 +969,7 @@ void saveCapturedImage() {
     // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
     char *input = (char *)fb->buf;
     char output[base64_enc_len(3)];
-    String imageFile = "";
+    String imageFile = "data:image/jpeg;base64,";
     for (int i=0;i<fb->len;i++) {
       base64_encode(output, (input++), 3);
       if (i%3==0) imageFile += urlencode(String(output));
