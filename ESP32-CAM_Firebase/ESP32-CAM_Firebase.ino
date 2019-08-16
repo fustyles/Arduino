@@ -63,12 +63,11 @@ void setup() {
       if ((StartTime+10000) < millis()) break;
   } 
 
-  char* apssid = "ESP32-CAM";
-  char* appassword = "12345678";         //AP password require at least 8 characters.
-  Serial.println("");
-  Serial.println("WiFi connected");    
-  Serial.print("Camera Ready! Use 'http://");
   if (WiFi.status() == WL_CONNECTED) {
+    char* apssid = "ESP32-CAM";
+    char* appassword = "12345678";         //AP password require at least 8 characters.
+    Serial.println(""); 
+    Serial.print("Camera Ready! Use 'http://");
     Serial.print(WiFi.localIP());
     Serial.println("' to connect");
     WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);            
