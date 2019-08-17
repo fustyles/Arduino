@@ -813,6 +813,16 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 </div>
             </div>
         </section>
+        Persons
+        <select id="persons">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="999">No Limit</option>
+        </select>
+        <br>        
         <div id="result">Please wait for loading model.<div>
         <script>
           document.addEventListener('DOMContentLoaded',function(){function b(B){let C;switch(B.type){case'checkbox':C=B.checked?1:0;break;case'range':case'select-one':C=B.value;break;case'button':case'submit':C='1';break;default:return;}const D=`${c}/control?var=${B.id}&val=${C}`;fetch(D).then(E=>{console.log(`request to ${D} finished, status: ${E.status}`)})}var c=document.location.origin;const e=B=>{B.classList.add('hidden')},f=B=>{B.classList.remove('hidden')},g=B=>{B.classList.add('disabled'),B.disabled=!0},h=B=>{B.classList.remove('disabled'),B.disabled=!1},i=(B,C,D)=>{D=!(null!=D)||D;let E;'checkbox'===B.type?(E=B.checked,C=!!C,B.checked=C):(E=B.value,B.value=C),D&&E!==C?b(B):!D&&('aec'===B.id?C?e(v):f(v):'agc'===B.id?C?(f(t),e(s)):(e(t),f(s)):'awb_gain'===B.id?C?f(x):e(x):'face_recognize'===B.id&&(C?h(n):g(n)))};document.querySelectorAll('.close').forEach(B=>{B.onclick=()=>{e(B.parentNode)}}),fetch(`${c}/status`).then(function(B){return B.json()}).then(function(B){document.querySelectorAll('.default-action').forEach(C=>{i(C,B[C.id],!1)})});const j=document.getElementById('stream'),k=document.getElementById('stream-container'),l=document.getElementById('get-still'),m=document.getElementById('toggle-stream'),n=document.getElementById('face_enroll'),o=document.getElementById('close-stream'),p=()=>{window.stop(),m.innerHTML='Start Stream'},q=()=>{j.src=`${c+':81'}/stream`,f(k),m.innerHTML='Stop Stream'};l.onclick=()=>{p(),j.src=`${c}/capture?_cb=${Date.now()}`,f(k)},o.onclick=()=>{p(),e(k)},m.onclick=()=>{const B='Stop Stream'===m.innerHTML;B?p():q()},n.onclick=()=>{b(n)},document.querySelectorAll('.default-action').forEach(B=>{B.onchange=()=>b(B)});const r=document.getElementById('agc'),s=document.getElementById('agc_gain-group'),t=document.getElementById('gainceiling-group');r.onchange=()=>{b(r),r.checked?(f(t),e(s)):(e(t),f(s))};const u=document.getElementById('aec'),v=document.getElementById('aec_value-group');u.onchange=()=>{b(u),u.checked?e(v):f(v)};const w=document.getElementById('awb_gain'),x=document.getElementById('wb_mode-group');w.onchange=()=>{b(w),w.checked?f(x):e(x)};const y=document.getElementById('face_detect'),z=document.getElementById('face_recognize'),A=document.getElementById('framesize');A.onchange=()=>{b(A),5<A.value&&(i(y,!1),i(z,!1))},y.onchange=()=>{return 5<A.value?(alert('Please select CIF or lower resolution before enabling this feature!'),void i(y,!1)):void(b(y),!y.checked&&(g(n),i(z,!1)))},z.onchange=()=>{return 5<A.value?(alert('Please select CIF or lower resolution before enabling this feature!'),void i(z,!1)):void(b(z),z.checked?(h(n),i(y,!0)):g(n))}});
@@ -860,7 +870,111 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   context.closePath();
                   context.fill();
                 }      
+                var centerShoulderX = (k[5].position.x+k[6].position.x)/2;
+                var centerShoulderY = (k[5].position.y+k[6].position.y)/2;  
+                context.beginPath();
+                context.arc(centerShoulderX, centerShoulderY, 3, 0,2*Math.PI);
+                context.closePath();
+                context.fill();
+                
                 result.innerHTML += "[" + n + "]" + k[i].part + ", " + Math.round(k[i].score*100) + "%, " + Math.round(k[i].position.x) + ", " + Math.round(k[i].position.y) + "<br>";
+                
+                context.lineWidth = 2;
+                
+                if (n<Number(document.getElementById("persons").value)) {
+                  var scoreLimit = 0.5;
+                  if (k[0].score>scoreLimit) {
+                    context.strokeStyle = "#0000FF";
+                    context.beginPath();
+                    context.moveTo(k[0].position.x,k[0].position.y);
+                    context.lineTo(centerShoulderX, centerShoulderY);
+                    context.stroke(); 
+                  }
+                  if (k[5].score>scoreLimit) {
+                    context.strokeStyle = "#FF3333";
+                    context.beginPath();
+                    context.moveTo(centerShoulderX, centerShoulderY);
+                    context.lineTo(k[5].position.x,k[5].position.y);
+                    context.stroke();
+                  }
+                  if (k[6].score>scoreLimit) {
+                    context.strokeStyle = "#FF8800";
+                    context.beginPath();
+                    context.moveTo(centerShoulderX, centerShoulderY);
+                    context.lineTo(k[6].position.x,k[6].position.y);
+                    context.stroke();              
+                  }
+                  if (k[5].score>scoreLimit&&k[7].score>scoreLimit) {
+                    context.strokeStyle = "#FFCC22";
+                    context.beginPath();
+                    context.moveTo(k[5].position.x,k[5].position.y);
+                    context.lineTo(k[7].position.x,k[7].position.y);
+                    context.stroke();
+                  }
+                  if (k[6].score>scoreLimit&&k[8].score>scoreLimit) {
+                    context.strokeStyle = "#66DD00";
+                    context.beginPath();
+                    context.moveTo(k[6].position.x,k[6].position.y);
+                    context.lineTo(k[8].position.x,k[8].position.y);
+                    context.stroke();
+                  }
+                  if (k[7].score>scoreLimit&&k[9].score>scoreLimit) {
+                    context.strokeStyle = "#FFFF77";
+                    context.beginPath();
+                    context.moveTo(k[7].position.x,k[7].position.y);
+                    context.lineTo(k[9].position.x,k[9].position.y);
+                    context.stroke(); 
+                  }
+                  if (k[8].score>scoreLimit&&k[10].score>scoreLimit) {
+                    context.strokeStyle = "#BBFF66";
+                    context.beginPath();
+                    context.moveTo(k[8].position.x,k[8].position.y);
+                    context.lineTo(k[10].position.x,k[10].position.y);
+                    context.stroke();      
+                  }
+                  if (k[11].score>scoreLimit) {
+                    context.strokeStyle = "#227700";
+                    context.beginPath();
+                    context.moveTo(centerShoulderX, centerShoulderY);
+                    context.lineTo(k[11].position.x,k[11].position.y);
+                    context.stroke(); 
+                  }
+                  if (k[12].score>scoreLimit) {
+                    context.strokeStyle = "#9999FF";
+                    context.beginPath();
+                    context.moveTo(centerShoulderX, centerShoulderY);
+                    context.lineTo(k[12].position.x,k[12].position.y);
+                    context.stroke();    
+                  }
+                  if (k[11].score>scoreLimit&&k[13].score>scoreLimit) {
+                    context.strokeStyle = "#77FF00";
+                    context.beginPath();
+                    context.moveTo(k[11].position.x,k[11].position.y);
+                    context.lineTo(k[13].position.x,k[13].position.y);
+                    context.stroke(); 
+                  }
+                  if (k[12].score>scoreLimit&&k[14].score>scoreLimit) {
+                    context.strokeStyle = "#0066FF";
+                    context.beginPath();
+                    context.moveTo(k[12].position.x,k[12].position.y);
+                    context.lineTo(k[14].position.x,k[14].position.y);
+                    context.stroke();  
+                  }
+                  if (k[13].score>scoreLimit&&k[15].score>scoreLimit) {
+                    context.strokeStyle = "#99FF99";
+                    context.beginPath();
+                    context.moveTo(k[13].position.x,k[13].position.y);
+                    context.lineTo(k[15].position.x,k[15].position.y);
+                    context.stroke(); 
+                  }
+                  if (k[14].score>scoreLimit&&k[16].score>scoreLimit) {
+                    context.strokeStyle = "#0000CC";
+                    context.beginPath();
+                    context.moveTo(k[14].position.x,k[14].position.y);
+                    context.lineTo(k[16].position.x,k[16].position.y);
+                    context.stroke(); 
+                  }
+                }
               }
             }
           }
