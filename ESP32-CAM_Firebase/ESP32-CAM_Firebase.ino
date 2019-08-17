@@ -2,6 +2,9 @@
 ESP32-CAM Save a captured photo(Base64) to firebase. 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-16 23:00
 https://www.facebook.com/francefu
+
+ESP32-CAM How to save a captured photo to Firebase
+https://youtu.be/Hx7bdpev1ug
 */
 
 const char* ssid = "xxxxxxxxxx";
