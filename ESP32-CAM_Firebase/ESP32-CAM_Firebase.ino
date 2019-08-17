@@ -10,11 +10,9 @@ https://youtu.be/Hx7bdpev1ug
 const char* ssid = "xxxxxxxxxx";
 const char* password = "xxxxxxxxxx";
 
-//xxxxxxxxxx.firebaseio.com
-String FIREBASE_HOST = "xxxxxxxxxx.firebaseio.com";
-
 //https://console.firebase.google.com/project/xxxxxxxxxx/settings/serviceaccounts/databasesecrets
-String FIREBASE_AUTH = "xxxxxxxxxx";
+String FIREBASE_HOST = "xxxxxxxxxx.firebaseio.com";
+String FIREBASE_AUTH = "xxxxxxxxxxxxxxxxxxxx";
 
 //Library: https://github.com/mobizt/Firebase-ESP32
 #include "FirebaseESP32.h"
