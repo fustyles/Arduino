@@ -1,6 +1,6 @@
 /*
 ESP32-CAM MULTI-PERSON POSE
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-13 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-18 08:00
 https://www.facebook.com/francefu
 */
 
@@ -822,6 +822,19 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <option value="5">5</option>
         <option value="999">No Limit</option>
         </select>
+        ScoreLimit
+        <select id="scorelimit">
+        <option value="0">0%</option>  
+        <option value="0.1">10%</option>
+        <option value="0.2">20%</option>
+        <option value="0.3">30%</option>
+        <option value="0.4">40%</option>
+        <option value="0.5" selected>50%</option>
+        <option value="0.6">60%</option>
+        <option value="0.7">70%</option>
+        <option value="0.8">80%</option>
+        <option value="0.9">90%</option>
+        </select>
         <br>        
         <div id="result">Please wait for loading model.<div>
         <script>
@@ -849,8 +862,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       await Model.estimatePoses(ShowImage, {flipHorizontal: false, decodingMethod: 'multi-person', maxPoseDetections: 5, scoreThreshold: 0.5, nmsRadius: 20}).then(pose => {
         //console.log(pose.score);
         //console.log(pose.keypoints);
-
-        result.innerHTML = "";
+        result.innerHTML = "";  
+        var scoreLimit = Number(document.getElementById("scorelimit").value);
+        
         canvas.setAttribute("width", ShowImage.width);
         canvas.setAttribute("height", ShowImage.height);
         context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height);   
@@ -861,7 +875,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             var k = pose[n].keypoints;
             if (k.length>0) {
               for (var i=0;i<k.length;i++) {
-                if (k[i].score>0.1) {
+                if (k[i].score>=scoreLimit) {
                   const x = k[i].position.x;
                   const y = k[i].position.y;
                   context.fillStyle="#00FFFF";
@@ -869,111 +883,110 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   context.arc(x, y, Math.round(s/200), 0,2*Math.PI);
                   context.closePath();
                   context.fill();
-                }      
-                var centerShoulderX = (k[5].position.x+k[6].position.x)/2;
-                var centerShoulderY = (k[5].position.y+k[6].position.y)/2;  
-                context.beginPath();
-                context.arc(centerShoulderX, centerShoulderY, 3, 0,2*Math.PI);
-                context.closePath();
-                context.fill();
-                
+                }     
                 result.innerHTML += "[" + n + "]" + k[i].part + ", " + Math.round(k[i].score*100) + "%, " + Math.round(k[i].position.x) + ", " + Math.round(k[i].position.y) + "<br>";
-                
-                context.lineWidth = 2;
-                
-                if (n<Number(document.getElementById("persons").value)) {
-                  var scoreLimit = 0.5;
-                  if (k[0].score>scoreLimit) {
-                    context.strokeStyle = "#0000FF";
-                    context.beginPath();
-                    context.moveTo(k[0].position.x,k[0].position.y);
-                    context.lineTo(centerShoulderX, centerShoulderY);
-                    context.stroke(); 
-                  }
-                  if (k[5].score>scoreLimit) {
-                    context.strokeStyle = "#FF3333";
-                    context.beginPath();
-                    context.moveTo(centerShoulderX, centerShoulderY);
-                    context.lineTo(k[5].position.x,k[5].position.y);
-                    context.stroke();
-                  }
-                  if (k[6].score>scoreLimit) {
-                    context.strokeStyle = "#FF8800";
-                    context.beginPath();
-                    context.moveTo(centerShoulderX, centerShoulderY);
-                    context.lineTo(k[6].position.x,k[6].position.y);
-                    context.stroke();              
-                  }
-                  if (k[5].score>scoreLimit&&k[7].score>scoreLimit) {
-                    context.strokeStyle = "#FFCC22";
-                    context.beginPath();
-                    context.moveTo(k[5].position.x,k[5].position.y);
-                    context.lineTo(k[7].position.x,k[7].position.y);
-                    context.stroke();
-                  }
-                  if (k[6].score>scoreLimit&&k[8].score>scoreLimit) {
-                    context.strokeStyle = "#66DD00";
-                    context.beginPath();
-                    context.moveTo(k[6].position.x,k[6].position.y);
-                    context.lineTo(k[8].position.x,k[8].position.y);
-                    context.stroke();
-                  }
-                  if (k[7].score>scoreLimit&&k[9].score>scoreLimit) {
-                    context.strokeStyle = "#FFFF77";
-                    context.beginPath();
-                    context.moveTo(k[7].position.x,k[7].position.y);
-                    context.lineTo(k[9].position.x,k[9].position.y);
-                    context.stroke(); 
-                  }
-                  if (k[8].score>scoreLimit&&k[10].score>scoreLimit) {
-                    context.strokeStyle = "#BBFF66";
-                    context.beginPath();
-                    context.moveTo(k[8].position.x,k[8].position.y);
-                    context.lineTo(k[10].position.x,k[10].position.y);
-                    context.stroke();      
-                  }
-                  if (k[11].score>scoreLimit) {
-                    context.strokeStyle = "#227700";
-                    context.beginPath();
-                    context.moveTo(centerShoulderX, centerShoulderY);
-                    context.lineTo(k[11].position.x,k[11].position.y);
-                    context.stroke(); 
-                  }
-                  if (k[12].score>scoreLimit) {
-                    context.strokeStyle = "#9999FF";
-                    context.beginPath();
-                    context.moveTo(centerShoulderX, centerShoulderY);
-                    context.lineTo(k[12].position.x,k[12].position.y);
-                    context.stroke();    
-                  }
-                  if (k[11].score>scoreLimit&&k[13].score>scoreLimit) {
-                    context.strokeStyle = "#77FF00";
-                    context.beginPath();
-                    context.moveTo(k[11].position.x,k[11].position.y);
-                    context.lineTo(k[13].position.x,k[13].position.y);
-                    context.stroke(); 
-                  }
-                  if (k[12].score>scoreLimit&&k[14].score>scoreLimit) {
-                    context.strokeStyle = "#0066FF";
-                    context.beginPath();
-                    context.moveTo(k[12].position.x,k[12].position.y);
-                    context.lineTo(k[14].position.x,k[14].position.y);
-                    context.stroke();  
-                  }
-                  if (k[13].score>scoreLimit&&k[15].score>scoreLimit) {
-                    context.strokeStyle = "#99FF99";
-                    context.beginPath();
-                    context.moveTo(k[13].position.x,k[13].position.y);
-                    context.lineTo(k[15].position.x,k[15].position.y);
-                    context.stroke(); 
-                  }
-                  if (k[14].score>scoreLimit&&k[16].score>scoreLimit) {
-                    context.strokeStyle = "#0000CC";
-                    context.beginPath();
-                    context.moveTo(k[14].position.x,k[14].position.y);
-                    context.lineTo(k[16].position.x,k[16].position.y);
-                    context.stroke(); 
-                  }
+              }
+              
+              context.lineWidth = 2;
+              if (n<Number(document.getElementById("persons").value)) {
+                var centerShoulderX = (k[5].position.x+k[6].position.x)/2;
+                var centerShoulderY = (k[5].position.y+k[6].position.y)/2; 
+                if (k[5].score>=scoreLimit&&k[6].score>=scoreLimit) {
+                  context.beginPath();
+                  context.arc(centerShoulderX, centerShoulderY, 3, 0,2*Math.PI);
+                  context.closePath();
+                  context.fill();
+                }              
+                if (k[0].score>=scoreLimit) {
+                  context.strokeStyle = "#0000FF";
+                  context.beginPath();
+                  context.moveTo(k[0].position.x,k[0].position.y);
+                  context.lineTo(centerShoulderX, centerShoulderY);
+                  context.stroke(); 
+                }
+                if (k[5].score>=scoreLimit) {
+                  context.strokeStyle = "#FF3333";
+                  context.beginPath();
+                  context.moveTo(centerShoulderX, centerShoulderY);
+                  context.lineTo(k[5].position.x,k[5].position.y);
+                  context.stroke();
+                }
+                if (k[6].score>=scoreLimit) {
+                  context.strokeStyle = "#FF8800";
+                  context.beginPath();
+                  context.moveTo(centerShoulderX, centerShoulderY);
+                  context.lineTo(k[6].position.x,k[6].position.y);
+                  context.stroke();              
+                }
+                if (k[5].score>=scoreLimit&&k[7].score>=scoreLimit) {
+                  context.strokeStyle = "#FFCC22";
+                  context.beginPath();
+                  context.moveTo(k[5].position.x,k[5].position.y);
+                  context.lineTo(k[7].position.x,k[7].position.y);
+                  context.stroke();
+                }
+                if (k[6].score>=scoreLimit&&k[8].score>=scoreLimit) {
+                  context.strokeStyle = "#66DD00";
+                  context.beginPath();
+                  context.moveTo(k[6].position.x,k[6].position.y);
+                  context.lineTo(k[8].position.x,k[8].position.y);
+                  context.stroke();
+                }
+                if (k[7].score>=scoreLimit&&k[9].score>=scoreLimit) {
+                  context.strokeStyle = "#FFFF77";
+                  context.beginPath();
+                  context.moveTo(k[7].position.x,k[7].position.y);
+                  context.lineTo(k[9].position.x,k[9].position.y);
+                  context.stroke(); 
+                }
+                if (k[8].score>=scoreLimit&&k[10].score>=scoreLimit) {
+                  context.strokeStyle = "#BBFF66";
+                  context.beginPath();
+                  context.moveTo(k[8].position.x,k[8].position.y);
+                  context.lineTo(k[10].position.x,k[10].position.y);
+                  context.stroke();      
+                }
+                if (k[11].score>=scoreLimit) {
+                  context.strokeStyle = "#227700";
+                  context.beginPath();
+                  context.moveTo(centerShoulderX, centerShoulderY);
+                  context.lineTo(k[11].position.x,k[11].position.y);
+                  context.stroke(); 
+                }
+                if (k[12].score>=scoreLimit) {
+                  context.strokeStyle = "#9999FF";
+                  context.beginPath();
+                  context.moveTo(centerShoulderX, centerShoulderY);
+                  context.lineTo(k[12].position.x,k[12].position.y);
+                  context.stroke();    
+                }
+                if (k[11].score>=scoreLimit&&k[13].score>=scoreLimit) {
+                  context.strokeStyle = "#77FF00";
+                  context.beginPath();
+                  context.moveTo(k[11].position.x,k[11].position.y);
+                  context.lineTo(k[13].position.x,k[13].position.y);
+                  context.stroke(); 
+                }
+                if (k[12].score>=scoreLimit&&k[14].score>=scoreLimit) {
+                  context.strokeStyle = "#0066FF";
+                  context.beginPath();
+                  context.moveTo(k[12].position.x,k[12].position.y);
+                  context.lineTo(k[14].position.x,k[14].position.y);
+                  context.stroke();  
+                }
+                if (k[13].score>=scoreLimit&&k[15].score>=scoreLimit) {
+                  context.strokeStyle = "#99FF99";
+                  context.beginPath();
+                  context.moveTo(k[13].position.x,k[13].position.y);
+                  context.lineTo(k[15].position.x,k[15].position.y);
+                  context.stroke(); 
+                }
+                if (k[14].score>=scoreLimit&&k[16].score>=scoreLimit) {
+                  context.strokeStyle = "#0000CC";
+                  context.beginPath();
+                  context.moveTo(k[14].position.x,k[14].position.y);
+                  context.lineTo(k[16].position.x,k[16].position.y);
+                  context.stroke(); 
                 }
               }
             }
