@@ -5,6 +5,9 @@ https://www.facebook.com/francefu
 
 ESP32-CAM How to save a captured photo to Firebase
 https://youtu.be/Hx7bdpev1ug
+
+How to set up Firebase
+https://iotdesignpro.com/projects/iot-controlled-led-using-firebase-database-and-esp32
 */
 
 const char* ssid = "xxxxxxxxxx";
