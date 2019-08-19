@@ -4,6 +4,8 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-21 19:00
 https://www.facebook.com/francefu
 
 Motor Driver IC -> PWM(gpio12, gpio13), digitalWrite(gpio14, gpio15)
+If I output PWM to GPIO 15 using ledcWrite, it will lose control. Why?
+
 Servo -> gpio2 (common ground)
 
 http://APIP
