@@ -99,7 +99,7 @@ void setup() {
   ledcSetup(5, 5000, 8);      
   ledcAttachPin(13, 6);
   ledcSetup(6, 5000, 8); 
-  ledcWrite(6,0);   
+  ledcWrite(6, 0);   
   pinMode(15, OUTPUT);  //If I output PWM to GPIO 15 using ledcWrite, it will lose control. Why?
   pinMode(14, OUTPUT);  
 
