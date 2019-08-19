@@ -3,7 +3,7 @@ ESP32-CAM Servo
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-10 01:00
 https://www.facebook.com/francefu
 
-Servo -> VCC, GND, gpio2
+Servo -> 3.3V, GND, gpio2
 
 http://APIP
 http://STAIP
