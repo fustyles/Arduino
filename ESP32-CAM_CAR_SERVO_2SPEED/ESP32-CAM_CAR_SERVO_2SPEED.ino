@@ -4,7 +4,7 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-19 19:00
 https://www.facebook.com/francefu
 
 Motor Driver IC -> gpio12, gpio13, gpio14, gpio15
-Servo -> VCC, GND, gpio2
+Servo -> gpio2 (common ground)
 
 http://APIP
 http://STAIP
