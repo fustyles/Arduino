@@ -3,7 +3,7 @@ ESP32-CAM knn-classifier
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-10 21:00
 https://www.facebook.com/francefu
 
-Servo -> 3.3V, GND, gpio2
+Servo -> gpio2 (common ground)
 */
 
 #include <esp32-hal-ledc.h>
