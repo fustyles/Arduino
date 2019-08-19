@@ -98,7 +98,8 @@ void setup() {
   ledcAttachPin(12, 5);
   ledcSetup(5, 2000, 8);      
   ledcAttachPin(13, 6);
-  ledcSetup(6, 2000, 8); 
+  ledcSetup(6, 2000, 8);
+  ledcWrite(6,0);  
   ledcAttachPin(15, 7);
   ledcSetup(7, 2000, 8);      
   ledcAttachPin(14, 8);
