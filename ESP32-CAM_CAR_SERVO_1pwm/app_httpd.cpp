@@ -6,6 +6,10 @@ https://www.facebook.com/francefu
 Motor Driver IC -> PWM(gpio12, gpio13, gpio14, gpio15)
 Servo -> gpio2 (common ground)
 
+If you output PWM to GPIO 15 using ledcWrite and the wheel loses control, you could use the codes.
+https://github.com/fustyles/Arduino/tree/master/ESP32-CAM_CAR_SERVO_2digitalwrite
+https://github.com/fustyles/Arduino/tree/master/ESP32-CAM_CAR_SERVO_1pwm1digitalwrite
+
 http://APIP
 http://STAIP
 */
