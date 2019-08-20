@@ -5,6 +5,9 @@ https://www.facebook.com/francefu
 
 Motor Driver IC (L9110S) -> PWM(gpio12, gpio13), digitalWrite(gpio14, gpio15)
 If I output PWM to GPIO 15 using ledcWrite, it will lose control. Why?
+
+http://APIP
+http://STAIP
 */
 
 #include <esp32-hal-ledc.h>
