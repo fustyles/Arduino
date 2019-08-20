@@ -4,6 +4,9 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-19 23:00
 https://www.facebook.com/francefu
 
 Motor Driver IC -> digitalWrite(gpio12, gpio13, gpio14, gpio15)
+
+http://APIP
+http://STAIP
 */
 
 #include <esp32-hal-ledc.h>
