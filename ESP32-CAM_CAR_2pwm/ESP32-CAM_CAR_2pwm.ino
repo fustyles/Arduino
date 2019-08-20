@@ -8,6 +8,9 @@ Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
 If you output PWM to GPIO 15 using ledcWrite and the wheel loses control, you could use the codes.
 https://github.com/fustyles/Arduino/tree/master/ESP32-CAM_CAR_2digitalwrite
 https://github.com/fustyles/Arduino/tree/master/ESP32-CAM_CAR_1pwm1digitalwrite
+
+http://APIP
+http://STAIP
 */
 
 const char* ssid = "xxxxx";
