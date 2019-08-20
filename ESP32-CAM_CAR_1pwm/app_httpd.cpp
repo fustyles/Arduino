@@ -4,6 +4,10 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-14 12:00
 https://www.facebook.com/francefu
 
 Motor Driver IC -> PWM(gpio12, gpio13, gpio14, gpio15)
+
+If you output PWM to GPIO 15 using ledcWrite and it loses control, you could use the codes.
+https://github.com/fustyles/Arduino/tree/master/ESP32-CAM_CAR_2digitalwrite
+https://github.com/fustyles/Arduino/tree/master/ESP32-CAM_CAR_1pwm1digitalwrite
 */
 
 #include <esp32-hal-ledc.h>
