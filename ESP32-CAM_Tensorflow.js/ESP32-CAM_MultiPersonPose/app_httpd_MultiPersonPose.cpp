@@ -888,8 +888,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   result.innerHTML += "[" + n + "]" + k[i].part + ", " + Math.round(k[i].score*100) + "%, " + Math.round(k[i].position.x) + ", " + Math.round(k[i].position.y) + "<br>";
                 }
               
-              context.lineWidth = 2;
-              
+                context.lineWidth = 2;
                 var centerShoulderX = (k[5].position.x+k[6].position.x)/2;
                 var centerShoulderY = (k[5].position.y+k[6].position.y)/2; 
                 if (k[5].score>=scoreLimit&&k[6].score>=scoreLimit) {
