@@ -825,11 +825,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         ScoreLimit
         <select id="scorelimit">
         <option value="0">0%</option>  
-        <option value="0.1">10%</option>
+        <option value="0.1" selected>10%</option>
         <option value="0.2">20%</option>
         <option value="0.3">30%</option>
         <option value="0.4">40%</option>
-        <option value="0.5" selected>50%</option>
+        <option value="0.5">50%</option>
         <option value="0.6">60%</option>
         <option value="0.7">70%</option>
         <option value="0.8">80%</option>
@@ -872,23 +872,24 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 
         if (pose.length>0) {
           for (var n=0;n<pose.length;n++) {
-            var k = pose[n].keypoints;
-            if (k.length>0) {
-              for (var i=0;i<k.length;i++) {
-                if (k[i].score>=scoreLimit) {
-                  const x = k[i].position.x;
-                  const y = k[i].position.y;
-                  context.fillStyle="#00FFFF";
-                  context.beginPath();
-                  context.arc(x, y, Math.round(s/200), 0,2*Math.PI);
-                  context.closePath();
-                  context.fill();
-                }     
-                result.innerHTML += "[" + n + "]" + k[i].part + ", " + Math.round(k[i].score*100) + "%, " + Math.round(k[i].position.x) + ", " + Math.round(k[i].position.y) + "<br>";
-              }
+            if (n<Number(document.getElementById("persons").value)) {
+              var k = pose[n].keypoints;
+              if (k.length>0) {
+                for (var i=0;i<k.length;i++) {
+                  if (k[i].score>=scoreLimit) {
+                    const x = k[i].position.x;
+                    const y = k[i].position.y;
+                    context.fillStyle="#00FFFF";
+                    context.beginPath();
+                    context.arc(x, y, Math.round(s/200), 0,2*Math.PI);
+                    context.closePath();
+                    context.fill();
+                  }     
+                  result.innerHTML += "[" + n + "]" + k[i].part + ", " + Math.round(k[i].score*100) + "%, " + Math.round(k[i].position.x) + ", " + Math.round(k[i].position.y) + "<br>";
+                }
               
               context.lineWidth = 2;
-              if (n<Number(document.getElementById("persons").value)) {
+              
                 var centerShoulderX = (k[5].position.x+k[6].position.x)/2;
                 var centerShoulderY = (k[5].position.y+k[6].position.y)/2; 
                 if (k[5].score>=scoreLimit&&k[6].score>=scoreLimit) {
