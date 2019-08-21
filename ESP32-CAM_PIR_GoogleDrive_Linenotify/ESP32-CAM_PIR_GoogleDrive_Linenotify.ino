@@ -131,7 +131,7 @@ void setup()
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  config.frame_size = FRAMESIZE_VGA;  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+  config.frame_size = FRAMESIZE_VGA;  // VGA|CIF|QVGA|HQVGA|QQVGA
   config.jpeg_quality = 10;
   config.fb_count = 1;
   
@@ -171,7 +171,7 @@ void saveCapturedImage() {
       return;
     }
   
-    // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+    // VGA|CIF|QVGA|HQVGA|QQVGA
     char *input = (char *)fb->buf;
     char output[base64_enc_len(3)];
     String imageFile = "data:image/jpeg;base64,";
@@ -182,6 +182,7 @@ void saveCapturedImage() {
     String Data = myLineNotifyToken+myFoldername+myFilename+myImage;
     
     esp_camera_fb_return(fb);
+    
     /*
     // HQVGA|QQVGA
     int encodedLen = base64_enc_len(fb->len);
