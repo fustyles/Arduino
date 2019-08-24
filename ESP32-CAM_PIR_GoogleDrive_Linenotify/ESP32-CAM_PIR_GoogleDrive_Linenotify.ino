@@ -183,15 +183,6 @@ void saveCapturedImage() {
     
     esp_camera_fb_return(fb);
     
-    /*
-    // HQVGA|QQVGA
-    int encodedLen = base64_enc_len(fb->len);
-    char imageFile[encodedLen];    
-    base64_encode(imageFile, (char *)fb->buf, fb->len);
-    //Serial.println(imageFile);
-    String Data = myLineNotifyToken+myFoldername+myFilename+(myImage+urlencode(String(imageFile)));
-    */ 
-    
     Serial.println("Send a captured image to Google Drive.");
     
     client.println("POST " + myScript + " HTTP/1.1");
