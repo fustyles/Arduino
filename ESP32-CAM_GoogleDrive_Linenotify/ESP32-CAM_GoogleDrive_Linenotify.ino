@@ -129,7 +129,7 @@ void setup()
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  config.frame_size = FRAMESIZE_VGA;  // VGA|CIF|QVGA|HQVGA|QQVGA
+  config.frame_size = FRAMESIZE_VGA;  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
   config.jpeg_quality = 10;
   config.fb_count = 1;
   
@@ -174,15 +174,6 @@ void saveCapturedImage() {
     String Data = myLineNotifyToken+myFoldername+myFilename+myImage;
     
     esp_camera_fb_return(fb);
-    
-    /*
-    // HQVGA|QQVGA
-    int encodedLen = base64_enc_len(fb->len);
-    char imageFile[encodedLen];    
-    base64_encode(imageFile, (char *)fb->buf, fb->len);
-    //Serial.println(imageFile);
-    String Data = myLineNotifyToken+myFoldername+myFilename+(myImage+urlencode(String(imageFile)));
-    */ 
     
     Serial.println("Send a captured image to Google Drive.");
     
