@@ -942,7 +942,6 @@ void saveCapturedImage() {
   if (client.connect(myDomain, 443)) {
     Serial.println("Connection successful");
     
-    // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
     char *input = (char *)fb->buf;
     char output[base64_enc_len(3)];
     String imageFile = "data:image/jpeg;base64,";
