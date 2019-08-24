@@ -163,7 +163,6 @@ void saveCapturedImage() {
       return;
     }
   
-    // VGA|CIF|QVGA|HQVGA|QQVGA
     char *input = (char *)fb->buf;
     char output[base64_enc_len(3)];
     String imageFile = "data:image/jpeg;base64,";
