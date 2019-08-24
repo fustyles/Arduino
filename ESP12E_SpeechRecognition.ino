@@ -195,9 +195,13 @@ void loop()
            */
 
             if (str2=="") str2="en-US";
-            if (Feedback=="") Feedback="Redirect..."; 
-            Feedback+="<script>setTimeout(() => location.href = \""+page+"?"+WiFi.localIP().toString()+"&"+str2+"&"+str3+"\", 3000);</script>";
-            
+            if (Feedback=="") {
+              Feedback="Redirect..."; 
+              Feedback+="<script>setTimeout(() => location.href = \""+page+"?"+WiFi.localIP().toString()+"&"+str2+"&"+str3+"\", 1000);</script>";
+            }
+            else {
+              Feedback+="<script>setTimeout(() => location.href = \""+page+"?"+WiFi.localIP().toString()+"&"+str2+"&"+str3+"\", 3000);</script>";
+            }
             client.println("HTTP/1.1 200 OK");
             client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
             client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
