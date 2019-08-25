@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Custom Vision 
+ESP32-CAM Custom Vision (Object Detection)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-26 00:30
 https://www.facebook.com/francefu
 */
