@@ -1,17 +1,7 @@
 /*
 ESP32-CAM Custom Vision 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-14 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-26 00:30
 https://www.facebook.com/francefu
-
-Google Apps Script
-https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doPost.gs
-You must allow anyone and anonymous to execute the google script.
-How to add a new script
-https://www.youtube.com/watch?v=f46VBqWwUuI
-
-https://script.google.com/home
-https://script.google.com/home/executions
-https://drive.google.com/drive/my-drive
 */
 
 // Enter your WiFi ssid and password
