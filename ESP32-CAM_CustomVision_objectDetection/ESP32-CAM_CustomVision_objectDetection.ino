@@ -130,11 +130,11 @@ void setup()
 
 void loop()
 {
-  predictionCapturedImage();
+  predictionCapturedPhoto();
   delay(10000);
 }
 
-void predictionCapturedImage() {
+void predictionCapturedPhoto() {
   Serial.println("Connect to " + String(myDomain));
   WiFiClientSecure client;
   
