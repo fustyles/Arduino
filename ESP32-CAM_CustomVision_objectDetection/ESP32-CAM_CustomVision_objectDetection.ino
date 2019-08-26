@@ -9,7 +9,7 @@ const char* ssid     = "xxxxx";   //your network SSID
 const char* password = "xxxxx";   //your network password
 
 const char* myDomain = "xxxxxxxxxxx.api.cognitive.microsoft.com";
-String myResource = "/customvision/v3.0/Prediction/xxxxxxxxxxxxxxxxxxxxxxxxxxxxx/detect/iterations/Iteration1/image";    //Create your Google Apps Script and replace the "myScript" path.
+String myResource = "/customvision/v3.0/Prediction/xxxxxxxxxxxxxxxxxxxxxxxxxxxxx/detect/iterations/xxxxxxxx/image";    //Create your Google Apps Script and replace the "myScript" path.
 String myPredictionKey = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 #include <WiFi.h>
