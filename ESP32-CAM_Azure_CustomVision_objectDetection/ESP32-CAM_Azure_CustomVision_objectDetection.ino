@@ -10,7 +10,7 @@ const char* password = "xxxxx";   //your network password
 
 const char* myDomain = "xxxxxxxxxxx.api.cognitive.microsoft.com";
 String myResource = "/customvision/v3.0/Prediction/xxxxxxxxxxxxxxxxxxxxxxxxxxxxx/detect/iterations/xxxxxxxx/image";
-String myPredictionKey = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+String myKey = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -126,12 +126,14 @@ void setup()
     delay(1000);
     ESP.restart();
   }
+  
+  predictionCapturedPhoto();
 }
 
 void loop()
 {
-  predictionCapturedPhoto();
   delay(10000);
+  //predictionCapturedPhoto();
 }
 
 void predictionCapturedPhoto() {
@@ -154,7 +156,7 @@ void predictionCapturedPhoto() {
     
     client.println("POST " + myResource + " HTTP/1.1");
     client.println("Host: " + String(myDomain));
-    client.println("Prediction-Key: " + myPredictionKey);
+    client.println("Prediction-Key: " + myKey);
     client.println("Content-Length: " + String(fb->len));
     client.println("Content-Type: application/octet-stream");
     client.println();
