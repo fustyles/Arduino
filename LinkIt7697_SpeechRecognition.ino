@@ -6,7 +6,7 @@ https://www.facebook.com/francefu
 Command Format :  
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 
-http://192.168.4.1/?speech=text;language;checkbox
+http://STAIP/?speech=text;language;checkbox
 */
 
 #include <LWiFi.h>
