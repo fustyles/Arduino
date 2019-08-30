@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Servo Rotation automatically
+ESP32-CAM Servo rotates back and forth.
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-20 21:00
 https://www.facebook.com/francefu
 
