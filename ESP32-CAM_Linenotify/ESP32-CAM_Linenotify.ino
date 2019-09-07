@@ -195,12 +195,11 @@ void sendCapturedImage2LineNotify()
        }
     }
     client_tcp.stop();
-    esp_camera_fb_return(fb);
     Serial.println(Feedback);
   }
   else {
     Serial.println("Connected to notify-api.line.me failed.");
-    esp_camera_fb_return(fb);
     Serial.println("Connection failed");  
   }
+  esp_camera_fb_return(fb);
 }
