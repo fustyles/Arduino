@@ -15,7 +15,6 @@ String myLineNotifyToken = "xxxxxxxxxxxxxxxxxxxx";    //Line Notify Token
 #include <WiFiClientSecure.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
-#include "Base64.h"
 
 #include "esp_camera.h"
 
