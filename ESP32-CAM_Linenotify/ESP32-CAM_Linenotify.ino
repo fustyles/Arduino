@@ -169,7 +169,7 @@ void sendCapturedImage2LineNotify()
     client_tcp.println();
     client_tcp.print(head);
     
-    // How to modify the code to upload a big file? (UXGA|SXGA|XGA|SVGA)
+    // How to modify the code to upload a big file? (SVGA)
     client_tcp.write(fb->buf, fb->len);
     
     client_tcp.print(tail);
