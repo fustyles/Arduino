@@ -4,6 +4,7 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-9-14 02:30
 https://www.facebook.com/francefu
 
 You could only send up to 50 images to Line Notify in one hour.
+The maximum size of post-upload image is XGA(1024*768).
 */
 
 // Enter your WiFi ssid and password
