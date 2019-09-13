@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (Save a captured photo to Line Notify)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-9-7 20:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-9-14 02:30
 https://www.facebook.com/francefu
 
 You could only send up to 50 images to Line Notify in one hour.
@@ -114,7 +114,7 @@ void setup()
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  config.frame_size = FRAMESIZE_CIF;  // VGA|CIF|QVGA|HQVGA|QQVGA
+  config.frame_size = FRAMESIZE_XGA;  // XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
   config.jpeg_quality = 10;
   config.fb_count = 1;
   
@@ -168,8 +168,18 @@ void sendCapturedImage2LineNotify()
     client_tcp.println();
     client_tcp.print(head);
     
-    // How to modify the code to upload a big file? (SVGA|XGA)
-    client_tcp.write(fb->buf, fb->len);
+    uint8_t *input = fb->buf;
+    size_t fbLen = fb->len;
+    for (size_t n=0;n<fbLen;n=n+1000) {
+      if (n+1000<fbLen) {
+        client_tcp.write(input, 1000);
+        input += 1000;
+      }
+      else if (fbLen%1000>0) {
+        size_t remainder = fbLen%1000;
+        client_tcp.write(input, remainder);
+      }
+    } 
     
     client_tcp.print(tail);
     client_tcp.println();
