@@ -171,16 +171,16 @@ void sendCapturedImage2LineNotify()
     
     uint8_t *fbBuf = fb->buf;
     size_t fbLen = fb->len;
-    for (size_t n=0;n<fbLen;n=n+1000) {
-      if (n+1000<fbLen) {
-        client_tcp.write(fbBuf, 1000);
-        fbBuf += 1000;
+    for (size_t n=0;n<fbLen;n=n+1024) {
+      if (n+1024<fbLen) {
+        client_tcp.write(fbBuf, 1024);
+        fbBuf += 1024;
       }
-      else if (fbLen%1000>0) {
-        size_t remainder = fbLen%1000;
+      else if (fbLen%1024>0) {
+        size_t remainder = fbLen%1024;
         client_tcp.write(fbBuf, remainder);
       }
-    } 
+    }  
     
     client_tcp.print(tail);
     client_tcp.println();
@@ -212,7 +212,6 @@ void sendCapturedImage2LineNotify()
   }
   else {
     Serial.println("Connected to notify-api.line.me failed.");
-    Serial.println("Connection failed");  
   }
   esp_camera_fb_return(fb);
 }
