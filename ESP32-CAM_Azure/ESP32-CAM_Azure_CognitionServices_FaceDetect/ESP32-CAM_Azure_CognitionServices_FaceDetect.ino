@@ -3,7 +3,7 @@ ESP32-CAM Azure Cognition Services (Face Detect)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-31 00:00
 https://www.facebook.com/francefu
 
-Buy me a coffee
+If you like my content, please consider buying me a coffee.
 https://www.buymeacoffee.com/e4LnbiU
 */
 
