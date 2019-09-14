@@ -2,6 +2,9 @@
 ESP32-CAM knn-classifier
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-13 21:00
 https://www.facebook.com/francefu
+
+Buy me a coffee
+https://www.buymeacoffee.com/e4LnbiU
 */
 
 const char* ssid = "xxxxx";
