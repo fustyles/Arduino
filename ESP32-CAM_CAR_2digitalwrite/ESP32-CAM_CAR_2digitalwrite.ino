@@ -7,6 +7,9 @@ Motor Driver IC -> digitalWrite(gpio12, gpio13, gpio14, gpio15)
 
 http://APIP
 http://STAIP
+
+Buy me a coffee
+https://www.buymeacoffee.com/e4LnbiU
 */
 
 const char* ssid = "xxxxx";
