@@ -9,7 +9,7 @@ If I output PWM to GPIO 15 using ledcWrite, it will lose control. Why?
 http://APIP
 http://STAIP
 
-Buy me a coffee
+If you like my content, please consider buying me a coffee.
 https://www.buymeacoffee.com/e4LnbiU
 */
 
