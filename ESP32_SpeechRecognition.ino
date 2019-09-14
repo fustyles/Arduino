@@ -17,6 +17,9 @@ http://STAIP/?mac
 http://STAIP/?restart
 http://STAIP/?resetwifi=ssid;password
 http://STAIP/?speech=text;language;checkbox
+
+Buy me a coffee
+https://www.buymeacoffee.com/e4LnbiU
 */
 
 #include <WiFi.h>
