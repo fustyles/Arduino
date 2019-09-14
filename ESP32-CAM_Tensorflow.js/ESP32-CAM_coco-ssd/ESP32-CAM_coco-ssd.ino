@@ -6,7 +6,7 @@ https://www.facebook.com/francefu
 Class
 https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
 
-Buy me a coffee
+If you like my content, please consider buying me a coffee.
 https://www.buymeacoffee.com/e4LnbiU
 */
 
