@@ -2,6 +2,9 @@
 ESP32-CAM MULTI-PERSON POSE
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-18 08:00
 https://www.facebook.com/francefu
+
+Buy me a coffee
+https://www.buymeacoffee.com/e4LnbiU
 */
 
 const char* ssid = "xxxxx";
