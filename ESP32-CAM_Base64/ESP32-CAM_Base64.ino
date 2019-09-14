@@ -2,7 +2,11 @@
 ESP32-CAM Base64
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-14 21:00
 https://www.facebook.com/francefu
+
+Buy me a coffee
+https://www.buymeacoffee.com/e4LnbiU
 */
+
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
 #include "Base64.h"
