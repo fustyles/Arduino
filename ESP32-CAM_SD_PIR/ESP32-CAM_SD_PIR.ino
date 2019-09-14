@@ -5,7 +5,7 @@ https://www.facebook.com/francefu
 
 PIR Motion Sensor -> GND, gpio13, 3.3V
 
-Buy me a coffee
+If you like my content, please consider buying me a coffee.
 https://www.buymeacoffee.com/e4LnbiU
 */
 
