@@ -8,7 +8,7 @@ Servo -> VCC, GND, gpio2
 http://APIP
 http://STAIP
 
-Buy me a coffee
+If you like my content, please consider buying me a coffee.
 https://www.buymeacoffee.com/e4LnbiU
 */
 
