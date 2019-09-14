@@ -5,6 +5,9 @@ https://www.facebook.com/francefu
 
 http://APIP
 http://STAIP
+
+Buy me a coffee
+https://www.buymeacoffee.com/e4LnbiU
 */
 
 const char* ssid = "xxxxx";
