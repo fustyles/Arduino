@@ -13,7 +13,7 @@ https://script.google.com/home
 https://script.google.com/home/executions
 https://drive.google.com/drive/my-drive
 
-Buy me a coffee
+If you like my content, please consider buying me a coffee.
 https://www.buymeacoffee.com/e4LnbiU
 */
 
