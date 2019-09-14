@@ -4,9 +4,6 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-10 21:00
 https://www.facebook.com/francefu
 
 Servo -> gpio2 (common ground)
-
-Buy me a coffee
-https://www.buymeacoffee.com/e4LnbiU
 */
 
 #include "esp_camera.h"
