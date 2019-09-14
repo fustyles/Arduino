@@ -4,6 +4,9 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-24 00:00
 https://www.facebook.com/francefu
 
 PIR Motion Sensor -> GND, gpio13, 3.3V
+
+Buy me a coffee
+https://www.buymeacoffee.com/e4LnbiU
 */
 
 int count = 0;
