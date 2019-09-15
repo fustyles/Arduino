@@ -2,9 +2,6 @@
 ESP32-CAM Custom Vision (Classification)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-9-7 22:00
 https://www.facebook.com/francefu
-
-If you like my content, please consider buying me a coffee.
-https://www.buymeacoffee.com/e4LnbiU
 */
 
 // Enter your WiFi ssid and password
