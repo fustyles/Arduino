@@ -5,9 +5,6 @@ https://www.facebook.com/francefu
 
 Class
 https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
-
-If you like my content, please consider buying me a coffee.
-https://www.buymeacoffee.com/e4LnbiU
 */
 
 const char* ssid = "xxxxx";
