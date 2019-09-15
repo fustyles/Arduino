@@ -8,9 +8,6 @@ https://youtu.be/Hx7bdpev1ug
 
 How to set up Firebase
 https://iotdesignpro.com/projects/iot-controlled-led-using-firebase-database-and-esp32
-
-If you like my content, please consider buying me a coffee.
-https://www.buymeacoffee.com/e4LnbiU
 */
 
 const char* ssid = "xxxxxxxxxx";
