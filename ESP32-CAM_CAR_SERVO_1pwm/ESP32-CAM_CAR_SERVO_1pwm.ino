@@ -12,9 +12,6 @@ https://github.com/fustyles/Arduino/tree/master/ESP32-CAM_CAR_SERVO_1pwm1digital
 
 http://APIP
 http://STAIP
-
-If you like my content, please consider buying me a coffee.
-https://www.buymeacoffee.com/e4LnbiU
 */
 
 const char* ssid = "xxxxx";
