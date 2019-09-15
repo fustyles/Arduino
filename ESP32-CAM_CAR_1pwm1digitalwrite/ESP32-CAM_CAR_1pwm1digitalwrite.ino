@@ -8,9 +8,6 @@ If I output PWM to GPIO 15 using ledcWrite, it will lose control. Why?
 
 http://APIP
 http://STAIP
-
-If you like my content, please consider buying me a coffee.
-https://www.buymeacoffee.com/e4LnbiU
 */
 
 const char* ssid = "xxxxx";
