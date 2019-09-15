@@ -2,9 +2,6 @@
 ESP32-CAM (Save a captured photo to SD card)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-24 12:00
 https://www.facebook.com/francefu
-
-If you like my content, please consider buying me a coffee.
-https://www.buymeacoffee.com/e4LnbiU
 */
 
 int count = 0;
