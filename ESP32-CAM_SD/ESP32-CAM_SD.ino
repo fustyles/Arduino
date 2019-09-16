@@ -4,8 +4,6 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-24 12:00
 https://www.facebook.com/francefu
 */
 
-int count = 0;
-
 #include "esp_camera.h"
 #include <WiFi.h>
 #include "soc/soc.h"
@@ -13,6 +11,7 @@ int count = 0;
 #include "FS.h"
 #include "SD_MMC.h"
 #include "esp_camera.h"
+#include <EEPROM.h>
 
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
 //            or another board which has PSRAM enabled
@@ -113,8 +112,11 @@ void setup() {
 }
 
 void loop() {
-  count++;
-  saveCapturedImage(String(count)); 
+  EEPROM.begin(sizeof(int)*4);
+  EEPROM.write(0, EEPROM.read(0)+1);
+  EEPROM.commit(); 
+  saveCapturedImage(String(EEPROM.read(0))); 
+  
   delay(10000);
 }
 
