@@ -114,10 +114,10 @@ void setup() {
   
   SD_MMC.end(); 
 
-  EEPROM.begin(1);
+  EEPROM.begin(sizeof(int)*4);
   EEPROM.write(0, EEPROM.read(0)+1);
   EEPROM.commit(); 
-  saveCapturedImage(String(EEPROM.read(0)));  //0.jpg ~ 255.jpg (Loop)
+  saveCapturedImage(String(EEPROM.read(0)));
 }
 
 void loop() {
