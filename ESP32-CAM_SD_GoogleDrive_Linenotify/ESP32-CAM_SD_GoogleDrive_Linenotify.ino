@@ -187,7 +187,7 @@ void loop()
   myFilename = "&myFilename="+String(EEPROM.read(0))+".jpg";
   saveCapturedImage2GoogleDrive();
   
-  delay(10000);
+  delay(72000);
 }
 
 void saveCapturedImage2GoogleDrive() {
