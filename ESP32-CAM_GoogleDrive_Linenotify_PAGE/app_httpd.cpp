@@ -18,8 +18,8 @@ String uint64ToString(uint64_t);
 String urlencode(String);
 
 const char* myDomain = "script.google.com";
-String myScript = "/macros/s/AKfycbyacDRLUMaOxoJ2IKR6_oqvah8-ma2YuwIW94q5Wn5ZxeHQsgw/exec";    //Create your Google Apps Script and replace the "myScript" path.
-String myLineNotifyToken = "myToken=lHaUbj8vv1ZCvoxzwhpoarxNYR4PKYIHtVOS72qS6Lt";    //Line Notify Token
+String myScript = "/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec";    //Create your Google Apps Script and replace the "myScript" path.
+String myLineNotifyToken = "myToken=xxxxxxxxxxxxx";    //Line Notify Token
 String myFoldername = "&myFoldername=ESP32-CAM";
 String myFilename;
 String myImage = "&myFile=";
