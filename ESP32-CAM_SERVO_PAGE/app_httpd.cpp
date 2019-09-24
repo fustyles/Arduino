@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Remote Control Car 
+ESP32-CAM Control one servo 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-1 02:00
 https://www.facebook.com/francefu
 
