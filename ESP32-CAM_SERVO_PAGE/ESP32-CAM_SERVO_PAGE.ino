@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Servo
+ESP32-CAM Control one servo
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-10 01:00
 https://www.facebook.com/francefu
 
