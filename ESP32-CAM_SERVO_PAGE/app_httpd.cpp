@@ -1,10 +1,12 @@
 /*
-ESP32-CAM Control one servo 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-1 02:00
+ESP32-CAM Control one servo
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-10 01:00
 https://www.facebook.com/francefu
 
-Motor Driver IC (L9110S) -> gpio12, gpio13, gpio14, gpio15
 Servo -> gpio2 (common ground)
+
+http://APIP
+http://STAIP
 */
 
 #include <esp32-hal-ledc.h>
