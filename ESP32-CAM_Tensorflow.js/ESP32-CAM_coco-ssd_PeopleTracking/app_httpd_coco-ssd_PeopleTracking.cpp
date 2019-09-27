@@ -1,6 +1,6 @@
 /*
 ESP32-CAM People Tracking (tfjs coco-ssd)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-9-27 12:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-9-27 15:00
 https://www.facebook.com/francefu
 
 Servo1(horizontal) -> gpio2 (common ground)
@@ -546,7 +546,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if (val < 1700)
         val = 1700;   
       val = 1700 + (8000 - val);   
-      ledcWrite(3, val);
+      ledcWrite(3, val); 
     }  
     else if(!strcmp(variable, "servo2")) {
       ledcAttachPin(13, 5);  
@@ -556,7 +556,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if (val < 1700)
         val = 1700;   
       val = 1700 + (8000 - val);   
-      ledcWrite(5, val);
+      ledcWrite(5, val); 
     } 
     else {
         res = -1;
@@ -634,11 +634,10 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <tr style="visibility:hidden"><td colspan="3"><button id="toggle-stream"></button><button id="face_enroll" class="disabled" disabled="disabled"></button></td></tr>
                 <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}"></td></tr>
                 <tr><td>Rotate</td><td align="center" colspan="2">
-                    <select onchange="document.getElementById('stream').style.transform='rotate('+this.value+')';">
-                      <option value="0deg">0deg</option>
-                      <option value="90deg">90deg</option>
-                      <option value="180deg">180deg</option>
-                      <option value="270deg">270deg</option>
+                    MirrorImage
+                    <select id="mirrorimage">
+                      <option value="1">yes</option>
+                      <option value="0">no</option>
                     </select>
                 </td></tr> 
                 <tr style="display:none"><td colspan="3"><iframe id="ifr"></iframe></td></tr>
@@ -857,6 +856,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var Model;
     var angle1Value1 = 4850;
     var angle1Value2 = 4850;
+
     function ObjectDetect() {
       result.innerHTML = "Please wait for loading model.";
       cocoSsd.load().then(cocoSsd_Model => {
@@ -865,11 +865,20 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         getStill.style.display = "block";
       }); 
     }
-    function DetectImage() {
-      Model.detect(ShowImage).then(Predictions => {
-        canvas.setAttribute("width", ShowImage.width);
-        canvas.setAttribute("height", ShowImage.height);      
-        context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height); 
+    function DetectImage() { 
+      canvas.setAttribute("width", ShowImage.width);
+      canvas.setAttribute("height", ShowImage.height);
+      var mirrorimage = Number(document.getElementById("mirrorimage").value);
+      if (mirrorimage==1) {
+        context.translate((canvas.width + ShowImage.width) / 2, 0);
+        context.scale(-1, 1);
+        context.drawImage(ShowImage, 0, 0, ShowImage.width, ShowImage.height);
+        context.setTransform(1, 0, 0, 1, 0, 0);
+      }
+      else
+        context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height);
+      
+      Model.detect(canvas).then(Predictions => {
         var s = (ShowImage.width>ShowImage.height)?ShowImage.width:ShowImage.height;
         var trackState = 0;
         var x, y, width, height;
@@ -897,47 +906,50 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             if (Predictions[i].class=="person"&&Predictions[i].score>=0.5&&trackState==0) {   
               try{
                 trackState = 1;
-                console.log(Predictions[i].score);
                 
                 var midX = Math.round(x)+Math.round(width)/2;
                 if (midX>(40+320/2)) {
-                  if (midX>260)
-                    angle1Value1+=350;
-                  else
-                    angle1Value1+=175;
+                  if (midX>260) {
+                    if (mirrorimage==1) {angle1Value1-=350;}else{angle1Value1+=350;}
+                  } else {
+                    if (mirrorimage==1) {angle1Value1-=175;}else{angle1Value1+=175;}
+                  }
                   if (angle1Value1 > 7650) angle1Value1 = 7650;
+                  if (angle1Value1 < 2050) angle1Value1 = 2050;
                   ifr.src = document.location.origin+'/control?var=servo1&val='+angle1Value1; 
-                  console.log(angle1Value1);
                 }
                 else if (midX<(320/2)-40) {
-                  if (midX<60)
-                    angle1Value1-=350;
-                  else
-                    angle1Value1-=175;
-                  if (angle1Value1 < 2050) angle1Value1 = 2050;
+                  if (midX<60) {
+                    if (mirrorimage==1) {angle1Value1+=350;}else{angle1Value1-=350;}
+                  } else {
+                    if (mirrorimage==1) {angle1Value1+=175;}else{angle1Value1-=175;}
+                  }
+                  if (angle1Value1 > 7650) angle1Value1 = 7650;
+                  if (angle1Value1 < 2050) angle1Value1 = 2050;                  
                   ifr.src = document.location.origin+'/control?var=servo1&val='+angle1Value1;  
-                  console.log(angle1Value1);
                 }
                   
                 var midY = Math.round(y)+Math.round(height)/2;
-                if (midY>(240/2+40)) {
-                  if (midY>200)
+                if (midY>(240/2+30)) {
+                  if (midY>195) {
                     angle1Value2-=300;
-                  else
-                    angle1Value2-=150;  
-                  if (angle1Value2 < 2050) angle1Value2 = 2050;
-                  ifr.src = document.location.origin+'/control?var=servo2&val='+angle1Value2; 
-                  console.log(angle1Value1);
-                }
-                else if (midY<(240/2)-40) {
-                  if (midY<40)
-                    angle1Value2+=300;
-                  else
-                    angle1Value2+=150;   
+                  } else {
+                    angle1Value2-=150; 
+                  }
                   if (angle1Value2 > 7650) angle1Value2 = 7650;
+                  if (angle1Value2 < 2050) angle1Value2 = 2050;                  
+                  ifr.src = document.location.origin+'/control?var=servo2&val='+angle1Value2; 
+                }
+                else if (midY<(240/2)-30) {
+                  if (midY<45) {
+                    angle1Value2+=300;
+                  } else {
+                    angle1Value2+=150;   
+                  }
+                  if (angle1Value2 > 7650) angle1Value2 = 7650;
+                  if (angle1Value2 < 2050) angle1Value2 = 2050;                  
                   ifr.src = document.location.origin+'/control?var=servo2&val='+angle1Value2;  
-                  console.log(angle1Value1);
-                }              
+                }            
               }
               catch(e){}
             }  

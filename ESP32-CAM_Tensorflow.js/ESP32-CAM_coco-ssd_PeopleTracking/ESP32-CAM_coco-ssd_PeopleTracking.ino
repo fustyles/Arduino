@@ -1,6 +1,6 @@
 /*
 ESP32-CAM People Tracking (tfjs coco-ssd)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-9-27 12:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-9-27 15:00
 https://www.facebook.com/francefu
 
 Servo1(horizontal) -> gpio2 (common ground)
