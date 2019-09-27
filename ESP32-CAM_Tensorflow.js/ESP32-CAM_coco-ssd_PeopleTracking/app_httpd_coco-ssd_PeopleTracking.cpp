@@ -1,6 +1,6 @@
 /*
 ESP32-CAM People Tracking (tfjs coco-ssd)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-9-27 15:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-9-27 16:00
 https://www.facebook.com/francefu
 
 Servo1(horizontal) -> gpio2 (common ground)
@@ -634,6 +634,20 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <tr style="visibility:hidden"><td colspan="3"><button id="toggle-stream"></button><button id="face_enroll" class="disabled" disabled="disabled"></button></td></tr>
                 <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}"></td></tr>
                 <tr><td colspan="3">
+                    ScoreLimit
+                    <select id="score">
+                      <option value="1.0">1</option>
+                      <option value="0.9">0.9</option>
+                      <option value="0.8">0.8</option>
+                      <option value="0.7">0.7</option>
+                      <option value="0.6">0.6</option>
+                      <option value="0.5" selected="selected">0.5</option>
+                      <option value="0.4">0.4</option>
+                      <option value="0.3">0.3</option>
+                      <option value="0.2">0.2</option>
+                      <option value="0.1">0.1</option>
+                      <option value="0">0</option>
+                    </select>
                     MirrorImage
                     <select id="mirrorimage">
                       <option value="1">yes</option>
@@ -880,6 +894,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       
       Model.detect(canvas).then(Predictions => {
         var s = (ShowImage.width>ShowImage.height)?ShowImage.width:ShowImage.height;
+        var score = Number(document.getElementById("score").value);
+        console.log(score);
         var trackState = 0;
         var x, y, width, height;
         //console.log('Predictions: ', Predictions);
@@ -903,7 +919,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             result.innerHTML+= "[ "+i+" ] "+Predictions[i].class+", "+Math.round(Predictions[i].score*100)+"%, "+Math.round(x)+", "+Math.round(y)+", "+Math.round(width)+", "+Math.round(height)+"<br>";
             
             //https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
-            if (Predictions[i].class=="person"&&Predictions[i].score>=0.5&&trackState==0) {   
+            if (Predictions[i].class=="person"&&Predictions[i].score>=score&&trackState==0) {   
               try{
                 trackState = 1;
                 
