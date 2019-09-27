@@ -1,6 +1,6 @@
 /*
 ESP32-CAM People Tracking (tfjs coco-ssd)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-9-26 16:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-9-27 12:00
 https://www.facebook.com/francefu
 
 Servo1(horizontal) -> gpio2 (common ground)
@@ -547,7 +547,6 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         val = 1700;   
       val = 1700 + (8000 - val);   
       ledcWrite(3, val);
-      delay(100); 
     }  
     else if(!strcmp(variable, "servo2")) {
       ledcAttachPin(13, 5);  
@@ -558,7 +557,6 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         val = 1700;   
       val = 1700 + (8000 - val);   
       ledcWrite(5, val);
-      delay(100); 
     } 
     else {
         res = -1;
@@ -642,7 +640,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                       <option value="180deg">180deg</option>
                       <option value="270deg">270deg</option>
                     </select>
-                </td></tr>
+                </td></tr> 
                 <tr style="display:none"><td colspan="3"><iframe id="ifr"></iframe></td></tr>
                 <tr><td colspan="3"><canvas id="canvas" width="0" height="0"></canvas></td></tr>
                 </table>
@@ -874,14 +872,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height); 
         var s = (ShowImage.width>ShowImage.height)?ShowImage.width:ShowImage.height;
         var trackState = 0;
+        var x, y, width, height;
         //console.log('Predictions: ', Predictions);
         if (Predictions.length>0) {
           result.innerHTML = "";
           for (var i=0;i<Predictions.length;i++) {
-            const x = Predictions[i].bbox[0];
-            const y = Predictions[i].bbox[1];
-            const width = Predictions[i].bbox[2];
-            const height = Predictions[i].bbox[3];
+            x = Number(Predictions[i].bbox[0]);
+            y = Number(Predictions[i].bbox[1]);
+            width = Number(Predictions[i].bbox[2]);
+            height = Number(Predictions[i].bbox[3]);
             context.lineWidth = Math.round(s/200);
             context.strokeStyle = "#00FFFF";
             context.beginPath();
@@ -901,29 +900,41 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 console.log(Predictions[i].score);
                 
                 var midX = Math.round(x)+Math.round(width)/2;
-                if (midX>(30+320/2)) {
-                  angle1Value1+=175;
-                  if (angle1Value1 > 7825) angle1Value1 = 7825;
+                if (midX>(40+320/2)) {
+                  if (midX>260)
+                    angle1Value1+=350;
+                  else
+                    angle1Value1+=175;
+                  if (angle1Value1 > 7650) angle1Value1 = 7650;
                   ifr.src = document.location.origin+'/control?var=servo1&val='+angle1Value1; 
                   console.log(angle1Value1);
                 }
-                else if (midX<(320/2)-30) {
-                  angle1Value1-=175;
-                  if (angle1Value1 < 1875) angle1Value1 = 1875;
+                else if (midX<(320/2)-40) {
+                  if (midX<60)
+                    angle1Value1-=350;
+                  else
+                    angle1Value1-=175;
+                  if (angle1Value1 < 2050) angle1Value1 = 2050;
                   ifr.src = document.location.origin+'/control?var=servo1&val='+angle1Value1;  
                   console.log(angle1Value1);
                 }
                   
                 var midY = Math.round(y)+Math.round(height)/2;
-                if (midY>(240/2+30)) {
-                  angle1Value2-=175;
-                  if (angle1Value2 < 1875) angle1Value2 = 1875;
+                if (midY>(240/2+40)) {
+                  if (midY>200)
+                    angle1Value2-=300;
+                  else
+                    angle1Value2-=150;  
+                  if (angle1Value2 < 2050) angle1Value2 = 2050;
                   ifr.src = document.location.origin+'/control?var=servo2&val='+angle1Value2; 
                   console.log(angle1Value1);
                 }
-                else if (midY<(240/2)-30) {
-                  angle1Value2+=175;
-                  if (angle1Value2 > 7825) angle1Value2 = 7825;
+                else if (midY<(240/2)-40) {
+                  if (midY<40)
+                    angle1Value2+=300;
+                  else
+                    angle1Value2+=150;   
+                  if (angle1Value2 > 7650) angle1Value2 = 7650;
                   ifr.src = document.location.origin+'/control?var=servo2&val='+angle1Value2;  
                   console.log(angle1Value1);
                 }              
