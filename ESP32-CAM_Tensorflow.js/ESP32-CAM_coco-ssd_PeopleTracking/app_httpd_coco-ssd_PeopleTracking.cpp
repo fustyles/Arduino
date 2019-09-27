@@ -633,7 +633,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <tr><td colspan="3"><button id="get-still" style="display:none">Start Object Detection (coco-ssd)</button></td></tr>
                 <tr style="visibility:hidden"><td colspan="3"><button id="toggle-stream"></button><button id="face_enroll" class="disabled" disabled="disabled"></button></td></tr>
                 <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}"></td></tr>
-                <tr><td>Rotate</td><td align="center" colspan="2">
+                <tr><td colspan="3">
                     MirrorImage
                     <select id="mirrorimage">
                       <option value="1">yes</option>
