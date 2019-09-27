@@ -643,7 +643,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                       <option value="270deg">270deg</option>
                     </select>
                 </td></tr>
-                <tr style="visibility:hidden"><td colspan="3"><iframe id="ifr"></iframe></td></tr>
+                <tr style="display:none"><td colspan="3"><iframe id="ifr"></iframe></td></tr>
                 <tr><td colspan="3"><canvas id="canvas" width="0" height="0"></canvas></td></tr>
                 </table>
             </section>
