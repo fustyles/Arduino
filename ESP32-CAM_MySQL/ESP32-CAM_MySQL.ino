@@ -16,7 +16,7 @@ char dbUser[] = "xxx";
 char dbPassword[] = "xxx";
 String databaseName = "xxx";
 String tableName = "xxx";
-String columnName = "xxx";
+String columnName = "xxx";   //Data Type: TEXT
 
 #include <WiFi.h>
 #include <MySQL_Connection.h>
