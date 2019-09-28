@@ -148,11 +148,7 @@ void SaveCapaturedPhoto2mySQL() {
 
     esp_camera_fb_return(fb);
 
-    Serial.println("Image size = " + String(imageFile.length()));
-    if (imageFile.length()>=65000) {  //TYPE: TEXT
-      Serial.println("Image size is too large. ("+String(imageFile.length())+")");
-      return;
-    }    
+    Serial.println("Image size = " + String(imageFile.length()));   
 
     MySQL_Cursor *cur_mem = new MySQL_Cursor(&conn);
     String INSERT_SQL = "INSERT INTO "+databaseName+"."+tableName+" ("+columnName+") VALUES ('"+imageFile+"')";
