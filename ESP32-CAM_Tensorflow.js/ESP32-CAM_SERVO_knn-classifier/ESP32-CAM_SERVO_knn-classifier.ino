@@ -3,7 +3,7 @@ ESP32-CAM knn-classifier
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-21 19:00
 https://www.facebook.com/francefu
 
-Servo -> VCC, GND, gpio2
+Servo -> gpio2 (common ground)
 
 How to enable WebGL in Chrome.
 https://superuser.com/questions/836832/how-can-i-enable-webgl-in-my-browser
