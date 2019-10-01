@@ -1,6 +1,6 @@
 /*
-ESP32-CAM Webduino Car, knn-classifier
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-9-22 11:00
+ESP32-CAM knn-classifier Webduino MQTT
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-10-1 21:00
 https://www.facebook.com/francefu
 */
 
