@@ -644,7 +644,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 </table>
             </section>          
             <div id="logo">
-                <label for="nav-toggle-cb" id="nav-toggle">&#9776;&nbsp;&nbsp;Toggle settings</label>
+                <label for="nav-toggle-cb" id="nav-toggle">&nbsp;&nbsp;Toggle settings</label>
             </div>
             <div id="content">
                 <div id="sidebar">
