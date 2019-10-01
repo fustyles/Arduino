@@ -636,10 +636,10 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <tr><td><button id="get-still">get-still</button></td><td colspan="2"><button id="clearAllClasses">Clear Classes</button></td></tr>
                 <tr><td><button id="addExample">Train</button></td><td colspan="2"><select id="Class"><option value="0" selected="">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select> &nbsp;&nbsp;&nbsp;&nbsp;<span id="count" style="color:red">0</span></td></tr>
                 <tr><td></td><td></td><td></td></tr>
-                <tr><td>Flash</td><td colspan="2"><input type="range" id="flash" min="0" max="255" value="0" style="width:200px" onchange="try{fetch(document.location.origin+&#39;/control?var=flash&amp;val=&#39;+this.value);}catch(e){}"></td></tr>
-                <tr><td></td><td align="center"><button onclick="document.getElementById(&#39;message&#39;).innerHTML=1;">Forward(1)</button></td><td></td></tr>
-                <tr><td><button onclick="document.getElementById(&#39;message&#39;).innerHTML=3;">TurnLeft(3)</button></td><td align="center"><button onclick="document.getElementById(&#39;message&#39;).innerHTML=0;">Stop(0)</button></td><td><button onclick="document.getElementById(&#39;message&#39;).innerHTML=4;">TurnRight(4)</button></td></tr>
-                <tr><td></td><td align="center"><button onclick="document.getElementById(&#39;message&#39;).innerHTML=2;">Backard(2)</button></td><td></td></tr>
+                <tr><td>Flash</td><td colspan="2"><input type="range" id="flash" min="0" max="255" value="0" style="width:200px" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}"></td></tr>
+                <tr><td></td><td align="center"><button onclick="document.getElementById('message').innerHTML=1;">Forward(1)</button></td><td></td></tr>
+                <tr><td><button onclick="document.getElementById('message').innerHTML=3;">TurnLeft(3)</button></td><td align="center"><button onclick="document.getElementById('message').innerHTML=0;">Stop(0)</button></td><td><button onclick="document.getElementById('message').innerHTML=4;">TurnRight(4)</button></td></tr>
+                <tr><td></td><td align="center"><button onclick="document.getElementById('message').innerHTML=2;">Backard(2)</button></td><td></td></tr>
                 <tr><td><span id="message" style="display:none"></span></td><td></td><td></td></tr>                
                 </table>
             </section>          
