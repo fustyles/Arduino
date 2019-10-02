@@ -1,6 +1,6 @@
 /*
 ESP32-CAM People Tracking with Webduino MQTT (tfjs coco-ssd)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-10-1 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-10-2 21:00
 https://www.facebook.com/francefu
 
 Class
