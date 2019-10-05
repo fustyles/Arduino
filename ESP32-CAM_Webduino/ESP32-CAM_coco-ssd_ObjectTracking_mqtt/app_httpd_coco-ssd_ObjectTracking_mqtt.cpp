@@ -835,7 +835,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             </div>
         </section>
         <div><input type="checkbox" id="mqtt">Start MQTT
-        Object
+        &nbsp;&nbsp;&nbsp;&nbsp;Object
         <select id="object">
           <option value="person">person</option>
           <option value="bicycle">bicycle</option>
