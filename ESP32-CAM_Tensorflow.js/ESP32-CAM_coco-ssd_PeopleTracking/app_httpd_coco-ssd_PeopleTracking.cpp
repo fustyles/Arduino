@@ -8,6 +8,8 @@ Servo2(Vertical) -> gpio13 (common ground)
 
 Class
 https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
+
+Open the page in Chrome.
 */
 
 #include <esp32-hal-ledc.h>
