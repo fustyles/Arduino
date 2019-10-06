@@ -2,6 +2,8 @@
 ESP32-CAM BodyPix
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-13 21:00
 https://www.facebook.com/francefu
+
+Open the page in Chrome.
 */
 
 const char* ssid = "xxxxx";
