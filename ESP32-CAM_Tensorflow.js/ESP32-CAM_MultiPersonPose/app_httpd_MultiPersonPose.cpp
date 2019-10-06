@@ -2,6 +2,8 @@
 ESP32-CAM MULTI-PERSON POSE
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-18 08:00
 https://www.facebook.com/francefu
+
+Open the page in Chrome.
 */
 
 // Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
