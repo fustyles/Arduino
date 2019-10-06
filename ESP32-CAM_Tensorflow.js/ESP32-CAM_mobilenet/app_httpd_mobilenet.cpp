@@ -2,6 +2,8 @@
 ESP32-CAM mobilenet
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-13 21:00
 https://www.facebook.com/francefu
+
+Open the page in Chrome.
 */
 
 // Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
