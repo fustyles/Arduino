@@ -961,6 +961,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         //console.log('Predictions: ', Predictions);
         if (Predictions.length>0) {
           result.innerHTML = "";
+          var object = document.getElementById('object').value;
           for (var i=0;i<Predictions.length;i++) {
             x = Number(Predictions[i].bbox[0]);
             y = Number(Predictions[i].bbox[1]);
@@ -977,7 +978,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             context.fillText(Predictions[i].class, x, y);
             //context.fillText(i, x, y);
             result.innerHTML+= "[ "+i+" ] "+Predictions[i].class+", "+Math.round(Predictions[i].score*100)+"%, "+Math.round(x)+", "+Math.round(y)+", "+Math.round(width)+", "+Math.round(height)+"<br>";
-            var object = document.getElementById('object').value;
+            
             //https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
             if (Predictions[i].class==object&&Predictions[i].score>=score&&trackState==0) {   
               try{
