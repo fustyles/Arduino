@@ -1013,7 +1013,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     
     <script id="jsbin-javascript">
       (async function () {
-        var topic = "my/followme";
+        var topic = "my/xxxxx";
         var webduinoMQTTClient = new webduino.module.mqttClient();
         await webduinoMQTTClient.connect({ server: 'wss://mqtt1.webduino.io/mqtt' });
         await webduinoMQTTClient.subscribe(topic);
