@@ -5,6 +5,8 @@ https://www.facebook.com/francefu
 
 Class
 https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
+
+Open the page in Chrome.
 */
 
 // Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
