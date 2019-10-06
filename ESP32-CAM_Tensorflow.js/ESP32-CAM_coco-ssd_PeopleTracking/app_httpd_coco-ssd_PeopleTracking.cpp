@@ -11,7 +11,6 @@ https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
 
 Wiring diagram 
 https://upload.cc/i1/2019/10/06/DeCwiE.jpg
-
 1. Common ground -> Servo1, Servo2, ESP32-CAM
 2. Use external power supply.
 3. Open the page in Chrome.
