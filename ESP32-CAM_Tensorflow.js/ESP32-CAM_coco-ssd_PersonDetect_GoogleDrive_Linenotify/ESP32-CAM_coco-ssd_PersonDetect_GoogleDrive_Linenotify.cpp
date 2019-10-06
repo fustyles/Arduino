@@ -15,6 +15,8 @@ https://www.youtube.com/watch?v=f46VBqWwUuI
 https://script.google.com/home
 https://script.google.com/home/executions
 https://drive.google.com/drive/my-drive
+
+Open the page in Chrome.
 */
 
 // Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
