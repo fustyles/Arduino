@@ -1,14 +1,14 @@
 /*
 ESP32-CAM Object Tracking Car with Webduino MQTT (tfjs coco-ssd)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-10-5 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-10-6 12:00
 https://www.facebook.com/francefu
 
 Class
 https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
 */
 
-const char* ssid = "xxxxx";
-const char* password = "xxxxx";
+const char* ssid = "webduino.io";
+const char* password = "webduinoio";
 
 #include "esp_camera.h"
 #include <WiFi.h>

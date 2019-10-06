@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Object Tracking Car with Webduino MQTT (tfjs coco-ssd)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-10-5 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-10-6 12:00
 https://www.facebook.com/francefu
 
 Class
@@ -961,7 +961,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         //console.log('Predictions: ', Predictions);
         if (Predictions.length>0) {
           result.innerHTML = "";
-          var object = document.getElementById('object').value;
           for (var i=0;i<Predictions.length;i++) {
             x = Number(Predictions[i].bbox[0]);
             y = Number(Predictions[i].bbox[1]);
@@ -978,7 +977,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             context.fillText(Predictions[i].class, x, y);
             //context.fillText(i, x, y);
             result.innerHTML+= "[ "+i+" ] "+Predictions[i].class+", "+Math.round(Predictions[i].score*100)+"%, "+Math.round(x)+", "+Math.round(y)+", "+Math.round(width)+", "+Math.round(height)+"<br>";
-            
+            var object = document.getElementById('object').value;
             //https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
             if (Predictions[i].class==object&&Predictions[i].score>=score&&trackState==0) {   
               try{
@@ -1014,21 +1013,17 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     
     <script id="jsbin-javascript">
       (async function () {
-        var topic = "my/xxxxx";
+        var topic = "my/followme";
         var webduinoMQTTClient = new webduino.module.mqttClient();
         await webduinoMQTTClient.connect({ server: 'wss://mqtt1.webduino.io/mqtt' });
         await webduinoMQTTClient.subscribe(topic);
-        var message_last = "";
         setInterval(async function () {
           var message = document.getElementById('people').innerHTML;
           document.getElementById('people').innerHTML = "";
           if (document.getElementById('mqtt').checked == true&&message!="") {
-            if (message==message_last) return;
-            //console.log(message);
-            message_last=message;
             webduinoMQTTClient.send({topic: topic,message: message});
           }
-        }, 100);
+        }, 500);
       }());
     </script>      
     </body>
