@@ -5,9 +5,8 @@ You must provide stable and large enough current for ESP or the fan will not wor
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-05 22:00
 https://www.facebook.com/francefu
 
-Servo PIN -> GPIO12
-Motor Driver IC PIN1 -> GPIO14
-Motor Driver IC PIN2 -> GPIO27
+Servo -> GPIO12
+Motor Driver IC -> GPIO14, GPIO27
 
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
