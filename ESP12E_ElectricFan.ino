@@ -5,6 +5,9 @@ You must provide stable and large enough current for ESP or the fan will not wor
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-05 22:00
 https://www.facebook.com/francefu
 
+Servo -> D8 (GPIO15)
+Motor Driver IC -> D1 (GPIO5), D2 (GPIO4)
+
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
