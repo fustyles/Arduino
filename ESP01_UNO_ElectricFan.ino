@@ -4,6 +4,8 @@ ESP-01 Electric Fan (with Arduino Uno)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-05 22:00 
 https://www.facebook.com/francefu
 
+SoftwareSerial -> TX(gpio2)->D6, RX(gpio0)->D7
+
 Command Format :  
 http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
 http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
@@ -260,6 +262,8 @@ void getCommand(char c)
 
 /*
 // Arduino Uno
+// Servo -> pin8
+// Motor Driver IC -> pin10, pin11
 
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(6, 7);  // ESP01 TX(gpio2)->D6, RX(gpio0)->D7
