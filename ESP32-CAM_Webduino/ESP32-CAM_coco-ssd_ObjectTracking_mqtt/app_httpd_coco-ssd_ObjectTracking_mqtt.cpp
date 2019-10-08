@@ -632,7 +632,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                       <option value="0">no</option>
                     </select>
                 </td></tr> 
-                <tr style="display:none"><td colspan="3"><span id="people"></span></td></tr>
+                <tr style="display:none"><td colspan="3"><span id="message"></span></td></tr>
                 <tr><td colspan="3"><canvas id="canvas" width="0" height="0"></canvas></td></tr>
                 </table>
             </section>
@@ -986,8 +986,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 var midX = Math.round(x)+Math.round(width)/2;
                 var midY = Math.round(y)+Math.round(height)/2;
                 if (midX>200||midX<120||midY>150||midY<90) {
-                  people.innerHTML = Math.round((midX-160)/1.6,2)+","+Math.round((midY-120)/1.2,2)+","+Math.round(x)+","+Math.round(y)+","+Math.round(width)+","+Math.round(height);
-                  console.log(people.innerHTML);
+                  message.innerHTML = Math.round((midX-160)/1.6,2)+","+Math.round((midY-120)/1.2,2)+","+Math.round(x)+","+Math.round(y)+","+Math.round(width)+","+Math.round(height);
+                  console.log(message.innerHTML);
                 }        
               }
               catch(e){}
@@ -1021,8 +1021,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         await webduinoMQTTClient.subscribe(topic);
         var message_last = "";
         setInterval(async function () {
-          var message = document.getElementById('people').innerHTML;
-          document.getElementById('people').innerHTML = "";
+          var message = document.getElementById('message').innerHTML;
+          document.getElementById('message').innerHTML = "";
           if (document.getElementById('mqtt').checked == true&&message!="") {
             if (message==message_last) return;
             //console.log(message);
