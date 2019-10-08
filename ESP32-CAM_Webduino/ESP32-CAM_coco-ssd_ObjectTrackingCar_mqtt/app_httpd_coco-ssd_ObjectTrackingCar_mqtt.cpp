@@ -1023,7 +1023,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           if (document.getElementById('mqtt').checked == true&&message!="") {
             webduinoMQTTClient.send({topic: topic,message: message});
           }
-        }, 500);
+        }, 100);
       }());
     </script>      
     </body>

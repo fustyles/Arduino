@@ -7,8 +7,8 @@ Class
 https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
 */
 
-const char* ssid = "webduino.io";
-const char* password = "webduinoio";
+const char* ssid = "xxxxx";
+const char* password = "xxxxx";
 
 #include "esp_camera.h"
 #include <WiFi.h>
