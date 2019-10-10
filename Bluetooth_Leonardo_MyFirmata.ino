@@ -1,5 +1,5 @@
 /*
-Arduino Leonardo (keyboard,mouse) + Bluetooth or ESP...whit Uart
+Arduino Leonardo (keyboard,mouse) + Bluetooth, ESP...with Uart
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-07 13:00 
 https://www.facebook.com/francefu
