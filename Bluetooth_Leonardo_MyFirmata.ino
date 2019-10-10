@@ -45,12 +45,12 @@ PPT Remote Control
 /*
 Game (?keyboardpress=keycode1;keycode2;keycode3;presstime)
 
-?keyboardpress=215;;;100  "KEY_RIGHT_ARROW"
+?keyboardpress=215;;;100     "KEY_RIGHT_ARROW"
 ?keyboardpress=215;218;;200  "KEY_RIGHT_ARROW + KEY_UP_ARROW"
-?keyboardpress=216;;;100  "KEY_LEFT_ARROW"
+?keyboardpress=216;;;100     "KEY_LEFT_ARROW"
 ?keyboardpress=216;218;;200  "KEY_LEFT_ARROW + KEY_UP_ARROW"
-?keyboardpress=217;;;100  "KEY_DOWN_ARROW"
-?keyboardpress=218;;;200  "KEY_UP_ARROW"
+?keyboardpress=217;;;100     "KEY_DOWN_ARROW"
+?keyboardpress=218;;;200     "KEY_UP_ARROW"
 */
 
 #include <SoftwareSerial.h>
