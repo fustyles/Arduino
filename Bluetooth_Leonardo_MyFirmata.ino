@@ -43,7 +43,7 @@ PPT Remote Control
 */
 
 /*
-Flash Game (You can modify the value 200)
+Game (?keyboardpress=keycode1;keycode2;keycode3;presstime)
 
 ?keyboardpress=215;;;100  "KEY_RIGHT_ARROW"
 ?keyboardpress=215;218;;200  "KEY_RIGHT_ARROW + KEY_UP_ARROW"
