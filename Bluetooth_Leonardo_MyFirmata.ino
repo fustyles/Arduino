@@ -30,6 +30,23 @@ Keyboard Modifiers (keyboardpress)
 https://www.arduino.cc/en/Reference/KeyboardModifiers
 */
 
+/*
+?keyboardwrite=198 value="F5"
+?keyboardwrite=211 value="PAGE UP"
+?keyboardpress=133;198;;10 value="SHIFT+F5"
+?keyboardwrite=214 value="PAGE DOWN"
+?keyboardwrite=87 value="W"
+?keyboardwrite=177 value="ESC"
+?keyboardwrite=66 value="B"
+*/
+
+/*
+?keyboardpress=215;;;100  KEY_RIGHT_ARROW
+?keyboardpress=216;;;100  KEY_LEFT_ARROW
+?keyboardpress=217;;;100  KEY_DOWN_ARROW
+?keyboardpress=218;;;100  KEY_UP_ARROW
+*/
+
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(10, 11); // Bluetooth(or ESP8266) TX->D10, RX->D11 
 
