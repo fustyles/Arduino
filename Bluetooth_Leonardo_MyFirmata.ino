@@ -43,12 +43,14 @@ PPT Remote Control
 */
 
 /*
-Flash Game (You can modify the value 100)
+Flash Game (You can modify the value 200)
 
 ?keyboardpress=215;;;100  "KEY_RIGHT_ARROW"
+?keyboardpress=215;218;;200  "KEY_RIGHT_ARROW + KEY_UP_ARROW"
 ?keyboardpress=216;;;100  "KEY_LEFT_ARROW"
+?keyboardpress=216;218;;200  "KEY_LEFT_ARROW + KEY_UP_ARROW"
 ?keyboardpress=217;;;100  "KEY_DOWN_ARROW"
-?keyboardpress=218;;;100  "KEY_UP_ARROW"
+?keyboardpress=218;;;200  "KEY_UP_ARROW"
 */
 
 #include <SoftwareSerial.h>
