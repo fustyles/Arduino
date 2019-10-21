@@ -6,6 +6,8 @@ https://www.facebook.com/francefu
 Relay: gpio2
 
 Open the page in Chrome.
+
+https://www.youtube.com/watch?v=0v-ZWXZSndA
 */
 
 const char* ssid = "xxxxx";
