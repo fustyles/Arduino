@@ -1,6 +1,6 @@
 /*
 ESP32-CAM MULTI-PERSON POSE (Control Relay)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-10-21 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-10-21 21:40
 https://www.facebook.com/francefu
 
 Relay: gpio2
