@@ -1,13 +1,11 @@
 /*
 ESP32-CAM MULTI-PERSON POSE (Control Relay)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-10-21 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-10-21 21:00
 https://www.facebook.com/francefu
 
 Relay: gpio2
 
 Open the page in Chrome.
-
-https://www.youtube.com/watch?v=0v-ZWXZSndA
 */
 
 // Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
@@ -611,7 +609,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <section class="main">
             <section id="buttons">
                 <table>
-                <tr><td colspan="3"><button id="get-still" style="display:none">Start Multi-Person Pose Estimation</button><iframe id="ifr" style="display:none"></iframe><span id="state" style="display:none">0</span></td></tr>
+                <tr><td colspan="3"><button id="get-still" style="display:none">Multi-Person Pose Estimation</button><iframe id="ifr" style="display:none"></iframe>Relay:<span id="state">OFF</span></td></tr>
                 <tr style="visibility:hidden"><td colspan="3"><button id="toggle-stream"></button><button id="face_enroll" class="disabled" disabled="disabled"></button></td></tr>
                 <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}"></td></tr>
                 <tr><td colspan="3"><canvas id="canvas" width="0" height="0"></canvas></td></tr>
@@ -864,7 +862,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       posenet.load().then(function(net) {
         Model = net;
         result.innerHTML = "";
-        getStill.style.display = "block";
+        getStill.click();
       });     
     }
     
@@ -1009,7 +1007,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           var leftShoulder = posenet_person(0,"rightShoulder");
           var nose = posenet_person(0,"nose");
           if (rightWrist != '' && leftWrist != '') {
-            if (rightWrist[2] >= 0 && leftWrist[2] >= 0) {
+            if (rightWrist[2] >= 0.1 && leftWrist[2] >= 0.1) {
               var rightWristLeft = rightWrist[3];
               var rightWristTop = rightWrist[4];
               var leftWristLeft = leftWrist[3];
@@ -1021,14 +1019,14 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               var leftShoulderLeft = leftShoulder[3];
               var leftShoulderTop = leftShoulder[4];
               if ((rightWristLeft / rightShoulderLeft >= 0.8 && rightWristLeft / rightShoulderLeft <= 1.3) && ((leftShoulderLeft / leftWristLeft >= 0.8 && leftShoulderLeft / leftWristLeft <= 1.3) && ((rightWristTop / noseTop >= 0.9 && rightWristTop / noseTop <= 1.5) && (leftWristTop / noseTop >= 0.9 && leftWristTop / noseTop <= 1.5)))) {
-                if (document.getElementById("state").innerHTML == "0") {
-                  document.getElementById("state").innerHTML = "1";
+                if (document.getElementById("state").innerHTML == "OFF") {
+                  document.getElementById("state").innerHTML = "ON";
                   document.getElementById("ifr").src = document.location.origin+"/control?var=relay&val=1";
                   console.log(document.location.origin+"/control?var=relay&val=1");
                 }
               } else if (Math.abs(rightWristLeft - leftWristLeft) * 2 <= Math.abs(rightShoulderLeft - leftShoulderLeft) && (rightWristTop > rightShoulderTop && leftWristTop > rightShoulderTop)) {
-                if (document.getElementById("state").innerHTML == "1") {
-                  document.getElementById("state").innerHTML = "0";
+                if (document.getElementById("state").innerHTML == "ON") {
+                  document.getElementById("state").innerHTML = "OFF";
                   document.getElementById("ifr").src = document.location.origin+"/control?var=relay&val=0";
                   console.log(document.location.origin+"/control?var=relay&val=0");
                 }
