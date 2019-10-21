@@ -832,8 +832,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         </select>
         ScoreLimit
         <select id="scorelimit">
-        <option value="0" selected>0%</option>  
-        <option value="0.1">10%</option>
+        <option value="0">0%</option>  
+        <option value="0.1" selected>10%</option>
         <option value="0.2">20%</option>
         <option value="0.3">30%</option>
         <option value="0.4">40%</option>
