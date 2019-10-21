@@ -1007,7 +1007,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           var leftShoulder = posenet_person(0,"rightShoulder");
           var nose = posenet_person(0,"nose");
           if (rightWrist != '' && leftWrist != '') {
-            if (rightWrist[2] >= 0.1 && leftWrist[2] >= 0.1) {
+            if (rightWrist[2]>=scoreLimit&& leftWrist[2]>=scoreLimit) {
               var rightWristLeft = rightWrist[3];
               var rightWristTop = rightWrist[4];
               var leftWristLeft = leftWrist[3];
