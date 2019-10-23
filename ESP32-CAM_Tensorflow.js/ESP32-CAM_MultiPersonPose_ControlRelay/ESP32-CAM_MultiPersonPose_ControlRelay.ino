@@ -8,12 +8,12 @@ Open the page in Chrome.
 
 https://www.youtube.com/watch?v=0v-ZWXZSndA
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-10-21 21:40
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-10-24 01:00
 https://www.facebook.com/francefu
 */
 
-const char* ssid = "xxxxx";
-const char* password = "xxxxx";
+const char* ssid = "3COM";
+const char* password = "godblessyou";
 
 #include "esp_camera.h"
 #include <WiFi.h>

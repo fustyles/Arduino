@@ -1,14 +1,14 @@
 /*
 ESP32-CAM MULTI-PERSON POSE Estimation (Control Relay)
-Turn on: Both wrists are next to the ears
-Turn off: Both wrists are close or cross under the shoulders
+Turn on: Put your wrists next to your ears.
+Turn off: Make your wrists close to each other or cross them under your shoulders.
 
 Relay: gpio2
 Open the page in Chrome.
 
 https://www.youtube.com/watch?v=0v-ZWXZSndA
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-10-21 21:40
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-10-24 01:00
 https://www.facebook.com/francefu
 */
 
@@ -614,7 +614,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             <section id="buttons">
                 <table>
                 <tr><td colspan="3"><button id="get-still" style="display:none">Multi-Person Pose Estimation</button><iframe id="ifr" style="display:none"></iframe>Relay:<span id="state">OFF</span></td></tr>
-                <tr style="visibility:hidden"><td colspan="3"><button id="toggle-stream"></button><button id="face_enroll" class="disabled" disabled="disabled"></button></td></tr>
+                <tr><td>MirrorImage<select id="mirrorimage"><option value="1">yes</option><option value="0">no</option></select></td><td><button id="toggle-stream"></button></td><td><button id="face_enroll" class="disabled" disabled="disabled"></button></td></tr>
                 <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}"></td></tr>
                 <tr><td colspan="3"><canvas id="canvas" width="0" height="0"></canvas></td></tr>
                 </table>
@@ -871,17 +871,25 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     }
     
     async function DetectImage() {
-      await Model.estimatePoses(ShowImage, {flipHorizontal: false, decodingMethod: 'multi-person', maxPoseDetections: 5, scoreThreshold: 0.5, nmsRadius: 20}).then(pose => {
+      canvas.setAttribute("width", ShowImage.width);
+      canvas.setAttribute("height", ShowImage.height);
+      var mirrorimage = Number(document.getElementById("mirrorimage").value);
+      if (mirrorimage==1) {
+        context.translate((canvas.width + ShowImage.width) / 2, 0);
+        context.scale(-1, 1);
+        context.drawImage(ShowImage, 0, 0, ShowImage.width, ShowImage.height);
+        context.setTransform(1, 0, 0, 1, 0, 0);
+      }
+      else
+        context.drawImage(ShowImage, 0, 0, ShowImage.width, ShowImage.height);   
+      
+      await Model.estimatePoses(canvas, {flipHorizontal: false, decodingMethod: 'multi-person', maxPoseDetections: 5, scoreThreshold: 0.5, nmsRadius: 20}).then(pose => {
         //console.log(pose.score);
         //console.log(pose.keypoints);
         result.innerHTML = "";  
         var scoreLimit = Number(document.getElementById("scorelimit").value);
-        
-        canvas.setAttribute("width", ShowImage.width);
-        canvas.setAttribute("height", ShowImage.height);
-        context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height);   
         var s = (ShowImage.width>ShowImage.height)?ShowImage.width:ShowImage.height;
-
+        
         if (pose.length>0) {
           for (var n=0;n<pose.length;n++) {
             if (n<Number(document.getElementById("persons").value)) {
@@ -1024,13 +1032,22 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             leftAnkle
             rightAnkle
           */
-          var rightWrist = posenet_person(0,"rightWrist");
-          var rightShoulder = posenet_person(0,"rightShoulder");
-          var leftWrist = posenet_person(0,"leftWrist");
-          var leftShoulder = posenet_person(0,"leftShoulder");
-          var nose = posenet_person(0,"nose");
-          if (rightWrist != '' && leftWrist != '') {
-            if (Number(rightWrist[2])>=scoreLimit&& Number(leftWrist[2])>=scoreLimit) {
+          if (mirrorimage==1) {
+            var rightWrist = posenet_person(0,"leftWrist");
+            var rightShoulder = posenet_person(0,"leftShoulder");
+            var leftWrist = posenet_person(0,"rightWrist");
+            var leftShoulder = posenet_person(0,"rightShoulder");
+            var nose = posenet_person(0,"nose");
+          }
+          else {      
+            var rightWrist = posenet_person(0,"rightWrist");
+            var rightShoulder = posenet_person(0,"rightShoulder");
+            var leftWrist = posenet_person(0,"leftWrist");
+            var leftShoulder = posenet_person(0,"leftShoulder");
+            var nose = posenet_person(0,"nose");
+          }
+          if (rightWrist!=''&&leftWrist!=''&&rightShoulder!=''&&leftShoulder!=''&&nose!='') {
+            if (Number(rightWrist[2])>=scoreLimit&&Number(leftWrist[2])>=scoreLimit&&Number(rightShoulder[2])>=scoreLimit&&Number(leftShoulder[2])>=scoreLimit&&Number(nose[2])>=scoreLimit) {
               var rightWristLeft = Number(rightWrist[3]);
               var rightWristTop = Number(rightWrist[4]);
               var leftWristLeft = Number(leftWrist[3]);
