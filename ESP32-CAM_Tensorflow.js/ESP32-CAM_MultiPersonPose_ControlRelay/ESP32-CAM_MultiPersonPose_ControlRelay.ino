@@ -1,5 +1,8 @@
 /*
 ESP32-CAM MULTI-PERSON POSE (Control Relay)
+Turn on: Both wrists are next to the ears
+Turn off: Both wrists are close or cross under the shoulders
+
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-10-21 21:40
 https://www.facebook.com/francefu
 
