@@ -1,5 +1,5 @@
 /*
-ESP32-CAM MULTI-PERSON POSE (Control Relay)
+ESP32-CAM MULTI-PERSON POSE Estimation (Control Relay)
 Turn on: Both wrists are next to the ears
 Turn off: Both wrists are close or cross under the shoulders
 
