@@ -12,8 +12,8 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-10-24 01:00
 https://www.facebook.com/francefu
 */
 
-const char* ssid = "3COM";
-const char* password = "godblessyou";
+const char* ssid = "xxxxx";
+const char* password = "xxxxx";
 
 #include "esp_camera.h"
 #include <WiFi.h>
