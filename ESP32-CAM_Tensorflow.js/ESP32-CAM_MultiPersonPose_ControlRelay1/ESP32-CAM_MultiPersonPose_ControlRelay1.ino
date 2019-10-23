@@ -1,6 +1,6 @@
 /*
 ESP32-CAM MULTI-PERSON POSE Estimation (Control Relay)
-Turn on: Superman start flying. Your wrists are tilted on a 45 degree axis.
+Turn on: Superman start flying. Your right hand must be above your nose. Your wrists are tilted on a 45 degree axis.
 Turn off: Raise your hands above your nose
 
 Relay: gpio2
