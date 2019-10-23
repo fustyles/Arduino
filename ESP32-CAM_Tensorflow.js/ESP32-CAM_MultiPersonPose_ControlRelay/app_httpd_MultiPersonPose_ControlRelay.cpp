@@ -1030,17 +1030,17 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           var leftShoulder = posenet_person(0,"leftShoulder");
           var nose = posenet_person(0,"nose");
           if (rightWrist != '' && leftWrist != '') {
-            if (rightWrist[2]>=scoreLimit&& leftWrist[2]>=scoreLimit) {
-              var rightWristLeft = rightWrist[3];
-              var rightWristTop = rightWrist[4];
-              var leftWristLeft = leftWrist[3];
-              var leftWristTop = leftWrist[4];
-              var noseLeft = nose[3];
-              var noseTop = nose[4];
-              var rightShoulderLeft = rightShoulder[3];
-              var rightShoulderTop = rightShoulder[4];
-              var leftShoulderLeft = leftShoulder[3];
-              var leftShoulderTop = leftShoulder[4];
+            if (Number(rightWrist[2])>=scoreLimit&& Number(leftWrist[2])>=scoreLimit) {
+              var rightWristLeft = Number(rightWrist[3]);
+              var rightWristTop = Number(rightWrist[4]);
+              var leftWristLeft = Number(leftWrist[3]);
+              var leftWristTop = Number(leftWrist[4]);
+              var noseLeft = Number(nose[3]);
+              var noseTop = Number(nose[4]);
+              var rightShoulderLeft = Number(rightShoulder[3]);
+              var rightShoulderTop = Number(rightShoulder[4]);
+              var leftShoulderLeft = Number(leftShoulder[3]);
+              var leftShoulderTop = Number(leftShoulder[4]);
               if ((rightWristLeft / rightShoulderLeft >= 0.8 && rightWristLeft / rightShoulderLeft <= 1.3) && ((leftShoulderLeft / leftWristLeft >= 0.8 && leftShoulderLeft / leftWristLeft <= 1.3) && ((rightWristTop / noseTop >= 0.9 && rightWristTop / noseTop <= 1.5) && (leftWristTop / noseTop >= 0.9 && leftWristTop / noseTop <= 1.5)))) {
                 if (document.getElementById("state").innerHTML == "OFF") {
                   document.getElementById("state").innerHTML = "ON";
