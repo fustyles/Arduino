@@ -1024,10 +1024,10 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             leftAnkle
             rightAnkle
           */
-          var rightWrist = posenet_person(0,"leftWrist");  //mirror image
-          var rightShoulder = posenet_person(0,"leftShoulder");  //mirror image
-          var leftWrist = posenet_person(0,"rightWrist");  //mirror image
-          var leftShoulder = posenet_person(0,"rightShoulder");  //mirror image
+          var rightWrist = posenet_person(0,"leftWrist");
+          var rightShoulder = posenet_person(0,"leftShoulder");
+          var leftWrist = posenet_person(0,"rightWrist");
+          var leftShoulder = posenet_person(0,"rightShoulder");
           var nose = posenet_person(0,"nose");
           if (rightWrist != '' && leftWrist != '') {
             if (rightWrist[2]>=scoreLimit&& leftWrist[2]>=scoreLimit) {
