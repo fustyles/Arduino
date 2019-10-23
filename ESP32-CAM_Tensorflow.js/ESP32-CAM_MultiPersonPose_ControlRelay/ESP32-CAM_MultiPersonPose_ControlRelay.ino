@@ -1,7 +1,7 @@
 /*
 ESP32-CAM MULTI-PERSON POSE Estimation (Control Relay)
-Turn on: Both wrists are next to the ears
-Turn off: Both wrists are close or cross under the shoulders
+Turn on: Put your wrists next to your ears.
+Turn off: Make your wrists close to each other or cross them under your shoulders.
 
 Relay: gpio2
 Open the page in Chrome.
