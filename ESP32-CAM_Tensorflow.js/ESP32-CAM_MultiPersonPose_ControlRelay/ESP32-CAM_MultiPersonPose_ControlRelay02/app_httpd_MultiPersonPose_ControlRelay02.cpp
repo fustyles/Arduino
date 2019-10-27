@@ -6,7 +6,7 @@ Turn off: Raise your hands above your nose
 Relay: gpio2
 Open the page in Chrome.
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-10-24 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-10-27 22:00
 https://www.facebook.com/francefu
 */
 
