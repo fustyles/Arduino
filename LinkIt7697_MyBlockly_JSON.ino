@@ -1,6 +1,6 @@
 /* 
 LinkIt7697 (MyBlockly JSON)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-10-28 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-10-29 00:00
 https://www.facebook.com/francefu
 
 Command Format :  
@@ -14,7 +14,7 @@ http://STAIP/?digitalwrite=pin;value
 http://STAIP/?analogwrite=pin;value
 http://STAIP/?digitalread=pin
 http://STAIP/?analogread=pin
-http://STAIP/?tcp=domain;port;request;wait  //wait -> 0 or 1  (waiting for response), request-> /xxxx/xxxx
+http://STAIP/?tcp=domain;port;request;wait  //wait = 0 or 1  (waiting for response)
 http://STAIP/?ifttt=event;key;value1;value2;value3
 http://STAIP/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
 http://STAIP/?thingspeakread=request   //request -> /channels/xxxxx/fields/1.json?results=1
@@ -37,6 +37,7 @@ https://fustyles.github.io/webduino/ESP8266_MyFirmata.html
 
 const char* ssid     = "xxxxx";   //your network SSID
 const char* password = "xxxxx";   //your network password
+String LineNotifyToken = "";  //Send STAIP address to LineNotify.
 
 //I2C LCD 16x2 Library: https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads/
 #include <LiquidCrystal_I2C.h>
@@ -276,7 +277,18 @@ void setup()
         digitalWrite(LED_BUILTIN,LOW);
         delay(100);
       }
-    }  
+      if (LineNotifyToken!="") LineNotify(LineNotifyToken,"message="+WiFi.localIP().toString(),1);
+    } 
+    else {
+      pinMode(LED_BUILTIN, OUTPUT);
+      for (int i=0;i<3;i++)
+      {
+        digitalWrite(LED_BUILTIN,HIGH);
+        delay(500);
+        digitalWrite(LED_BUILTIN,LOW);
+        delay(500);
+      }
+    }
 
     Serial.println("");
     Serial.println("STAIP address: ");
