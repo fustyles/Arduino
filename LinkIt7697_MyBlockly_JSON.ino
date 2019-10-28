@@ -14,7 +14,7 @@ http://STAIP/?digitalwrite=pin;value
 http://STAIP/?analogwrite=pin;value
 http://STAIP/?digitalread=pin
 http://STAIP/?analogread=pin
-http://STAIP/?tcp=domain;port;request;wait  //wait = 0 or 1  (waiting for response)
+http://STAIP/?tcp=domain;port;request;wait  //wait -> 0 or 1  (waiting for response), request-> /xxxx/xxxx
 http://STAIP/?ifttt=event;key;value1;value2;value3
 http://STAIP/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
 http://STAIP/?thingspeakread=request   //request -> /channels/xxxxx/fields/1.json?results=1
