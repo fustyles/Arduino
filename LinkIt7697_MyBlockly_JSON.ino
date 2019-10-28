@@ -37,7 +37,7 @@ https://fustyles.github.io/webduino/ESP8266_MyFirmata.html
 
 const char* ssid     = "xxxxx";   //your network SSID
 const char* password = "xxxxx";   //your network password
-String LineNotifyToken = "";  //Send STAIP address to LineNotify.
+String LineNotifyToken = "";  //Send STAIP address message to LineNotify.
 
 //I2C LCD 16x2 Library: https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads/
 #include <LiquidCrystal_I2C.h>
