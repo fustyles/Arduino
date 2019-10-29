@@ -21,7 +21,8 @@ http://STAIP/?ifttt=event;key;value1;value2;value3
 http://STAIP/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
 http://STAIP/?thingspeakread=request   
 --> request = /channels/xxxxx/fields/1.json?results=1
-http://STAIP/?linenotify=token;request   
+http://STAIP/?linenotify=token;request
+--> request = message=xxxxx
 --> request = message=xxxxx&stickerPackageId=xxxxx&stickerId=xxxxx
 http://STAIP/?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 http://STAIP/?i2cLcd=address;text1;text2   
