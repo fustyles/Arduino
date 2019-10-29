@@ -26,7 +26,7 @@ http://STAIP/?linenotify=token;request
 --> request = message=xxxxx&stickerPackageId=xxxxx&stickerId=xxxxx
 http://STAIP/?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 http://STAIP/?i2cLcd=address;text1;text2   
---> 0x27=39, 0x3F=63   
+--> address(Decimal) : 0x27=39, 0x3F=63   
 --> SDA->gpio9, SCL->gpio8
 
 If you don't need to get response from ESP8266 and want to execute commands quickly, 
