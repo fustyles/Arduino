@@ -962,7 +962,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   setTimeout(function(){getStill.click();},250);
                 }
                 catch(e) { 
-                  getStill.click();
+                  setTimeout(function(){getStill.click();},150);
                 } 
               }
             }
