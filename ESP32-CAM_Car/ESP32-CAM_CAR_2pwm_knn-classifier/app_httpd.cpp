@@ -688,7 +688,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <section class="main">
             <section id="buttons">
                 <table>
-                <tr><td><button id="toggle-stream"></button></td><td><button id="face_enroll" class="disabled" disabled="disabled"></button></td><td></td></tr>
+                <tr style="display:none"><td><button id="toggle-stream"></button></td><td><button id="face_enroll" class="disabled" disabled="disabled"></button></td><td></td></tr>
                 <tr><td><button onclick="saveModel();">Save Model</button></td><td><input type="file" id="getModel" style="width:150px"></input></td><td></td></tr>
                 <tr><td><button id="get-still">get-still</button></td><td><button id="clearAllClasses">Clear Classes</button></td><td></td></tr>
                 <tr><td><button id="addExample">Train</button></td><td><select id="Class"><option value="0" selected>0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select></td><td><span id="count" style="color:red">0</span></td></tr>
