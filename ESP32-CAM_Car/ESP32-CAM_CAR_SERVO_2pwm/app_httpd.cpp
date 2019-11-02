@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Remote Control Car 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-1 02:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-3 00:30
 https://www.facebook.com/francefu
 
 Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
@@ -17,7 +17,6 @@ http://STAIP
 #include <esp32-hal-ledc.h>
 int speedL = 255;  //You can adjust the speed of the wheel. (gpio12, gpio13)
 int speedR = 255;  //You can adjust the speed of the wheel. (gpio14, gpio15)
-int noStop = 0;
 
 // Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
 //
@@ -560,6 +559,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if (val < 0)
         val = 0;       
       speedL = val;
+      Serial.println("LeftSpeed = " + String(val));       
     }  
     else if(!strcmp(variable, "speedR")) {
       if (val > 255)
@@ -567,10 +567,8 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if (val < 0)
         val = 0;       
       speedR = val;
-    }        
-    else if(!strcmp(variable, "nostop")) {
-      noStop = val;
-    }             
+      Serial.println("RightSpeed = " + String(val));       
+    }                     
     else if(!strcmp(variable, "car")) {  
       if (val==1) {
         Serial.println("Forward");     
@@ -578,15 +576,13 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         ledcWrite(6,0);
         ledcWrite(7,speedR);
         ledcWrite(8,0);   
-        delay(200);
       }
       else if (val==2) {
         Serial.println("TurnLeft");     
         ledcWrite(5,speedL);
         ledcWrite(6,0);
         ledcWrite(7,0);
-        ledcWrite(8,speedR);
-        delay(100);              
+        ledcWrite(8,speedR);      
       }
       else if (val==3) {
         Serial.println("Stop");      
@@ -600,23 +596,15 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         ledcWrite(5,0);
         ledcWrite(6,speedL);
         ledcWrite(7,speedR);
-        ledcWrite(8,0);    
-        delay(100);              
+        ledcWrite(8,0);          
       }
       else if (val==5) {
         Serial.println("Backward");      
         ledcWrite(5,0);
         ledcWrite(6,speedL);
         ledcWrite(7,0);
-        ledcWrite(8,speedR);
-        delay(200);              
-      }
-      if (noStop!=1) {
-        ledcWrite(5,0);
-        ledcWrite(6,0);
-        ledcWrite(7,0);
-        ledcWrite(8,0); 
-      }         
+        ledcWrite(8,speedR);      
+      }        
     }           
     else {
         res = -1;
@@ -693,9 +681,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             <section id="buttons">
                 <table>
                 <tr><td align="center"><button id="get-still">Get Still</button></td><td align="center"><button id="toggle-stream">Start Stream</button></td><td align="center"><button id="face_enroll" class="disabled" disabled="disabled">Enroll Face</button></td></tr>
-                <tr><td><input type="checkbox" id="nostop" onclick="var noStop=0;if (this.checked) noStop=1;fetch(document.location.origin+'/control?var=nostop&val='+noStop);">No Stop</td><td align="center"><button id="forward" onclick="fetch(document.location.origin+'/control?var=car&val=1');">Forward</button></td><td></td></tr>
-                <tr><td align="center"><button id="turnleft" onclick="fetch(document.location.origin+'/control?var=car&val=2');">TurnLeft</button></td><td align="center"><button id="stop" onclick="fetch(document.location.origin+'/control?var=car&val=3');">Stop</button></td><td align="center"><button id="turnright" onclick="fetch(document.location.origin+'/control?var=car&val=4');">TurnRight</button></td></tr>
-                <tr><td></td><td align="center"><button id="backward" onclick="fetch(document.location.origin+'/control?var=car&val=5');">Backward</button></td><td></td></tr>
+                <tr><td></td><td align="center"><button align="center" id="forward" onmousedown="try{fetch(document.location.origin+'/control?var=car&val=1');}catch(e){}" ontouchstart="event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=1');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Forward</button></td><td><input type="checkbox" id="nostop" onclick="noStopControl();">No Stop</td></tr>
+                <tr><td><button id="turnleft" align="center" onmousedown="try{fetch(document.location.origin+'/control?var=car&val=2');}catch(e){}" ontouchstart="event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=2');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">TurnLeft</button></td><td align="center"><button id="stop" align="center" onclick="try{fetch(document.location.origin+'/control?var=car&val=3');}catch(e){}">Stop</button></td><td align="center"><button id="turnright" onmousedown="try{fetch(document.location.origin+'/control?var=car&val=4');}catch(e){}" ontouchstart="event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=4');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">TurnRight</button></td></tr>
+                <tr><td></td><td align="center"><button id="backward" onmousedown="try{fetch(document.location.origin+'/control?var=car&val=5');}catch(e){}" ontouchstart="event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=5');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Backward</button></td><td></td></tr>                   
                 <tr><td>Servo</td><td align="center" colspan="2"><input type="range" id="servo" min="1700" max="8000" step="35" value="4850" onchange="try{fetch(document.location.origin+'/control?var=servo&val='+this.value);}catch(e){}"></td></tr>
                 <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}"></td></tr>
                 <tr><td>SpeedL</td><td align="center" colspan="2"><input type="range" id="speedL" min="0" max="255" value="255" onchange="fetch(document.location.origin+'/control?var=speedL&val='+this.value);"></td></tr>
@@ -905,6 +893,18 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <script>
           document.addEventListener('DOMContentLoaded',function(){function b(B){let C;switch(B.type){case'checkbox':C=B.checked?1:0;break;case'range':case'select-one':C=B.value;break;case'button':case'submit':C='1';break;default:return;}const D=`${c}/control?var=${B.id}&val=${C}`;fetch(D).then(E=>{console.log(`request to ${D} finished, status: ${E.status}`)})}var c=document.location.origin;const e=B=>{B.classList.add('hidden')},f=B=>{B.classList.remove('hidden')},g=B=>{B.classList.add('disabled'),B.disabled=!0},h=B=>{B.classList.remove('disabled'),B.disabled=!1},i=(B,C,D)=>{D=!(null!=D)||D;let E;'checkbox'===B.type?(E=B.checked,C=!!C,B.checked=C):(E=B.value,B.value=C),D&&E!==C?b(B):!D&&('aec'===B.id?C?e(v):f(v):'agc'===B.id?C?(f(t),e(s)):(e(t),f(s)):'awb_gain'===B.id?C?f(x):e(x):'face_recognize'===B.id&&(C?h(n):g(n)))};document.querySelectorAll('.close').forEach(B=>{B.onclick=()=>{e(B.parentNode)}}),fetch(`${c}/status`).then(function(B){return B.json()}).then(function(B){document.querySelectorAll('.default-action').forEach(C=>{i(C,B[C.id],!1)})});const j=document.getElementById('stream'),k=document.getElementById('stream-container'),l=document.getElementById('get-still'),m=document.getElementById('toggle-stream'),n=document.getElementById('face_enroll'),o=document.getElementById('close-stream'),p=()=>{window.stop(),m.innerHTML='Start Stream'},q=()=>{j.src=`${c+':81'}/stream`,f(k),m.innerHTML='Stop Stream'};l.onclick=()=>{p(),j.src=`${c}/capture?_cb=${Date.now()}`,f(k)},o.onclick=()=>{p(),e(k)},m.onclick=()=>{const B='Stop Stream'===m.innerHTML;B?p():q()},n.onclick=()=>{b(n)},document.querySelectorAll('.default-action').forEach(B=>{B.onchange=()=>b(B)});const r=document.getElementById('agc'),s=document.getElementById('agc_gain-group'),t=document.getElementById('gainceiling-group');r.onchange=()=>{b(r),r.checked?(f(t),e(s)):(e(t),f(s))};const u=document.getElementById('aec'),v=document.getElementById('aec_value-group');u.onchange=()=>{b(u),u.checked?e(v):f(v)};const w=document.getElementById('awb_gain'),x=document.getElementById('wb_mode-group');w.onchange=()=>{b(w),w.checked?f(x):e(x)};const y=document.getElementById('face_detect'),z=document.getElementById('face_recognize'),A=document.getElementById('framesize');A.onchange=()=>{b(A),5<A.value&&(i(y,!1),i(z,!1))},y.onchange=()=>{return 5<A.value?(alert('Please select CIF or lower resolution before enabling this feature!'),void i(y,!1)):void(b(y),!y.checked&&(g(n),i(z,!1)))},z.onchange=()=>{return 5<A.value?(alert('Please select CIF or lower resolution before enabling this feature!'),void i(z,!1)):void(b(z),z.checked?(h(n),i(y,!0)):g(n))}});
         </script>
+
+        <script>
+          function noStopControl() {
+            
+            if (!document.getElementById('nostop').checked) {
+              try{
+                fetch(document.location.origin+'/control?var=car&val=3');
+              }
+              catch(e){}
+            }
+          }
+        </script>         
     </body>
 </html>
 )rawliteral";
