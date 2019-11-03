@@ -16,6 +16,7 @@ http://STAIP
 #include <esp32-hal-ledc.h>
 int speedR = 255;  //You can adjust the speed of the wheel. (gpio12, gpio13)
 int speedL = 255;  //You can adjust the speed of the wheel. (gpio14, gpio15)
+double decelerate = 60;
 
 // Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
 //
@@ -557,9 +558,12 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         val = 0;       
       speedR = val;
       Serial.println("RightSpeed = " + String(val)); 
-    }              
+    }  
+    else if(!strcmp(variable, "decelerate")) {       
+      decelerate = val;
+      Serial.println("Decelerate = " + String(val)); 
+    }       
     else if(!strcmp(variable, "car")) {  
-      double decelerate = 0.6;
       if (val==1) {
         Serial.println("Front");     
         ledcWrite(5,speedR);
@@ -569,10 +573,10 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       }
       else if (val==2) {
         Serial.println("Left");     
-        ledcWrite(5,speedR*decelerate);
+        ledcWrite(5,speedR*decelerate/100);
         ledcWrite(6,0);
         ledcWrite(7,0);
-        ledcWrite(8,speedL*decelerate);  
+        ledcWrite(8,speedL*decelerate/100);  
       }
       else if (val==3) {
         Serial.println("Stop");      
@@ -584,8 +588,8 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if (val==4) {
         Serial.println("Right");
         ledcWrite(5,0);
-        ledcWrite(6,speedR*decelerate);
-        ledcWrite(7,speedL*decelerate);
+        ledcWrite(6,speedR*decelerate/100);
+        ledcWrite(7,speedL*decelerate/100);
         ledcWrite(8,0);          
       }
       else if (val==5) {
@@ -599,12 +603,12 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         Serial.println("FrontLeft");     
         ledcWrite(5,speedR);
         ledcWrite(6,0);
-        ledcWrite(7,speedL*decelerate);
+        ledcWrite(7,speedL*decelerate/100);
         ledcWrite(8,0);   
       }
       else if (val==7) {
         Serial.println("FrontRight");     
-        ledcWrite(5,speedR*decelerate);
+        ledcWrite(5,speedR*decelerate/100);
         ledcWrite(6,0);
         ledcWrite(7,speedL);
         ledcWrite(8,0);   
@@ -614,12 +618,12 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         ledcWrite(5,0);
         ledcWrite(6,speedR);
         ledcWrite(7,0);
-        ledcWrite(8,speedL*decelerate);
+        ledcWrite(8,speedL*decelerate/100);
       } 
       else if (val==9) {
         Serial.println("RightAfter");      
         ledcWrite(5,0);
-        ledcWrite(6,speedR*decelerate);
+        ledcWrite(6,speedR*decelerate/100);
         ledcWrite(7,0);
         ledcWrite(8,speedL);
       }       
@@ -709,7 +713,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <tr><td>Flash</td><td><input type="range" id="flash" min="0" max="255" value="0" style="width:100px" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}"></td><td></td></tr>
                 <tr><td>SpeedR</td><td><input type="range" id="speedR" min="0" max="255" value="255" style="width:100px" onchange="try{fetch(document.location.origin+'/control?var=speedR&val='+this.value);}catch(e){}"></td><td></td></tr></td></tr>
                 <tr><td>SpeedL</td><td><input type="range" id="speedL" min="0" max="255" value="255" style="width:100px" onchange="try{fetch(document.location.origin+'/control?var=speedL&val='+this.value);}catch(e){}"></td><td></td></tr>
-                <tr><td><input type="checkbox" id="nostop" onclick="noStopControl();">No Stop</td><td></td><td></td></tr> 
+                <tr><td colspan="2">Decelerate<select onclick="try{fetch(document.location.origin+'/control?var=decelerate&val='+this.value);}catch(e){}"><option value="100">100%</option><option value="90">90%</option><option value="80">80%</option><option value="70">70%</option><option value="60" selected="selected">60%</option><option value="50">50%</option><option value="40">40%</option><option value="30">30%</option><option value="10">20%</option><option value="10">10%</option><option value="0">0%</option></select></td><td><input type="checkbox" id="nostop" onclick="noStopControl();">No Stop</td></tr> 
                 <tr><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?var=car&val=6');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=6');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">FrontLeft</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?var=car&val=1');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=1');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Front</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?var=car&val=7');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=7');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">FrontRight</button></td></tr>
                 <tr><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?var=car&val=2');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=2');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Left</button></td><td align="center"><button onclick="try{stopDetection();fetch(document.location.origin+'/control?var=car&val=3');}catch(e){}">Stop</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?var=car&val=4');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=4');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Right</button></td></tr>
                 <tr><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?var=car&val=8');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=8');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">LeftAfter</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?var=car&val=5');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=5');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Back</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?var=car&val=9');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=9');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">RightAfter</button></td></tr>                   
