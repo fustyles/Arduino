@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Remote Control Car (knn-classifier)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-3 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-3 13:30
 https://www.facebook.com/francefu
 
 Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
@@ -14,8 +14,8 @@ http://STAIP
 */
 
 #include <esp32-hal-ledc.h>
-int speedL = 255;  //You can adjust the speed of the wheel. (gpio12, gpio13)
-int speedR = 255;  //You can adjust the speed of the wheel. (gpio14, gpio15)
+int speedR = 255;  //You can adjust the speed of the wheel. (gpio12, gpio13)
+int speedL = 255;  //You can adjust the speed of the wheel. (gpio14, gpio15)
 
 // Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
 //
@@ -559,19 +559,20 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       Serial.println("RightSpeed = " + String(val)); 
     }              
     else if(!strcmp(variable, "car")) {  
+      double decelerate = 0.6;
       if (val==1) {
-        Serial.println("Forward");     
-        ledcWrite(5,speedL);
+        Serial.println("Front");     
+        ledcWrite(5,speedR);
         ledcWrite(6,0);
-        ledcWrite(7,speedR);
+        ledcWrite(7,speedL);
         ledcWrite(8,0);   
       }
       else if (val==2) {
-        Serial.println("TurnLeft");     
-        ledcWrite(5,speedL);
+        Serial.println("Left");     
+        ledcWrite(5,speedR*decelerate);
         ledcWrite(6,0);
         ledcWrite(7,0);
-        ledcWrite(8,speedR);  
+        ledcWrite(8,speedL*decelerate);  
       }
       else if (val==3) {
         Serial.println("Stop");      
@@ -581,19 +582,47 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         ledcWrite(8,0);    
       }
       else if (val==4) {
-        Serial.println("TurnRight");
+        Serial.println("Right");
         ledcWrite(5,0);
-        ledcWrite(6,speedL);
-        ledcWrite(7,speedR);
+        ledcWrite(6,speedR*decelerate);
+        ledcWrite(7,speedL*decelerate);
         ledcWrite(8,0);          
       }
       else if (val==5) {
-        Serial.println("Backward");      
+        Serial.println("Back");      
         ledcWrite(5,0);
-        ledcWrite(6,speedL);
+        ledcWrite(6,speedR);
         ledcWrite(7,0);
-        ledcWrite(8,speedR);
-      }        
+        ledcWrite(8,speedL);
+      }  
+      else if (val==6) {
+        Serial.println("FrontLeft");     
+        ledcWrite(5,speedR);
+        ledcWrite(6,0);
+        ledcWrite(7,speedL*decelerate);
+        ledcWrite(8,0);   
+      }
+      else if (val==7) {
+        Serial.println("FrontRight");     
+        ledcWrite(5,speedR*decelerate);
+        ledcWrite(6,0);
+        ledcWrite(7,speedL);
+        ledcWrite(8,0);   
+      }  
+      else if (val==8) {
+        Serial.println("LeftAfter");      
+        ledcWrite(5,0);
+        ledcWrite(6,speedR);
+        ledcWrite(7,0);
+        ledcWrite(8,speedL*decelerate);
+      } 
+      else if (val==9) {
+        Serial.println("RightAfter");      
+        ledcWrite(5,0);
+        ledcWrite(6,speedR*decelerate);
+        ledcWrite(7,0);
+        ledcWrite(8,speedL);
+      }       
     }        
     else {
         res = -1;
@@ -676,13 +705,14 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <table>
                 <tr><td><button id="get-still">get-still</button></td><td style="display:none"><button id="toggle-stream"></button></td><td><button id="face_enroll" class="disabled" disabled="disabled"></button></td></tr>
                 <tr><td><button id="clearAllClasses">Clear Classes</button></td><td><button onclick="saveModel();">Save Model</button></td><td><input type="file" id="getModel" style="width:100px"></input></td></tr>
-                <tr><td><button id="addExample">Train</button></td><td><select id="Class"><option value="1">Forward(1)</option><option value="2">TurnLeft(2)</option><option value="3">Stop(3)</option><option value="4">TurnRight(4)</option><option value="5">Backward(5)</option></select></td><td><span id="count" style="color:red">0</span></td></tr>
+                <tr><td><button id="addExample">Train</button></td><td><select id="Class"><option value="1">Front(1)</option><option value="2">Left(2)</option><option value="3">Stop(3)</option><option value="4">Right(4)</option><option value="5">Back(5)</option><option value="6">FrontLeft(6)</option><option value="7">FrontRight(7)</option><option value="8">LeftAfter(8)</option><option value="9">RightAfter(9)</option></select></td><td><span id="count" style="color:red">0</span></td></tr>
                 <tr><td>Flash</td><td><input type="range" id="flash" min="0" max="255" value="0" style="width:100px" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}"></td><td></td></tr>
-                <tr><td>SpeedL</td><td><input type="range" id="speedL" min="0" max="255" value="255" style="width:100px" onchange="try{fetch(document.location.origin+'/control?var=speedL&val='+this.value);}catch(e){}"></td><td></td></tr></td></tr>
-                <tr><td>SpeedR</td><td><input type="range" id="speedR" min="0" max="255" value="255" style="width:100px" onchange="try{fetch(document.location.origin+'/control?var=speedR&val='+this.value);}catch(e){}"></td><td></td></tr>
-                <tr><td></td><td align="center"><button align="center" id="forward" onmousedown="stopDetection();try{fetch(document.location.origin+'/control?var=car&val=1');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=1');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Forward</button></td><td><input type="checkbox" id="nostop" onclick="noStopControl();">No Stop</td></tr>
-                <tr><td><button id="turnleft" align="center" onmousedown="stopDetection();try{fetch(document.location.origin+'/control?var=car&val=2');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=2');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">TurnLeft</button></td><td align="center"><button id="stop" align="center" onclick="stopDetection();try{fetch(document.location.origin+'/control?var=car&val=3');}catch(e){}">Stop</button></td><td align="center"><button id="turnright" onmousedown="stopDetection();try{fetch(document.location.origin+'/control?var=car&val=4');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=4');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">TurnRight</button></td></tr>
-                <tr><td></td><td align="center"><button id="backward" onmousedown="stopDetection();try{fetch(document.location.origin+'/control?var=car&val=5');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=5');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Backward</button></td><td></td></tr>                   
+                <tr><td>SpeedR</td><td><input type="range" id="speedR" min="0" max="255" value="255" style="width:100px" onchange="try{fetch(document.location.origin+'/control?var=speedR&val='+this.value);}catch(e){}"></td><td></td></tr></td></tr>
+                <tr><td>SpeedL</td><td><input type="range" id="speedL" min="0" max="255" value="255" style="width:100px" onchange="try{fetch(document.location.origin+'/control?var=speedL&val='+this.value);}catch(e){}"></td><td></td></tr>
+                <tr><td><input type="checkbox" id="nostop" onclick="noStopControl();">No Stop</td><td></td><td></td></tr> 
+                <tr><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?var=car&val=6');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=6');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">FrontLeft</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?var=car&val=1');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=1');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Front</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?var=car&val=7');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=7');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">FrontRight</button></td></tr>
+                <tr><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?var=car&val=2');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=2');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Left</button></td><td align="center"><button onclick="try{stopDetection();fetch(document.location.origin+'/control?var=car&val=3');}catch(e){}">Stop</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?var=car&val=4');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=4');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Right</button></td></tr>
+                <tr><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?var=car&val=8');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=8');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">LeftAfter</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?var=car&val=5');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=5');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Back</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?var=car&val=9');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=9');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">RightAfter</button></td></tr>                   
                 <tr><td><span id="message" style="display:none"></span></td><td></td><td></td></tr> 
                 <tr style="display:none"><td colspan="3"><iframe id="ifr"></iframe></td></tr> 
                 </table>
@@ -977,45 +1007,16 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               const predict = await classifier.predictClass(xlogits);
               //console.log(predict);
 
-              if (predict.label) {     // predict.label -> 0 to 9
+              if (predict.label) {
                 var msg = "<font color='red'>Result : class " + predict.label + "</font><br><br>";
                 for (i=0;i<Class.length;i++) {
                   if (predict.confidences[i.toString()]>=0) msg += "[train "+i+"] " + predict.confidences[i.toString()] + "<br>";
                 }
                 result.innerHTML = msg; 
-                                
-                if (document.getElementById('message').innerHTML==predict.label) return;
-                document.getElementById('message').innerHTML= predict.label;
-                if (predict.label=="1") {
-                  try {
-                    ifr.src = document.location.origin+'/control?var=car&val=1';
-                  }
-                  catch(e){}
-                }
-                else if (predict.label=="2") {
-                  try {
-                    ifr.src = document.location.origin+'/control?var=car&val=2';
-                  }
-                  catch(e){}
-                }
-                else if (predict.label=="3") {
-                  try {
-                    ifr.src = document.location.origin+'/control?var=car&val=3';
-                  }
-                  catch(e){}
-                }
-                else if (predict.label=="4") {
-                  try {
-                    ifr.src = document.location.origin+'/control?var=car&val=4';
-                  }
-                  catch(e){}
-                }    
-                else if (predict.label=="5") {
-                  try {
-                    ifr.src = document.location.origin+'/control?var=car&val=5';
-                  }
-                  catch(e){}
-                }  
+                var message = document.getElementById('message');                
+                if (message.innerHTML==predict.label) return;
+                message.innerHTML= predict.label;
+                ifr.src = document.location.origin+'/control?var=car&val='+predict.label;
               }
             }
             catch (e) {
