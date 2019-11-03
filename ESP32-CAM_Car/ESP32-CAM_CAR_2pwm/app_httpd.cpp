@@ -14,8 +14,8 @@ http://STAIP
 */
 
 #include <esp32-hal-ledc.h>
-int speedL = 255;  //You can adjust the speed of the wheel. (gpio12, gpio13)
-int speedR = 255;  //You can adjust the speed of the wheel. (gpio14, gpio15)
+int speedR = 255;  //You can adjust the speed of the wheel. (gpio12, gpio13)
+int speedL = 255;  //You can adjust the speed of the wheel. (gpio14, gpio15)
 
 // Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
 //
@@ -561,17 +561,17 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     else if(!strcmp(variable, "car")) {  
       if (val==1) {
         Serial.println("Forward");     
-        ledcWrite(5,speedL);
+        ledcWrite(5,speedR);
         ledcWrite(6,0);
-        ledcWrite(7,speedR);
+        ledcWrite(7,speedL);
         ledcWrite(8,0);   
       }
       else if (val==2) {
         Serial.println("TurnLeft");     
-        ledcWrite(5,speedL);
+        ledcWrite(5,speedR);
         ledcWrite(6,0);
         ledcWrite(7,0);
-        ledcWrite(8,speedR);   
+        ledcWrite(8,speedL);   
       }
       else if (val==3) {
         Serial.println("Stop");      
@@ -583,16 +583,16 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if (val==4) {
         Serial.println("TurnRight");
         ledcWrite(5,0);
-        ledcWrite(6,speedL);
-        ledcWrite(7,speedR);
+        ledcWrite(6,speedR);
+        ledcWrite(7,speedL);
         ledcWrite(8,0);        
       }
       else if (val==5) {
         Serial.println("Backward");      
         ledcWrite(5,0);
-        ledcWrite(6,speedL);
+        ledcWrite(6,speedR);
         ledcWrite(7,0);
-        ledcWrite(8,speedR);    
+        ledcWrite(8,speedL);    
       }    
     }        
     else {
@@ -670,8 +670,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             <section id="buttons">
                 <table>
                 <tr><td align="center"><button id="get-still">Get Still</button></td><td align="center"><button id="toggle-stream">Start Stream</button></td><td align="center"><button id="face_enroll" class="disabled" disabled="disabled">Enroll Face</button></td></tr>
-                <tr><td></td><td align="center"><button align="center" id="forward" onmousedown="try{fetch(document.location.origin+'/control?var=car&val=1');}catch(e){}" ontouchstart="event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=1');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Forward</button></td><td><input type="checkbox" id="nostop" onclick="noStopControl();">No Stop</td></tr>
-                <tr><td><button id="turnleft" align="center" onmousedown="try{fetch(document.location.origin+'/control?var=car&val=2');}catch(e){}" ontouchstart="event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=2');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">TurnLeft</button></td><td align="center"><button id="stop" align="center" onclick="try{fetch(document.location.origin+'/control?var=car&val=3');}catch(e){}">Stop</button></td><td align="center"><button id="turnright" onmousedown="try{fetch(document.location.origin+'/control?var=car&val=4');}catch(e){}" ontouchstart="event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=4');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">TurnRight</button></td></tr>
+                <tr><td></td><td align="center"><button id="forward" onmousedown="try{fetch(document.location.origin+'/control?var=car&val=1');}catch(e){}" ontouchstart="event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=1');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Forward</button></td><td><input type="checkbox" id="nostop" onclick="noStopControl();">No Stop</td></tr>
+                <tr><td align="center"><button id="turnleft" onmousedown="try{fetch(document.location.origin+'/control?var=car&val=2');}catch(e){}" ontouchstart="event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=2');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">TurnLeft</button></td><td align="center"><button id="stop" onclick="try{fetch(document.location.origin+'/control?var=car&val=3');}catch(e){}">Stop</button></td><td align="center"><button id="turnright" onmousedown="try{fetch(document.location.origin+'/control?var=car&val=4');}catch(e){}" ontouchstart="event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=4');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">TurnRight</button></td></tr>
                 <tr><td></td><td align="center"><button id="backward" onmousedown="try{fetch(document.location.origin+'/control?var=car&val=5');}catch(e){}" ontouchstart="event.preventDefault();try{fetch(document.location.origin+'/control?var=car&val=5');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Backward</button></td><td></td></tr>                   
                 <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="fetch(document.location.origin+'/control?var=flash&val='+this.value);"></td></tr>
                 <tr><td>SpeedL</td><td align="center" colspan="2"><input type="range" id="speedL" min="0" max="255" value="255" onchange="fetch(document.location.origin+'/control?var=speedL&val='+this.value);"></td></tr>
