@@ -1,12 +1,11 @@
 /* 
 NodeMCU (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-07 10:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-4 09:00
 https://www.facebook.com/francefu
 
 Command Format :  
-http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
-http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
-
+http://APIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+http://STAIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 Default APIP： 192.168.4.1
 http://192.168.4.1/?ip
 http://192.168.4.1/?mac
@@ -23,6 +22,9 @@ http://192.168.4.1/?tcp=domain;port;request;wait
 http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
 http://192.168.4.1/?thingspeakread=request
+http://192.168.4.1/?linenotify=token;request
+http://192.168.4.1/?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
+http://192.168.4.1/?i2cLcd=address;gpioSDA;gpioSCL;text1;text2
 
 STAIP：
 Query：http://192.168.4.1/?ip
@@ -39,9 +41,16 @@ Source
 https://github.com/fustyles/webduino/blob/master/ESP8266_MyFirmata.html
 Page
 https://fustyles.github.io/webduino/ESP8266_MyFirmata.html
+
+LCD Library
+https://github.com/nhatuan84/esp32-lcd
 */
 
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
+
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
 
 // Enter your WiFi ssid and password
 const char* ssid     = "xxxxx";   //your network SSID
@@ -52,14 +61,14 @@ const char* appassword = "12345678";         //AP password require at least 8 ch
 
 WiFiServer server(80);
 
-String Feedback="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
+String Feedback="", Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
 void ExecuteCommand()
 {
   Serial.println("");
   //Serial.println("Command: "+Command);
-  Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
+  Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
   Serial.println("");
   
   if (cmd=="your cmd")
@@ -84,9 +93,9 @@ void ExecuteCommand()
   }    
   else if (cmd=="resetwifi")
   {
-    WiFi.begin(str1.c_str(), str2.c_str());
+    WiFi.begin(P1.c_str(), P2.c_str());
     Serial.print("Connecting to ");
-    Serial.println(str1);
+    Serial.println(P1);
     long int StartTime=millis();
     while (WiFi.status() != WL_CONNECTED) 
     {
@@ -100,83 +109,210 @@ void ExecuteCommand()
     if (WiFi.localIP().toString()!="0.0.0.0") 
     {
       cmd="ifttt";
-      str1="eventname";
-      str2="key";
-      str3=WiFi.localIP().toString();
+      P1="eventname";
+      P2="key";
+      P3=WiFi.localIP().toString();
       ExecuteCommand();
     }
     */
   }    
   else if (cmd=="inputpullup")
   {
-    pinMode(str1.toInt(), INPUT_PULLUP);
+    pinMode(P1.toInt(), INPUT_PULLUP);
     Feedback=Command;
   }  
   else if (cmd=="pinmode")
   {
-    if (str2.toInt()==1)
-      pinMode(str1.toInt(), OUTPUT);
+    if (P2.toInt()==1)
+      pinMode(P1.toInt(), OUTPUT);
     else
-      pinMode(str1.toInt(), INPUT);
+      pinMode(P1.toInt(), INPUT);
     Feedback=Command;
   }        
   else if (cmd=="digitalwrite")
   {
-    ledcDetachPin(str1.toInt());
-    pinMode(str1.toInt(), OUTPUT);
-    digitalWrite(str1.toInt(), str2.toInt());
+    ledcDetachPin(P1.toInt());
+    pinMode(P1.toInt(), OUTPUT);
+    digitalWrite(P1.toInt(), P2.toInt());
     Feedback=Command;
   }   
   else if (cmd=="digitalread")
   {
-    Feedback=String(digitalRead(str1.toInt()));
+    Feedback=String(digitalRead(P1.toInt()));
   }
   else if (cmd=="analogwrite")
   {
-    ledcAttachPin(str1.toInt(), 1);
+    ledcAttachPin(P1.toInt(), 1);
     ledcSetup(1, 5000, 8);
-    ledcWrite(1,str2.toInt());
+    ledcWrite(1,P2.toInt());
     Feedback=Command;
   }       
   else if (cmd=="analogread")
   {
-    Feedback=String(analogRead(str1.toInt()));
+    Feedback=String(analogRead(P1.toInt()));
   }
   else if (cmd=="touchread")
   {
-    Feedback=String(touchRead(str1.toInt()));
-  }  
-  else if (cmd=="tcp")
-  {
-    String domain=str1;
-    int port=str2.toInt();
-    String request=str3;
-    int wait=str4.toInt();      // wait = 0 or 1
-    Feedback=tcp(domain,request,port,wait);
-  }
-  else if (cmd=="ifttt")
-  {
-    String domain="maker.ifttt.com";
-    String request = "/trigger/" + str1 + "/with/key/" + str2;
-    request += "?value1="+str3+"&value2="+str4+"&value3="+str5;
-    Feedback=tcp(domain,request,80,0);
-  }
-  else if (cmd=="thingspeakupdate")
-  {
-    String domain="api.thingspeak.com";
-    String request = "/update?api_key=" + str1;
-    request += "&field1="+str2+"&field2="+str3+"&field3="+str4+"&field4="+str5+"&field5="+str6+"&field6="+str7+"&field7="+str8+"&field8="+str9;
-    Feedback=tcp(domain,request,80,0);
-  }    
-  else if (cmd=="thingspeakread")
-  {
-    String domain="api.thingspeak.com";
-    String request = str1;
-    Feedback=tcp(domain,request,80,1);
+    Feedback=String(touchRead(P1.toInt()));
   }   
-  else 
-  {
-    Feedback="Command is not defined";
+  else if (cmd=="tcp") {
+    String domain=P1;
+    int port=P2.toInt();
+    String request=P3;
+    int wait=P4.toInt();      // wait = 0 or 1
+
+    if ((port==443)||(domain.indexOf("https")==0)||(domain.indexOf("HTTPS")==0))
+      Feedback=tcp_https(domain,request,port,wait);
+    else
+      Feedback=tcp_http(domain,request,port,wait);  
+  }
+  else if (cmd=="ifttt") {
+    String domain="maker.ifttt.com";
+    String request = "/trigger/" + P1 + "/with/key/" + P2;
+    request += "?value1="+P3+"&value2="+P4+"&value3="+P5;
+    Feedback=tcp_https(domain,request,443,0);
+  }
+  else if (cmd=="thingspeakupdate") {
+    String domain="api.thingspeak.com";
+    String request = "/update?api_key=" + P1;
+    request += "&field1="+P2+"&field2="+P3+"&field3="+P4+"&field4="+P5+"&field5="+P6+"&field6="+P7+"&field7="+P8+"&field8="+P9;
+    Feedback=tcp_https(domain,request,443,0);
+  }    
+  else if (cmd=="thingspeakread") {
+    String domain="api.thingspeak.com";
+    String request = P1;
+    Feedback=tcp_https(domain,request,443,1);
+    int s=Feedback.indexOf("feeds");
+    Feedback=Feedback.substring(s+8);
+    int e=Feedback.indexOf("]");
+    Feedback=Feedback.substring(0,e);
+    Feedback.replace("},{",";");
+    Feedback.replace("\":\"",",");
+    Feedback.replace("\":",",");
+    Feedback.replace("\",\"",","); 
+    Feedback.replace("\"","");
+    Feedback.replace("{","");
+    Feedback.replace("}","");
+    Feedback.replace("[","");
+    Feedback.replace("]","");
+    Feedback.replace(",\"",",");
+    Feedback.replace("\":",",");
+  } 
+  else if (cmd=="linenotify") {    //message=xxx&stickerPackageId=xxx&stickerId=xxx
+    String token = P1;
+    String request = P2;
+    Feedback=LineNotify(token,request,1);
+    if (Feedback.indexOf("status")!=-1) {
+      int s=Feedback.indexOf("{");
+      Feedback=Feedback.substring(s);
+      int e=Feedback.indexOf("}");
+      Feedback=Feedback.substring(0,e);
+      Feedback.replace("\"","");
+      Feedback.replace("{","");
+      Feedback.replace("}","");
+    }
+  } 
+  else if (cmd=="car") {
+    ledcAttachPin(P1.toInt(), 1);
+    ledcSetup(1, 5000, 8);
+    ledcWrite(1,0);
+    ledcAttachPin(P2.toInt(), 2);
+    ledcSetup(2, 5000, 8);
+    ledcWrite(2,0);  
+    ledcAttachPin(P3.toInt(), 3);
+    ledcSetup(3, 5000, 8);
+    ledcWrite(3,0); 
+    ledcAttachPin(P4.toInt(), 4);
+    ledcSetup(4, 5000, 8);
+    ledcWrite(4,0);
+    delay(10);
+    
+    if (P8=="S") {
+      //
+    }
+    else if  (P8=="F") {
+      ledcAttachPin(P1.toInt(), 1);
+      ledcSetup(1, 5000, 8);
+      ledcWrite(1,P5.toInt());
+      ledcAttachPin(P4.toInt(), 4);
+      ledcSetup(4, 5000, 8);
+      ledcWrite(4,P6.toInt());
+      if ((P7!="")&&(P7!="0")) {
+        delay(P7.toInt());
+        ledcAttachPin(P1.toInt(), 1);
+        ledcSetup(1, 5000, 8);
+        ledcWrite(1,0);
+        ledcAttachPin(P4.toInt(), 4);
+        ledcSetup(4, 5000, 8);
+        ledcWrite(4,0);          
+      }     
+    }
+    else if  (P8=="B") {
+      ledcAttachPin(P2.toInt(), 2);
+      ledcSetup(2, 5000, 8);
+      ledcWrite(2,P5.toInt());  
+      ledcAttachPin(P3.toInt(), 3);
+      ledcSetup(3, 5000, 8);
+      ledcWrite(3,P6.toInt());  
+      if ((P7!="")&&(P7!="0")) {
+        delay(P7.toInt());
+        ledcAttachPin(P2.toInt(), 2);
+        ledcSetup(2, 5000, 8);
+        ledcWrite(2,0); 
+        ledcAttachPin(P3.toInt(), 3);
+        ledcSetup(3, 5000, 8);
+        ledcWrite(3,0); 
+      }     
+    }
+    else if  (P8=="L") {
+      ledcAttachPin(P2.toInt(), 2);
+      ledcSetup(2, 5000, 8);
+      ledcWrite(2,P5.toInt());  
+      ledcAttachPin(P4.toInt(), 4);
+      ledcSetup(4, 5000, 8);
+      ledcWrite(4,P6.toInt());   
+      if ((P7!="")&&(P7!="0")) {
+        delay(P7.toInt());
+        ledcAttachPin(P2.toInt(), 2);
+        ledcSetup(2, 5000, 8);
+        ledcWrite(2,0); 
+        ledcAttachPin(P4.toInt(), 4);
+        ledcSetup(4, 5000, 8);
+        ledcWrite(4,0);          
+      }
+    }
+    else if  (P8=="R") {
+      ledcAttachPin(P1.toInt(), 1);
+      ledcSetup(1, 5000, 8);
+      ledcWrite(1,P5.toInt());
+      ledcAttachPin(P3.toInt(), 3);
+      ledcSetup(3, 5000, 8);
+      ledcWrite(3,P6.toInt());  
+      if ((P7!="")&&(P7!="0")) {
+        delay(P7.toInt());
+        ledcAttachPin(P1.toInt(), 1);
+        ledcSetup(1, 5000, 8);
+        ledcWrite(1,0);
+        ledcAttachPin(P3.toInt(), 3);
+        ledcSetup(3, 5000, 8);
+        ledcWrite(3,0); 
+      }        
+    }
+    Feedback=Command;
+  } 
+  else if (cmd=="i2cLcd") {
+    LiquidCrystal_I2C lcd(P1.toInt(),16,2);
+    lcd.begin(P2.toInt(), P3.toInt());
+    lcd.backlight();
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print(P4);
+    lcd.setCursor(0,1);
+    lcd.print(P5);
+    Feedback=Command;
+  }
+  else {
+    Feedback="Command is not defined.";
   }
 }
 
@@ -224,9 +360,9 @@ void setup()
       WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
       /*
       cmd="ifttt";
-      str1="eventname";
-      str2="key";
-      str3=WiFi.localIP().toString();
+      P1="eventname";
+      P2="key";
+      P3=WiFi.localIP().toString();
       ExecuteCommand();
       */
     }
@@ -242,10 +378,10 @@ void setup()
 
 void loop()
 {
-Command="";cmd="";str1="";str2="";str3="";str4="";str5="";str6="";str7="";str8="";str9="";
-ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
-
- WiFiClient client = server.available();
+  Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
+  ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
+  
+   WiFiClient client = server.available();
 
   if (client) 
   { 
@@ -307,17 +443,24 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
             Feedback+="<option value=\"ifttt\">ifttt</option>";
             Feedback+="<option value=\"thingspeakupdate\">thingspeakupdate</option>";
             Feedback+="<option value=\"thingspeakread\">thingspeakread</option>";
+            Feedback+="<option value=\"linenotify\">linenotify</option>";
+            Feedback+="<option value=\"car\">car(L1,L2,R1,R2,Lspeed,Rspeed,Delay,state)</option>";
+            Feedback+="<option value=\"i2cLcd\">i2cLcd(address,gpioSDA,gpioSCL,text1,text2)</option>";
             Feedback+="</select>";
-            Feedback+="<br><br>str1:"; 
-            Feedback+="<input type=\"text\" name=\"str1\" id=\"str1\" size=\"20\">";      
-            Feedback+="<br><br>str2:";
-            Feedback+="<input type=\"text\" name=\"str2\" id=\"str2\" size=\"20\">";  
-            Feedback+="<br><br>str3:";
-            Feedback+="<input type=\"text\" name=\"str3\" id=\"str3\" size=\"20\">";  
-            Feedback+="<br><br>str4:";
-            Feedback+="<input type=\"text\" name=\"str4\" id=\"str4\" size=\"20\">"; 
-            Feedback+="<br>(str4;str5;str6;str7;str8;str9)<br><br>";           
-            Feedback+="<input type=\"button\" value=\"Send\" onclick=\"location.href='?'+cmd.value+'='+str1.value+';'+str2.value+';'+str3.value+';'+str4.value\">"; 
+            Feedback+="<br><br>P1:"; 
+            Feedback+="<input type=\"text\" name=\"P1\" id=\"P1\" size=\"20\">";      
+            Feedback+="<br><br>P2:";
+            Feedback+="<input type=\"text\" name=\"P2\" id=\"P2\" size=\"20\">";  
+            Feedback+="<br><br>P3:";
+            Feedback+="<input type=\"text\" name=\"P3\" id=\"P3\" size=\"20\">";  
+            Feedback+="<br><br>P4:";
+            Feedback+="<input type=\"text\" name=\"P4\" id=\"P4\" size=\"20\">"; 
+            Feedback+="<br><br>P5:";
+            Feedback+="<input type=\"text\" name=\"P5\" id=\"P5\" size=\"20\">"; 
+            Feedback+="<br><br>P6:";
+            Feedback+="<input type=\"text\" name=\"P6\" id=\"P6\" size=\"20\">"; 
+            Feedback+="<br>(P6;P7;P8;P9)<br><br>";           
+            Feedback+="<input type=\"button\" value=\"Send\" onclick=\"location.href='?'+cmd.value+'='+P1.value+';'+P2.value+';'+P3.value+';'+P4.value+';'+P5.value+';'+P6.value\">"; 
             Feedback+="</form>";
 
             client.println("HTTP/1.1 200 OK");
@@ -325,7 +468,7 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
             client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
             client.println("Content-Type: text/html; charset=utf-8");
             client.println("Access-Control-Allow-Origin: *");
-            //client.println("Connection: close");
+            client.println("Connection: close");
             client.println();
             client.println("<!DOCTYPE HTML>");
             client.println("<html><head>");
@@ -368,11 +511,11 @@ ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate
   if (SensorValue>LimitValue)
   {
     cmd="yourcmd";
-    str1="yourstr1";
-    str2="yourstr2";
-    str3="yourstr3";
+    P1="yourP1";
+    P2="yourP2";
+    P3="yourP3";
     ...
-    str9="yourstr9";
+    P9="yourP9";
     ExecuteCommand();
     delay(10000);
   }
@@ -392,15 +535,15 @@ void getCommand(char c)
     if (c==';') strState++;
   
     if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
-    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) str1=str1+String(c);
-    if ((cmdState==0)&&(strState==2)&&(c!=';')) str2=str2+String(c);
-    if ((cmdState==0)&&(strState==3)&&(c!=';')) str3=str3+String(c);
-    if ((cmdState==0)&&(strState==4)&&(c!=';')) str4=str4+String(c);
-    if ((cmdState==0)&&(strState==5)&&(c!=';')) str5=str5+String(c);
-    if ((cmdState==0)&&(strState==6)&&(c!=';')) str6=str6+String(c);
-    if ((cmdState==0)&&(strState==7)&&(c!=';')) str7=str7+String(c);
-    if ((cmdState==0)&&(strState==8)&&(c!=';')) str8=str8+String(c);
-    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) str9=str9+String(c);
+    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) P1=P1+String(c);
+    if ((cmdState==0)&&(strState==2)&&(c!=';')) P2=P2+String(c);
+    if ((cmdState==0)&&(strState==3)&&(c!=';')) P3=P3+String(c);
+    if ((cmdState==0)&&(strState==4)&&(c!=';')) P4=P4+String(c);
+    if ((cmdState==0)&&(strState==5)&&(c!=';')) P5=P5+String(c);
+    if ((cmdState==0)&&(strState==6)&&(c!=';')) P6=P6+String(c);
+    if ((cmdState==0)&&(strState==7)&&(c!=';')) P7=P7+String(c);
+    if ((cmdState==0)&&(strState==8)&&(c!=';')) P8=P8+String(c);
+    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) P9=P9+String(c);
     
     if (c=='?') questionstate=1;
     if (c=='=') equalstate=1;
@@ -408,10 +551,10 @@ void getCommand(char c)
   }
 }
 
-String tcp(String domain,String request,int port,byte wait)
+String tcp_http(String domain,String request,int port,byte wait)
 {
     WiFiClient client_tcp;
-    
+
     if (client_tcp.connect(domain.c_str(), port)) 
     {
       Serial.println("GET " + request);
@@ -448,4 +591,108 @@ String tcp(String domain,String request,int port,byte wait)
     }
     else
       return "Connection failed";  
+}
+
+String tcp_https(String domain,String request,int port,byte wait)
+{
+    WiFiClientSecure client_tcp;
+
+    if (client_tcp.connect(domain.c_str(), port)) 
+    {
+      Serial.println("GET " + request);
+      client_tcp.println("GET " + request + " HTTP/1.1");
+      client_tcp.println("Host: " + domain);
+      client_tcp.println("Connection: close");
+      client_tcp.println();
+
+      String getResponse="",Feedback="";
+      boolean state = false;
+      int waitTime = 3000;   // timeout 3 seconds
+      long startTime = millis();
+      while ((startTime + waitTime) > millis())
+      {
+        while (client_tcp.available()) 
+        {
+            char c = client_tcp.read();
+            if (c == '\n') 
+            {
+              if (getResponse.length()==0) state=true; 
+              getResponse = "";
+            } 
+            else if (c != '\r')
+              getResponse += String(c);
+            if (state==true) Feedback += String(c);
+            if (wait==1)
+              startTime = millis();
+         }
+         if (wait==0)
+          if ((state==true)&&(Feedback.length()!= 0)) break;
+      }
+      client_tcp.stop();
+      return Feedback;
+    }
+    else
+      return "Connection failed";  
+}
+
+String LineNotify(String token, String request, byte wait)
+{
+  request.replace(" ","%20");
+  request.replace("&","%20");
+  request.replace("#","%20");
+  //request.replace("\'","%27");
+  request.replace("\"","%22");
+  request.replace("\n","%0D%0A");
+  request.replace("%3Cbr%3E","%0D%0A");
+  request.replace("%3Cbr/%3E","%0D%0A");
+  request.replace("%3Cbr%20/%3E","%0D%0A");
+  request.replace("%3CBR%3E","%0D%0A");
+  request.replace("%3CBR/%3E","%0D%0A");
+  request.replace("%3CBR%20/%3E","%0D%0A"); 
+  request.replace("%20stickerPackageId","&stickerPackageId");
+  request.replace("%20stickerId","&stickerId");    
+  
+  WiFiClientSecure client_tcp;
+  
+  if (client_tcp.connect("notify-api.line.me", 443)) 
+  {
+    client_tcp.println("POST /api/notify HTTP/1.1");
+    client_tcp.println("Connection: close"); 
+    client_tcp.println("Host: notify-api.line.me");
+    client_tcp.println("User-Agent: ESP8266/1.0");
+    client_tcp.println("Authorization: Bearer " + token);
+    client_tcp.println("Content-Type: application/x-www-form-urlencoded");
+    client_tcp.println("Content-Length: " + String(request.length()));
+    client_tcp.println();
+    client_tcp.println(request);
+    client_tcp.println();
+    
+    String getResponse="",Feedback="";
+    boolean state = false;
+    int waitTime = 3000;   // timeout 3 seconds
+    long startTime = millis();
+    while ((startTime + waitTime) > millis())
+    {
+      while (client_tcp.available()) 
+      {
+          char c = client_tcp.read();
+          if (c == '\n') 
+          {
+            if (getResponse.length()==0) state=true; 
+            getResponse = "";
+          } 
+          else if (c != '\r')
+            getResponse += String(c);
+          if (state==true) Feedback += String(c);
+          if (wait==1)
+            startTime = millis();
+       }
+       if (wait==0)
+        if ((state==true)&&(Feedback.length()!= 0)) break;
+    }
+    client_tcp.stop();
+    return Feedback;
+  }
+  else
+    return "Connection failed";  
 }
