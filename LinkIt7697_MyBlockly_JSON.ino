@@ -29,7 +29,7 @@ http://STAIP/?i2cLcd=address;text1;text2
 --> address(Decimal) : 0x27=39, 0x3F=63   
 --> SDA->gpio9, SCL->gpio8
 
-If you don't need to get response from ESP8266 and want to execute commands quickly, 
+If you don't need to get response from LinkIt7697 and want to execute commands quickly, 
 you can append a parameter value "stop" at the end of command.
 For example:
 http://STAIP/?digitalwrite=gpio;value;stop
