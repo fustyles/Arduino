@@ -708,8 +708,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             <section id="buttons">
                 <table>
                 <tr><td><button id="get-still">get-still</button></td><td style="display:none"><button id="toggle-stream"></button></td><td><button id="face_enroll" class="disabled" disabled="disabled"></button></td></tr>
-                <tr><td><button id="clearAllClasses">Clear Classes</button></td><td><button onclick="saveModel();">Save Model</button></td><td><input type="file" id="getModel" style="width:100px"></input></td></tr>
                 <tr><td><button id="addExample">Train</button></td><td><select id="Class"><option value="1">Front(1)</option><option value="2">Left(2)</option><option value="3">Stop(3)</option><option value="4">Right(4)</option><option value="5">Back(5)</option><option value="6">FrontLeft(6)</option><option value="7">FrontRight(7)</option><option value="8">LeftAfter(8)</option><option value="9">RightAfter(9)</option></select></td><td><span id="count" style="color:red">0</span></td></tr>
+                <tr><td><button id="clearAllClasses">Clear Classes</button></td><td><button onclick="saveModel();">Save Model</button></td><td><input type="file" id="getModel" style="width:100px"></input></td></tr>
                 <tr><td>Flash</td><td colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}"></td></tr>
                 <tr><td>SpeedR</td><td colspan="2"><input type="range" id="speedR" min="0" max="255" value="255" onchange="try{fetch(document.location.origin+'/control?var=speedR&val='+this.value);}catch(e){}"></td></tr>
                 <tr><td>SpeedL</td><td colspan="2"><input type="range" id="speedL" min="0" max="255" value="255" onchange="try{fetch(document.location.origin+'/control?var=speedL&val='+this.value);}catch(e){}"></td></tr>
