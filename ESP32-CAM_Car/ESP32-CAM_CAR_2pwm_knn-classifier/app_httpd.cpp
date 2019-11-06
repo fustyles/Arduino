@@ -695,7 +695,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
         <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/knn-classifier"></script>         
     </head>
-    <body>
+    <body ontouchstart="event.preventDefault();">
     <figure>
       <div id="stream-container" class="image-container hidden">
         <div class="close" id="close-stream">×</div>
