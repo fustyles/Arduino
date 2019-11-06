@@ -10,7 +10,7 @@ http://APIP
 http://STAIP
 
 Google Apps Script
-https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doPost.gs
+https://github.com/fustyles/webduino/blob/gs/SendCapturedImageByGmail_doPost.gs
 You must allow anyone and anonymous to execute the google script.
 How to add a new script
 https://www.youtube.com/watch?v=f46VBqWwUuI
