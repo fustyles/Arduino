@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (SD Card Manager)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-10 12:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-10 18:00
 https://www.facebook.com/francefu
 
 http://APIP
@@ -63,6 +63,10 @@ void ExecuteCommand()
     // You can do anything
     // Feedback="<font color=\"red\">Hello World</font>";
   }   
+  else if (cmd=="restart")
+  { 
+    ESP.restart();
+  }    
   else if (cmd=="saveimage")
   {
     EEPROM.begin(sizeof(int)*4);
@@ -72,7 +76,8 @@ void ExecuteCommand()
   } 
   else if (cmd=="getstill")
   { 
-    Feedback=getstill();
+    Feedback="<script>document.write(new Date());</script><br>";
+    Feedback+=getstill();
   }   
   else if (cmd=="listimages")
   {
@@ -80,7 +85,7 @@ void ExecuteCommand()
   }  
   else if (cmd=="showimage")
   {
-    Feedback=showimage(P1)+"<br>"+ListImages(); 
+    Feedback=P1+"<br>"+showimage(P1)+"<br>"+ListImages(); 
   }  
   else if (cmd=="deleteimage")
   {
@@ -219,11 +224,12 @@ void loop() {
             if (Feedback=="") {
               Feedback="<script>var myVar;</script>";
               Feedback+="<table><tr>";
+              Feedback+="<td><input type=\"button\" value=\"Restart\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?restart\';\"\"></td>";
               Feedback+="<td><input type=\"button\" value=\"Image List\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?listimages\';\"\"></td>";              
               Feedback+="<td><input type=\"button\" value=\"Get Still\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?getstill\';\"></td>";
               Feedback+="<td><input type=\"button\" value=\"Get Still (Timer)\" onclick=\"if (myVar) clearInterval(myVar);myVar = setInterval(function(){document.getElementById(\'execute\').src=\'?getstill\';}, Number(document.getElementById(\'interval\').value)*1000);\"></td>";              
               Feedback+="<td><input type=\"button\" value=\"Save Image\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?saveimage\';\"\"></td>";  
-              Feedback+="</tr><tr><td></td><td></td><td><input type=\"text\" id=\"interval\" value=\"2\" size=\"2\">(s)</td><td></td></tr></table>";  
+              Feedback+="</tr><tr><td></td><td></td><td></td><td><input type=\"text\" id=\"interval\" value=\"2\" size=\"2\">(s)</td><td></td></tr></table>";  
               Feedback+="<br><br><iframe id=\"execute\" frameborder=\"0\" width=\"100%\" height=\"500\">";
             }
           
