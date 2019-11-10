@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (SD Card Manager)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-10 18:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-10 21:00
 https://www.facebook.com/francefu
 
 http://APIP
@@ -230,7 +230,7 @@ void loop() {
               Feedback+="<td><input type=\"button\" value=\"Get Still (Timer)\" onclick=\"if (myVar) clearInterval(myVar);myVar = setInterval(function(){document.getElementById(\'execute\').src=\'?getstill\';}, Number(document.getElementById(\'interval\').value)*1000);\"></td>";              
               Feedback+="<td><input type=\"button\" value=\"Save Image\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?saveimage\';\"\"></td>";  
               Feedback+="</tr><tr><td></td><td></td><td></td><td><input type=\"text\" id=\"interval\" value=\"2\" size=\"2\">(s)</td><td></td></tr></table>";  
-              Feedback+="<br><br><iframe id=\"execute\" frameborder=\"0\" width=\"100%\" height=\"500\">";
+              Feedback+="<br><iframe id=\"execute\" frameborder=\"0\" width=\"100%\" height=\"500\">";
             }
           
             client.println("HTTP/1.1 200 OK");
@@ -342,23 +342,24 @@ String ListImages() {
   fs::FS &fs = SD_MMC; 
   File root = fs.open("/");
   if(!root){
-      Serial.println("Failed to open directory");
-      return "Failed";
+    Serial.println("Failed to open directory");
+    return "Failed";
   }
 
   String list="";
   File file = root.openNextFile();
   while(file){
     if(!file.isDirectory()){
-        Serial.print("  FILE: ");
-        Serial.print(file.name());
-        Serial.print("  SIZE: ");
-        Serial.println(file.size());
-        list = "<tr><td><a href=\'?deleteimage="+String(file.name())+"\'>Delete</td><td><a href=\'?showimage="+String(file.name())+"\'>"+String(file.name())+"</td><td>"+String(file.size())+" B</td></tr>"+list;
+      String filename=String(file.name());
+      filename.toLowerCase();
+      if (filename.indexOf(".html")!=-1)
+        list = "<tr><td><button onclick=\'location.href=\"?deleteimage="+String(file.name())+"\";\'>Delete</button></td><td></td><td><a href=\'?showimage="+String(file.name())+"\'>"+String(file.name())+"</a></td><td align=\'right\'>"+String(file.size())+" B</td></tr>"+list;
+      else
+        list = "<tr><td><button onclick=\'location.href=\"?deleteimage="+String(file.name())+"\";\'>Delete</button></td><td>"+String(file.name())+"</td><td></td><td align=\'right\'>"+String(file.size())+" B</td></tr>"+list;  
     }
     file = root.openNextFile();
   }
-  if (list=="") list="<tr><td>null</td><td>null</td><td>null</td></tr>";
+  if (list=="") list="<tr><td>null</td><td>null</td><td>null</td><td>null</td></tr>";
   list="<table border=1>"+list+"</table>";
 
   file.close();
@@ -388,8 +389,8 @@ String showimage(String filename) {
   Serial.print("Read from file: ");
   String imageFile="";
   while(file.available()){
-      char c = file.read();
-      imageFile+=String(c);
+    char c = file.read();
+    imageFile+=String(c);
   }
   file.close();
   SD_MMC.end();
@@ -428,7 +429,8 @@ String deleteimage(String filename) {
 
 String saveCapturedImage(String filename) {
   String response = ""; 
-  String path = "/"+filename+".html";
+  String path_html = "/"+filename+".html";
+  String path_jpg = "/"+filename+".jpg";
 
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();  
@@ -445,17 +447,16 @@ String saveCapturedImage(String filename) {
     if (i%3==0) imageFile += urlencode(String(output));
   }
   imageFile = "<img src=\'"+imageFile+"\'>";
-  esp_camera_fb_return(fb);
-
+  
   //SD Card
   if(!SD_MMC.begin()){
     response = "Card Mount Failed";
   }  
   
   fs::FS &fs = SD_MMC; 
-  Serial.printf("Picture file name: %s\n", path.c_str());
+  Serial.printf("Picture file name: %s\n", path_html.c_str());
 
-  File file = fs.open(path.c_str(), FILE_WRITE);
+  File file = fs.open(path_html.c_str(), FILE_WRITE);
   if(!file){
     response = "Failed to open file in writing mode";
   } 
@@ -464,13 +465,25 @@ String saveCapturedImage(String filename) {
     for (Index=0;Index<imageFile.length();Index=Index+1000) {
       file.print(imageFile.substring(Index, Index+1000));
     }    
-    Serial.printf("Saved file to path: %s\n", path.c_str());
+    Serial.printf("Saved file to path: %s\n", path_html.c_str());
   }
+  file.close();
+
+  Serial.printf("Picture file name: %s\n", path_jpg.c_str());
+  file = fs.open(path_jpg.c_str(), FILE_WRITE);
+  if(!file){
+    response = "Failed to open file in writing mode";
+  } 
+  else {
+    file.write(fb->buf, fb->len);
+    Serial.printf("Saved file to path: %s\n", path_jpg.c_str());
+  }
+    
   file.close();
   SD_MMC.end();
 
-  Serial.println("");  
   esp_camera_fb_return(fb);
+  Serial.println("");
 
   pinMode(4, OUTPUT);
   digitalWrite(4, LOW);
