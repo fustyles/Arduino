@@ -2,6 +2,9 @@
 ESP32-CAM (SD Card Manager)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-10 12:00
 https://www.facebook.com/francefu
+
+http://APIP
+http://STAIP
 */
 
 // Enter your WiFi ssid and password
