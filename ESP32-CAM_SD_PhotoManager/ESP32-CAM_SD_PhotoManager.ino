@@ -1,6 +1,6 @@
 /*
-ESP32-CAM (SD Card Photo Manager)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-10 09:00
+ESP32-CAM (SD Card Manager)
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-10 12:00
 https://www.facebook.com/francefu
 */
 
@@ -214,14 +214,13 @@ void loop() {
         if (c == '\n') {
           if (currentLine.length() == 0) {    
             if (Feedback=="") {
-              Feedback="<select name=\"cmd\" id=\"cmd\">";
-              Feedback+="<option value=\"getstill\">Get Still</option>";
-              Feedback+="<option value=\"getstilltimer\">Get Still (Timer)</option>";
-              Feedback+="<option value=\"listimages\">List Images</option>"; 
-              Feedback+="<option value=\"saveimage\">Save Image</option>";  
-              Feedback+="</select>";  
-              Feedback+="<script>var myVar;</script>";   
-              Feedback+="<input type=\"button\" value=\"Execute\" onclick=\"clearInterval(myVar);if(document.getElementById(\'cmd\').value==\'getstilltimer\'){myVar = setInterval(function(){document.getElementById(\'execute\').src=\'?getstill\';}, 2000);} else document.getElementById(\'execute\').src=\'?\'+document.getElementById(\'cmd\').value;\">"; 
+              Feedback="<script>var myVar;</script>";
+              Feedback+="<table><tr>";
+              Feedback+="<td><input type=\"button\" value=\"Image List\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?listimages\';\"\"></td>";              
+              Feedback+="<td><input type=\"button\" value=\"Get Still\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?getstill\';\"></td>";
+              Feedback+="<td><input type=\"button\" value=\"Get Still (Timer)\" onclick=\"if (myVar) clearInterval(myVar);myVar = setInterval(function(){document.getElementById(\'execute\').src=\'?getstill\';}, Number(document.getElementById(\'interval\').value));\"></td>";              
+              Feedback+="<td><input type=\"button\" value=\"Save Image\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?saveimage\';\"\"></td>";  
+              Feedback+="</tr><tr><td></td><td></td><td><input type=\"text\" id=\"interval\" value=\"2000\" size=\"2\">(ms)</td><td></td></tr></table>";  
               Feedback+="<br><br><iframe id=\"execute\" frameborder=\"0\" width=\"100%\" height=\"500\">";
             }
           
@@ -350,6 +349,7 @@ String ListImages() {
     }
     file = root.openNextFile();
   }
+  if (list=="") list="<tr><td>null</td><td>null</td><td>null</td></tr>";
   list="<table border=1>"+list+"</table>";
 
   file.close();
