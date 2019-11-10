@@ -218,9 +218,9 @@ void loop() {
               Feedback+="<table><tr>";
               Feedback+="<td><input type=\"button\" value=\"Image List\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?listimages\';\"\"></td>";              
               Feedback+="<td><input type=\"button\" value=\"Get Still\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?getstill\';\"></td>";
-              Feedback+="<td><input type=\"button\" value=\"Get Still (Timer)\" onclick=\"if (myVar) clearInterval(myVar);myVar = setInterval(function(){document.getElementById(\'execute\').src=\'?getstill\';}, Number(document.getElementById(\'interval\').value));\"></td>";              
+              Feedback+="<td><input type=\"button\" value=\"Get Still (Timer)\" onclick=\"if (myVar) clearInterval(myVar);myVar = setInterval(function(){document.getElementById(\'execute\').src=\'?getstill\';}, Number(document.getElementById(\'interval\').value)*1000);\"></td>";              
               Feedback+="<td><input type=\"button\" value=\"Save Image\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?saveimage\';\"\"></td>";  
-              Feedback+="</tr><tr><td></td><td></td><td><input type=\"text\" id=\"interval\" value=\"2000\" size=\"2\">(ms)</td><td></td></tr></table>";  
+              Feedback+="</tr><tr><td></td><td></td><td><input type=\"text\" id=\"interval\" value=\"2\" size=\"2\">(s)</td><td></td></tr></table>";  
               Feedback+="<br><br><iframe id=\"execute\" frameborder=\"0\" width=\"100%\" height=\"500\">";
             }
           
