@@ -214,8 +214,7 @@ void loop() {
         if (c == '\n') {
           if (currentLine.length() == 0) {    
             if (Feedback=="") {
-              Feedback="Command";
-              Feedback+="<select name=\"cmd\" id=\"cmd\">";
+              Feedback="<select name=\"cmd\" id=\"cmd\">";
               Feedback+="<option value=\"getstill\">Get Still</option>";
               Feedback+="<option value=\"getstilltimer\">Get Still (Timer)</option>";
               Feedback+="<option value=\"listimages\">List Images</option>"; 
