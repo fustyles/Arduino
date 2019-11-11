@@ -336,14 +336,14 @@ String ListImages() {
   //SD Card
   if(!SD_MMC.begin()){
     Serial.println("Card Mount Failed");
-    return "Failed";
+    return "Card Mount Failed";
   }  
   
   fs::FS &fs = SD_MMC; 
   File root = fs.open("/");
   if(!root){
     Serial.println("Failed to open directory");
-    return "Failed";
+    return "Failed to open directory";
   }
 
   String list="";
@@ -384,6 +384,7 @@ String showimage(String filename) {
   File file = fs.open(filename);
   if(!file){
     Serial.println("Failed to open file for reading");
+    SD_MMC.end();    
     return "Failed to open file for reading";
   }
   Serial.print("Read from file: ");
@@ -436,7 +437,7 @@ String saveCapturedImage(String filename) {
   fb = esp_camera_fb_get();  
   if(!fb) {
     Serial.println("Camera capture failed");
-    return "";
+    return "Camera capture failed";
   }
 
   String imageFile = "data:image/jpeg;base64,";
@@ -451,6 +452,7 @@ String saveCapturedImage(String filename) {
   //SD Card
   if(!SD_MMC.begin()){
     response = "Card Mount Failed";
+    return "Card Mount Failed";
   }  
   
   fs::FS &fs = SD_MMC; 
@@ -458,7 +460,9 @@ String saveCapturedImage(String filename) {
 
   File file = fs.open(path_html.c_str(), FILE_WRITE);
   if(!file){
-    response = "Failed to open file in writing mode";
+    esp_camera_fb_return(fb);
+    SD_MMC.end();
+    return "Failed to open file in writing mode";
   } 
   else {
     int Index;
@@ -472,6 +476,8 @@ String saveCapturedImage(String filename) {
   Serial.printf("Picture file name: %s\n", path_jpg.c_str());
   file = fs.open(path_jpg.c_str(), FILE_WRITE);
   if(!file){
+    esp_camera_fb_return(fb);
+    SD_MMC.end();    
     response = "Failed to open file in writing mode";
   } 
   else {
