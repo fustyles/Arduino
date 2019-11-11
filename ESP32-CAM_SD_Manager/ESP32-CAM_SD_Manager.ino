@@ -1,8 +1,7 @@
 /*
 ESP32-CAM (SD Card Manager)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-10 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-11 22:00
 https://www.facebook.com/francefu
-
 http://APIP
 http://STAIP
 */
@@ -20,7 +19,6 @@ const char* appassword = "12345678";         //AP password require at least 8 ch
 #include "FS.h"
 #include "SD_MMC.h"
 #include "esp_camera.h"
-#include <EEPROM.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
 
@@ -69,10 +67,7 @@ void ExecuteCommand()
   }    
   else if (cmd=="saveimage")
   {
-    EEPROM.begin(sizeof(int)*4);
-    EEPROM.write(0, EEPROM.read(0)+1);
-    EEPROM.commit(); 
-    Feedback=saveCapturedImage(String(EEPROM.read(0)))+"<br>"+showimage("/"+String(EEPROM.read(0))+".html")+"<br>"+ListImages(); 
+    Feedback=saveCapturedImage(P1)+"<br>"+showimage("/"+P1+".html")+"<br>"+ListImages(); 
   } 
   else if (cmd=="getstill")
   { 
@@ -224,14 +219,14 @@ void loop() {
             if (Feedback=="") {
               Feedback="<script>var myVar;</script>";
               Feedback+="<table><tr>";
-              Feedback+="<td><input type=\"button\" value=\"Restart\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?restart\';\"\"></td>";
-              Feedback+="<td><input type=\"button\" value=\"Image List\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?listimages\';\"\"></td>";              
+              Feedback+="<td><input type=\"button\" value=\"Restart\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?restart\';\"></td>";
+              Feedback+="<td><input type=\"button\" value=\"Image List\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?listimages\';\"></td>";              
               Feedback+="<td><input type=\"button\" value=\"Get Still\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?getstill\';\"></td>";
               Feedback+="<td><input type=\"button\" value=\"Get Still (Timer)\" onclick=\"if (myVar) clearInterval(myVar);myVar = setInterval(function(){document.getElementById(\'execute\').src=\'?getstill\';}, Number(document.getElementById(\'interval\').value)*1000);\"></td>";              
-              Feedback+="<td><input type=\"button\" value=\"Save Image\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?saveimage\';\"\"></td>";  
+              Feedback+="<td><input type=\"button\" value=\"Save Image\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?saveimage=\'+(new Date().getFullYear()*10000000000+(new Date().getMonth()+1)*100000000+new Date().getDay()*1000000+new Date().getHours()*10000+new Date().getMinutes()*100+new Date().getSeconds()).toString();\"></td>";  
               Feedback+="</tr><tr><td></td><td></td><td></td><td><input type=\"text\" id=\"interval\" value=\"2\" size=\"2\">(s)</td><td></td></tr></table>";  
-              Feedback+="<br><iframe id=\"execute\" frameborder=\"0\" width=\"100%\" height=\"500\">";
-            }
+              Feedback+="<br><br><iframe id=\"execute\" frameborder=\"0\" width=\"100%\" height=\"500\">";
+              }
           
             client.println("HTTP/1.1 200 OK");
             client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
@@ -530,3 +525,4 @@ String urlencode(String str)
     }
     return encodedString;
 }
+          
