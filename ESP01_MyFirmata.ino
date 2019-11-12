@@ -86,6 +86,7 @@ void ExecuteCommand()
   {
     setup();
     Feedback=Command;
+    //ESP.restart();
   }    
   else if (cmd=="resetwifi")
   {
