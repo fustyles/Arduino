@@ -115,6 +115,7 @@ void ExecuteCommand()
   else if (cmd=="restart") {
     setup();
     Feedback="{\"data\":\""+Command+"\"}";
+    //ESP.restart();
   }    
   else if (cmd=="resetwifi") {
     WiFi.begin(p1.c_str(), p2.c_str());
