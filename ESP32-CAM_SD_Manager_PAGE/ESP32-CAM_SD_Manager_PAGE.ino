@@ -4,6 +4,10 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-11 22:00
 https://www.facebook.com/francefu
 http://APIP
 http://STAIP
+
+Command Format :  
+http://APIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+http://STAIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 */
 
 // Enter your WiFi ssid and password
