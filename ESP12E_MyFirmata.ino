@@ -181,8 +181,8 @@ void ExecuteCommand()
     Feedback=tcp(domain,request,80,1);
   }   
   else if (cmd=="linenotify") {    //message=xxx&stickerPackageId=xxx&stickerId=xxx
-    String token = P1;
-    String request = P2;
+    String token = str1;
+    String request = str2;
     Feedback=LineNotify(token,request,1);
     if (Feedback.indexOf("status")!=-1) {
       int s=Feedback.indexOf("status");
@@ -194,16 +194,16 @@ void ExecuteCommand()
     } 
   } 
   else if (cmd=="i2cLcd") {
-    LiquidCrystal_I2C lcd(P1.toInt(),16,2);
-    Wire.begin(P2.toInt(), P3.toInt());
+    LiquidCrystal_I2C lcd(str1.toInt(),16,2);
+    Wire.begin(str2.toInt(), str3.toInt());
     lcd.begin();
     lcd.backlight();
     lcd.clear();
     lcd.setCursor(0,0);
-    lcd.print(P4);
+    lcd.print(str4);
     lcd.setCursor(0,1);
-    lcd.print(P5);
-    Feedback=P4+","+P5;
+    lcd.print(str5);
+    Feedback=str4+","+str5;
   }  
   else 
   {
