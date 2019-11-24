@@ -179,6 +179,21 @@ void ExecuteCommand()
     String domain="api.thingspeak.com";
     String request = str1;
     Feedback=tcp(domain,request,80,1);
+    int s=Feedback.indexOf("feeds");
+    Feedback=Feedback.substring(s+8);
+    int e=Feedback.indexOf("]");
+    Feedback=Feedback.substring(0,e);
+    Feedback.replace("},{",";");
+    Feedback.replace("\":\"",",");
+    Feedback.replace("\":",",");
+    Feedback.replace("\",\"",","); 
+    Feedback.replace("\"","");
+    Feedback.replace("{","");
+    Feedback.replace("}","");
+    Feedback.replace("[","");
+    Feedback.replace("]","");
+    Feedback.replace(",\"",",");
+    Feedback.replace("\":",",");
   }   
   else if (cmd=="linenotify") {    //message=xxx&stickerPackageId=xxx&stickerId=xxx
     String token = str1;
