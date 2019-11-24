@@ -1,6 +1,6 @@
 /* 
 ESP-01
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-07 10:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-24 23:30
 https://www.facebook.com/francefu
 
 Expanding Arduino Serial Port Buffer Size
@@ -208,7 +208,7 @@ void ExecuteCommand()
     lcd.print(str4);
     lcd.setCursor(0,1);
     lcd.print(str5);
-    Feedback="{\"data\":\""+str4+"\"},{\"data\":\""+str5+"\"}";
+    Feedback=str4+","+str5;
   }  
   else 
   {
