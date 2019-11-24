@@ -50,6 +50,11 @@ void setup() {
 
   //Push a message to LineNotify
   if (WiFi.status() == WL_CONNECTED) {
+    /*
+    request = message=xxxxx
+    request = message=xxxxx&stickerPackageId=xxxxx&stickerId=xxxxx
+    */
+    
     String request = "message=Taiwan\nI'm a \"Maker\"";
     request.replace(" ","%20");
     request.replace("&","%20");
