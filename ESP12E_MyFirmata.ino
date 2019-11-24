@@ -22,6 +22,10 @@ http://192.168.4.1/?tcp=domain;port;request;wait
 http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
 http://192.168.4.1/?thingspeakread=request
+http://192.168.4.1/?linenotify=token;request
+--> request = message=xxxxx
+--> request = message=xxxxx&stickerPackageId=xxxxx&stickerId=xxxxx
+http://192.168.4.1/?i2cLcd=address;gpioSDA;gpioSCL;text1;text2
 
 STAIP：
 Query：http://192.168.4.1/?ip
@@ -40,7 +44,12 @@ Page
 https://fustyles.github.io/webduino/ESP8266_MyFirmata.html
 */
 
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
+
 #include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
+HTTPClient http;
 
 // Enter your WiFi ssid and password
 const char* ssid     = "xxxxx";   //your network SSID
@@ -168,6 +177,31 @@ void ExecuteCommand()
     String request = str1;
     Feedback=tcp(domain,request,80,1);
   }   
+  else if (cmd=="linenotify") {    //message=xxx&stickerPackageId=xxx&stickerId=xxx
+    String token = P1;
+    String request = P2;
+    Feedback=LineNotify(token,request,1);
+    if (Feedback.indexOf("status")!=-1) {
+      int s=Feedback.indexOf("status");
+      Feedback=Feedback.substring(s);
+      int e=Feedback.indexOf("</body>");
+      Feedback=Feedback.substring(0,e);
+      Feedback.replace("\n","");
+      Feedback.replace(" ","");
+    } 
+  } 
+  else if (cmd=="i2cLcd") {
+    LiquidCrystal_I2C lcd(P1.toInt(),16,2);
+    Wire.begin(P2.toInt(), P3.toInt());
+    lcd.begin();
+    lcd.backlight();
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print(P4);
+    lcd.setCursor(0,1);
+    lcd.print(P5);
+    Feedback=P4+","+P5;
+  }  
   else 
   {
     Feedback="Command is not defined";
@@ -441,4 +475,29 @@ String tcp(String domain,String request,int port,byte wait)
     }
     else
       return "Connection failed";  
+}
+
+String LineNotify(String token, String message, byte wait)
+{
+  message.replace(" ","%20");
+  message.replace("&","%20");
+  message.replace("#","%20");
+  //message.replace("\'","%27");
+  message.replace("\"","%22");
+  message.replace("\n","%0D%0A");
+  message.replace("%3Cbr%3E","%0D%0A");
+  message.replace("%3Cbr/%3E","%0D%0A");
+  message.replace("%3Cbr%20/%3E","%0D%0A");
+  message.replace("%3CBR%3E","%0D%0A");
+  message.replace("%3CBR/%3E","%0D%0A");
+  message.replace("%3CBR%20/%3E","%0D%0A");     
+  message.replace("%20stickerPackageId","&stickerPackageId");
+  message.replace("%20stickerId","&stickerId");    
+  
+  http.begin("http://linenotify.com/notify.php?token="+token+"&"+message);
+  int httpCode = http.GET();
+  if(httpCode > 0) {
+      return http.getString();
+  } else 
+      return "Connection Error!";
 }
