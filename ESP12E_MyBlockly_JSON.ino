@@ -24,6 +24,8 @@ http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
 http://192.168.4.1/?thingspeakread=request
 http://192.168.4.1/?linenotify=token;request
+--> request = message=xxxxx
+--> request = message=xxxxx&stickerPackageId=xxxxx&stickerId=xxxxx
 http://192.168.4.1/?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 http://192.168.4.1/?i2cLcd=address;gpioSDA;gpioSCL;text1;text2
 
