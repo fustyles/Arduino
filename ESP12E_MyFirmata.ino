@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP12E)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-07 10:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-24 23:30
 https://www.facebook.com/francefu
 
 Command Format :  
