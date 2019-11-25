@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Remote Control Car (Use Mobile 3-Axis)
-You must open the page in Firefox. (For Android)
+You must open the page in Firefox.
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-25 01:00
 https://www.facebook.com/francefu
