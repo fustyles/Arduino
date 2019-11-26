@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (SD Card Manager)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-11 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-27 01:00
 https://www.facebook.com/francefu
 http://APIP
 http://STAIP
@@ -75,8 +75,7 @@ void ExecuteCommand()
   } 
   else if (cmd=="getstill")
   { 
-    Feedback="<script>document.write(new Date());</script><br>";
-    Feedback+=getstill();
+    Feedback=getstill();
   }   
   else if (cmd=="listimages")
   {
@@ -221,16 +220,40 @@ void loop() {
         if (c == '\n') {
           if (currentLine.length() == 0) {    
             if (Feedback=="") {
-              Feedback="<script>var myVar;</script>";
+              Feedback+="<!DOCTYPE html>";
+              Feedback+="<head>";
+              Feedback+="<meta charset=\"utf-8\">";
+              Feedback+="<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">";
+              Feedback+="<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js\"></script>";
+              Feedback+="</head><body>";
+              Feedback+="<script>var myVar;</script>";
               Feedback+="<table><tr>";
-              Feedback+="<td><input type=\"button\" value=\"Restart\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?restart\';\"></td>";
-              Feedback+="<td><input type=\"button\" value=\"Image List\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?listimages\';\"></td>";              
-              Feedback+="<td><input type=\"button\" value=\"Get Still\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?getstill\';\"></td>";
-              Feedback+="<td><input type=\"button\" value=\"Get Still (Timer)\" onclick=\"if (myVar) clearInterval(myVar);myVar = setInterval(function(){document.getElementById(\'execute\').src=\'?getstill\';}, Number(document.getElementById(\'interval\').value)*1000);\"></td>";              
-              Feedback+="<td><input type=\"button\" value=\"Save Image\" onclick=\"if (myVar) clearInterval(myVar);document.getElementById(\'execute\').src=\'?saveimage=\'+(new Date().getFullYear()*10000000000+(new Date().getMonth()+1)*100000000+new Date().getDay()*1000000+new Date().getHours()*10000+new Date().getMinutes()*100+new Date().getSeconds()).toString();\"></td>";  
-              Feedback+="</tr><tr><td></td><td></td><td></td><td><input type=\"text\" id=\"interval\" value=\"2\" size=\"2\">(s)</td><td></td></tr></table>";  
-              Feedback+="<br><br><iframe id=\"execute\" frameborder=\"0\" width=\"100%\" height=\"500\">";
-              }
+              Feedback+="<td><input type=\"button\" value=\"Restart\" onclick=\"if (myVar) clearInterval(myVar);execute(location.origin+\'?restart\');\"></td>";
+              Feedback+="<td><input type=\"button\" value=\"Image List\" onclick=\"if (myVar) clearInterval(myVar);execute(location.origin+\'?listimages\');\"></td>";              
+              Feedback+="<td><input type=\"button\" value=\"Get Still\" onclick=\"if (myVar) clearInterval(myVar);execute(location.origin+\'?getstill\');\"></td>";
+              Feedback+="<td><input type=\"button\" value=\"Get Still (Timer)\" onclick=\"if (myVar) clearInterval(myVar);myVar = setInterval(function(){execute(location.origin+\'?getstill\');}, Number(document.getElementById(\'interval\').value)*1000);\"></td>";              
+              Feedback+="<td><input type=\"button\" value=\"Save Image\" onclick=\"if (myVar) clearInterval(myVar);execute(location.origin+\'?saveimage=\'+(new Date().getFullYear()*10000000000+(new Date().getMonth()+1)*100000000+new Date().getDay()*1000000+new Date().getHours()*10000+new Date().getMinutes()*100+new Date().getSeconds()).toString());\"></td>";  
+              Feedback+="</tr><tr><td></td><td></td><td></td><td><input type=\"text\" id=\"interval\" value=\"1\" size=\"2\">(s)</td><td></td></tr></table>";  
+              Feedback+="<br><div id=\"show\" ></div>";
+              Feedback+="</body></html>"; 
+              Feedback+="<script>";
+              Feedback+="function execute(target) {";
+              Feedback+="  var data = $.ajax({";
+              Feedback+="  type: \"get\",";
+              Feedback+="  dataType: \"text\",";
+              Feedback+="  url: target,";
+              Feedback+="  success: function(response)";
+              Feedback+="    {";
+              Feedback+="      document.getElementById(\'show\').innerHTML = response;";
+              Feedback+="    },";
+              Feedback+="    error: function(exception)";
+              Feedback+="    {";
+              Feedback+="      document.getElementById(\'show\').innerHTML = \'fail\';";
+              Feedback+="    }";
+              Feedback+="  });";
+              Feedback+="}";
+              Feedback+="</script>";
+            }
           
             client.println("HTTP/1.1 200 OK");
             client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
@@ -239,17 +262,10 @@ void loop() {
             client.println("Access-Control-Allow-Origin: *");
             client.println("Connection: close");
             client.println();
-            client.println("<!DOCTYPE HTML>");
-            client.println("<html><head>");
-            client.println("<meta charset=\"UTF-8\">");
-            client.println("<meta http-equiv=\"Access-Control-Allow-Origin\" content=\"*\">");
-            client.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
-            client.println("</head><body>");
             int Index;
             for (Index = 0; Index < Feedback.length(); Index = Index+1000) {
               client.print(Feedback.substring(Index, Index+1000));
             }
-            client.println("</body></html>");
             client.println();
                         
             Feedback="";
@@ -351,9 +367,9 @@ String ListImages() {
       String filename=String(file.name());
       filename.toLowerCase();
       if (filename.indexOf(".html")!=-1)
-        list = "<tr><td><button onclick=\'location.href=\"?deleteimage="+String(file.name())+"\";\'>Delete</button></td><td></td><td><a href=\'?showimage="+String(file.name())+"\'>"+String(file.name())+"</a></td><td align=\'right\'>"+String(file.size())+" B</td></tr>"+list;
+        list = "<tr><td><button onclick=\'execute(location.origin+\"?deleteimage="+String(file.name())+"\");\'>Delete</button></td><td></td><td><a onclick=\'execute(location.origin+\"?showimage="+String(file.name())+"\")\' style=\'color:blue;\'>"+String(file.name())+"</a></td><td align=\'right\'>"+String(file.size())+" B</td></tr>"+list;
       else
-        list = "<tr><td><button onclick=\'location.href=\"?deleteimage="+String(file.name())+"\";\'>Delete</button></td><td>"+String(file.name())+"</td><td></td><td align=\'right\'>"+String(file.size())+" B</td></tr>"+list;  
+        list = "<tr><td><button onclick=\'execute(location.origin+\"?deleteimage="+String(file.name())+"\");\'>Delete</button></td><td>"+String(file.name())+"</td><td></td><td align=\'right\'>"+String(file.size())+" B</td></tr>"+list;  
     }
     file = root.openNextFile();
   }
