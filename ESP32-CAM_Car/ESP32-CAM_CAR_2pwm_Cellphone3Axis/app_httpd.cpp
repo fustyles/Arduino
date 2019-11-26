@@ -2,7 +2,7 @@
 ESP32-CAM Remote Control Car (Use Mobile 3-Axis)
 You must open the page in Firefox.
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-25 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-26 23:00
 https://www.facebook.com/francefu
 
 Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
@@ -968,17 +968,28 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         var gamma = Number(event.gamma);
         
         var label = "";
-        if ((beta<=-20)&&(gamma<20&&gamma>-20)) label = "1"; //Front
-        else if ((beta<20&&beta>-20)&&(gamma<=-20)) label = "2"; //Left
-        else if ((beta<20&&beta>-20)&&(gamma<20&&gamma>-20)) label = "3"; //Stop
-        else if ((beta<20&&beta>-20)&&(gamma>=20)) label = "4"; //Right
-        else if ((beta>=20)&&(gamma<20&&gamma>-20)) label = "5"; //Back
-        else if ((beta<=-20)&&(gamma<=-20)) label = "6"; //FrontLeft
-        else if ((beta<=-20)&&(gamma>=20)) label = "7"; //FrontRight
-        else if ((beta>=20)&&(gamma<=-20)) label = "8"; //LeftAfter
-        else if ((beta>=20)&&(gamma>=20)) label = "9"; //RightAfter
+        var state = "";
+        var angle = 20;
+        if ((beta<=-angle)&&(gamma<angle&&gamma>-angle)) 
+          {label="1";state="Front";}
+        else if ((beta<angle&&beta>-angle)&&(gamma<=-angle)) 
+          {label="2";state="Left";}
+        else if ((beta<angle&&beta>-angle)&&(gamma<angle&&gamma>-angle)) 
+          {label="3";state="Stop";}
+        else if ((beta<angle&&beta>-angle)&&(gamma>=angle)) 
+          {label="4";state="Right";}
+        else if ((beta>=angle)&&(gamma<angle&&gamma>-angle)) 
+          {label="5";state="Back";}
+        else if ((beta<=-angle)&&(gamma<=-angle)) 
+          {label="6";state="FrontLeft";}
+        else if ((beta<=-angle)&&(gamma>=angle)) 
+          {label="7";state="FrontRight";}
+        else if ((beta>=angle)&&(gamma<=-angle)) 
+          {label="8";state="LeftAfter";}
+        else if ((beta>=angle)&&(gamma>=angle)) 
+          {label="9";state="RightAfter";}
 
-        result.innerHTML = document.getElementById('ip').value+'/control?var=car&val='+label+"<br>alpha = "+event.alpha+"<br>beta = "+event.beta+"<br>gamma = "+event.gamma;                                                                                                               
+        result.innerHTML = state+"<br>alpha = "+event.alpha+"<br>beta = "+event.beta+"<br>gamma = "+event.gamma;                                                                                                               
         if (message.innerHTML==label) return;
         message.innerHTML=label;
         //fetch(document.getElementById('ip').value+'/control?var=car&val='+label);
