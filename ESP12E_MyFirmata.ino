@@ -352,6 +352,8 @@ void loop()
             Feedback+="<option value=\"ifttt\">ifttt</option>";
             Feedback+="<option value=\"thingspeakupdate\">thingspeakupdate</option>";
             Feedback+="<option value=\"thingspeakread\">thingspeakread</option>";
+            Feedback+="<option value=\"linenotify\">linenotify</option>";
+            Feedback+="<option value=\"i2cLcd\">i2cLcd</option>";
             Feedback+="</select>";
             Feedback+="<br><br>str1:"; 
             Feedback+="<input type=\"text\" name=\"str1\" id=\"str1\" size=\"20\">";      
