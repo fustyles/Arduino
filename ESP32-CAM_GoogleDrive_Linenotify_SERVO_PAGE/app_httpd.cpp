@@ -22,7 +22,7 @@ String urlencode(String);
 
 const char* myDomain = "script.google.com";
 String myScript = "/macros/s/xxxxxxxxxxxxxxx/exec";    //Create your Google Apps Script and replace the "myScript" path.
-String myLineNotifyToken = "myToken=xxxxxxxxxxxxxxx";    //Line Notify Token
+String myLineNotifyToken = "myToken=xxxxxxxxxx";    //Line Notify Token. You can set the value of xxxxxxxxxx empty if you don't want to send picture to Linenotify.
 String myFoldername = "&myFoldername=ESP32-CAM";
 String myFilename;
 String myImage = "&myFile=";
