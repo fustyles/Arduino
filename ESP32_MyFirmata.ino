@@ -423,7 +423,7 @@ void loop()
             //client.println("Connection: close");
             client.println();
             client.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-            client.println("<esp32><feedback>"+Feedback+"</feedback></esp8266>");
+            client.println("<esp32><feedback>"+Feedback+"</feedback></esp32>");
             client.println();
            */
             
