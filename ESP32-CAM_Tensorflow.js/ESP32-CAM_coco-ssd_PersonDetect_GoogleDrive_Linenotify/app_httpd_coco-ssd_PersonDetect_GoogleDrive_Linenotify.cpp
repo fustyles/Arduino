@@ -9,6 +9,7 @@ https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
 Google Apps Script
 https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doPost.gs
 You must allow anyone and anonymous to execute the google script.
+
 How to add a new script
 https://www.youtube.com/watch?v=f46VBqWwUuI
 
