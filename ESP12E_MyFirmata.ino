@@ -317,7 +317,7 @@ void loop()
             client.println("Access-Control-Allow-Origin: *");
             //client.println("Connection: close");
             client.println();
-            client.println("[{\"esp8266\":\""+Feedback+"\"}]");
+            client.println("[{\"esp12e\":\""+Feedback+"\"}]");
             client.println();
             */
             
@@ -330,7 +330,7 @@ void loop()
             //client.println("Connection: close");
             client.println();
             client.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-            client.println("<esp8266><feedback>"+Feedback+"</feedback></esp8266>");
+            client.println("<esp12e><feedback>"+Feedback+"</feedback></esp12e>");
             client.println();
            */
             
