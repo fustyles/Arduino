@@ -1,5 +1,5 @@
 /*
-ESP32-CAM PIR (Save a captured image to Google Drive and LineNotify)
+ESP32-CAM PIR Motion Sensor (Save a captured image to Google Drive and LineNotify)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-21 13:00
 https://www.facebook.com/francefu
 
