@@ -1,5 +1,5 @@
 /*
-ESP32-CAM PIR　(Send a captured photo by using Gmail)
+ESP32-CAM PIR Motion Sensor (Send a captured photo by using Gmail)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-27 01:00
 https://www.facebook.com/francefu
 
