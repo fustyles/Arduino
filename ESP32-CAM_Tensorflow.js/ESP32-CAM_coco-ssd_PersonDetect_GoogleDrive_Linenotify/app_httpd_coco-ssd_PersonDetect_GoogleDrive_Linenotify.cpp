@@ -631,6 +631,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 Google Script Url : <input type="text" id="myGoogleScript" name="myGoogleScript" value=""><br>
                 Google Folder Name : <input type="text" id="myFoldername" name="myFoldername" value="ESP32-CAM"><br>
                 Line Notify Token : <input type="text" id="myToken" name="myToken" value=""><br>
+                You can set the value of Token empty if you don't want to send picture to Linenotify.<br>
                 <input type="text" id="myFilename" name="myFilename" style="display:none">
                 <textarea id="myFile" name="myFile" rows="10" cols="50" style="display:none"></textarea><br>
                 </form>
