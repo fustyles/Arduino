@@ -20,7 +20,7 @@ const char* password = "xxxxx";   //your network password
 
 const char* myDomain = "script.google.com";
 String myScript = "/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxx/exec";    //Create your Google Apps Script and replace the "myScript" path.
-String myLineNotifyToken = "myToken=xxxxxxxxxxxxxxxxxxxxxxxxx";    //Line Notify Token. You can set the value of xxxxxxxxxxx empty if you don't want to send picture to Linenotify.
+String myLineNotifyToken = "myToken=xxxxxxxxxx";    //Line Notify Token. You can set the value of xxxxxxxxxx empty if you don't want to send picture to Linenotify.
 String myFoldername = "&myFoldername=ESP32-CAM";
 String myFilename = "&myFilename=ESP32-CAM.jpg";
 String myImage = "&myFile=";
