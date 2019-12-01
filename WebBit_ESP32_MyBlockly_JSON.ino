@@ -116,9 +116,7 @@ void ExecuteCommand()
     Feedback="{\"data\":\""+WiFi.macAddress()+"\"}";
   }  
   else if (cmd=="restart") {
-    setup();
-    Feedback="{\"data\":\""+Command+"\"}";
-    //ESP.restart();
+    ESP.restart();
   }    
   else if (cmd=="resetwifi") {
     WiFi.begin(p1.c_str(), p2.c_str());
