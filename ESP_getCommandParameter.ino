@@ -71,8 +71,7 @@ void ExecuteCommand()
   }  
   else if (cmd=="restart")
   {
-    setup();
-    Feedback=Command;
+    ESP.restart();
   }    
   else if (cmd=="resetwifi")
   {
