@@ -1,5 +1,5 @@
 /* 
-NodeMCU (ESP32)
+NodeMCU (ESP32) MyFirmata
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-4 09:00
 https://www.facebook.com/francefu
 
