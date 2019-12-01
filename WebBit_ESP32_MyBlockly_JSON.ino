@@ -25,9 +25,12 @@ http://192.168.4.1/?digitalread=gpio
 http://192.168.4.1/?analogread=gpio
 http://192.168.4.1/?touchread=gpio
 http://192.168.4.1/?tcp=domain;port;request;wait
+--> wait = 0 or 1  (waiting for response)
+--> request = /xxxx/xxxx
 http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
 http://192.168.4.1/?thingspeakread=request
+--> request = /channels/xxxxx/fields/1.json?results=1
 http://192.168.4.1/?linenotify=token;request
 http://192.168.4.1/?car=gpioL1;gpioL2;gpioR1;gpioR2;L_speed;R_speed;Delay;state
 http://192.168.4.1/?i2cLcd=address;gpioSDA;gpioSCL;text1;text2
