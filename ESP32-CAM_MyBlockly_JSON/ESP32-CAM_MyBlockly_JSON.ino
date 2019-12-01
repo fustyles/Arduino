@@ -45,7 +45,7 @@ http://192.168.4.1/?speedR=value       //vale= 0~255
 http://192.168.4.1/?decelerate=value   //vale= 0~100
 http://192.168.4.1/?car=state          //state= 1(Front),2(Left),3(Stop),4(Right),5(Back),6(FrontLeft),7(FrontRight),8(LeftAfter),9(RightAfter)
 http://192.168.4.1/?getstill
-http://192.168.4.1/?sendCapturedImage2LineNotify=token
+http://192.168.4.1/?sendCapturedImageToLineNotify=token
 
 STAIP：
 Query：http://192.168.4.1/?ip
@@ -420,8 +420,8 @@ void ExecuteCommand()
   { 
     Feedback=Feedback="{\"data\":\""+getstill()+"\"}";
   }   
-  else if (cmd=="sendCapturedImage2LineNotify") { 
-    Feedback=sendCapturedImage2LineNotify(P1);
+  else if (cmd=="sendCapturedImageToLineNotify") { 
+    Feedback=sendCapturedImageToLineNotify(P1);
     Feedback="{\"data\":\""+Feedback+"\"}";
   }   
   else {
@@ -836,7 +836,7 @@ String LineNotify(String token, String request, byte wait)
     return "Connection failed";  
 }
 
-String sendCapturedImage2LineNotify(String myLineNotifyToken)
+String sendCapturedImageToLineNotify(String myLineNotifyToken)
 {
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();  
