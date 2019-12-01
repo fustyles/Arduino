@@ -11,6 +11,8 @@ http://APIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://STAIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 
 Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
+Servo -> gpio2
+Servo1 -> gpio2, Servo2 -> gpio13
 */
 
 // Enter your WiFi ssid and password
