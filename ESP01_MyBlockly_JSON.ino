@@ -19,13 +19,18 @@ http://192.168.4.1/?analogwrite=pin;value
 http://192.168.4.1/?digitalread=pin
 http://192.168.4.1/?analogread=pin
 http://192.168.4.1/?tcp=domain;port;request;wait
+--> wait = 0 or 1  (waiting for response)
+--> request = /xxxx/xxxx
 http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
 http://192.168.4.1/?thingspeakread=request
+--> request = /channels/xxxxx/fields/1.json?results=1
 http://192.168.4.1/?linenotify=token;request
 --> request = message=xxxxx
 --> request = message=xxxxx&stickerPackageId=xxxxx&stickerId=xxxxx
 http://192.168.4.1/?i2cLcd=address;gpioSDA;gpioSCL;text1;text2
+--> address(Decimal) : 0x27=39, 0x3F=63   
+--> SDA->gpio0, SCL->gpio2
 
 STAIP：
 Query：http://192.168.4.1/?ip
