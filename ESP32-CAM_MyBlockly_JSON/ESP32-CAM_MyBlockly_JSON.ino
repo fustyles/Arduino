@@ -259,7 +259,7 @@ void ExecuteCommand()
     Feedback.replace("\":",",");
     Feedback="{\"data\":\""+Feedback+"\"}";
   } 
-  else if (cmd=="linenotify") {    //message=xxx&stickerPackageId=xxx&stickerId=xxx
+  else if (cmd=="linenotify") {
     String token = P1;
     String request = P2;
     Feedback=LineNotify(token,request,1);
