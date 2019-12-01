@@ -4,8 +4,7 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-01 22:30
 https://www.facebook.com/francefu
 
 Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
-Servo -> gpio2
-Servo1 -> gpio2, Servo2 -> gpio13
+( Servo -> gpio2 ) or ( Servo1 -> gpio2, Servo2 -> gpio13 )
 
 http://APIP
 http://STAIP
@@ -34,14 +33,14 @@ http://192.168.4.1/?linenotify=token;request
 --> request = message=xxxxx
 --> request = message=xxxxx&stickerPackageId=xxxxx&stickerId=xxxxx
 
-http://192.168.4.1/?flash=value   (vale:0~255)
-http://192.168.4.1/?servo=value   (vale:1700~8000)
-http://192.168.4.1/?servo1=value  (vale:1700~8000)
-http://192.168.4.1/?servo2=value  (vale:1700~8000)
-http://192.168.4.1/?speedL=value   (vale:0~255)
-http://192.168.4.1/?speedR=value   (vale:0~255)
-http://192.168.4.1/?decelerate=value   (vale:0~100)
-http://192.168.4.1/?car=state   (vale:1~9)
+http://192.168.4.1/?flash=value        //vale= 0~255
+http://192.168.4.1/?servo=value        //vale= 1700~8000
+http://192.168.4.1/?servo1=value       //vale= 1700~8000
+http://192.168.4.1/?servo2=value       //vale= 1700~8000
+http://192.168.4.1/?speedL=value       //vale= 0~255
+http://192.168.4.1/?speedR=value       //vale= 0~255
+http://192.168.4.1/?decelerate=value   //vale= 0~100
+http://192.168.4.1/?car=state          //state= 1(Front),2(Left),3(Stop),4(Right),5(Back),6(FrontLeft),7(FrontRight),8(LeftAfter),9(RightAfter)
 http://192.168.4.1/?getstill
 http://192.168.4.1/?sendCapturedImage2LineNotify=token
 
