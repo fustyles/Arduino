@@ -371,7 +371,7 @@ void loop()
             client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
             client.println("Content-Type: text/html; charset=utf-8");
             client.println("Access-Control-Allow-Origin: *");
-            //client.println("Connection: close");
+            client.println("Connection: close");
             client.println();
             client.println("<!DOCTYPE HTML>");
             client.println("<html><head>");
