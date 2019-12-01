@@ -30,7 +30,7 @@ http://192.168.4.1/?linenotify=token;request
 --> request = message=xxxxx&stickerPackageId=xxxxx&stickerId=xxxxx
 http://192.168.4.1/?i2cLcd=address;gpioSDA;gpioSCL;text1;text2
 --> address(Decimal) : 0x27=39, 0x3F=63   
---> SDA->gpio9, SCL->gpio8
+--> SDA->gpio2, SCL->gpio1
 
 STAIP：
 Query：http://192.168.4.1/?ip
