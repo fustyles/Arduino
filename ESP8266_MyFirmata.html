@@ -1,3 +1,4 @@
+<!-- Author: https://www.facebook.com/francefu -->
 <!doctype html>
 <html>
 <head>
@@ -38,8 +39,8 @@ function wait()
 <table>
  <tr>
   <td valign="top">
-   <table >
-    <tr><td>ESP8266 (ESP01, ESP12E, ESP32)</td></tr>
+   <table width="350px">
+    <tr><td>ESP01(+Arduino Leonardo), ESP12E, ESP32, WebBit, LinkIt7697</td></tr>
     <tr><td>IP：<input type="text" name="url" id="url" size="26" value="http://192.168.4.1"></td></tr>
     <tr><td>Command</td></tr>
     <tr>
@@ -53,22 +54,37 @@ function wait()
     <option value="at">at</option>
     <option value="inputpullup">inputpullup</option>
     <option value="pinmode">pinmode</option>
-    <option value="digitalwrite">digitalwrite(pin,value)</option>
-    <option value="analogwrite">analogwrite</option>
-    <option value="digitalread">digitalread(pin)</option>
-    <option value="analogread">analogread(pin)</option>
-    <option value="touchread">touchread(pin) for ESP32</option>
+    <option value="digitalwrite">digitalwrite(gpio,value)</option>
+    <option value="analogwrite">analogwrite(gpio,value)</option>
+    <option value="digitalread">digitalread(gpio)</option>
+    <option value="analogread">analogread(gpio)</option>
+    <option value="touchread">touchread(gpio) for ESP32</option>
     <option value="tcp">tcp(domain,port,request,wait)</option>
-    <option value="ifttt">ifttt(event,key,value1,value2\,value3)</option>
+    <option value="ifttt">ifttt(event,key,value1,value2,value3)</option>
     <option value="thingspeakupdate">thingspeakupdate(key,field1~field8)</option>
     <option value="thingspeakread">thingspeakread(request)</option>
     <option value="linenotify">linenotify(token,request)</option>
     <option value="car">car(L1,L2,R1,R2,Lspeed,Rspeed,Delay,state)</option>
     <option value="i2cLcd">i2cLcd(address,gpioSDA,gpioSCL,text1,text2)</option>
+    <option value="i2cLcd">i2cLcd(address,text1,text2)</option>        
+    <option value="led">led(0~24,rrggbb) for WebBit</option>
+    <option value="matrixled">matrixled(rrggbbrrggbb......) for WebBit</option>
+    <option value="brightness">brightness(0~1) for WebBit</option>        
+    <option value="buzzer">buzzer(frequency,delay) for WebBit</option>
+    <option value="buttonA">buttonA for WebBit</option>
+    <option value="buttonB">buttonB for WebBit</option>
+    <option value="buttonAB">buttonAB for WebBit</option>
+    <option value="temperature">temperature for WebBit</option>
+    <option value="lumL">lumL for WebBit</option> 
+    <option value="lumR">lumR for WebBit</option>  
+    <option value="MPU9250">MPU9250 for WebBit</option>
+    <option value="accel">Accelerometer for WebBit</option>
+    <option value="gyro">Gyroscope for WebBit</option> 
+    <option value="mag">Magnetic for WebBit</option>  
     <option value="mousemove">mousemove For Leonardo</option>
     <option value="mouseclickleft">mouseclickleft For Leonardo</option>
     <option value="mouseclickright">mouseclickright For Leonardo</option>
-    <option value="mouseclickmiddle"> mouseclickmiddle For Leonardo</option>
+    <option value="mouseclickmiddle">mouseclickmiddle For Leonardo</option>
     <option value="mousepressleft">mousepressleft For Leonardo</option>
     <option value="mousepressright">mousepressright For Leonardo</option>
     <option value="mousepressmiddle">mousepressmiddle For Leonardo</option>
@@ -126,7 +142,7 @@ function wait()
    </table><br>
   </td>
   <td valign="top">
-   <iframe id="MyFirmata" width="320" height="320"></iframe><br>
+   <iframe id="MyFirmata" width="270" height="320"></iframe><br>
    Command Format：<br>
    http://APIP/?cmd=P1;P2;P3;P4;P5;P6;;P7;P8;P9<br>
    http://STAIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
