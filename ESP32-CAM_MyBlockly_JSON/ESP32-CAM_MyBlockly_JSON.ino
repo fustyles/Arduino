@@ -4,7 +4,7 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-01 22:30
 https://www.facebook.com/francefu
 
 Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
-( Servo -> gpio2 ) or ( Servo1 -> gpio2, Servo2 -> gpio13 )
+Servo -> gpio2  (or)  Servo1 -> gpio2, Servo2 -> gpio13
 
 http://APIP
 http://STAIP
