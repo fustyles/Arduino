@@ -420,9 +420,9 @@ void ExecuteCommand()
   }   
   else if (cmd=="getstill") { 
     if (P1=="img")
-      Feedback=Feedback="{\"data\":\"\<img id=\'getstill\' src=\'"+getstill()+"\'\>\"}";
+      Feedback="{\"data\":\"\<img id=\'getstill\' src=\'"+getstill()+"\'\>\"}";
     else
-      Feedback=Feedback="{\"data\":\""+getstill()+"\"}";
+      Feedback="{\"data\":\""+getstill()+"\"}";
   }   
   else if (cmd=="framesize") { 
     sensor_t * s = esp_camera_sensor_get();  
