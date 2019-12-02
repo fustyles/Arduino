@@ -323,13 +323,11 @@ void ExecuteCommand()
     lcd.print(p4);
     lcd.setCursor(0,1);
     lcd.print(p5);
-    Feedback="{\"data\":\""+p4+"\"},{\"data\":\""+p5+"\"}";
   }
   else if (cmd=="brightness") {
     brightness = p1.toFloat();
     if (brightness>1) brightness=1;
     if (brightness<0) brightness=0.5;
-    Serial.println(String(brightness));
   }   
   else if (cmd=="buttonA") {
     pinMode(35, INPUT);
