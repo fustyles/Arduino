@@ -3,6 +3,8 @@ ESP32-CAM knn-classifier
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-6-10 21:00
 https://www.facebook.com/francefu
 
+Open the page in Chrome.
+
 Servo -> gpio2 (Common Groung)
 
 How to enable WebGL in Chrome.
@@ -10,8 +12,6 @@ https://superuser.com/questions/836832/how-can-i-enable-webgl-in-my-browser
 
 If the page can't load model due to the CORS policy, Use the Chrome extension Allow-Control-Allow-Origin: *
 https://chrome.google.com/webstore/detail/allow-control-allow-origi/nlfbmbojpeacfghkpbjhddihlkkiljbi
-
-Open the page in Chrome.
 */
 
 #include <esp32-hal-ledc.h>
