@@ -414,10 +414,12 @@ void ExecuteCommand()
       ledcWrite(8,speedL);
     }       
   }   
-  else if (cmd=="getstill")
-  { 
-    Feedback=Feedback="{\"data\":\""+getstill()+"\"}";
-  }   
+  else if (cmd=="getstill") { 
+    if (P1=="img")
+      Feedback=Feedback="{\"data\":\"\<img id=\'getstill\' src=\'"+getstill()+"\'\>\"}";
+    else
+      Feedback=Feedback="{\"data\":\""+getstill()+"\"}";
+  }    
   else if (cmd=="sendCapturedImageToLineNotify") { 
     Feedback=sendCapturedImageToLineNotify(P1);
     Feedback="{\"data\":\""+Feedback+"\"}";
