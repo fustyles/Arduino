@@ -242,7 +242,6 @@ void ExecuteCommand()
     lcd.print(P2);
     lcd.setCursor(0,1);
     lcd.print(P3);
-    Feedback="{\"data\":\""+P2+"\"},{\"data\":\""+P3+"\"}";
   }
   else {
     Feedback="{\"data\":\"Command is not defined\"}";
