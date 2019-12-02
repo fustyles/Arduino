@@ -44,7 +44,8 @@ http://192.168.4.1/?speedL=value       //vale= 0~255
 http://192.168.4.1/?speedR=value       //vale= 0~255
 http://192.168.4.1/?decelerate=value   //vale= 0~100
 http://192.168.4.1/?car=state          //state= 1(Front),2(Left),3(Stop),4(Right),5(Back),6(FrontLeft),7(FrontRight),8(LeftAfter),9(RightAfter)
-http://192.168.4.1/?getstill
+http://192.168.4.1/?getstill           //base64
+http://192.168.4.1/?getstill=img       //<img id='getstill' src='base64'>
 http://192.168.4.1/?sendCapturedImageToLineNotify=token
 
 STAIP：
