@@ -305,7 +305,6 @@ void ExecuteCommand()
     lcd.print(P4);
     lcd.setCursor(0,1);
     lcd.print(P5);
-    Feedback=Command;
   }
   else {
     Feedback="Command is not defined.";
