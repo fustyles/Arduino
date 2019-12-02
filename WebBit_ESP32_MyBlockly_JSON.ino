@@ -142,20 +142,17 @@ void ExecuteCommand()
   }    
   else if (cmd=="inputpullup") {
     pinMode(p1.toInt(), INPUT_PULLUP);
-    Feedback="{\"data\":\""+Command+"\"}";
   }  
   else if (cmd=="pinmode") {
     if (p2.toInt()==1)
       pinMode(p1.toInt(), OUTPUT);
     else
       pinMode(p1.toInt(), INPUT);
-    Feedback="{\"data\":\""+Command+"\"}";
   }        
   else if (cmd=="digitalwrite") {
     ledcDetachPin(p1.toInt());
     pinMode(p1.toInt(), OUTPUT);
     digitalWrite(p1.toInt(), p2.toInt());
-    Feedback="{\"data\":\""+Command+"\"}";
   }   
   else if (cmd=="digitalread") {
     Feedback="{\"data\":\""+String(digitalRead(p1.toInt()))+"\"}";
@@ -164,7 +161,6 @@ void ExecuteCommand()
     ledcAttachPin(p1.toInt(), 1);
     ledcSetup(1, 5000, 8);
     ledcWrite(1,p2.toInt());
-    Feedback="{\"data\":\""+Command+"\"}";
   }       
   else if (cmd=="analogread") {
     Feedback="{\"data\":\""+String(analogRead(p1.toInt()))+"\"}";
@@ -317,7 +313,6 @@ void ExecuteCommand()
         ledcWrite(3,0); 
       }        
     }
-    Feedback="{\"data\":\""+Command+"\"}";
   } 
   else if (cmd=="i2cLcd") {
     LiquidCrystal_I2C lcd(p1.toInt(),16,2);
@@ -335,7 +330,6 @@ void ExecuteCommand()
     if (brightness>1) brightness=1;
     if (brightness<0) brightness=0.5;
     Serial.println(String(brightness));
-    Feedback="{\"data\":\""+Command+"\"}";   
   }   
   else if (cmd=="buttonA") {
     pinMode(35, INPUT);
@@ -376,7 +370,6 @@ void ExecuteCommand()
     int B = (HextoRGB(p2[4])*16+HextoRGB(p2[5]))*brightness;
     strip.SetPixelColor(p1.toInt(), RgbColor(R, G, B));
     strip.Show();
-    Feedback="{\"data\":\""+Command+"\"}";    
   }  
   else if (cmd=="matrixled") {
     p1.toLowerCase();    
@@ -388,7 +381,6 @@ void ExecuteCommand()
       strip.SetPixelColor(i, RgbColor(R, G, B));
     }
     strip.Show();
-    Feedback="{\"data\":\""+Command+"\"}";    
   }  
 else if (cmd=="buzzer") {
     int freq = 2000;
@@ -415,9 +407,7 @@ else if (cmd=="buzzer") {
         }
       }
     }
-    ledcWriteTone(channel, 0);
-
-    Feedback="{\"data\":\""+Command+"\"}";    
+    ledcWriteTone(channel, 0); 
   }
   else if (cmd=="accel") {
     mySensor.accelUpdate();
@@ -463,6 +453,7 @@ else if (cmd=="buzzer") {
   else {
     Feedback="{\"data\":\"Command is not defined\"}";
   }
+  if (Feedback=="") Feedback="{\"data\":\""+Command+"\"}";  
 }
 
 int HextoRGB(char val) {
