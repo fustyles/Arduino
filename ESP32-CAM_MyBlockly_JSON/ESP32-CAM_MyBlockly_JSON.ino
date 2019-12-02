@@ -1,6 +1,6 @@
 /*
 ESP32-CAM MyBlockly
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-01 22:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-02 21:00
 https://www.facebook.com/francefu
 
 Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
@@ -46,6 +46,7 @@ http://192.168.4.1/?decelerate=value   //vale= 0~100
 http://192.168.4.1/?car=state          //state= 1(Front),2(Left),3(Stop),4(Right),5(Back),6(FrontLeft),7(FrontRight),8(LeftAfter),9(RightAfter)
 http://192.168.4.1/?getstill           //base64
 http://192.168.4.1/?getstill=img       //<img id='getstill' src='base64'>
+http://192.168.4.1/?framesize=size     //size= CIF,QVGA,HQVGA,QQVGA
 http://192.168.4.1/?sendCapturedImageToLineNotify=token
 
 STAIP：
@@ -126,7 +127,9 @@ void ExecuteCommand()
     Feedback="{\"data\":\""+WiFi.macAddress()+"\"}";
   }  
   else if (cmd=="restart") {
-    ESP.restart();
+    setup();
+    Feedback="{\"data\":\""+Command+"\"}";
+    //ESP.restart();
   }    
   else if (cmd=="resetwifi") {
     WiFi.begin(P1.c_str(), P2.c_str());
@@ -420,7 +423,21 @@ void ExecuteCommand()
       Feedback=Feedback="{\"data\":\"\<img id=\'getstill\' src=\'"+getstill()+"\'\>\"}";
     else
       Feedback=Feedback="{\"data\":\""+getstill()+"\"}";
-  }    
+  }   
+  else if (cmd=="framesize") { 
+    sensor_t * s = esp_camera_sensor_get();  
+    if (P1=="QQVGA")
+      s->set_framesize(s, FRAMESIZE_QQVGA);
+    else if (P1=="HQVGA")
+      s->set_framesize(s, FRAMESIZE_HQVGA);
+    else if (P1=="QVGA")
+      s->set_framesize(s, FRAMESIZE_QVGA);
+    else if (P1=="CIF")
+      s->set_framesize(s, FRAMESIZE_CIF);
+    else 
+      s->set_framesize(s, FRAMESIZE_QVGA);      
+    Feedback="{\"data\":\""+P1+"\"}";
+  }   
   else if (cmd=="sendCapturedImageToLineNotify") { 
     Feedback=sendCapturedImageToLineNotify(P1);
     Feedback="{\"data\":\""+Feedback+"\"}";
@@ -460,15 +477,15 @@ void setup() {
   config.pixel_format = PIXFORMAT_JPEG;
   //init with high specs to pre-allocate larger buffers
   if(psramFound()){
-    config.frame_size = FRAMESIZE_QVGA;
+    config.frame_size = FRAMESIZE_UXGA;
     config.jpeg_quality = 10;
     config.fb_count = 2;
   } else {
-    config.frame_size = FRAMESIZE_QVGA;
+    config.frame_size = FRAMESIZE_SVGA;
     config.jpeg_quality = 12;
     config.fb_count = 1;
   }
-
+  
   // camera init
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
