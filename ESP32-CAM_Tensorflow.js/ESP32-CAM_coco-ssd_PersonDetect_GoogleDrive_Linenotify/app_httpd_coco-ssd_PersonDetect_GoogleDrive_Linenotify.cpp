@@ -544,6 +544,12 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     else if(!strcmp(variable, "flash")) {
       ledcWrite(4,val);
     }  
+    else if(!strcmp(variable, "detect")) {
+      if (val==1) 
+        Serial.println("Person");
+      else if (val==0) 
+        Serial.println("Nobody"); 
+     }    
     else {
         res = -1;
     }
@@ -621,6 +627,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <tr style="visibility:hidden"><td colspan="3"><button id="toggle-stream"></button><button id="face_enroll" class="disabled" disabled="disabled"></button></td></tr>
                 <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}"></td></tr>
                 <tr><td colspan="3"><canvas id="canvas" width="0" height="0"></canvas></td></tr>
+                <tr style="display:none"><td colspan="3"><iframe id="ifr"></iframe></td></tr>
                 </table>
             </section>
             <figure>
@@ -902,7 +909,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               if ((myStartDetection.checked)&&(personState == false)&&(Predictions[i].class=="person")) {
                 personState = true;
                 SendCapturedImage();
-                setTimeout(function(){ personState = false; }, 15000);
+                //ifr.src = document.location.origin+'/control?var=detect&val=1';
+                setTimeout(function(){ personState = false; }, 15000);   // 15s
               }  
             }
           }
