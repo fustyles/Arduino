@@ -3,6 +3,8 @@ ESP32-CAM COCO-SSD
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-13 21:00
 https://www.facebook.com/francefu
 
+Open the page in Chrome.
+
 Class
 https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
 
@@ -16,8 +18,6 @@ https://www.youtube.com/watch?v=f46VBqWwUuI
 https://script.google.com/home
 https://script.google.com/home/executions
 https://drive.google.com/drive/my-drive
-
-Open the page in Chrome.
 */
 
 const char* ssid = "xxxxx";
