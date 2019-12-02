@@ -490,7 +490,8 @@ void setup() {
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
-    return;
+    delay(1000);
+    ESP.restart();
   }
 
   //drop down frame size for higher initial frame rate
