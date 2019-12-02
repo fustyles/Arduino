@@ -3,6 +3,8 @@ ESP32-CAM Remote Control Car (knn-classifier)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-24 20:00
 https://www.facebook.com/francefu
 
+Open the page in Chrome.
+
 Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
 
 If you output PWM to GPIO 15 using ledcWrite and the wheel loses control, you could use the codes.
