@@ -95,8 +95,6 @@ void setup() {
   //drop down frame size for higher initial frame rate
   sensor_t * s = esp_camera_sensor_get();
   s->set_framesize(s, FRAMESIZE_QVGA);  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
-
-  //ESP32-CAM Remote Control Car
   
   //Flash
   ledcAttachPin(4, 4);  
