@@ -222,7 +222,6 @@ void ExecuteCommand()
     lcd.print(str4);
     lcd.setCursor(0,1);
     lcd.print(str5);
-    Feedback=str4+","+str5;
   }  
   else 
   {
