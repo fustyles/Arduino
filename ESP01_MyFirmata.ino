@@ -131,7 +131,6 @@ void ExecuteCommand()
   else if (cmd=="inputpullup")
   {
     pinMode(str1.toInt(), INPUT_PULLUP);
-    Feedback=Command;
   }  
   else if (cmd=="pinmode")
   {
@@ -139,13 +138,11 @@ void ExecuteCommand()
       pinMode(str1.toInt(), OUTPUT);
     else
       pinMode(str1.toInt(), INPUT);
-    Feedback=Command;
   }        
   else if (cmd=="digitalwrite")
   {
     pinMode(str1.toInt(), OUTPUT);
     digitalWrite(str1.toInt(), str2.toInt());
-    Feedback=Command;
   }   
   else if (cmd=="digitalread")
   {
@@ -155,7 +152,6 @@ void ExecuteCommand()
   {
     pinMode(str1.toInt(), OUTPUT);
     analogWrite(str1.toInt(), str2.toInt());
-    Feedback=Command;
   }       
   else if (cmd=="analogread")
   {
@@ -232,6 +228,7 @@ void ExecuteCommand()
   {
     Feedback="Command is not defined";
   }
+  if (Feedback=="") Feedback=Command;  
 }
 
 void setup()
