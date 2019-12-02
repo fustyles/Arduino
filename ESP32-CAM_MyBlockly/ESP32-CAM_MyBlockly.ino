@@ -431,8 +431,7 @@ void ExecuteCommand()
     else if (P1=="CIF")
       s->set_framesize(s, FRAMESIZE_CIF);
     else 
-      s->set_framesize(s, FRAMESIZE_QVGA);      
-    Feedback="{\"data\":\""+P1+"\"}";
+      s->set_framesize(s, FRAMESIZE_QVGA);    
   }   
   else if (cmd=="sendCapturedImageToLineNotify") { 
     Feedback=sendCapturedImageToLineNotify(P1);
@@ -441,7 +440,7 @@ void ExecuteCommand()
   else {
     Feedback="{\"data\":\"Command is not defined\"}";
   }
-  if (Feedback=="") Feedback=Command;
+  if (Feedback=="") Feedback="{\"data\":\""+Command+"\"}";  
 }
 
 void setup() {
