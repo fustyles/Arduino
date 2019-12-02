@@ -114,20 +114,17 @@ void ExecuteCommand()
   }    
   else if (cmd=="inputpullup") {
     pinMode(P1.toInt(), INPUT_PULLUP);
-    Feedback="{\"data\":\""+Command+"\"}";
   }  
   else if (cmd=="pinmode") {
     if (P2.toInt()==1)
       pinMode(P1.toInt(), OUTPUT);
     else
       pinMode(P1.toInt(), INPUT);
-    Feedback="{\"data\":\""+Command+"\"}";
   }        
   else if (cmd=="digitalwrite") {
     ledcDetachPin(P1.toInt());
     pinMode(P1.toInt(), OUTPUT);
     digitalWrite(P1.toInt(), P2.toInt());
-    Feedback="{\"data\":\""+Command+"\"}";
   }   
   else if (cmd=="digitalread") {
     Feedback="{\"data\":\""+String(digitalRead(P1.toInt()))+"\"}";
@@ -136,7 +133,6 @@ void ExecuteCommand()
     ledcAttachPin(P1.toInt(), 1);
     ledcSetup(1, 5000, 8);
     ledcWrite(1,P2.toInt());
-    Feedback="{\"data\":\""+Command+"\"}";
   }       
   else if (cmd=="analogread") {
     Feedback="{\"data\":\""+String(analogRead(P1.toInt()))+"\"}";
@@ -289,7 +285,6 @@ void ExecuteCommand()
         ledcWrite(3,0); 
       }        
     }
-    Feedback="{\"data\":\""+Command+"\"}";
   } 
   else if (cmd=="i2cLcd") {
     LiquidCrystal_I2C lcd(P1.toInt(),16,2);
@@ -305,6 +300,7 @@ void ExecuteCommand()
   else {
     Feedback="{\"data\":\"Command is not defined\"}";
   }
+  if (Feedback=="") Feedback="{\"data\":\""+Command+"\"}";  
 }
 
 void setup()
