@@ -337,9 +337,6 @@ void getCommand(char c) {
 }
 
 String getstill() { 
-  sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_CIF);  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
-  
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();  
   if(!fb) {
@@ -459,9 +456,6 @@ String deleteimage(String filename) {
 }
 
 String saveCapturedImage(String filename) {
-  sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_UXGA);  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
-  
   String response = ""; 
   String path_html = "/"+filename+".html";
   String path_jpg = "/"+filename+".jpg";
