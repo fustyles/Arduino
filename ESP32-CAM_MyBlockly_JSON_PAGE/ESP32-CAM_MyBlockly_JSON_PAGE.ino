@@ -36,7 +36,7 @@ http://192.168.4.1/control?var=cmd&val=decelerate=value   //vale= 0~100  (%)
 http://192.168.4.1/control?var=cmd&val=car=state          //state= 1(Front),2(Left),3(Stop),4(Right),5(Back),6(FrontLeft),7(FrontRight),8(LeftAfter),9(RightAfter)
 http://192.168.4.1/control?var=cmd&val=getstill           //base64
 http://192.168.4.1/control?var=cmd&val=getstill=img       //<img id='gameimage_getstill' src='base64'>
-http://192.168.4.1/control?var=cmd&val=framesize=size     //size= CIF,QVGA,HQVGA,QQVGA
+http://192.168.4.1/control?var=cmd&val=framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
 STAIP：
 Query：http://192.168.4.1/control?var=cmd&val=ip
