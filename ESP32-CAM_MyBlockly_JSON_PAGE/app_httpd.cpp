@@ -38,6 +38,9 @@ http://192.168.4.1/control?decelerate=value   //vale= 0~100  (%)
 http://192.168.4.1/control?car=state          //state= 1(Front),2(Left),3(Stop),4(Right),5(Back),6(FrontLeft),7(FrontRight),8(LeftAfter),9(RightAfter)
 http://192.168.4.1/control?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
+http://192.168.4.1:81/stream   //Stream Video
+http://192.168.4.1/capture   //Image
+
 STAIP：
 Query：http://192.168.4.1/control?ip
 Link：http://192.168.4.1/control?resetwifi=ssid;password
