@@ -1,6 +1,6 @@
 /*
 ESP32-CAM MyBlock
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-13 18:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-13 21:00
 https://www.facebook.com/francefu
 
 Command Format :  
@@ -27,7 +27,6 @@ http://192.168.4.1/control?var=cmd&val=thingspeakread=request
 --> request = /channels/xxxxx/fields/1.jsoncontrol?var=cmd&val=results=1
 http://192.168.4.1/control?var=cmd&val=linenotify=token;request
 --> request = message=xxxxx
---> request = message=xxxxx&stickerPackageId=xxxxx&stickerId=xxxxx
 
 http://192.168.4.1/control?var=cmd&val=flash=value        //vale= 0~255
 http://192.168.4.1/control?var=cmd&val=servo=value        //vale= 1700~8000
