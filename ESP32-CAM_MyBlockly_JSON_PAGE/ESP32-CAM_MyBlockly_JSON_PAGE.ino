@@ -1,54 +1,54 @@
 /*
 ESP32-CAM MyBlock
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-13 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-13 22:00
 https://www.facebook.com/francefu
 
 Command Format :  
-http://APIP/control?var=cmd&val=cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
-http://STAIP/control?var=cmd&val=cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+http://APIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 
 Default APIP： 192.168.4.1
-http://192.168.4.1/control?var=cmd&val=ip
-http://192.168.4.1/control?var=cmd&val=mac
-http://192.168.4.1/control?var=cmd&val=restart
-http://192.168.4.1/control?var=cmd&val=inputpullup=pin
-http://192.168.4.1/control?var=cmd&val=pinmode=pin;value
-http://192.168.4.1/control?var=cmd&val=digitalwrite=pin;value
-http://192.168.4.1/control?var=cmd&val=analogwrite=pin;value
-http://192.168.4.1/control?var=cmd&val=digitalread=pin
-http://192.168.4.1/control?var=cmd&val=analogread=pin
-http://192.168.4.1/control?var=cmd&val=touchread=pin
-http://192.168.4.1/control?var=cmd&val=tcp=domain;port;request;wait
+http://192.168.4.1/control?ip
+http://192.168.4.1/control?mac
+http://192.168.4.1/control?restart
+http://192.168.4.1/control?inputpullup=pin
+http://192.168.4.1/control?pinmode=pin;value
+http://192.168.4.1/control?digitalwrite=pin;value
+http://192.168.4.1/control?analogwrite=pin;value
+http://192.168.4.1/control?digitalread=pin
+http://192.168.4.1/control?analogread=pin
+http://192.168.4.1/control?touchread=pin
+http://192.168.4.1/control?tcp=domain;port;request;wait
 --> wait = 0 or 1  (waiting for response)
 --> request = /xxxx/xxxx
-http://192.168.4.1/control?var=cmd&val=ifttt=event;key;value1;value2;value3
-http://192.168.4.1/control?var=cmd&val=thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
-http://192.168.4.1/control?var=cmd&val=thingspeakread=request
---> request = /channels/xxxxx/fields/1.jsoncontrol?var=cmd&val=results=1
-http://192.168.4.1/control?var=cmd&val=linenotify=token;request
+http://192.168.4.1/control?ifttt=event;key;value1;value2;value3
+http://192.168.4.1/control?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
+http://192.168.4.1/control?thingspeakread=request
+--> request = /channels/xxxxx/fields/1.jsoncontrol?results=1
+http://192.168.4.1/control?linenotify=token;request
 --> request = message=xxxxx
 
-http://192.168.4.1/control?var=cmd&val=flash=value        //vale= 0~255
-http://192.168.4.1/control?var=cmd&val=servo=value        //vale= 1700~8000
-http://192.168.4.1/control?var=cmd&val=servo1=value       //vale= 1700~8000
-http://192.168.4.1/control?var=cmd&val=servo2=value       //vale= 1700~8000
-http://192.168.4.1/control?var=cmd&val=speedL=value       //vale= 0~255
-http://192.168.4.1/control?var=cmd&val=speedR=value       //vale= 0~255
-http://192.168.4.1/control?var=cmd&val=decelerate=value   //vale= 0~100  (%)
-http://192.168.4.1/control?var=cmd&val=car=state          //state= 1(Front),2(Left),3(Stop),4(Right),5(Back),6(FrontLeft),7(FrontRight),8(LeftAfter),9(RightAfter)
-http://192.168.4.1/control?var=cmd&val=getstill           //base64
-http://192.168.4.1/control?var=cmd&val=getstill=img       //<img id='gameimage_getstill' src='base64'>
-http://192.168.4.1/control?var=cmd&val=framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+http://192.168.4.1/control?flash=value        //vale= 0~255
+http://192.168.4.1/control?servo=value        //vale= 1700~8000
+http://192.168.4.1/control?servo1=value       //vale= 1700~8000
+http://192.168.4.1/control?servo2=value       //vale= 1700~8000
+http://192.168.4.1/control?speedL=value       //vale= 0~255
+http://192.168.4.1/control?speedR=value       //vale= 0~255
+http://192.168.4.1/control?decelerate=value   //vale= 0~100  (%)
+http://192.168.4.1/control?car=state          //state= 1(Front),2(Left),3(Stop),4(Right),5(Back),6(FrontLeft),7(FrontRight),8(LeftAfter),9(RightAfter)
+http://192.168.4.1/control?getstill           //base64
+http://192.168.4.1/control?getstill=img       //<img id='gameimage_getstill' src='base64'>
+http://192.168.4.1/control?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
 STAIP：
-Query：http://192.168.4.1/control?var=cmd&val=ip
-Link：http://192.168.4.1/control?var=cmd&val=resetwifi=ssid;password
+Query：http://192.168.4.1/control?ip
+Link：http://192.168.4.1/control?resetwifi=ssid;password
 
 If you don't need to get response from ESP8266 and want to execute commands quickly, 
 you can append a parameter value "stop" at the end of command.
 For example:
-http://192.168.4.1/control?var=cmd&val=digitalwrite=gpio;value;stop
-http://192.168.4.1/control?var=cmd&val=restart=stop
+http://192.168.4.1/control?digitalwrite=gpio;value;stop
+http://192.168.4.1/control?restart=stop
 */
 
 const char* ssid = "xxxxx";
