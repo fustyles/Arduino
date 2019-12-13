@@ -877,7 +877,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       static char json_response[4096];
       char * p = json_response;
       *p++ = '[{';
-      p+=sprintf(p, "\"data\":%s", Feedback.c_str());
+      p+=sprintf(p, "\"data\":\"%s\"", Feedback.c_str());
       *p++ = '}]';
       *p++ = 0;
       httpd_resp_set_type(req, "application/json");
