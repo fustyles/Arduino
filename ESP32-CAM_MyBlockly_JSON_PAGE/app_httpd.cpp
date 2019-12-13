@@ -36,8 +36,6 @@ http://192.168.4.1/control?speedL=value       //vale= 0~255
 http://192.168.4.1/control?speedR=value       //vale= 0~255
 http://192.168.4.1/control?decelerate=value   //vale= 0~100  (%)
 http://192.168.4.1/control?car=state          //state= 1(Front),2(Left),3(Stop),4(Right),5(Back),6(FrontLeft),7(FrontRight),8(LeftAfter),9(RightAfter)
-http://192.168.4.1/control?getstill           //base64
-http://192.168.4.1/control?getstill=img       //<img id='gameimage_getstill' src='base64'>
 http://192.168.4.1/control?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
 STAIP：
@@ -845,13 +843,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           ledcWrite(7,0);
           ledcWrite(8,speedL);
         }       
-      }   
-      else if (cmd=="getstill") { 
-        if (P1=="img")
-          Feedback="\<img id=\'gameimage_getstill\' src=\'"+getstill()+"\'\>";
-        else
-          Feedback=getstill();
-      }   
+      }     
       else if (cmd=="framesize") { 
         sensor_t * s = esp_camera_sensor_get();  
         if (P1=="QQVGA")
@@ -879,7 +871,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         Feedback="Command is not defined";
       }       
     
-      static char json_response[1024];
+      static char json_response[4096];
       char * p = json_response;
       *p++ = '{';
       p+=sprintf(p, "\"data\":%s", Feedback.c_str());
@@ -1328,29 +1320,6 @@ void getCommand(char c)
   }
 }
 
-String getstill() { 
-  camera_fb_t * fb = NULL;
-  fb = esp_camera_fb_get();  
-  if(!fb) {
-    Serial.println("Camera capture failed");
-    return "Camera capture failed";
-  }
-
-  String imageFile = "data:image/jpeg;base64,";
-  char *input = (char *)fb->buf;
-  char output[base64_enc_len(3)];
-  for (int i=0;i<fb->len;i++) {
-    base64_encode(output, (input++), 3);
-    if (i%3==0) imageFile += urlencode(String(output));
-  }
-  esp_camera_fb_return(fb);
-
-  pinMode(4, OUTPUT);
-  digitalWrite(4, LOW); 
-  
-  return imageFile;
-}
-
 //https://github.com/zenmanenergy/ESP8266-Arduino-Examples/
 String urlencode(String str)
 {
@@ -1392,7 +1361,6 @@ String tcp_http(String domain,String request,int port,byte wait)
 
     if (client_tcp.connect(domain.c_str(), port)) 
     {
-      Serial.println("GET " + request);
       client_tcp.println("GET " + request + " HTTP/1.1");
       client_tcp.println("Host: " + domain);
       client_tcp.println("Connection: close");

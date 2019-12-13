@@ -36,8 +36,6 @@ http://192.168.4.1/control?speedL=value       //vale= 0~255
 http://192.168.4.1/control?speedR=value       //vale= 0~255
 http://192.168.4.1/control?decelerate=value   //vale= 0~100  (%)
 http://192.168.4.1/control?car=state          //state= 1(Front),2(Left),3(Stop),4(Right),5(Back),6(FrontLeft),7(FrontRight),8(LeftAfter),9(RightAfter)
-http://192.168.4.1/control?getstill           //base64
-http://192.168.4.1/control?getstill=img       //<img id='gameimage_getstill' src='base64'>
 http://192.168.4.1/control?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
 STAIP：
