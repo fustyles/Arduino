@@ -1,6 +1,6 @@
 /*
 ESP32-CAM MyBlock
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-13 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-13 18:00
 https://www.facebook.com/francefu
 
 Command Format :  
@@ -25,6 +25,9 @@ http://192.168.4.1/control?var=cmd&val=ifttt=event;key;value1;value2;value3
 http://192.168.4.1/control?var=cmd&val=thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
 http://192.168.4.1/control?var=cmd&val=thingspeakread=request
 --> request = /channels/xxxxx/fields/1.jsoncontrol?var=cmd&val=results=1
+http://192.168.4.1/control?var=cmd&val=linenotify=token;request
+--> request = message=xxxxx
+--> request = message=xxxxx&stickerPackageId=xxxxx&stickerId=xxxxx
 
 http://192.168.4.1/control?var=cmd&val=flash=value        //vale= 0~255
 http://192.168.4.1/control?var=cmd&val=servo=value        //vale= 1700~8000
@@ -49,10 +52,12 @@ http://192.168.4.1/control?var=cmd&val=digitalwrite=gpio;value;stop
 http://192.168.4.1/control?var=cmd&val=restart=stop
 */
 
-#include <esp32-hal-ledc.h>
-#include <WiFi.h>
 #include "Base64.h"
 #include "Arduino.h"
+#include <esp32-hal-ledc.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
+HTTPClient http;
 
 int speedR = 255;  //You can adjust the speed of the wheel. (gpio12, gpio13)
 int speedL = 255;  //You can adjust the speed of the wheel. (gpio14, gpio15)
@@ -1428,7 +1433,7 @@ String tcp_http(String domain,String request,int port,byte wait)
       return "Connection failed";  
 }
 
-String LineNotify(String token, String message, byte wait) 
+String LineNotify(String token, String message, byte wait)
 {
   message.replace(" ","%20");
   message.replace("&","%20");
@@ -1445,52 +1450,10 @@ String LineNotify(String token, String message, byte wait)
   message.replace("%20stickerPackageId","&stickerPackageId");
   message.replace("%20stickerId","&stickerId");    
   
-  WiFiClient client_tcp;
-
-  Serial.println("Connect to linenotify.com");
-  
-  if (client_tcp.connect("linenotify.com/notify.php", 80)) 
-  {
-    Serial.println("Connection successful");
-    
-    String message = "token="+token+"&"+message;
-    client_tcp.println("GET  HTTP/1.1");
-    client_tcp.println("Connection: close"); 
-    client_tcp.println("Host: linenotify.com");
-    client_tcp.println("Authorization: Bearer " + token);
-    client_tcp.println("Content-Length: " + String(message));
-    client_tcp.println();
-    client_tcp.println(message);
-    client_tcp.println();
-    
-    String getResponse="",Feedback="";
-    boolean state = false;
-    int waitTime = 3000;   // timeout 3 seconds
-    long startTime = millis();
-    while ((startTime + waitTime) > millis())
-    {
-      Serial.print(".");
-      delay(100);      
-      while (client_tcp.available()) 
-      {
-          char c = client_tcp.read();
-          if (c == '\n') 
-          {
-            if (getResponse.length()==0) state=true; 
-            getResponse = "";
-          } 
-          else if (c != '\r')
-            getResponse += String(c);
-          if (state==true) Feedback += String(c);
-          startTime = millis();
-       }
-    }
-    client_tcp.stop();
-    Serial.println(Feedback);
-    return Feedback;
-  }
-  else {
-    Serial.println("Connected to linenotify.com failed.");
-    return "Connected to linenotify.com failed.";
-  }
+  http.begin("http://linenotify.com/notify.php?token="+token+"&"+message);
+  int httpCode = http.GET();
+  if(httpCode > 0) {
+      return http.getString();
+  } else 
+      return "Connection Error!";
 }
