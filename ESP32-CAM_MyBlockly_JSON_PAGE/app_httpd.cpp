@@ -66,6 +66,27 @@ int servo1Pin = 2;
 int servo2Pin = 13;
 double decelerate = 60;
 
+//For Webbit
+#define HTTPD_MY_CONFIG() {                        \
+       .task_priority      = tskIDLE_PRIORITY+5,       \
+       .stack_size         = 4096,                     \    
+       .server_port        = 20975,                    \  
+       .ctrl_port          = 32768,                    \
+       .max_open_sockets   = 7,                        \
+       .max_uri_handlers   = 8,                        \
+       .max_resp_headers   = 8,                        \
+       .backlog_conn       = 5,                        \
+       .lru_purge_enable   = false,                    \
+       .recv_wait_timeout  = 5,                        \
+       .send_wait_timeout  = 5,                        \
+       .global_user_ctx = NULL,                        \
+       .global_user_ctx_free_fn = NULL,                \
+       .global_transport_ctx = NULL,                   \
+       .global_transport_ctx_free_fn = NULL,           \
+       .open_fn = NULL,                                \
+       .close_fn = NULL,                               \
+} 
+
 // Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -1225,7 +1246,8 @@ static esp_err_t index_handler(httpd_req_t *req){
 }
 
 void startCameraServer(){
-    httpd_config_t config = HTTPD_DEFAULT_CONFIG();
+  httpd_config_t config = HTTPD_DEFAULT_CONFIG(); 
+  //httpd_config_t config = HTTPD_MY_CONFIG();  //For Webbit
 
     httpd_uri_t index_uri = {
         .uri       = "/",
