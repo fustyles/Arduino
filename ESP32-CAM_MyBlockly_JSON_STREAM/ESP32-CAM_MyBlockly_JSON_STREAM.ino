@@ -855,7 +855,9 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       }  
       else {
         Feedback="Command is not defined";
-      }       
+      }
+
+      if (Feedback=="") Feedback=Command;
     
       static char json_response[15000];
       char * p = json_response;
