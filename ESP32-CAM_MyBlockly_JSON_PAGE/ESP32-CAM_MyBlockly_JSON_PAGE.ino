@@ -163,7 +163,7 @@ void setup() {
   } 
 
   startCameraServer();
-
+  
   char* apssid = "ESP32-CAM";
   char* appassword = "12345678";         //AP password require at least 8 characters.
   Serial.println("");
