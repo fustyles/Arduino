@@ -1,6 +1,6 @@
 /*
 ESP32-CAM MyBlock
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-13 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-15 21:00
 https://www.facebook.com/francefu
 
 Command Format :  
@@ -41,6 +41,7 @@ http://192.168.4.1/control?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF
 
 http://192.168.4.1:81/stream   //Stream Video
 http://192.168.4.1/capture   //Image
+http://192.168.4.1/status   //Status
 
 http://192.168.4.1/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
 http://192.168.4.1/control?var=quality&val=value    // value = 10 ~ 63
@@ -912,9 +913,24 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       if(res){
           return httpd_resp_send_500(req);
       }
-  
+
+      if (buf) {
+        Feedback = String(buf);
+      }
+      else {
+        Feedback = "";
+      }
+      static char json_response[128];
+      char * p = json_response;
+      *p++ = '[';      
+      *p++ = '{';
+      p+=sprintf(p, "\"data\":\"%s\"", Feedback.c_str());
+      *p++ = '}';
+      *p++ = ']';      
+      *p++ = 0;
+      httpd_resp_set_type(req, "application/json");
       httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-      return httpd_resp_send(req, NULL, 0);
+      return httpd_resp_send(req, json_response, strlen(json_response));      
     }
 }
 
@@ -958,16 +974,143 @@ static esp_err_t status_handler(httpd_req_t *req){
 
 static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 <!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width,initial-scale=1">
-        <title>ESP32 OV2460</title>
-    </head>
-    <body>    
-    Hello World  
-    </body>
-</html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="Expires" Content="0">
+  </head>
+  <script>
+  function SendCommand() {
+    var P1=document.getElementById("P1").value;
+    var P2=document.getElementById("P2").value;
+    var P3=document.getElementById("P3").value;
+    var P4=document.getElementById("P4").value;
+    var P5=document.getElementById("P5").value;
+        
+    document.getElementById("Send").disabled=true;
+    if (document.getElementById("choice1").checked) {
+      var cmd=document.getElementById("cmd1").value;
+      var link=location.origin+"/control?"+cmd+"="+P1+";"+P2+";"+P3+";"+P4+";"+P5;
+    }
+    else if (document.getElementById("choice2").checked) {
+      var cmd=document.getElementById("cmd2").value;
+      var link=location.origin+"/control?var="+cmd+"&val="+P1;
+    }    
+    else if (document.getElementById("choice3").checked) {
+      var cmd=document.getElementById("cmd3").value;
+      var link=location.origin+"/control?"+cmd+"="+P1+";"+P2+";"+P3+";"+P4+";"+P5;
+    }
+
+    document.getElementById("ShowUrl").innerHTML="<font color=red>URL："+link+"</font>";
+    document.getElementById("MyFirmata").src=link;
+    setTimeout(wait,1000);
+  }
+  
+  function wait() {
+    document.getElementById("Send").disabled=false;
+  }
+  </script>
+  <body>
+  <button onclick="document.getElementById('stream').src=location.origin+':81/stream';">Start Stream</button><button onclick="document.getElementById('stream').src='';">Stop Stream</button><button onclick="document.getElementById('stream').src=window.location.origin+'/capture?'+Math.floor(Math.random()*1000000);">Get Still</button></td>
+  <br>
+  <img id="stream" src="">
+  <br>  
+  <form onreset="document.getElementById('MyFirmata').src='about:blank';">
+      <table width="350px">
+      <tr>
+        <td>
+        <input type="radio" name="choice" id="choice1" checked>
+        <select name="cmd1" id="cmd1">
+        <option value="ip">ip</option>
+        <option value="mac">mac</option>
+        <option value="restart">restart</option>
+        <option value="inputpullup">inputpullup</option>
+        <option value="pinmode">pinmode</option>
+        <option value="digitalwrite">digitalwrite(gpio,value)</option>
+        <option value="analogwrite">analogwrite(gpio,value)</option>
+        <option value="digitalread">digitalread(gpio)</option>
+        <option value="analogread">analogread(gpio)</option>
+        <option value="touchread">touchread(gpio)</option>
+        <option value="tcp">tcp(domain,port,request,wait)</option>
+        <option value="ifttt">ifttt(event,key,value1,value2,value3)</option>
+        <option value="thingspeakupdate">thingspeakupdate(key,field1~field8)</option>
+        <option value="thingspeakread">thingspeakread(request)</option>
+        <option value="linenotify">linenotify(token,request)</option>
+        <option value="flash">flash(value)</option>
+        <option value="servo">servo(value)</option>
+        <option value="servo1">servo1(value)</option>
+        <option value="servo2">servo2(value)</option>
+        <option value="speedL">speedL(value)</option>
+        <option value="speedR">speedR(value)</option>
+        <option value="decelerate">decelerate(value)</option>
+        <option value="car">car(state)</option>
+        <option value="getstill">getstill</option>
+        <option value="framesize">framesize(size)</option>     
+        </select>
+        <br>
+      <tr>
+        <td>
+        <input type="radio" name="choice" id="choice2">
+        <select name="cmd2" id="cmd2">
+          <option value="framesize">framesize(value)</option>  
+          <option value="quality">quality(value)</option>  
+          <option value="brightness">brightness(value)</option>  
+          <option value="contrast">contrast(value)</option>  
+          <option value="saturation">saturation(value)</option>  
+          <option value="gainceiling">gainceiling(value)</option>  
+          <option value="colorbar">colorbar(value)</option>  
+          <option value="awb">awb(value)</option>  
+          <option value="agc">agc(value)</option>  
+          <option value="aec">aec(value)</option>  
+          <option value="hmirror">hmirror(value)</option>  
+          <option value="vflip">vflip(value)</option>  
+          <option value="awb_gain">awb_gain(value)</option>  
+          <option value="agc_gain">agc_gain(value)</option>  
+          <option value="aec_value">aec_value(value)</option>  
+          <option value="aec2">aec2(value)</option>  
+          <option value="dcw">dcw(value)</option>  
+          <option value="bpc">bpc(value)</option>  
+          <option value="wpc">wpc(value)</option>  
+          <option value="raw_gma">raw_gma(value)</option>  
+          <option value="lenc">lenc(value)</option>  
+          <option value="special_effect">special_effect(value)</option>  
+          <option value="wb_mode">wb_mode(value)</option>  
+          <option value="ae_level">ae_level(value)</option>  
+          <option value="flash">flash(value)</option>  
+        </select>
+        <br>        
+        <input type="radio" name="choice" id="choice3">
+        <input type="text" name="cmd3" id="cmd3" size="23">
+        </td>
+      </tr>
+      <tr>
+      <td>P1：<input type="text" name="P1" id="P1" size="30" onclick="this.select()"></td>
+      </tr>
+      <tr>
+      <td>P2：<input type="text" name="P2" id="P2" size="30" onclick="this.select()"></td>
+      </tr>
+      <tr>
+      <td>P3：<input type="text" name="P3" id="P3" size="30" onclick="this.select()"></td>
+      </tr>
+      <tr>
+      <td>P4：<input type="text" name="P4" id="P4" size="30" onclick="this.select()"></td>
+      </tr>
+      <tr>
+      <td>P5：<input type="text" name="P5" id="P5" size="30" onclick="this.select()"></td>
+      </tr>
+      <tr>
+      <td align="center"><input type="reset" value="Clear" height="50">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" id="Send" value="Send" onclick="SendCommand();">&nbsp;&nbsp;&nbsp;</td>
+      </tr>
+    </table>
+  </form>
+  <iframe id="MyFirmata" width="270" height="150"></iframe><br>
+  Command Format：<br>
+  http://APIP/control?cmd=P1;P2;P3;P4;P5<br>
+  http://STAIP/?cmd=P1;P2;P3;P4;P5<br>
+  <div id="ShowUrl"></div>
+  </body>
+  </html>
 )rawliteral";
 
 static esp_err_t index_handler(httpd_req_t *req){
