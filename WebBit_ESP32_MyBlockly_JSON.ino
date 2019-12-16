@@ -32,6 +32,8 @@ http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;fiel
 http://192.168.4.1/?thingspeakread=request
 --> request = /channels/xxxxx/fields/1.json?results=1
 http://192.168.4.1/?linenotify=token;request
+--> request = message=xxxxx
+--> request = message=xxxxx&stickerPackageId=xxxxx&stickerId=xxxxx
 http://192.168.4.1/?car=gpioL1;gpioL2;gpioR1;gpioR2;L_speed;R_speed;Delay;state
 http://192.168.4.1/?i2cLcd=address;gpioSDA;gpioSCL;text1;text2
 
