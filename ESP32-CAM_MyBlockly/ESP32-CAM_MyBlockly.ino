@@ -435,12 +435,11 @@ void ExecuteCommand()
   }   
   else if (cmd=="sendCapturedImageToLineNotify") { 
     Feedback=sendCapturedImageToLineNotify(P1);
-    Feedback="{\"data\":\""+Feedback+"\"}";
   }   
   else {
-    Feedback="{\"data\":\"Command is not defined\"}";
+    Feedback="Command is not defined";
   }
-  if (Feedback=="") Feedback="{\"data\":\""+Command+"\"}";  
+  if (Feedback=="") Feedback=Command;  
 }
 
 void setup() {
