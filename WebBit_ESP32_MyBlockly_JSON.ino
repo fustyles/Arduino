@@ -1,6 +1,6 @@
 /* 
 WebBit(BPI-bit) (ESP32) MyBlockly
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-2-28 09:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-21 13:00
 https://www.facebook.com/francefu
 
 Library
@@ -71,8 +71,7 @@ https://fustyles.github.io/webduino/ESP8266_MyFirmata.html
 */
 
 #include <MPU9250_asukiaaa.h>
-MPU9250 mySensor;
-uint8_t sensorId;
+MPU9250_asukiaaa mySensor;
 float aX, aY, aZ, aSqrt, gX, gY, gZ, mDirection, mX, mY, mZ;
 
 #include <NeoPixelBus.h>
@@ -88,8 +87,8 @@ NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
 #include <WiFiClientSecure.h>
 
 // Enter your WiFi ssid and password
-const char* ssid     = "xxxxx";   //your network SSID
-const char* password = "xxxxx";   //your network password
+const char* ssid     = "*****";   //your network SSID
+const char* password = "*****";   //your network password
 
 const char* apssid = "MyFirmata WebBit";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
@@ -134,7 +133,7 @@ void ExecuteCommand()
     Serial.println("STAIP: "+WiFi.localIP().toString());
     Feedback="{\"data\":\""+WiFi.softAPIP().toString()+"\"},{\"data\":\""+WiFi.localIP().toString()+"\"}";
     /*
-    if (WiFi.localIP().toString()!="0.0.0.0") {
+    if (WiFi.status() == WL_CONNECTED) {
       cmd="linenotify";
       p1 = "yourToken";
       p2 = "message="+WiFi.localIP().toString();
@@ -467,6 +466,7 @@ void setup()
   pinMode(LED_POWER, OUTPUT);
   digitalWrite(LED_POWER, HIGH);
   Serial.begin(115200);
+  Serial.setDebugOutput(true);
   while (!Serial); // wait for serial attach
   
   Wire.begin(21, 22);
@@ -474,15 +474,23 @@ void setup()
   mySensor.beginAccel();
   mySensor.beginGyro();
   mySensor.beginMag();
+  /*
   // You can set your own offset for mag values
-  // mySensor.magXOffset = -50;
-  // mySensor.magYOffset = -55;
-  // mySensor.magZOffset = -10;  
-  sensorId = mySensor.readId();
-  
+    maxXOffset = - (magXMax + magXMin) / 2
+               = - (70 - 30) / 2
+               = - 40 / 2
+               = -20
+    magYOffset = - (magYMax + magYMin) / 2
+               = - (110 + 10) / 2
+               = - 120 / 2
+               = -60  
+    mySensor.magXOffset = -50;
+    mySensor.magYOffset = -55;
+    mySensor.magZOffset = -10;  
+  */
+
   strip.Begin();
-  strip.Show();
-    
+  
   WiFi.mode(WIFI_AP_STA);
 
   //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
@@ -514,9 +522,26 @@ void setup()
     p2 = "message="+WiFi.localIP().toString();
     ExecuteCommand();
     */
+    for (int i=0;i<5;i++) {
+      strip.SetPixelColor(0, RgbColor(100, 100, 100));
+      strip.Show();
+      delay(300);
+      strip.SetPixelColor(0, RgbColor(0, 0, 0));
+      strip.Show();
+      delay(300);      
+    }
   }
-  else
+  else {
     WiFi.softAP(apssid, appassword);
+    for (int i=0;i<3;i++) {
+      strip.SetPixelColor(0, RgbColor(100, 100, 100));
+      strip.Show();
+      delay(1000);
+      strip.SetPixelColor(0, RgbColor(0, 0, 0));
+      strip.Show();
+      delay(1000);      
+    }    
+  }
 
   //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
   Serial.println("");
