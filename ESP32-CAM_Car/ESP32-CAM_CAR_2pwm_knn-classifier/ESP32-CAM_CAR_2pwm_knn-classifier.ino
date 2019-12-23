@@ -14,11 +14,10 @@ http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://192.168.xxx.xxx/control?ip
 http://192.168.xxx.xxx/control?mac
 http://192.168.xxx.xxx/control?restart
-http://192.168.xxx.xxx/control?resetwifi=ssid;password
-http://192.168.xxx.xxx/control?flash=value        //vale= 0~255
+http://192.168.xxx.xxx/control?flash=value        //value= 0~255
 
-http://192.168.xxx.xxx/control?speedL=value  //左輪車速 vale= 0~255 
-http://192.168.xxx.xxx/control?speedR=value  //右輪車速 vale= 0~255
+http://192.168.xxx.xxx/control?speedL=value  //左輪車速 value= 0~255 
+http://192.168.xxx.xxx/control?speedR=value  //右輪車速 value= 0~255
 http://192.168.xxx.xxx/control?decelerate=value  //轉彎減速為原速的比例% vale= 0~100
 http://192.168.xxx.xxx/control?car=1  //前進
 http://192.168.xxx.xxx/control?car=2  //左轉
@@ -1401,6 +1400,7 @@ void startCameraServer(){
   
   Serial.printf("Starting web server on port: '%d'\n", config.server_port);
   if (httpd_start(&camera_httpd, &config) == ESP_OK) {
+      //註冊自訂網址路徑對應執行的函式
       httpd_register_uri_handler(camera_httpd, &index_uri);
       httpd_register_uri_handler(camera_httpd, &cmd_uri);
       httpd_register_uri_handler(camera_httpd, &status_uri);
