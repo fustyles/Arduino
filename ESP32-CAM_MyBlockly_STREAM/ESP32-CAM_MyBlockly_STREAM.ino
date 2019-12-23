@@ -1,112 +1,81 @@
 /*
-ESP32-CAM MyBlock
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-15 21:00
+ESP32-CAM 模組 (暫時無法跨網域連線與使用HTTPS)
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-22 12:00
 https://www.facebook.com/francefu
 
-Command Format :  
+自訂指令格式 :  
 http://APIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 
-Default APIP： 192.168.4.1
-http://192.168.4.1/control?ip
-http://192.168.4.1/control?mac
-http://192.168.4.1/control?restart
-http://192.168.4.1/control?inputpullup=pin
-http://192.168.4.1/control?pinmode=pin;value
-http://192.168.4.1/control?digitalwrite=pin;value
-http://192.168.4.1/control?analogwrite=pin;value
-http://192.168.4.1/control?digitalread=pin
-http://192.168.4.1/control?analogread=pin
-http://192.168.4.1/control?touchread=pin
-http://192.168.4.1/control?tcp=domain;port;request;wait
---> wait = 0 or 1  (waiting for response)
---> request = /xxxx/xxxx
-http://192.168.4.1/control?ifttt=event;key;value1;value2;value3
-http://192.168.4.1/control?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
-http://192.168.4.1/control?thingspeakread=request
---> request = /channels/xxxxx/fields/1.jsoncontrol?results=1
-http://192.168.4.1/control?linenotify=token;request
---> request = message=xxxxx
-http://192.168.4.1/control?flash=value        //vale= 0~255
-http://192.168.4.1/control?servo=value        //vale= 1700~8000
-http://192.168.4.1/control?servo1=value       //vale= 1700~8000
-http://192.168.4.1/control?servo2=value       //vale= 1700~8000
-http://192.168.4.1/control?speedL=value       //vale= 0~255
-http://192.168.4.1/control?speedR=value       //vale= 0~255
-http://192.168.4.1/control?decelerate=value   //vale= 0~100  (%)
-http://192.168.4.1/control?car=state          //state= 1(Front),2(Left),3(Stop),4(Right),5(Back),6(FrontLeft),7(FrontRight),8(LeftAfter),9(RightAfter)
-http://192.168.4.1/control?getstill           //base64
-http://192.168.4.1/control?getstill=img       //<img id='gameimage_getstill' src='base64'>
-http://192.168.4.1/control?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+預設AP端IP： 192.168.4.1
+http://192.168.xxx.xxx/control?ip
+http://192.168.xxx.xxx/control?mac
+http://192.168.xxx.xxx/control?restart
+http://192.168.xxx.xxx/control?flash=value        //value= 0~255
 
-http://192.168.4.1:81/stream   //Stream Video
-http://192.168.4.1/capture   //Image
-http://192.168.4.1/status   //Status
+查詢Client端IP：
+查詢IP：http://192.168.4.1/?ip
+重設網路：http://192.168.4.1/?resetwifi=ssid;password
 
-http://192.168.4.1/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
-http://192.168.4.1/control?var=quality&val=value    // value = 10 ~ 63
-http://192.168.4.1/control?var=brightness&val=value    // value = -2 ~ 2
-http://192.168.4.1/control?var=contrast&val=value    // value = -2 ~ 2
-http://192.168.4.1/control?var=saturation&val=value    // value = -2 ~ 2 
-http://192.168.4.1/control?var=gainceiling&val=value    // value = 0 ~ 6
-http://192.168.4.1/control?var=colorbar&val=value    // value = 0 or 1
-http://192.168.4.1/control?var=awb&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=agc&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=aec&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=hmirror&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=vflip&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=awb_gain&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=agc_gain&val=value    // value = 0 ~ 30
-http://192.168.4.1/control?var=aec_value&val=value    // value = 0 ~ 1200
-http://192.168.4.1/control?var=aec2&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=dcw&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=bpc&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=wpc&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=raw_gma&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=lenc&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=special_effect&val=value    // value = 0 ~ 6
-http://192.168.4.1/control?var=wb_mode&val=value    // value = 0 ~ 4
-http://192.168.4.1/control?var=ae_level&val=value    // value = -2 ~ 2  
-http://192.168.4.1/control?var=flash&val=value    // value = 0 ~ 255
-      
-STAIP：
-Query：http://192.168.4.1/control?ip
-Link：http://192.168.4.1/control?resetwifi=ssid;password
+http://192.168.xxx.xxx             //網頁首頁管理介面
+http://192.168.xxx.xxx:81/stream   //取得串流影像
+http://192.168.xxx.xxx/capture     //取得影像
+http://192.168.xxx.xxx/status      //取得視訊參數值
+
+//設定視訊參數
+http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
+http://192.168.xxx.xxx/control?var=quality&val=value    // value = 10 ~ 63
+http://192.168.xxx.xxx/control?var=brightness&val=value    // value = -2 ~ 2
+http://192.168.xxx.xxx/control?var=contrast&val=value    // value = -2 ~ 2
+http://192.168.xxx.xxx/control?var=saturation&val=value    // value = -2 ~ 2 
+http://192.168.xxx.xxx/control?var=gainceiling&val=value    // value = 0 ~ 6
+http://192.168.xxx.xxx/control?var=colorbar&val=value    // value = 0 or 1
+http://192.168.xxx.xxx/control?var=awb&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=agc&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=aec&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=hmirror&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=vflip&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=awb_gain&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=agc_gain&val=value    // value = 0 ~ 30
+http://192.168.xxx.xxx/control?var=aec_value&val=value    // value = 0 ~ 1200
+http://192.168.xxx.xxx/control?var=aec2&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=dcw&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=bpc&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=wpc&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=raw_gma&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=lenc&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=special_effect&val=value    // value = 0 ~ 6
+http://192.168.xxx.xxx/control?var=wb_mode&val=value    // value = 0 ~ 4
+http://192.168.xxx.xxx/control?var=ae_level&val=value    // value = -2 ~ 2  
 */
 
-// Enter your WiFi ssid and password
-const char* ssid     = "xxxxx";   //your network SSID
-const char* password = "xxxxx";   //your network password
+//輸入WIFI連線帳號密碼
+const char* ssid     = "*****";   //your network SSID
+const char* password = "*****";   //your network password
 
+//輸入AP端連線帳號密碼
 const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
-int speedR = 255;  //You can adjust the speed of the wheel. (gpio12, gpio13)
-int speedL = 255;  //You can adjust the speed of the wheel. (gpio14, gpio15)
-int servoPin = 2;
-int servo1Pin = 2;
-int servo2Pin = 13;
-double decelerate = 60;
-
 #include <WiFi.h>
-#include <HTTPClient.h>
-HTTPClient http;
-#include <esp32-hal-ledc.h>
-#include "esp_camera.h"
-#include "Base64.h"
-#include "soc/soc.h"
-#include "soc/rtc_cntl_reg.h"
+#include <esp32-hal-ledc.h>      //用於控制伺服馬達
+#include "esp_camera.h"          //視訊
+#include "Base64.h"              //用於轉換視訊影像格式為base64格式，易於上傳google雲端硬碟或資料庫
+#include "soc/soc.h"             //用於電源不穩不重開機 
+#include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機 
 
+//官方函式庫
 #include "esp_http_server.h"
 #include "esp_timer.h"
 #include "esp_camera.h"
 #include "img_converters.h"
-
 #include "fb_gfx.h"
 #include "fd_forward.h"
 #include "fr_forward.h"
 
-String Feedback="";
+String Feedback="";   //回傳客戶端訊息
+
+//指令參數值
 String Command="";
 String cmd="";
 String P1="";
@@ -118,6 +87,8 @@ String P6="";
 String P7="";
 String P8="";
 String P9="";
+
+//指令拆解狀態值
 byte ReceiveState=0;
 byte cmdState=1;
 byte strState=1;
@@ -180,7 +151,7 @@ static int ra_filter_run(ra_filter_t * filter, int value){
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
 //            or another board which has PSRAM enabled
 
-//CAMERA_MODEL_AI_THINKER
+//CAMERA_MODEL_AI_THINKER  指定安可信ESP32-CAM模組腳位設定
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -200,12 +171,13 @@ static int ra_filter_run(ra_filter_t * filter, int value){
 #define PCLK_GPIO_NUM     22
 
 void setup() {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
   
   Serial.begin(115200);
-  Serial.setDebugOutput(true);
+  Serial.setDebugOutput(true);  //開啟診斷輸出
   Serial.println();
 
+  //視訊組態設定
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
@@ -226,7 +198,8 @@ void setup() {
   config.pin_pwdn = PWDN_GPIO_NUM;
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
-  config.pixel_format = PIXFORMAT_JPEG;
+  //https://github.com/espressif/esp32-camera/blob/master/driver/include/sensor.h
+  config.pixel_format = PIXFORMAT_JPEG;    //影像格式：RGB565|YUV422|GRAYSCALE|JPEG|RGB888|RAW|RGB444|RGB555
   //init with high specs to pre-allocate larger buffers
   if(psramFound()){
     config.frame_size = FRAMESIZE_UXGA;
@@ -238,7 +211,7 @@ void setup() {
     config.fb_count = 1;
   }
   
-  // camera init
+  //視訊初始化
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
@@ -246,30 +219,20 @@ void setup() {
     ESP.restart();
   }
 
-  //drop down frame size for higher initial frame rate
+  //可動態改變視訊框架大小(解析度大小)
   sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_QVGA);
+  s->set_framesize(s, FRAMESIZE_QVGA);  //96x96|QQVGA|QQVGA2|QCIF|HQVGA|240x240|QVGA|CIF|VGA|SVGA|XGA|SXGA|UXGA|QXGA|INVALID
 
-  //Flash
+  //閃光燈(GPIO4)
   ledcAttachPin(4, 4);  
   ledcSetup(4, 5000, 8);
   
-  //Wheel
-  ledcAttachPin(12, 5);
-  ledcSetup(5, 2000, 8);      
-  ledcAttachPin(13, 6);
-  ledcSetup(6, 2000, 8);
-  ledcWrite(6, 0);  
-  ledcAttachPin(15, 7);
-  ledcSetup(7, 2000, 8);      
-  ledcAttachPin(14, 8);
-  ledcSetup(8, 2000, 8);   
-  
-  WiFi.mode(WIFI_AP_STA);
+  WiFi.mode(WIFI_AP_STA);  //其他模式 WiFi.mode(WIFI_AP); WiFi.mode(WIFI_STA);
 
+  //指定Client端靜態IP
   //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
 
-  WiFi.begin(ssid, password);
+  WiFi.begin(ssid, password);    //執行網路連線
 
   delay(1000);
   Serial.println("");
@@ -277,19 +240,18 @@ void setup() {
   Serial.println(ssid);
   
   long int StartTime=millis();
-  while (WiFi.status() != WL_CONNECTED) 
-  {
-      delay(500);
-      if ((StartTime+10000) < millis()) break;
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    if ((StartTime+10000) < millis()) break;    //等待10秒連線
   } 
 
-  if (WiFi.status() == WL_CONNECTED) {
-    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);         
+  if (WiFi.status() == WL_CONNECTED) {    //若連線成功
+    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP         
     Serial.println("");
     Serial.println("STAIP address: ");
     Serial.println(WiFi.localIP()); 
 
-    for (int i=0;i<5;i++) {
+    for (int i=0;i<5;i++) {   //若連上WIFI設定閃光燈快速閃爍
       ledcWrite(4,10);
       delay(200);
       ledcWrite(4,0);
@@ -299,14 +261,15 @@ void setup() {
   else {
     WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);    
 
-    for (int i=0;i<2;i++) {
+    for (int i=0;i<2;i++) {    //若連不上WIFI設定閃光燈慢速閃爍
       ledcWrite(4,10);
       delay(1000);
       ledcWrite(4,0);
       delay(1000);    
     }      
   }     
-    
+
+  //指定AP端IP
   //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
   Serial.println("");
   Serial.println("APIP address: ");
@@ -314,6 +277,7 @@ void setup() {
   
   startCameraServer(); 
 
+  //設定閃光燈為低電位
   pinMode(4, OUTPUT);
   digitalWrite(4, LOW);      
 }
@@ -334,6 +298,7 @@ static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size
     return len;
 }
 
+//影像截圖
 static esp_err_t capture_handler(httpd_req_t *req){
     camera_fb_t * fb = NULL;
     esp_err_t res = ESP_OK;
@@ -403,6 +368,7 @@ static esp_err_t capture_handler(httpd_req_t *req){
     return res;
 }
 
+//影像串流
 static esp_err_t stream_handler(httpd_req_t *req){
     camera_fb_t * fb = NULL;
     esp_err_t res = ESP_OK;
@@ -513,11 +479,12 @@ static esp_err_t stream_handler(httpd_req_t *req){
     return res;
 }
 
+//指令參數控制
 static esp_err_t cmd_handler(httpd_req_t *req){
-    char*  buf;
+    char*  buf;  //存取網址後帶的參數字串
     size_t buf_len;
-    char variable[128] = {0,};
-    char value[128] = {0,};
+    char variable[128] = {0,};  //存取參數var值
+    char value[128] = {0,};  //存取參數val值
     String myCmd = "";
 
     buf_len = httpd_req_get_url_query_len(req) + 1;
@@ -544,9 +511,9 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     Feedback="";Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
     ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;     
     if (myCmd.length()>0) {
-      myCmd = "?"+myCmd;
+      myCmd = "?"+myCmd;  //網址後帶的參數字串轉換成自訂參數格式
       for (int i=0;i<myCmd.length();i++) {
-        getCommand(char(myCmd.charAt(i)));
+        getCommand(char(myCmd.charAt(i)));  //拆解參數字串
       }
     }
 
@@ -555,326 +522,54 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       //Serial.println("Command: "+Command);
       Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
       Serial.println(""); 
-          
+
+      //自訂指令區塊  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
       if (cmd=="your cmd") {
         // You can do anything
-        // Feedback="<font color=\"red\">Hello World</font>";
+        // Feedback="<font color=\"red\">Hello World</font>";   //可為一般文字或HTML語法
       }
-      else if (cmd=="ip") {
+      else if (cmd=="ip") {  //查詢IP
         Feedback="AP IP: "+WiFi.softAPIP().toString();    
         Feedback+=", ";
         Feedback+="STA IP: "+WiFi.localIP().toString();
       }  
-      else if (cmd=="mac") {
+      else if (cmd=="mac") {  //查詢MAC
         Feedback="STA MAC: "+WiFi.macAddress();
       }  
-      else if (cmd=="restart") {
+      else if (cmd=="restart") {  //重設WIFI連線
         ESP.restart();
       }           
-      else if (cmd=="inputpullup") {
-        pinMode(P1.toInt(), INPUT_PULLUP);
-      }  
-      else if (cmd=="pinmode") {
-        if (P2.toInt()==1)
-          pinMode(P1.toInt(), OUTPUT);
-        else
-          pinMode(P1.toInt(), INPUT);
-      }        
-      else if (cmd=="digitalwrite") {
-        ledcDetachPin(P1.toInt());
-        pinMode(P1.toInt(), OUTPUT);
-        digitalWrite(P1.toInt(), P2.toInt());
-      }   
-      else if (cmd=="digitalread") {
-        Feedback=String(digitalRead(P1.toInt()));
-      }
-      else if (cmd=="analogwrite") {
-        if (P1=="2") {
-          ledcAttachPin(2, 3);  
-          ledcSetup(3, 5000, 8);
-          ledcWrite(3,P2.toInt());     
-        }    
-        else if (P1=="4") {
-          ledcAttachPin(4, 4);  
-          ledcSetup(4, 5000, 8);
-          ledcWrite(4,P2.toInt());     
-        }
-        else if (P1=="12") {
-          ledcAttachPin(12, 5);  
-          ledcSetup(5, 5000, 8);
-          ledcWrite(5,P2.toInt());     
-        }
-        else if (P1=="13") {
-          ledcAttachPin(13, 6);  
-          ledcSetup(6, 5000, 8);
-          ledcWrite(6,P2.toInt());     
-        }
-        else if (P1=="14") {
-          ledcAttachPin(14, 8);  
-          ledcSetup(8, 5000, 8);
-          ledcWrite(8,P2.toInt());     
-        }
-        else if (P1=="15") {
-          ledcAttachPin(15, 7);  
-          ledcSetup(7, 5000, 8);
-          ledcWrite(7,P2.toInt());     
-        }
-        else {
-          ledcAttachPin(P1.toInt(), 9);
-          ledcSetup(9, 5000, 8);
-          ledcWrite(9,P2.toInt());
-        }
-      }       
-      else if (cmd=="analogread") {
-        Feedback=String(analogRead(P1.toInt()));
-      }
-      else if (cmd=="touchread") {
-        Feedback=String(touchRead(P1.toInt()));
-      }   
-      else if (cmd=="tcp") {
-        String domain=P1;
-        int port=P2.toInt();
-        String request=P3;
-        int wait=P4.toInt();      // wait = 0 or 1
-    
-        Feedback=tcp_http(domain,request,port,wait);  
-      }
-      else if (cmd=="ifttt") {
-        String domain="maker.ifttt.com";
-        String request = "/trigger/" + P1 + "/with/key/" + P2;
-        request += "?value1="+P3+"&value2="+P4+"&value3="+P5;
-        Feedback=tcp_http(domain,request,80,0);
-      }
-      else if (cmd=="thingspeakupdate") {
-        String domain="api.thingspeak.com";
-        String request = "/update?api_key=" + P1;
-        request += "&field1="+P2+"&field2="+P3+"&field3="+P4+"&field4="+P5+"&field5="+P6+"&field6="+P7+"&field7="+P8+"&field8="+P9;
-        Feedback=tcp_http(domain,request,80,0);
-      }    
-      else if (cmd=="thingspeakread") {
-        String domain="api.thingspeak.com";
-        String request = P1;
-        Feedback=tcp_http(domain,request,80,1);
-        int s=Feedback.indexOf("feeds");
-        Feedback=Feedback.substring(s+8);
-        int e=Feedback.indexOf("]");
-        Feedback=Feedback.substring(0,e);
-        Feedback.replace("},{",";");
-        Feedback.replace("\":\"",",");
-        Feedback.replace("\":",",");
-        Feedback.replace("\",\"",","); 
-        Feedback.replace("\"","");
-        Feedback.replace("{","");
-        Feedback.replace("}","");
-        Feedback.replace("[","");
-        Feedback.replace("]","");
-        Feedback.replace(",\"",",");
-        Feedback.replace("\":",",");
-      } 
-      else if (cmd=="linenotify") {
-        String token = P1;
-        String request = P2;
-        Feedback=LineNotify(token,request,1);
-        //Serial.println(Feedback);
-        if (Feedback.indexOf("status")!=-1) {
-          int s=Feedback.indexOf("<body>");
-          Feedback=Feedback.substring(s+6);
-          int e=Feedback.indexOf("<");
-          Feedback=Feedback.substring(0,e);
-        }
-      } 
-      else if (cmd=="flash") {
+      else if (cmd=="flash") {  //控制內建閃光燈
         ledcAttachPin(4, 4);  
         ledcSetup(4, 5000, 8);   
          
         int val = P1.toInt();
         ledcWrite(4,val);  
       }  
-      else if (cmd=="servo") {
-        ledcAttachPin(servoPin, 3);  
-        ledcSetup(3, 50, 16);
-        
-        int val = P1.toInt();      
-        if (val > 8000)
-           val = 8000;
-        else if (val < 1700)
-          val = 1700;   
-        val = 1700 + (8000 - val);   
-        ledcWrite(3, val); 
-      }  
-      else if (cmd=="servo1") {
-        ledcAttachPin(servo1Pin, 3);  
-        ledcSetup(3, 50, 16); 
-        
-        int val = P1.toInt();     
-        if (val > 8000)
-           val = 8000;
-        else if (val < 1700)
-          val = 1700;   
-        val = 1700 + (8000 - val);   
-        ledcWrite(3, val); 
-      }  
-      else if (cmd=="servo2") {
-        ledcAttachPin(servo2Pin, 6);  
-        ledcSetup(6, 50, 16); 
-        
-        int val = P1.toInt();     
-        if (val > 8000)
-           val = 8000;
-        else if (val < 1700)
-          val = 1700;   
-        val = 1700 + (8000 - val);   
-        ledcWrite(6, val); 
-      }
-      else if (cmd=="speedL") {
-        int val = P1.toInt();
-        if (val > 255)
-           val = 255;
-        else if (val < 0)
-          val = 0;       
-        speedL = val;
-        Serial.println("LeftSpeed = " + String(val)); 
-      }  
-      else if (cmd=="speedR") {
-        int val = P1.toInt();
-        if (val > 255)
-           val = 255;
-        else if (val < 0)
-          val = 0;       
-        speedR = val;
-        Serial.println("RightSpeed = " + String(val)); 
-      }  
-      else if (cmd=="decelerate") { 
-        int val = P1.toInt();      
-        decelerate = val;
-        Serial.println("Decelerate = " + String(val)); 
-      }   
-      else if (cmd=="car") {
-        ledcAttachPin(12, 5);
-        ledcSetup(5, 2000, 8);      
-        ledcAttachPin(13, 6);
-        ledcSetup(6, 2000, 8);
-        ledcWrite(6, 0);  
-        ledcAttachPin(15, 7);
-        ledcSetup(7, 2000, 8);      
-        ledcAttachPin(14, 8);
-        ledcSetup(8, 2000, 8); 
-          
-        int val = P1.toInt();
-        if (val==1) {
-          Serial.println("Front");     
-          ledcWrite(5,speedR);
-          ledcWrite(6,0);
-          ledcWrite(7,speedL);
-          ledcWrite(8,0);   
-        }
-        else if (val==2) {
-          Serial.println("Left");     
-          ledcWrite(5,speedR*decelerate/100);
-          ledcWrite(6,0);
-          ledcWrite(7,0);
-          ledcWrite(8,speedL*decelerate/100);  
-        }
-        else if (val==3) {
-          Serial.println("Stop");      
-          ledcWrite(5,0);
-          ledcWrite(6,0);
-          ledcWrite(7,0);
-          ledcWrite(8,0);    
-        }
-        else if (val==4) {
-          Serial.println("Right");
-          ledcWrite(5,0);
-          ledcWrite(6,speedR*decelerate/100);
-          ledcWrite(7,speedL*decelerate/100);
-          ledcWrite(8,0);          
-        }
-        else if (val==5) {
-          Serial.println("Back");      
-          ledcWrite(5,0);
-          ledcWrite(6,speedR);
-          ledcWrite(7,0);
-          ledcWrite(8,speedL);
-        }  
-        else if (val==6) {
-          Serial.println("FrontLeft");     
-          ledcWrite(5,speedR);
-          ledcWrite(6,0);
-          ledcWrite(7,speedL*decelerate/100);
-          ledcWrite(8,0);   
-        }
-        else if (val==7) {
-          Serial.println("FrontRight");     
-          ledcWrite(5,speedR*decelerate/100);
-          ledcWrite(6,0);
-          ledcWrite(7,speedL);
-          ledcWrite(8,0);   
-        }  
-        else if (val==8) {
-          Serial.println("LeftAfter");      
-          ledcWrite(5,0);
-          ledcWrite(6,speedR);
-          ledcWrite(7,0);
-          ledcWrite(8,speedL*decelerate/100);
-        } 
-        else if (val==9) {
-          Serial.println("RightAfter");      
-          ledcWrite(5,0);
-          ledcWrite(6,speedR*decelerate/100);
-          ledcWrite(7,0);
-          ledcWrite(8,speedL);
-        }       
-      }    
-      else if (cmd=="getstill") { 
-        if (P1=="img")
-          Feedback="\<img id=\'gameimage_getstill\' src=\'"+getstill()+"\'\>";
-        else
-          Feedback=getstill();
-      } 
-      else if (cmd=="framesize") { 
-        sensor_t * s = esp_camera_sensor_get();  
-        if (P1=="QQVGA")
-          s->set_framesize(s, FRAMESIZE_QQVGA);
-        else if (P1=="HQVGA")
-          s->set_framesize(s, FRAMESIZE_HQVGA);
-        else if (P1=="QVGA")
-          s->set_framesize(s, FRAMESIZE_QVGA);
-        else if (P1=="CIF")
-          s->set_framesize(s, FRAMESIZE_CIF);
-        else if (P1=="VGA")
-          s->set_framesize(s, FRAMESIZE_VGA);
-        else if (P1=="SVGA")
-          s->set_framesize(s, FRAMESIZE_SVGA);
-        else if (P1=="XGA")
-          s->set_framesize(s, FRAMESIZE_XGA);
-        else if (P1=="SXGA")
-          s->set_framesize(s, FRAMESIZE_SXGA);
-        else if (P1=="UXGA")
-          s->set_framesize(s, FRAMESIZE_UXGA);          
-        else 
-          s->set_framesize(s, FRAMESIZE_CIF);    
-      }  
       else {
         Feedback="Command is not defined";
       }
 
-      if (Feedback=="") Feedback=Command;
+      if (Feedback=="") Feedback=Command;  //若沒有設定回傳資料就回傳Command值
     
       static char response[15000];
       char * p = response;
       p+=sprintf(p, "%s", Feedback.c_str());   
       *p++ = 0;
-      httpd_resp_set_type(req, "text/html");
-      httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+      httpd_resp_set_type(req, "text/html");  //設定回傳資料格式
+      httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");  //允許跨網域讀取
       return httpd_resp_send(req, response, strlen(response));
     } 
     else {
       int val = atoi(value);
       sensor_t * s = esp_camera_sensor_get();
       int res = 0;
-      
+
+      //官方指令區塊  http://192.168.xxx.xxx/control?var=xxx&val=xxx
+      //也可在此自訂指令
       if(!strcmp(variable, "framesize")) {
-          if(s->pixformat == PIXFORMAT_JPEG) res = s->set_framesize(s, (framesize_t)val);
+        if(s->pixformat == PIXFORMAT_JPEG) 
+          res = s->set_framesize(s, (framesize_t)val);
       }
       else if(!strcmp(variable, "quality")) res = s->set_quality(s, val);
       else if(!strcmp(variable, "contrast")) res = s->set_contrast(s, val);
@@ -898,10 +593,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if(!strcmp(variable, "lenc")) res = s->set_lenc(s, val);
       else if(!strcmp(variable, "special_effect")) res = s->set_special_effect(s, val);
       else if(!strcmp(variable, "wb_mode")) res = s->set_wb_mode(s, val);
-      else if(!strcmp(variable, "ae_level")) res = s->set_ae_level(s, val);   
-      else if(!strcmp(variable, "flash")) {
-        ledcWrite(4,val);
-      }       
+      else if(!strcmp(variable, "ae_level")) res = s->set_ae_level(s, val);         
       else {
           res = -1;
       }
@@ -918,7 +610,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         *p++ = 0;
         httpd_resp_set_type(req, "text/html");
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-        return httpd_resp_send(req, response, strlen(response));
+        return httpd_resp_send(req, response, strlen(response));  //回傳參數字串
       }
       else {
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
@@ -927,6 +619,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     }
 }
 
+//顯示視訊參數狀態
 static esp_err_t status_handler(httpd_req_t *req){
     static char response[1024];
 
@@ -962,6 +655,7 @@ static esp_err_t status_handler(httpd_req_t *req){
     return httpd_resp_send(req, response, strlen(response));
 }
 
+//自訂網頁首頁管理介面
 static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 <!doctype html>
   <html>
@@ -1015,28 +709,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <option value="ip">ip</option>
         <option value="mac">mac</option>
         <option value="restart">restart</option>
-        <option value="inputpullup">inputpullup</option>
-        <option value="pinmode">pinmode</option>
-        <option value="digitalwrite">digitalwrite(gpio,value)</option>
-        <option value="analogwrite">analogwrite(gpio,value)</option>
-        <option value="digitalread">digitalread(gpio)</option>
-        <option value="analogread">analogread(gpio)</option>
-        <option value="touchread">touchread(gpio)</option>
-        <option value="tcp">tcp(domain,port,request,wait)</option>
-        <option value="ifttt">ifttt(event,key,value1,value2,value3)</option>
-        <option value="thingspeakupdate">thingspeakupdate(key,field1~field8)</option>
-        <option value="thingspeakread">thingspeakread(request)</option>
-        <option value="linenotify">linenotify(token,request)</option>
-        <option value="flash">flash(value)</option>
-        <option value="servo">servo(value)</option>
-        <option value="servo1">servo1(value)</option>
-        <option value="servo2">servo2(value)</option>
-        <option value="speedL">speedL(value)</option>
-        <option value="speedR">speedR(value)</option>
-        <option value="decelerate">decelerate(value)</option>
-        <option value="car">car(state)</option>
-        <option value="getstill">getstill</option>
-        <option value="framesize">framesize(size)</option>     
+        <option value="flash">flash(value)</option>   
         </select>
         <br>
       <tr>
@@ -1067,7 +740,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           <option value="special_effect">special_effect(value)</option>  
           <option value="wb_mode">wb_mode(value)</option>  
           <option value="ae_level">ae_level(value)</option>  
-          <option value="flash">flash(value)</option>  
         </select>
         <br>        
         <input type="radio" name="choice" id="choice3">
@@ -1103,40 +775,17 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   </html>
 )rawliteral";
 
+//網頁首頁   http://192.168.xxx.xxx
 static esp_err_t index_handler(httpd_req_t *req){
     httpd_resp_set_type(req, "text/html");
-    /*
-    httpd_resp_set_hdr(req, "Content-Encoding", "gzip");
-    return httpd_resp_send(req, (const char *)index_html_gz, index_html_gz_len);
-    */
     return httpd_resp_send(req, (const char *)INDEX_HTML, strlen(INDEX_HTML));
 }
 
 void startCameraServer(){
-/*
-  #define HTTPD_DEFAULT_CONFIG() {                   \
-     .task_priority      = tskIDLE_PRIORITY+5,       \
-     .stack_size         = 4096,                     \    
-     .server_port        = 80,                       \  
-     .ctrl_port          = 32768,                    \
-     .max_open_sockets   = 7,                        \
-     .max_uri_handlers   = 8,                        \
-     .max_resp_headers   = 8,                        \
-     .backlog_conn       = 5,                        \
-     .lru_purge_enable   = false,                    \
-     .recv_wait_timeout  = 5,                        \
-     .send_wait_timeout  = 5,                        \
-     .global_user_ctx = NULL,                        \
-     .global_user_ctx_free_fn = NULL,                \
-     .global_transport_ctx = NULL,                   \
-     .global_transport_ctx_free_fn = NULL,           \
-     .open_fn = NULL,                                \
-     .close_fn = NULL,                               \
-  } 
-*/  
+  httpd_config_t config = HTTPD_DEFAULT_CONFIG();  //可在此設定SERVER PORT 
 
-  httpd_config_t config = HTTPD_DEFAULT_CONFIG(); 
-
+  //可自訂網址路徑
+  //http://192.168.xxx.xxx/
   httpd_uri_t index_uri = {
       .uri       = "/",
       .method    = HTTP_GET,
@@ -1144,6 +793,7 @@ void startCameraServer(){
       .user_ctx  = NULL
   };
 
+  //http://192.168.xxx.xxx/status
   httpd_uri_t status_uri = {
       .uri       = "/status",
       .method    = HTTP_GET,
@@ -1151,6 +801,7 @@ void startCameraServer(){
       .user_ctx  = NULL
   };
 
+  //http://192.168.xxx.xxx/control
   httpd_uri_t cmd_uri = {
       .uri       = "/control",
       .method    = HTTP_GET,
@@ -1158,6 +809,7 @@ void startCameraServer(){
       .user_ctx  = NULL
   }; 
 
+  //http://192.168.xxx.xxx/capture
   httpd_uri_t capture_uri = {
       .uri       = "/capture",
       .method    = HTTP_GET,
@@ -1165,6 +817,7 @@ void startCameraServer(){
       .user_ctx  = NULL
   };
 
+  //http://192.168.xxx.xxx/stream
   httpd_uri_t stream_uri = {
       .uri       = "/stream",
       .method    = HTTP_GET,
@@ -1174,22 +827,24 @@ void startCameraServer(){
   
   ra_filter_init(&ra_filter, 20);
   
-  Serial.printf("Starting web server on port: '%d'\n", config.server_port);
+  Serial.printf("Starting web server on port: '%d'\n", config.server_port);  //Server Port
   if (httpd_start(&camera_httpd, &config) == ESP_OK) {
+      //註冊自訂網址路徑對應執行的函式
       httpd_register_uri_handler(camera_httpd, &index_uri);
       httpd_register_uri_handler(camera_httpd, &cmd_uri);
       httpd_register_uri_handler(camera_httpd, &status_uri);
       httpd_register_uri_handler(camera_httpd, &capture_uri);
   }
   
-  config.server_port += 1;
-  config.ctrl_port += 1;
+  config.server_port += 1;  //Stream Port
+  config.ctrl_port += 1;    //UDP Port
   Serial.printf("Starting stream server on port: '%d'\n", config.server_port);
   if (httpd_start(&stream_httpd, &config) == ESP_OK) {
       httpd_register_uri_handler(stream_httpd, &stream_uri);
   }
 }
 
+//拆解命令字串置入變數
 void getCommand(char c)
 {
   if (c=='?') ReceiveState=1;
@@ -1217,128 +872,4 @@ void getCommand(char c)
     if (c=='=') equalstate=1;
     if ((strState>=9)&&(c==';')) semicolonstate=1;
   }
-}
-
-//https://github.com/zenmanenergy/ESP8266-Arduino-Examples/
-String urlencode(String str)
-{
-    String encodedString="";
-    char c;
-    char code0;
-    char code1;
-    char code2;
-    for (int i =0; i < str.length(); i++){
-      c=str.charAt(i);
-      if (c == ' '){
-        encodedString+= '+';
-      } else if (isalnum(c)){
-        encodedString+=c;
-      } else{
-        code1=(c & 0xf)+'0';
-        if ((c & 0xf) >9){
-            code1=(c & 0xf) - 10 + 'A';
-        }
-        c=(c>>4)&0xf;
-        code0=c+'0';
-        if (c > 9){
-            code0=c - 10 + 'A';
-        }
-        code2='\0';
-        encodedString+='%';
-        encodedString+=code0;
-        encodedString+=code1;
-        //encodedString+=code2;
-      }
-      yield();
-    }
-    return encodedString;
-}
-          
-String tcp_http(String domain,String request,int port,byte wait)
-{
-    WiFiClient client_tcp;
-
-    if (client_tcp.connect(domain.c_str(), port)) 
-    {
-      client_tcp.println("GET " + request + " HTTP/1.1");
-      client_tcp.println("Host: " + domain);
-      client_tcp.println("Connection: close");
-      client_tcp.println();
-
-      String getResponse="",Feedback="";
-      boolean state = false;
-      int waitTime = 3000;   // timeout 3 seconds
-      long startTime = millis();
-      while ((startTime + waitTime) > millis())
-      {
-        while (client_tcp.available()) 
-        {
-            char c = client_tcp.read();
-            if (c == '\n') 
-            {
-              if (getResponse.length()==0) state=true; 
-              getResponse = "";
-            } 
-            else if (c != '\r')
-              getResponse += String(c);
-            if (state==true) Feedback += String(c);
-            if (wait==1)
-              startTime = millis();
-         }
-         if (wait==0)
-          if ((state==true)&&(Feedback.length()!= 0)) break;
-      }
-      client_tcp.stop();
-      return Feedback;
-    }
-    else
-      return "Connection failed";  
-}
-
-String LineNotify(String token, String message, byte wait)
-{
-  message.replace(" ","%20");
-  message.replace("&","%20");
-  message.replace("#","%20");
-  //message.replace("\'","%27");
-  message.replace("\"","%22");
-  message.replace("\n","%0D%0A");
-  message.replace("%3Cbr%3E","%0D%0A");
-  message.replace("%3Cbr/%3E","%0D%0A");
-  message.replace("%3Cbr%20/%3E","%0D%0A");
-  message.replace("%3CBR%3E","%0D%0A");
-  message.replace("%3CBR/%3E","%0D%0A");
-  message.replace("%3CBR%20/%3E","%0D%0A");     
-  message.replace("%20stickerPackageId","&stickerPackageId");
-  message.replace("%20stickerId","&stickerId");    
-  
-  http.begin("http://linenotify.com/notify.php?token="+token+"&"+message);
-  int httpCode = http.GET();
-  if(httpCode > 0) {
-      return http.getString();
-  } else 
-      return "Connection Error!";
-}
-
-String getstill() { 
-  camera_fb_t * fb = NULL;
-  fb = esp_camera_fb_get();  
-  if(!fb) {
-    Serial.println("Camera capture failed");
-    return "Camera capture failed";
-  }
-
-  String imageFile = "data:image/jpeg;base64,";
-  char *input = (char *)fb->buf;
-  char output[base64_enc_len(3)];
-  for (int i=0;i<fb->len;i++) {
-    base64_encode(output, (input++), 3);
-    if (i%3==0) imageFile += urlencode(String(output));
-  }
-  esp_camera_fb_return(fb);
-
-  pinMode(4, OUTPUT);
-  digitalWrite(4, LOW); 
-  Serial.println(imageFile);
-  return imageFile;
 }
