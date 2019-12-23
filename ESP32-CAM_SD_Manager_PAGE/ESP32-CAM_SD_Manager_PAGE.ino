@@ -1,49 +1,59 @@
 /*
 ESP32-CAM (SD Card Manager)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-15 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-22 14:00
 https://www.facebook.com/francefu
 
+首頁
 http://APIP
 http://STAIP
 
-Command Format :  
+自訂指令格式 :  
 http://APIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+
+預設AP端IP： 192.168.4.1
+http://192.168.xxx.xxx/control?ip
+http://192.168.xxx.xxx/control?mac
+http://192.168.xxx.xxx/control?restart
+http://192.168.xxx.xxx/control?flash=value        //value= 0~255
+http://192.168.xxx.xxx/control?saveimage=/filename(No Extension)
+http://192.168.xxx.xxx/control?listimages
+http://192.168.xxx.xxx/control?showimage=/filename
+http://192.168.xxx.xxx/control?deleteimage=/filename
+
+查詢Client端IP：
+查詢IP：http://192.168.4.1/?ip
+重設網路：http://192.168.4.1/?resetwifi=ssid;password
 */
 
-// Enter your WiFi ssid and password
+//輸入WIFI連線帳號密碼
 const char* ssid     = "xxxxx";   //your network SSID
 const char* password = "xxxxx";   //your network password
 
+//輸入AP端連線帳號密碼
 const char* apssid = "ESP32-CAM";
-const char* appassword = "12345678";         //AP password require at least 8 characters.
-
-int speedR = 255;  //You can adjust the speed of the wheel. (gpio12, gpio13)
-int speedL = 255;  //You can adjust the speed of the wheel. (gpio14, gpio15)
-int servoPin = 2;
-int servo1Pin = 2;
-int servo2Pin = 13;
-double decelerate = 60;
+const char* appassword = "12345678";    //AP端密碼至少要八個字元以上
 
 #include <WiFi.h>
-#include <esp32-hal-ledc.h>
-#include "esp_camera.h"
-#include "Base64.h"
-#include "soc/soc.h"
-#include "soc/rtc_cntl_reg.h"
-#include "FS.h"
-#include "SD_MMC.h"
+#include "esp_camera.h"         //視訊
+#include "Base64.h"             //用於轉換視訊影像格式為base64格式，易於上傳google雲端硬碟或資料庫
+#include "soc/soc.h"            //用於電源不穩不重開機
+#include "soc/rtc_cntl_reg.h"   //用於電源不穩不重開機
+#include "FS.h"                 //file system wrapper
+#include "SD_MMC.h"             //SD卡存取函式庫
 
+//官方函式庫
 #include "esp_http_server.h"
 #include "esp_timer.h"
 #include "esp_camera.h"
 #include "img_converters.h"
-
 #include "fb_gfx.h"
 #include "fd_forward.h"
 #include "fr_forward.h"
 
-String Feedback="";
+String Feedback="";   //回傳客戶端訊息
+
+//指令參數值
 String Command="";
 String cmd="";
 String P1="";
@@ -55,6 +65,8 @@ String P6="";
 String P7="";
 String P8="";
 String P9="";
+
+//指令拆解狀態值
 byte ReceiveState=0;
 byte cmdState=1;
 byte strState=1;
@@ -117,7 +129,7 @@ static int ra_filter_run(ra_filter_t * filter, int value){
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
 //            or another board which has PSRAM enabled
 
-//CAMERA_MODEL_AI_THINKER
+//CAMERA_MODEL_AI_THINKER  指定安可信ESP32-CAM模組腳位設定
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -137,12 +149,13 @@ static int ra_filter_run(ra_filter_t * filter, int value){
 #define PCLK_GPIO_NUM     22
 
 void setup() {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
   
   Serial.begin(115200);
-  Serial.setDebugOutput(true);
+  Serial.setDebugOutput(true);  //開啟診斷輸出
   Serial.println();
 
+  //視訊組態設定
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
@@ -185,9 +198,9 @@ void setup() {
 
   //drop down frame size for higher initial frame rate
   sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_CIF);
+  s->set_framesize(s, FRAMESIZE_QVGA);  //QQVGA|HQVGA|QVGA
 
-  //SD Card
+  //SD Card偵測
   if(!SD_MMC.begin()){
     Serial.println("Card Mount Failed");
     return;
@@ -220,24 +233,14 @@ void setup() {
 
   //Flash
   ledcAttachPin(4, 4);  
-  ledcSetup(4, 5000, 8);
-  
-  //Wheel
-  ledcAttachPin(12, 5);
-  ledcSetup(5, 2000, 8);      
-  ledcAttachPin(13, 6);
-  ledcSetup(6, 2000, 8);
-  ledcWrite(6, 0);  
-  ledcAttachPin(15, 7);
-  ledcSetup(7, 2000, 8);      
-  ledcAttachPin(14, 8);
-  ledcSetup(8, 2000, 8);   
+  ledcSetup(4, 5000, 8);    
   
   WiFi.mode(WIFI_AP_STA);
-
+  
+  //指定Client端靜態IP
   //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
 
-  WiFi.begin(ssid, password);
+  WiFi.begin(ssid, password);    //執行網路連線
 
   delay(1000);
   Serial.println("");
@@ -248,42 +251,43 @@ void setup() {
   while (WiFi.status() != WL_CONNECTED) 
   {
       delay(500);
-      if ((StartTime+10000) < millis()) break;
+      if ((StartTime+10000) < millis()) break;    //等待10秒連線
   } 
 
-  if (WiFi.status() == WL_CONNECTED) {
+  if (WiFi.status() == WL_CONNECTED) {    //若連線成功
     WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);         
     Serial.println("");
     Serial.println("STAIP address: ");
-    Serial.println(WiFi.localIP()); 
+    Serial.println(WiFi.localIP());  
 
     for (int i=0;i<5;i++) {
       ledcWrite(4,10);
       delay(200);
       ledcWrite(4,0);
       delay(200);    
-    }    
+    }         
   }
   else {
-    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);    
+    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP           
 
     for (int i=0;i<2;i++) {
       ledcWrite(4,10);
       delay(1000);
       ledcWrite(4,0);
       delay(1000);    
-    }      
+    }
   }     
-    
+
+  //指定AP端IP    
   //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
   Serial.println("");
   Serial.println("APIP address: ");
   Serial.println(WiFi.softAPIP());    
-  
+
   startCameraServer(); 
 
   pinMode(4, OUTPUT);
-  digitalWrite(4, LOW);      
+  digitalWrite(4, LOW);         
 }
 
 void loop() {
@@ -302,6 +306,7 @@ static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size
     return len;
 }
 
+//影像截圖
 static esp_err_t capture_handler(httpd_req_t *req){
     camera_fb_t * fb = NULL;
     esp_err_t res = ESP_OK;
@@ -319,7 +324,7 @@ static esp_err_t capture_handler(httpd_req_t *req){
 
     size_t out_len, out_width, out_height;
     uint8_t * out_buf;
-    bool s;
+    bool state;
     if(fb->width > 400){
         size_t fb_len = 0;
         if(fb->format == PIXFORMAT_JPEG){
@@ -350,9 +355,9 @@ static esp_err_t capture_handler(httpd_req_t *req){
     out_width = fb->width;
     out_height = fb->height;
 
-    s = fmt2rgb888(fb->buf, fb->len, fb->format, out_buf);
+    state = fmt2rgb888(fb->buf, fb->len, fb->format, out_buf);
     esp_camera_fb_return(fb);
-    if(!s){
+    if(!state){
         dl_matrix3du_free(image_matrix);
         Serial.println("to rgb888 failed");
         httpd_resp_send_500(req);
@@ -360,9 +365,9 @@ static esp_err_t capture_handler(httpd_req_t *req){
     }
 
     jpg_chunking_t jchunk = {req, 0};
-    s = fmt2jpg_cb(out_buf, out_len, out_width, out_height, PIXFORMAT_RGB888, 90, jpg_encode_stream, &jchunk);
+    state = fmt2jpg_cb(out_buf, out_len, out_width, out_height, PIXFORMAT_RGB888, 90, jpg_encode_stream, &jchunk);
     dl_matrix3du_free(image_matrix);
-    if(!s){
+    if(!state){
         Serial.println("JPEG compression failed");
         return ESP_FAIL;
     }
@@ -371,6 +376,7 @@ static esp_err_t capture_handler(httpd_req_t *req){
     return res;
 }
 
+//影像串流
 static esp_err_t stream_handler(httpd_req_t *req){
     camera_fb_t * fb = NULL;
     esp_err_t res = ESP_OK;
@@ -481,11 +487,12 @@ static esp_err_t stream_handler(httpd_req_t *req){
     return res;
 }
 
+//指令參數控制
 static esp_err_t cmd_handler(httpd_req_t *req){
-    char*  buf;
+    char*  buf;  //存取網址後帶的參數字串
     size_t buf_len;
-    char variable[128] = {0,};
-    char value[128] = {0,};
+    char variable[128] = {0,};  //存取參數var值
+    char value[128] = {0,};  //存取參數val值
     String myCmd = "";
 
     buf_len = httpd_req_get_url_query_len(req) + 1;
@@ -512,12 +519,13 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     Feedback="";Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
     ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;     
     if (myCmd.length()>0) {
-      myCmd = "?"+myCmd;
+      myCmd = "?"+myCmd;  //網址後帶的參數字串轉換成自訂參數格式
       for (int i=0;i<myCmd.length();i++) {
-        getCommand(char(myCmd.charAt(i)));
+        getCommand(char(myCmd.charAt(i)));  //拆解參數字串
       }
     }
 
+    //自訂指令區塊  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
     if (cmd.length()>0) {
       Serial.println("");
       //Serial.println("Command: "+Command);
@@ -526,21 +534,68 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           
       if (cmd=="your cmd") {
         // You can do anything
-        // Feedback="<font color=\"red\">Hello World</font>";
+        // Feedback="<font color=\"red\">Hello World</font>";   //可為一般文字或HTML語法
       }   
-      else if (cmd=="restart") { 
+      else if (cmd=="ip") {  //查詢IP
+        Feedback="AP IP: "+WiFi.softAPIP().toString();
+        Feedback+=", ";
+        Feedback+="STA IP: "+WiFi.localIP().toString();
+      }  
+      else if (cmd=="mac") {  //查詢MAC
+        Feedback="STA MAC: "+WiFi.macAddress();
+      }  
+      else if (cmd=="restart") {
         ESP.restart();
-      }    
+      }      
+      else if (cmd=="flash") {  //控制內建閃光燈
+        ledcWrite(4,P1.toInt());
+      }  
       else if (cmd=="saveimage") {
         Feedback=saveCapturedImage(P1)+"<br>";
-        Feedback+=showimage("/"+P1+".html")+"<br>";
         Feedback+=ListImages(); 
       }  
       else if (cmd=="listimages") {
         Feedback=ListImages();
       }  
       else if (cmd=="showimage") {
-        Feedback=P1+"<br>"+showimage(P1)+"<br>"+ListImages(); 
+
+        //SD Card
+        if(!SD_MMC.begin()){
+          Serial.println("Card Mount Failed");
+          httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+          return httpd_resp_send(req, NULL, 0);
+        }  
+        
+        fs::FS &fs = SD_MMC;
+        File file = fs.open(P1);
+        if(!file){
+          Serial.println("Failed to open file for reading");
+          SD_MMC.end();    
+          httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+          return httpd_resp_send(req, NULL, 0);
+        }
+        Serial.println("Read from file: "+P1);
+        Serial.println("file size: "+String(file.size()));
+        
+        String imageFile="";
+        while(file.available()){
+          char c = file.read();
+          imageFile+=String(c);
+        }
+        static char response[20000];
+        char * p = response;
+        p+=sprintf(p, "%s", imageFile.c_str());   
+        *p++ = 0;
+      
+        httpd_resp_set_type(req, "text/plain");
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+        return httpd_resp_send(req, response, strlen(response));
+
+        file.close();
+        SD_MMC.end();
+      
+        pinMode(4, OUTPUT);
+        digitalWrite(4, LOW);        
       }  
       else if (cmd=="deleteimage") {
         Feedback=deleteimage(P1)+"<br>"+ListImages(); 
@@ -549,14 +604,15 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         Feedback="Command is not defined.";
       }
 
-      if (Feedback=="") Feedback=Command;
+      if (Feedback=="") Feedback=Command;  //若沒有設定回傳資料就回傳Command值
     
       static char response[15000];
       char * p = response;
       p+=sprintf(p, "%s", Feedback.c_str());   
       *p++ = 0;
-      httpd_resp_set_type(req, "text/html");
-      httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+
+      httpd_resp_set_type(req, "text/html");  //設定回傳資料格式
+      httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");  //允許跨網域讀取
       return httpd_resp_send(req, response, strlen(response));
     } 
     else {
@@ -564,6 +620,8 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       sensor_t * s = esp_camera_sensor_get();
       int res = 0;
       
+      //官方指令區塊  http://192.168.xxx.xxx/control?var=xxx&val=xxx
+      //也可在此自訂指令
       if(!strcmp(variable, "framesize")) {
           if(s->pixformat == PIXFORMAT_JPEG) res = s->set_framesize(s, (framesize_t)val);
       }
@@ -589,10 +647,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if(!strcmp(variable, "lenc")) res = s->set_lenc(s, val);
       else if(!strcmp(variable, "special_effect")) res = s->set_special_effect(s, val);
       else if(!strcmp(variable, "wb_mode")) res = s->set_wb_mode(s, val);
-      else if(!strcmp(variable, "ae_level")) res = s->set_ae_level(s, val);   
-      else if(!strcmp(variable, "flash")) {
-        ledcWrite(4,val);
-      }       
+      else if(!strcmp(variable, "ae_level")) res = s->set_ae_level(s, val);        
       else {
           res = -1;
       }
@@ -609,7 +664,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         *p++ = 0;
         httpd_resp_set_type(req, "text/html");
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-        return httpd_resp_send(req, response, strlen(response));
+        return httpd_resp_send(req, response, strlen(response));  //回傳參數字串
       }
       else {
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
@@ -618,6 +673,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     }
 }
 
+//顯示視訊參數狀態
 static esp_err_t status_handler(httpd_req_t *req){
     static char response[1024];
 
@@ -653,6 +709,7 @@ static esp_err_t status_handler(httpd_req_t *req){
     return httpd_resp_send(req, response, strlen(response));
 }
 
+//自訂網頁首頁管理介面
 static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <!DOCTYPE html>
   <head>
@@ -695,6 +752,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   </script>
 )rawliteral";
 
+//網頁首頁   http://192.168.xxx.xxx
 static esp_err_t index_handler(httpd_req_t *req){
     httpd_resp_set_type(req, "text/html");
     /*
@@ -727,8 +785,10 @@ void startCameraServer(){
   } 
 */  
 
-  httpd_config_t config = HTTPD_DEFAULT_CONFIG(); 
+  httpd_config_t config = HTTPD_DEFAULT_CONFIG();  //可在此設定SERVER PORT  
 
+  //可自訂網址路徑
+  //http://192.168.xxx.xxx/
   httpd_uri_t index_uri = {
       .uri       = "/",
       .method    = HTTP_GET,
@@ -736,6 +796,7 @@ void startCameraServer(){
       .user_ctx  = NULL
   };
 
+  //http://192.168.xxx.xxx/status
   httpd_uri_t status_uri = {
       .uri       = "/status",
       .method    = HTTP_GET,
@@ -743,6 +804,7 @@ void startCameraServer(){
       .user_ctx  = NULL
   };
 
+  //http://192.168.xxx.xxx/control
   httpd_uri_t cmd_uri = {
       .uri       = "/control",
       .method    = HTTP_GET,
@@ -750,6 +812,7 @@ void startCameraServer(){
       .user_ctx  = NULL
   }; 
 
+  //http://192.168.xxx.xxx/capture
   httpd_uri_t capture_uri = {
       .uri       = "/capture",
       .method    = HTTP_GET,
@@ -757,6 +820,7 @@ void startCameraServer(){
       .user_ctx  = NULL
   };
 
+  //http://192.168.xxx.xxx/stream
   httpd_uri_t stream_uri = {
       .uri       = "/stream",
       .method    = HTTP_GET,
@@ -766,22 +830,24 @@ void startCameraServer(){
   
   ra_filter_init(&ra_filter, 20);
   
-  Serial.printf("Starting web server on port: '%d'\n", config.server_port);
+  Serial.printf("Starting web server on port: '%d'\n", config.server_port);  //Server Port
   if (httpd_start(&camera_httpd, &config) == ESP_OK) {
+      //註冊網址路徑執行函式    
       httpd_register_uri_handler(camera_httpd, &index_uri);
       httpd_register_uri_handler(camera_httpd, &cmd_uri);
       httpd_register_uri_handler(camera_httpd, &status_uri);
       httpd_register_uri_handler(camera_httpd, &capture_uri);
   }
   
-  config.server_port += 1;
-  config.ctrl_port += 1;
+  config.server_port += 1;  //Server Port
+  config.ctrl_port += 1;    //UDP Port
   Serial.printf("Starting stream server on port: '%d'\n", config.server_port);
   if (httpd_start(&stream_httpd, &config) == ESP_OK) {
       httpd_register_uri_handler(stream_httpd, &stream_uri);
   }
 }
 
+//拆解命令字串置入變數
 void getCommand(char c)
 {
   if (c=='?') ReceiveState=1;
@@ -831,10 +897,7 @@ String ListImages() {
     if(!file.isDirectory()){
       String filename=String(file.name());
       filename.toLowerCase();
-      if (filename.indexOf(".html")!=-1)
-        list = "<tr><td><button onclick=\'execute(location.origin+\"/control?deleteimage="+String(file.name())+"\");\'>Delete</button></td><td></td><td><a onclick=\'execute(location.origin+\"/control?showimage="+String(file.name())+"\")\' style=\'color:blue;\'>"+String(file.name())+"</a></td><td align=\'right\'>"+String(file.size())+" B</td></tr>"+list;
-      else
-        list = "<tr><td><button onclick=\'execute(location.origin+\"/control?deleteimage="+String(file.name())+"\");\'>Delete</button></td><td>"+String(file.name())+"</td><td></td><td align=\'right\'>"+String(file.size())+" B</td></tr>"+list;  
+      list = "<tr><td><button onclick=\'execute(location.origin+\"/control?deleteimage="+String(file.name())+"\");\'>Delete</button></td><td></td><td><a onclick=\'var res=fetch(location.origin+\"/control?showimage="+String(file.name())+"\").then(response => response.text()).then(data=> document.getElementById(\"stream\").src=data);\' style=\'color:blue;\'>"+String(file.name())+"</a></td><td align=\'right\'>"+String(file.size())+" B</td></tr>"+list;
     }
     file = root.openNextFile();
   }
@@ -845,38 +908,9 @@ String ListImages() {
   SD_MMC.end();
 
   pinMode(4, OUTPUT);
-  digitalWrite(4, LOW);  
+  digitalWrite(4, LOW);   
   
   return list;
-}
-
-String showimage(String filename) {
-  //SD Card
-  if(!SD_MMC.begin()){
-    Serial.println("Card Mount Failed");
-    return "Card Mount Failed";
-  }  
-  
-  fs::FS &fs = SD_MMC;
-  File file = fs.open(filename);
-  if(!file){
-    Serial.println("Failed to open file for reading");
-    SD_MMC.end();    
-    return "Failed to open file for reading";
-  }
-  Serial.print("Read from file: ");
-  String imageFile="";
-  while(file.available()){
-    char c = file.read();
-    imageFile+=String(c);
-  }
-  file.close();
-  SD_MMC.end();
-
-  pinMode(4, OUTPUT);
-  digitalWrite(4, LOW);
-    
-  return imageFile;
 }
 
 String deleteimage(String filename) {
@@ -898,15 +932,14 @@ String deleteimage(String filename) {
   SD_MMC.end();
 
   pinMode(4, OUTPUT);
-  digitalWrite(4, LOW);
-    
+  digitalWrite(4, LOW);   
+
   return message;
 }
 
-String saveCapturedImage(String filename) {
+String saveCapturedImage(String filename) {    
   String response = ""; 
-  String path_html = "/"+filename+".html";
-  String path_jpg = "/"+filename+".jpg";
+  String path_jpg = "/"+filename+".base64";
 
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();  
@@ -915,15 +948,6 @@ String saveCapturedImage(String filename) {
     return "Camera capture failed";
   }
 
-  String imageFile = "data:image/jpeg;base64,";
-  char *input = (char *)fb->buf;
-  char output[base64_enc_len(3)];
-  for (int i=0;i<fb->len;i++) {
-    base64_encode(output, (input++), 3);
-    if (i%3==0) imageFile += urlencode(String(output));
-  }
-  imageFile = "<img src=\'"+imageFile+"\'>";
-  
   //SD Card
   if(!SD_MMC.begin()){
     response = "Card Mount Failed";
@@ -931,35 +955,26 @@ String saveCapturedImage(String filename) {
   }  
   
   fs::FS &fs = SD_MMC; 
-  Serial.printf("Picture file name: %s\n", path_html.c_str());
+  Serial.printf("Picture file name: %s\n", path_jpg.c_str());
 
-  File file = fs.open(path_html.c_str(), FILE_WRITE);
+  File file = fs.open(path_jpg.c_str(), FILE_WRITE);
   if(!file){
     esp_camera_fb_return(fb);
     SD_MMC.end();
     return "Failed to open file in writing mode";
   } 
   else {
-    int Index;
-    for (Index=0;Index<imageFile.length();Index=Index+1000) {
-      file.print(imageFile.substring(Index, Index+1000));
-    }    
-    Serial.printf("Saved file to path: %s\n", path_html.c_str());
-  }
-  file.close();
+    char *input = (char *)fb->buf;
+    char output[base64_enc_len(3)];
+    file.print("data:image/jpeg;charset=utf-8;base64,");
+    for (int i=0;i<fb->len;i++) {
+      base64_encode(output, (input++), 3);
+      if (i%3==0) 
+        file.print(String(output));
+    }
 
-  Serial.printf("Picture file name: %s\n", path_jpg.c_str());
-  file = fs.open(path_jpg.c_str(), FILE_WRITE);
-  if(!file){
-    esp_camera_fb_return(fb);
-    SD_MMC.end();    
-    response = "Failed to open file in writing mode";
-  } 
-  else {
-    file.write(fb->buf, fb->len);
     Serial.printf("Saved file to path: %s\n", path_jpg.c_str());
   }
-    
   file.close();
   SD_MMC.end();
 
@@ -967,8 +982,8 @@ String saveCapturedImage(String filename) {
   Serial.println("");
 
   pinMode(4, OUTPUT);
-  digitalWrite(4, LOW);
-
+  digitalWrite(4, LOW);  
+  
   return response;
 }
 
