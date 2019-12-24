@@ -5,7 +5,9 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-24 01:00
 https://www.facebook.com/francefu
 
 打開: 兩手分別在兩耳旁.
+Turn on: Put your wrists next to your ears.	
 關閉: 兩手腕在肩膀下交叉.
+Turn off: Make your wrists close to each other or cross them under your shoulders.
 
 繼電器: gpio2
 
