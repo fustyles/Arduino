@@ -1285,6 +1285,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                   message.innerHTML= predict.label;
                   //影像辨識依predict.label回傳參數至ESP32-CAM改變運動狀態
                   ifr.src = document.location.origin+'/control?car='+predict.label;  //網址參數格式 http://192.168.xxx.xxx/control?car=value
+                  /*
+                    if (predict.label=="1")
+                      ifr.src = "http://192.168.xxx.xxx/...";
+                    else if  (predict.label=="2")
+                      ifr.src = "http://192.168.xxx.xxx/...";
+                  */                  
                 }
               }
             }
