@@ -5,7 +5,9 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-24 01:00
 https://www.facebook.com/francefu
 
 打開: 拉弓動作.右手腕在肩膀右上，左手腕在左胸，兩手腕連線傾斜角度20~60度
+Turn on: Superman starts flying. Your right hand must be above your nose. Your wrists are tilted on a 45 degree axis.
 關閉: 兩手腕垂直高舉
+Turn off: Raise your two hands above your nose
 
 繼電器: gpio2
 
