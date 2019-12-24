@@ -31,7 +31,7 @@ const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 #define FACE_ID_SAVE_NUMBER 7
 
 //設定人臉辨識顯示的人名
-String recognize_face_matched_name_0 = "Mike";
+String recognize_face_matched_name_0 = "Name0";
 String recognize_face_matched_name_1 = "Name1";
 String recognize_face_matched_name_2 = "Name2";
 String recognize_face_matched_name_3 = "Name3";
@@ -356,6 +356,7 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
                 Serial.printf("Match Face ID: %u\n", matched_id);
                 if (matched_id==0) {
                   rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] %s", matched_id, recognize_face_matched_name_0);
+                  //You can control a relay module to open the door.
                 } else if (matched_id==1) {
                   rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] %s", matched_id, recognize_face_matched_name_1);
                 } else if (matched_id==2) {
