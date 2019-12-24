@@ -279,7 +279,7 @@ void loop() {
             client.println("HTTP/1.1 200 OK");
             client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
             client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
-            client.println("Content-Type: text/html; charset=utf-8");
+            client.println("Content-Type: text/plain; charset=utf-8");
             client.println("Access-Control-Allow-Origin: *");
             client.println("Connection: close");
             client.println();
