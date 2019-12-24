@@ -1092,12 +1092,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                             <button id="toggle-stream">Start Stream</button>
                             <button id="face_enroll" class="disabled" disabled="disabled">Enroll Face</button>
                         </section> 
-                        <div class="input-group" id="flash-group">
-                            <label for="flash">Flash</label>
-                            <div class="range-min">0</div>
-                            <input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}" class="default-action">
-                            <div class="range-max">255</div>
-                        </div>
                         <div class="input-group" id="face_detect-group">
                             <label for="face_detect">Face Detection</label>
                             <div class="switch">
@@ -1112,6 +1106,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                                 <label class="slider" for="face_recognize"></label>
                             </div>
                         </div>
+                        <div class="input-group" id="flash-group">
+                            <label for="flash">Flash</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}" class="default-action">
+                            <div class="range-max">255</div>
+                        </div>                        
                         <div class="input-group" id="framesize-group">
                             <label for="framesize">Resolution</label>
                             <select id="framesize" class="default-action">
