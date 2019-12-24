@@ -1,6 +1,6 @@
 /*
 ESP32-CAM 模組 (可跨網域連線)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-17 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-24 01:00
 https://www.facebook.com/francefu
 
 自訂指令格式 :  
@@ -43,7 +43,7 @@ const char* appassword = "12345678";         //AP端密碼至少要八個字元�
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
 //            or another board which has PSRAM enabled
 
-//CAMERA_MODEL_AI_THINKER  指定安可信ESP32-CAM模組腳位設定
+//安可信ESP32-CAM模組腳位設定
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0

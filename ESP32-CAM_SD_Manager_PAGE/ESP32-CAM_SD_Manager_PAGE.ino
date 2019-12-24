@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (SD Card Manager)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-22 14:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-24 01:00
 https://www.facebook.com/francefu
 
 首頁
@@ -129,7 +129,7 @@ static int ra_filter_run(ra_filter_t * filter, int value){
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
 //            or another board which has PSRAM enabled
 
-//CAMERA_MODEL_AI_THINKER  指定安可信ESP32-CAM模組腳位設定
+//安可信ESP32-CAM模組腳位設定
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -620,8 +620,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       sensor_t * s = esp_camera_sensor_get();
       int res = 0;
       
-      //官方指令區塊  http://192.168.xxx.xxx/control?var=xxx&val=xxx
-      //也可在此自訂指令
+      //官方指令區塊，也可在此自訂指令  http://192.168.xxx.xxx/control?var=xxx&val=xxx
       if(!strcmp(variable, "framesize")) {
           if(s->pixformat == PIXFORMAT_JPEG) res = s->set_framesize(s, (framesize_t)val);
       }
@@ -877,6 +876,7 @@ void getCommand(char c)
   }
 }
 
+//列出TF卡中照片清單
 String ListImages() {
   //SD Card
   if(!SD_MMC.begin()){
@@ -913,6 +913,7 @@ String ListImages() {
   return list;
 }
 
+//刪除TF卡指定檔名照片
 String deleteimage(String filename) {
   //SD Card
   if(!SD_MMC.begin()){
@@ -937,6 +938,7 @@ String deleteimage(String filename) {
   return message;
 }
 
+//儲存即時影像至TF卡
 String saveCapturedImage(String filename) {    
   String response = ""; 
   String path_jpg = "/"+filename+".base64";
