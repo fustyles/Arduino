@@ -9,7 +9,7 @@ Turn on: Superman starts flying. Your right hand must be above your nose. Your w
 關閉: 兩手腕垂直高舉
 Turn off: Raise your two hands above your nose
 
-繼電器: gpio2
+Relay: gpio2
 
 示範影片
 https://www.youtube.com/watch?v=0v-ZWXZSndA
