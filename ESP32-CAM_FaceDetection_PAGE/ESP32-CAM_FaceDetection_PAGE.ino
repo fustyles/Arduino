@@ -670,7 +670,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     }
 
     
-    int val = atoi(value);   //String val_str = String(value);
+    int val = atoi(value);   //自訂指令格式value可為字串  String val_str = String(value);
     sensor_t * s = esp_camera_sensor_get();
     int res = 0;
 
