@@ -9,7 +9,7 @@ Turn on: Put your wrists next to your ears.
 關閉: 兩手腕在肩膀下交叉.
 Turn off: Make your wrists close to each other or cross them under your shoulders.
 
-繼電器: gpio2
+Relay: gpio2
 
 示範影片
 https://www.youtube.com/watch?v=0v-ZWXZSndA
