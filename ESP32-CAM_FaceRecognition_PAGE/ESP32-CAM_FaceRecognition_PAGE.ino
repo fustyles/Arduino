@@ -1,12 +1,15 @@
 /*
 ESP32-CAM Face Recognition
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-25 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-26 01:00
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
 http://192.168.xxx.xxx:81/stream   //取得串流影像
 http://192.168.xxx.xxx/capture     //取得影像
 http://192.168.xxx.xxx/status      //取得視訊參數值
+
+//自訂指令格式(動態設定名字)
+http://192.168.xxx.xxx/control?facename=matched_id;name
 
 //設定視訊參數(官方指令格式)
 http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
@@ -31,13 +34,7 @@ const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 #define FACE_ID_SAVE_NUMBER 7
 
 //設定人臉辨識顯示的人名
-String recognize_face_matched_name_0 = "Name0";
-String recognize_face_matched_name_1 = "Name1";
-String recognize_face_matched_name_2 = "Name2";
-String recognize_face_matched_name_3 = "Name3";
-String recognize_face_matched_name_4 = "Name4";
-String recognize_face_matched_name_5 = "Name5";
-String recognize_face_matched_name_6 = "Name6";
+String recognize_face_matched_name[7] = {"Name0","Name1","Name2","Name3","Name4","Name5","Name6"};
 
 #include <WiFi.h>
 #include "soc/soc.h"             //用於電源不穩不重開機 
@@ -49,6 +46,29 @@ String recognize_face_matched_name_6 = "Name6";
 #include "fr_forward.h"
 #include "esp_http_server.h"
 #include "esp_timer.h"
+
+String Feedback="";   //回傳客戶端訊息
+
+//指令參數值
+String Command="";
+String cmd="";
+String P1="";
+String P2="";
+String P3="";
+String P4="";
+String P5="";
+String P6="";
+String P7="";
+String P8="";
+String P9="";
+
+//指令拆解狀態值
+byte ReceiveState=0;
+byte cmdState=1;
+byte strState=1;
+byte questionstate=0;
+byte equalstate=0;
+byte semicolonstate=0;
 
 //
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
@@ -138,122 +158,6 @@ static int ra_filter_run(ra_filter_t * filter, int value){
         filter->count++;
     }
     return filter->sum / filter->count;
-}
-
-void setup() {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
-    
-  Serial.begin(115200);
-  Serial.setDebugOutput(true);  //開啟診斷輸出
-  Serial.println();
-
-  //視訊組態設定
-  camera_config_t config;
-  config.ledc_channel = LEDC_CHANNEL_0;
-  config.ledc_timer = LEDC_TIMER_0;
-  config.pin_d0 = Y2_GPIO_NUM;
-  config.pin_d1 = Y3_GPIO_NUM;
-  config.pin_d2 = Y4_GPIO_NUM;
-  config.pin_d3 = Y5_GPIO_NUM;
-  config.pin_d4 = Y6_GPIO_NUM;
-  config.pin_d5 = Y7_GPIO_NUM;
-  config.pin_d6 = Y8_GPIO_NUM;
-  config.pin_d7 = Y9_GPIO_NUM;
-  config.pin_xclk = XCLK_GPIO_NUM;
-  config.pin_pclk = PCLK_GPIO_NUM;
-  config.pin_vsync = VSYNC_GPIO_NUM;
-  config.pin_href = HREF_GPIO_NUM;
-  config.pin_sscb_sda = SIOD_GPIO_NUM;
-  config.pin_sscb_scl = SIOC_GPIO_NUM;
-  config.pin_pwdn = PWDN_GPIO_NUM;
-  config.pin_reset = RESET_GPIO_NUM;
-  config.xclk_freq_hz = 20000000;
-  config.pixel_format = PIXFORMAT_JPEG;
-  //init with high specs to pre-allocate larger buffers
-  if(psramFound()){
-    config.frame_size = FRAMESIZE_UXGA;
-    config.jpeg_quality = 10;
-    config.fb_count = 2;
-  } else {
-    config.frame_size = FRAMESIZE_SVGA;
-    config.jpeg_quality = 12;
-    config.fb_count = 1;
-  }
-
-  //視訊初始化
-  esp_err_t err = esp_camera_init(&config);
-  if (err != ESP_OK) {
-    Serial.printf("Camera init failed with error 0x%x", err);
-    return;
-  }
-
-  //可動態改變視訊框架大小(解析度大小)
-  sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_QVGA);  //96x96|QQVGA|QQVGA2|QCIF|HQVGA|240x240|QVGA|CIF|VGA|SVGA|XGA|SXGA|UXGA|QXGA|INVALID
-
-  //閃光燈(GPIO4)
-  ledcAttachPin(4, 4);  
-  ledcSetup(4, 5000, 8);
-  
-  WiFi.mode(WIFI_AP_STA);  //其他模式 WiFi.mode(WIFI_AP); WiFi.mode(WIFI_STA);
-
-  //指定Client端靜態IP
-  //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
-
-  WiFi.begin(ssid, password);    //執行網路連線
-
-  delay(1000);
-  Serial.println("");
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-  
-  long int StartTime=millis();
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    if ((StartTime+10000) < millis()) break;    //等待10秒連線
-  } 
-
-  if (WiFi.status() == WL_CONNECTED) {    //若連線成功
-    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP         
-    Serial.println("");
-    Serial.println("STAIP address: ");
-    Serial.println(WiFi.localIP()); 
-
-    for (int i=0;i<5;i++) {   //若連上WIFI設定閃光燈快速閃爍
-      ledcWrite(4,10);
-      delay(200);
-      ledcWrite(4,0);
-      delay(200);    
-    }    
-  }
-  else {
-    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);    
-
-    for (int i=0;i<2;i++) {    //若連不上WIFI設定閃光燈慢速閃爍
-      ledcWrite(4,10);
-      delay(1000);
-      ledcWrite(4,0);
-      delay(1000);    
-    }      
-  }     
-
-  //指定AP端IP
-  //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
-  Serial.println("");
-  Serial.println("APIP address: ");
-  Serial.println(WiFi.softAPIP());  
-  Serial.println("");
-  
-  startCameraServer(); 
-
-  //設定閃光燈為低電位
-  pinMode(4, OUTPUT);
-  digitalWrite(4, LOW);          
-}
-
-void loop() {
-  // put your main code here, to run repeatedly:
-  delay(10000);
 }
 
 static void rgb_print(dl_matrix3du_t *image_matrix, uint32_t color, const char * str){
@@ -354,24 +258,14 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
             if (matched_id >= 0) {
                 //如果偵測到有註冊的人臉可在此區塊自訂顯示人名與開門控制。
                 Serial.printf("Match Face ID: %u\n", matched_id);
-                if (matched_id==0) {
-                  rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] %s", matched_id, recognize_face_matched_name_0);
+                int name_length = sizeof(recognize_face_matched_name) / sizeof(recognize_face_matched_name[0]);
+                Serial.println(name_length);
+                if (matched_id<name_length) {
+                  rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] %s", matched_id, recognize_face_matched_name[matched_id]);
                   //You can control a relay module to open the door.
-                } else if (matched_id==1) {
-                  rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] %s", matched_id, recognize_face_matched_name_1);
-                } else if (matched_id==2) {
-                  rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] %s", matched_id, recognize_face_matched_name_2);
-                } else if (matched_id==3) {
-                  rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] %s", matched_id, recognize_face_matched_name_3);
-                } else if (matched_id==4) {
-                  rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] %s", matched_id, recognize_face_matched_name_4);
-                } else if (matched_id==5) {
-                  rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] %s", matched_id, recognize_face_matched_name_5);
-                } else if (matched_id==6) {
-                  rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] %s", matched_id, recognize_face_matched_name_6);
-                } else {
-                  rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] No Name", matched_id);
                 }
+                else
+                  rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] No Name", matched_id);
             } else {
                 //可增加指令發出陌生人警示訊息
                 Serial.println("No Match Found");
@@ -636,78 +530,154 @@ static esp_err_t stream_handler(httpd_req_t *req){
     return res;
 }
 
+//拆解命令字串置入變數
+void getCommand(char c)
+{
+  if (c=='?') ReceiveState=1;
+  if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
+  
+  if (ReceiveState==1)
+  {
+    Command=Command+String(c);
+    
+    if (c=='=') cmdState=0;
+    if (c==';') strState++;
+  
+    if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
+    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) P1=P1+String(c);
+    if ((cmdState==0)&&(strState==2)&&(c!=';')) P2=P2+String(c);
+    if ((cmdState==0)&&(strState==3)&&(c!=';')) P3=P3+String(c);
+    if ((cmdState==0)&&(strState==4)&&(c!=';')) P4=P4+String(c);
+    if ((cmdState==0)&&(strState==5)&&(c!=';')) P5=P5+String(c);
+    if ((cmdState==0)&&(strState==6)&&(c!=';')) P6=P6+String(c);
+    if ((cmdState==0)&&(strState==7)&&(c!=';')) P7=P7+String(c);
+    if ((cmdState==0)&&(strState==8)&&(c!=';')) P8=P8+String(c);
+    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) P9=P9+String(c);
+    
+    if (c=='?') questionstate=1;
+    if (c=='=') equalstate=1;
+    if ((strState>=9)&&(c==';')) semicolonstate=1;
+  }
+}
+
 //指令參數控制
 static esp_err_t cmd_handler(httpd_req_t *req){
     char*  buf;  //存取網址後帶的參數字串
     size_t buf_len;
-    char variable[32] = {0,};  //存取參數var值，可修改陣列長度。  char variable[128] = {0,};
-    char value[32] = {0,};  //存取參數val值，可修改陣列長度。  char value[128] = {0,};
-
+    char variable[128] = {0,};  //存取參數var值，可修改陣列長度。
+    char value[128] = {0,};  //存取參數val值，可修改陣列長度。
+    String myCmd = "";
+    
     buf_len = httpd_req_get_url_query_len(req) + 1;
     if (buf_len > 1) {
         buf = (char*)malloc(buf_len);
+        
         if(!buf){
             httpd_resp_send_500(req);
             return ESP_FAIL;
         }
         if (httpd_req_get_url_query_str(req, buf, buf_len) == ESP_OK) {
-            if (httpd_query_key_value(buf, "var", variable, sizeof(variable)) == ESP_OK &&
-                httpd_query_key_value(buf, "val", value, sizeof(value)) == ESP_OK) {
-            } else {
-                free(buf);
-                httpd_resp_send_404(req);
-                return ESP_FAIL;
-            }
-        } else {
-            free(buf);
-            httpd_resp_send_404(req);
-            return ESP_FAIL;
+          if (httpd_query_key_value(buf, "var", variable, sizeof(variable)) == ESP_OK &&
+            httpd_query_key_value(buf, "val", value, sizeof(value)) == ESP_OK) {
+          } 
+          else {
+            myCmd = String(buf);
+          }
         }
-        free(buf);
     } else {
         httpd_resp_send_404(req);
         return ESP_FAIL;
     }
 
+    Feedback="";Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
+    ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;     
+    if (myCmd.length()>0) {
+      myCmd = "?"+myCmd;  //網址後帶的參數字串轉換成自訂參數格式
+      for (int i=0;i<myCmd.length();i++) {
+        getCommand(char(myCmd.charAt(i)));  //拆解參數字串
+      }
+    }
+
+    if (cmd.length()>0) {
+      Serial.println("");
+      //Serial.println("Command: "+Command);
+      Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
+      Serial.println(""); 
+
+      //自訂指令區塊  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+      if (cmd=="your cmd") {
+        // You can do anything
+        // Feedback="<font color=\"red\">Hello World</font>";   //可為一般文字或HTML語法
+      }
+      else if (cmd=="facename") {  //查詢IP
+        recognize_face_matched_name[P1.toInt()] = P2;
+      }  
+      else {
+        Feedback="Command is not defined";
+      }
+
+      if (Feedback=="") Feedback=Command;  //若沒有設定回傳資料就回傳Command值
     
-    int val = atoi(value);   //自訂指令格式value可為字串  String val_str = String(value);
-    sensor_t * s = esp_camera_sensor_get();
-    int res = 0;
-
-    //官方指令區塊，也可在此自訂指令  http://192.168.xxx.xxx/control?var=xxx&val=xxx
-    if(!strcmp(variable, "framesize")) {
-        if(s->pixformat == PIXFORMAT_JPEG) res = s->set_framesize(s, (framesize_t)val);
-    }
-    else if(!strcmp(variable, "quality")) res = s->set_quality(s, val);
-    else if(!strcmp(variable, "contrast")) res = s->set_contrast(s, val);
-    else if(!strcmp(variable, "brightness")) res = s->set_brightness(s, val);
-    else if(!strcmp(variable, "face_detect")) {
-        detection_enabled = val;
-        if(!detection_enabled) {
-            recognition_enabled = 0;
-        }
-    }
-    else if(!strcmp(variable, "face_enroll")) is_enrolling = val;
-    else if(!strcmp(variable, "face_recognize")) {
-        recognition_enabled = val;
-        if(recognition_enabled){
-            detection_enabled = val;
-        }
-    }
-    else if(!strcmp(variable, "flash")) {  //Control flash
-      ledcWrite(4,val);
-      flash_value = val;
-    }    
+      static char response[15000];
+      char * p = response;
+      p+=sprintf(p, "%s", Feedback.c_str());   
+      *p++ = 0;
+      httpd_resp_set_type(req, "text/html");  //設定回傳資料格式
+      httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");  //允許跨網域讀取
+      return httpd_resp_send(req, response, strlen(response));
+    } 
     else {
-        res = -1;
+      int val = atoi(value); 
+      sensor_t * s = esp_camera_sensor_get();
+      int res = 0;
+  
+      //官方指令區塊，也可在此自訂指令  http://192.168.xxx.xxx/control?var=xxx&val=xxx
+      if(!strcmp(variable, "framesize")) {
+          if(s->pixformat == PIXFORMAT_JPEG) res = s->set_framesize(s, (framesize_t)val);
+      }
+      else if(!strcmp(variable, "quality")) res = s->set_quality(s, val);
+      else if(!strcmp(variable, "contrast")) res = s->set_contrast(s, val);
+      else if(!strcmp(variable, "brightness")) res = s->set_brightness(s, val);
+      else if(!strcmp(variable, "face_detect")) {
+          detection_enabled = val;
+          if(!detection_enabled) {
+              recognition_enabled = 0;
+          }
+      }
+      else if(!strcmp(variable, "face_enroll")) is_enrolling = val;
+      else if(!strcmp(variable, "face_recognize")) {
+          recognition_enabled = val;
+          if(recognition_enabled){
+              detection_enabled = val;
+          }
+      }
+      else if(!strcmp(variable, "flash")) {  //Control flash
+        ledcWrite(4,val);
+        flash_value = val;
+      }    
+      else {
+          res = -1;
+      }
+  
+      if(res){
+          return httpd_resp_send_500(req);
+      }
+  
+      if (buf) {
+        Feedback = String(buf);
+        static char response[128];
+        char * p = response;
+        p+=sprintf(p, "%s", Feedback.c_str());   
+        *p++ = 0;
+        httpd_resp_set_type(req, "text/html");
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+        return httpd_resp_send(req, response, strlen(response));  //回傳參數字串
+      }
+      else {
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+        return httpd_resp_send(req, NULL, 0);
+      }
     }
-
-    if(res){
-        return httpd_resp_send_500(req);
-    }
-
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-    return httpd_resp_send(req, NULL, 0);
 }
 
 //顯示視訊參數狀態(須回傳json格式)
@@ -1106,6 +1076,20 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                                 <label class="slider" for="face_recognize"></label>
                             </div>
                         </div>
+                        <div class="input-group" id="facename-group">
+                            <label for="facename">Face Name</label>
+                            <select id="faceid" class="default-action">
+                              <option value="0">0</option>
+                              <option value="1">1</option>
+                              <option value="2">2</option>
+                              <option value="3">3</option>
+                              <option value="4">4</option>
+                              <option value="5">5</option>
+                              <option value="6">6</option>
+                            </select>
+                            <input type="text" id="facename" size="6" style="height:16px">
+                            <button onclick="try{fetch(document.location.origin+'/control?facename='+document.getElementById('faceid').value+';'+document.getElementById('facename').value);}catch(e){}">Set</button>
+                        </div>                        
                         <div class="input-group" id="flash-group">
                             <label for="flash">Flash</label>
                             <div class="range-min">0</div>
@@ -1433,4 +1417,120 @@ void startCameraServer(){
     if (httpd_start(&stream_httpd, &config) == ESP_OK) {
         httpd_register_uri_handler(stream_httpd, &stream_uri);
     }
+}
+
+void setup() {
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
+    
+  Serial.begin(115200);
+  Serial.setDebugOutput(true);  //開啟診斷輸出
+  Serial.println();
+
+  //視訊組態設定
+  camera_config_t config;
+  config.ledc_channel = LEDC_CHANNEL_0;
+  config.ledc_timer = LEDC_TIMER_0;
+  config.pin_d0 = Y2_GPIO_NUM;
+  config.pin_d1 = Y3_GPIO_NUM;
+  config.pin_d2 = Y4_GPIO_NUM;
+  config.pin_d3 = Y5_GPIO_NUM;
+  config.pin_d4 = Y6_GPIO_NUM;
+  config.pin_d5 = Y7_GPIO_NUM;
+  config.pin_d6 = Y8_GPIO_NUM;
+  config.pin_d7 = Y9_GPIO_NUM;
+  config.pin_xclk = XCLK_GPIO_NUM;
+  config.pin_pclk = PCLK_GPIO_NUM;
+  config.pin_vsync = VSYNC_GPIO_NUM;
+  config.pin_href = HREF_GPIO_NUM;
+  config.pin_sscb_sda = SIOD_GPIO_NUM;
+  config.pin_sscb_scl = SIOC_GPIO_NUM;
+  config.pin_pwdn = PWDN_GPIO_NUM;
+  config.pin_reset = RESET_GPIO_NUM;
+  config.xclk_freq_hz = 20000000;
+  config.pixel_format = PIXFORMAT_JPEG;
+  //init with high specs to pre-allocate larger buffers
+  if(psramFound()){
+    config.frame_size = FRAMESIZE_UXGA;
+    config.jpeg_quality = 10;
+    config.fb_count = 2;
+  } else {
+    config.frame_size = FRAMESIZE_SVGA;
+    config.jpeg_quality = 12;
+    config.fb_count = 1;
+  }
+
+  //視訊初始化
+  esp_err_t err = esp_camera_init(&config);
+  if (err != ESP_OK) {
+    Serial.printf("Camera init failed with error 0x%x", err);
+    return;
+  }
+
+  //可動態改變視訊框架大小(解析度大小)
+  sensor_t * s = esp_camera_sensor_get();
+  s->set_framesize(s, FRAMESIZE_QVGA);  //96x96|QQVGA|QQVGA2|QCIF|HQVGA|240x240|QVGA|CIF|VGA|SVGA|XGA|SXGA|UXGA|QXGA|INVALID
+
+  //閃光燈(GPIO4)
+  ledcAttachPin(4, 4);  
+  ledcSetup(4, 5000, 8);
+  
+  WiFi.mode(WIFI_AP_STA);  //其他模式 WiFi.mode(WIFI_AP); WiFi.mode(WIFI_STA);
+
+  //指定Client端靜態IP
+  //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
+
+  WiFi.begin(ssid, password);    //執行網路連線
+
+  delay(1000);
+  Serial.println("");
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+  
+  long int StartTime=millis();
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    if ((StartTime+10000) < millis()) break;    //等待10秒連線
+  } 
+
+  if (WiFi.status() == WL_CONNECTED) {    //若連線成功
+    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP         
+    Serial.println("");
+    Serial.println("STAIP address: ");
+    Serial.println(WiFi.localIP()); 
+
+    for (int i=0;i<5;i++) {   //若連上WIFI設定閃光燈快速閃爍
+      ledcWrite(4,10);
+      delay(200);
+      ledcWrite(4,0);
+      delay(200);    
+    }    
+  }
+  else {
+    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);    
+
+    for (int i=0;i<2;i++) {    //若連不上WIFI設定閃光燈慢速閃爍
+      ledcWrite(4,10);
+      delay(1000);
+      ledcWrite(4,0);
+      delay(1000);    
+    }      
+  }     
+
+  //指定AP端IP
+  //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
+  Serial.println("");
+  Serial.println("APIP address: ");
+  Serial.println(WiFi.softAPIP());  
+  Serial.println("");
+  
+  startCameraServer(); 
+
+  //設定閃光燈為低電位
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);          
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  delay(10000);
 }
