@@ -1,7 +1,14 @@
 /*
 ESP32-CAM 模組 (可跨網域連線)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-24 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-26 01:00
 https://www.facebook.com/francefu
+
+
+馬達驅動IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
+伺服馬達 -> gpio2  (or)  Servo1 -> gpio2, Servo2 -> gpio13
+
+http://APIP
+http://STAIP
 
 自訂指令格式 :  
 http://APIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
@@ -12,8 +19,36 @@ http://192.168.xxx.xxx/?ip
 http://192.168.xxx.xxx/?mac
 http://192.168.xxx.xxx/?restart
 http://192.168.xxx.xxx/?resetwifi=ssid;password
-http://192.168.xxx.xxx/?flash=value        //value= 0~255
-http://192.168.xxx.xxx/?getstill   //取得影像下載
+http://192.168.4.1/?inputpullup=pin
+http://192.168.4.1/?pinmode=pin;value
+http://192.168.4.1/?digitalwrite=pin;value
+http://192.168.4.1/?analogwrite=pin;value
+http://192.168.4.1/?digitalread=pin
+http://192.168.4.1/?analogread=pin
+http://192.168.4.1/?touchread=pin
+http://192.168.4.1/?tcp=domain;port;request;wait
+--> wait = 0 or 1  (持續等待回應)
+--> request = /xxxx/xxxx
+http://192.168.4.1/?ifttt=event;key;value1;value2;value3
+http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
+http://192.168.4.1/?thingspeakread=request
+--> request = /channels/xxxxx/fields/1.json?results=1
+http://192.168.4.1/?linenotify=token;request
+--> request = message=xxxxx
+--> request = message=xxxxx&stickerPackageId=xxxxx&stickerId=xxxxx
+http://192.168.4.1/?flash=value        //vale= 0~255  (閃光燈)
+http://192.168.4.1/?servo=value        //vale= 1700~8000   伺服馬達(gpio2)
+http://192.168.4.1/?servo1=value       //vale= 1700~8000   伺服馬達1(gpio2)
+http://192.168.4.1/?servo2=value       //vale= 1700~8000   伺服馬達2(gpio13)
+http://192.168.4.1/?speedL=value       //vale= 0~255  (左輪速度)
+http://192.168.4.1/?speedR=value       //vale= 0~255  (右輪速度)
+http://192.168.4.1/?decelerate=value   //vale= 0~100  (轉彎輪子減速後的速度為原速的百分比%)
+http://192.168.4.1/?car=state          //state= 1(前進),2(左轉),3(停止),4(右轉),5(後退),6(左前轉),7(右前轉),8(左後轉),9(右後轉)
+http://192.168.4.1/?getstill           //回傳base64格式文字
+http://192.168.4.1/?getstill=img       //<img id='gameimage_getstill' src='base64'> 回傳IMG標籤圖檔
+http://192.168.4.1/?framesize=size     //size= CIF,QVGA,HQVGA,QQVGA (支援格式)
+http://192.168.4.1/?sendCapturedImageToLineNotify=token  //傳送影像截圖
+http://192.168.xxx.xxx/?downloadstill   //影像檔案下載
 
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
@@ -31,6 +66,13 @@ const char* password = "*****";   //your network password
 //輸入AP端連線帳號密碼
 const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP端密碼至少要八個字元以上
+
+int speedR = 255;  //右輪初速 (gpio12, gpio13)
+int speedL = 255;  //左輪初速 (gpio14, gpio15)
+int servoPin = 2;
+int servo1Pin = 2;
+int servo2Pin = 13;
+double decelerate = 60;
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>    //用於https加密傳輸協定
@@ -105,6 +147,284 @@ void ExecuteCommand()
     Serial.println("STAIP: "+WiFi.localIP().toString());
     Feedback="STAIP: "+WiFi.localIP().toString();
   }    
+  else if (cmd=="inputpullup") {
+    pinMode(P1.toInt(), INPUT_PULLUP);
+  }  
+  else if (cmd=="pinmode") {
+    if (P2.toInt()==1)
+      pinMode(P1.toInt(), OUTPUT);
+    else
+      pinMode(P1.toInt(), INPUT);
+  }        
+  else if (cmd=="digitalwrite") {
+    ledcDetachPin(P1.toInt());
+    pinMode(P1.toInt(), OUTPUT);
+    digitalWrite(P1.toInt(), P2.toInt());
+  }   
+  else if (cmd=="digitalread") {
+    Feedback=String(digitalRead(P1.toInt()));
+  }
+  else if (cmd=="analogwrite") {
+    if (P1=="2") {
+      ledcAttachPin(2, 3);  
+      ledcSetup(3, 5000, 8);
+      ledcWrite(3,P2.toInt());     
+    }    
+    else if (P1=="4") {
+      ledcAttachPin(4, 4);  
+      ledcSetup(4, 5000, 8);
+      ledcWrite(4,P2.toInt());     
+    }
+    else if (P1=="12") {
+      ledcAttachPin(12, 5);  
+      ledcSetup(5, 5000, 8);
+      ledcWrite(5,P2.toInt());     
+    }
+    else if (P1=="13") {
+      ledcAttachPin(13, 6);  
+      ledcSetup(6, 5000, 8);
+      ledcWrite(6,P2.toInt());     
+    }
+    else if (P1=="14") {
+      ledcAttachPin(14, 8);  
+      ledcSetup(8, 5000, 8);
+      ledcWrite(8,P2.toInt());     
+    }
+    else if (P1=="15") {
+      ledcAttachPin(15, 7);  
+      ledcSetup(7, 5000, 8);
+      ledcWrite(7,P2.toInt());     
+    }
+    else {
+      ledcAttachPin(P1.toInt(), 9);
+      ledcSetup(9, 5000, 8);
+      ledcWrite(9,P2.toInt());
+    } 
+  }       
+  else if (cmd=="analogread") {
+    Feedback=String(analogRead(P1.toInt()));
+  }
+  else if (cmd=="touchread") {
+    Feedback=String(touchRead(P1.toInt()));
+  }  
+  else if (cmd=="tcp") {
+    String domain=P1;
+    int port=P2.toInt();
+    String request=P3;
+    int wait=P4.toInt();      // wait = 0 or 1
+
+    if ((port==443)||(domain.indexOf("https")==0)||(domain.indexOf("HTTPS")==0))
+      Feedback=tcp_https(domain,request,port,wait);
+    else
+      Feedback=tcp_http(domain,request,port,wait);  
+  }
+  else if (cmd=="ifttt") {
+    String domain="maker.ifttt.com";
+    String request = "/trigger/" + P1 + "/with/key/" + P2;
+    request += "?value1="+P3+"&value2="+P4+"&value3="+P5;
+    Feedback=tcp_https(domain,request,443,0);
+  }
+  else if (cmd=="thingspeakupdate") {
+    String domain="api.thingspeak.com";
+    String request = "/update?api_key=" + P1;
+    request += "&field1="+P2+"&field2="+P3+"&field3="+P4+"&field4="+P5+"&field5="+P6+"&field6="+P7+"&field7="+P8+"&field8="+P9;
+    Feedback=tcp_https(domain,request,443,0);
+  }    
+  else if (cmd=="thingspeakread") {
+    String domain="api.thingspeak.com";
+    String request = P1;
+    Feedback=tcp_https(domain,request,443,1);
+    int s=Feedback.indexOf("feeds");
+    Feedback=Feedback.substring(s+8);
+    int e=Feedback.indexOf("]");
+    Feedback=Feedback.substring(0,e);
+    Feedback.replace("},{",";");
+    Feedback.replace("\":\"",",");
+    Feedback.replace("\":",",");
+    Feedback.replace("\",\"",","); 
+    Feedback.replace("\"","");
+    Feedback.replace("{","");
+    Feedback.replace("}","");
+    Feedback.replace("[","");
+    Feedback.replace("]","");
+    Feedback.replace(",\"",",");
+    Feedback.replace("\":",",");
+  } 
+  else if (cmd=="linenotify") {
+    String token = P1;
+    String request = P2;
+    Feedback=LineNotify(token,request,1);
+    if (Feedback.indexOf("status")!=-1) {
+      int s=Feedback.indexOf("{");
+      Feedback=Feedback.substring(s);
+      int e=Feedback.indexOf("}");
+      Feedback=Feedback.substring(0,e);
+      Feedback.replace("\"","");
+      Feedback.replace("{","");
+      Feedback.replace("}","");
+    }
+  } 
+  else if (cmd=="flash") {
+    ledcAttachPin(4, 4);  
+    ledcSetup(4, 5000, 8);   
+     
+    int val = P1.toInt();
+    ledcWrite(4,val);
+  }  
+  else if (cmd=="servo") {
+    ledcAttachPin(servoPin, 3);  
+    ledcSetup(3, 50, 16);
+    
+    int val = P1.toInt();      
+    if (val > 8000)
+       val = 8000;
+    else if (val < 1700)
+      val = 1700;   
+    val = 1700 + (8000 - val);   
+    ledcWrite(3, val); 
+  }  
+  else if (cmd=="servo1") {
+    ledcAttachPin(servo1Pin, 3);  
+    ledcSetup(3, 50, 16); 
+    
+    int val = P1.toInt();     
+    if (val > 8000)
+       val = 8000;
+    else if (val < 1700)
+      val = 1700;   
+    val = 1700 + (8000 - val);   
+    ledcWrite(3, val); 
+  }  
+  else if (cmd=="servo2") {
+    ledcAttachPin(servo2Pin, 6);  
+    ledcSetup(6, 50, 16); 
+    
+    int val = P1.toInt();     
+    if (val > 8000)
+       val = 8000;
+    else if (val < 1700)
+      val = 1700;   
+    val = 1700 + (8000 - val);   
+    ledcWrite(6, val); 
+  }
+  else if (cmd=="speedL") {
+    int val = P1.toInt();
+    if (val > 255)
+       val = 255;
+    else if (val < 0)
+      val = 0;       
+    speedL = val;
+  }  
+  else if (cmd=="speedR") {
+    int val = P1.toInt();
+    if (val > 255)
+       val = 255;
+    else if (val < 0)
+      val = 0;       
+    speedR = val;
+  }  
+  else if (cmd=="decelerate") { 
+    int val = P1.toInt();      
+    decelerate = val;
+  }   
+  else if (cmd=="car") {
+    ledcAttachPin(12, 5);
+    ledcSetup(5, 2000, 8);      
+    ledcAttachPin(13, 6);
+    ledcSetup(6, 2000, 8);
+    ledcWrite(6, 0);  
+    ledcAttachPin(15, 7);
+    ledcSetup(7, 2000, 8);      
+    ledcAttachPin(14, 8);
+    ledcSetup(8, 2000, 8); 
+      
+    int val = P1.toInt();
+    if (val==1) {
+      Serial.println("Front");     
+      ledcWrite(5,speedR);
+      ledcWrite(6,0);
+      ledcWrite(7,speedL);
+      ledcWrite(8,0);   
+    }
+    else if (val==2) {
+      Serial.println("Left");     
+      ledcWrite(5,speedR*decelerate/100);
+      ledcWrite(6,0);
+      ledcWrite(7,0);
+      ledcWrite(8,speedL*decelerate/100);  
+    }
+    else if (val==3) {
+      Serial.println("Stop");      
+      ledcWrite(5,0);
+      ledcWrite(6,0);
+      ledcWrite(7,0);
+      ledcWrite(8,0);    
+    }
+    else if (val==4) {
+      Serial.println("Right");
+      ledcWrite(5,0);
+      ledcWrite(6,speedR*decelerate/100);
+      ledcWrite(7,speedL*decelerate/100);
+      ledcWrite(8,0);          
+    }
+    else if (val==5) {
+      Serial.println("Back");      
+      ledcWrite(5,0);
+      ledcWrite(6,speedR);
+      ledcWrite(7,0);
+      ledcWrite(8,speedL);
+    }  
+    else if (val==6) {
+      Serial.println("FrontLeft");     
+      ledcWrite(5,speedR);
+      ledcWrite(6,0);
+      ledcWrite(7,speedL*decelerate/100);
+      ledcWrite(8,0);   
+    }
+    else if (val==7) {
+      Serial.println("FrontRight");     
+      ledcWrite(5,speedR*decelerate/100);
+      ledcWrite(6,0);
+      ledcWrite(7,speedL);
+      ledcWrite(8,0);   
+    }  
+    else if (val==8) {
+      Serial.println("LeftAfter");      
+      ledcWrite(5,0);
+      ledcWrite(6,speedR);
+      ledcWrite(7,0);
+      ledcWrite(8,speedL*decelerate/100);
+    } 
+    else if (val==9) {
+      Serial.println("RightAfter");      
+      ledcWrite(5,0);
+      ledcWrite(6,speedR*decelerate/100);
+      ledcWrite(7,0);
+      ledcWrite(8,speedL);
+    }       
+  }   
+  else if (cmd=="getstill") { 
+    if (P1=="img")
+      Feedback="\<img id=\'gameimage_getstill\' src=\'"+getstill()+"\'\>";
+    else
+      Feedback=getstill();
+  }   
+  else if (cmd=="framesize") { 
+    sensor_t * s = esp_camera_sensor_get();  
+    if (P1=="QQVGA")
+      s->set_framesize(s, FRAMESIZE_QQVGA);
+    else if (P1=="HQVGA")
+      s->set_framesize(s, FRAMESIZE_HQVGA);
+    else if (P1=="QVGA")
+      s->set_framesize(s, FRAMESIZE_QVGA);
+    else if (P1=="CIF")
+      s->set_framesize(s, FRAMESIZE_CIF);
+    else 
+      s->set_framesize(s, FRAMESIZE_QVGA);   
+  }   
+  else if (cmd=="sendCapturedImageToLineNotify") { 
+    Feedback=sendCapturedImageToLineNotify(P1);
+  }   
   else if (cmd=="flash") {  //控制內建閃光燈
     ledcAttachPin(4, 4);  
     ledcSetup(4, 5000, 8);   
@@ -174,6 +494,17 @@ void setup() {
   //閃光燈(GPIO4)
   ledcAttachPin(4, 4);  
   ledcSetup(4, 5000, 8); 
+
+  //馬達驅動IC腳位初始化
+  ledcAttachPin(12, 5);
+  ledcSetup(5, 2000, 8);      
+  ledcAttachPin(13, 6);
+  ledcSetup(6, 2000, 8);
+  ledcWrite(6, 0);  
+  ledcAttachPin(15, 7);
+  ledcSetup(7, 2000, 8);      
+  ledcAttachPin(14, 8);
+  ledcSetup(8, 2000, 8);    
   
   WiFi.mode(WIFI_AP_STA);  //其他模式 WiFi.mode(WIFI_AP); WiFi.mode(WIFI_STA);
 
@@ -287,7 +618,7 @@ void loop() {
             client.println();
             */
 
-            if (cmd=="getstill") {
+            if (cmd=="downloadstill") {
               //回傳JPEG格式影像
               camera_fb_t * fb = NULL;
               fb = esp_camera_fb_get();  
@@ -397,5 +728,295 @@ void getCommand(char c) {
     if (c=='?') questionstate=1;
     if (c=='=') equalstate=1;
     if ((strState>=9)&&(c==';')) semicolonstate=1;
+  }
+}
+
+String getstill() { 
+  camera_fb_t * fb = NULL;
+  fb = esp_camera_fb_get();  
+  if(!fb) {
+    Serial.println("Camera capture failed");
+    return "Camera capture failed";
+  }
+
+  String imageFile = "data:image/jpeg;base64,";
+  char *input = (char *)fb->buf;
+  char output[base64_enc_len(3)];
+  for (int i=0;i<fb->len;i++) {
+    base64_encode(output, (input++), 3);
+    if (i%3==0) imageFile += urlencode(String(output));
+  }
+  esp_camera_fb_return(fb);
+
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW); 
+  
+  return imageFile;
+}
+
+//https://github.com/zenmanenergy/ESP8266-Arduino-Examples/
+String urlencode(String str)
+{
+    String encodedString="";
+    char c;
+    char code0;
+    char code1;
+    char code2;
+    for (int i =0; i < str.length(); i++){
+      c=str.charAt(i);
+      if (c == ' '){
+        encodedString+= '+';
+      } else if (isalnum(c)){
+        encodedString+=c;
+      } else{
+        code1=(c & 0xf)+'0';
+        if ((c & 0xf) >9){
+            code1=(c & 0xf) - 10 + 'A';
+        }
+        c=(c>>4)&0xf;
+        code0=c+'0';
+        if (c > 9){
+            code0=c - 10 + 'A';
+        }
+        code2='\0';
+        encodedString+='%';
+        encodedString+=code0;
+        encodedString+=code1;
+        //encodedString+=code2;
+      }
+      yield();
+    }
+    return encodedString;
+}
+          
+String tcp_http(String domain,String request,int port,byte wait)
+{
+    WiFiClient client_tcp;
+
+    if (client_tcp.connect(domain.c_str(), port)) 
+    {
+      Serial.println("GET " + request);
+      client_tcp.println("GET " + request + " HTTP/1.1");
+      client_tcp.println("Host: " + domain);
+      client_tcp.println("Connection: close");
+      client_tcp.println();
+
+      String getResponse="",Feedback="";
+      boolean state = false;
+      int waitTime = 3000;   // timeout 3 seconds
+      long startTime = millis();
+      while ((startTime + waitTime) > millis())
+      {
+        while (client_tcp.available()) 
+        {
+            char c = client_tcp.read();
+            if (c == '\n') 
+            {
+              if (getResponse.length()==0) state=true; 
+              getResponse = "";
+            } 
+            else if (c != '\r')
+              getResponse += String(c);
+            if (state==true) Feedback += String(c);
+            if (wait==1)
+              startTime = millis();
+         }
+         if (wait==0)
+          if ((state==true)&&(Feedback.length()!= 0)) break;
+      }
+      client_tcp.stop();
+      return Feedback;
+    }
+    else
+      return "Connection failed";  
+}
+
+String tcp_https(String domain,String request,int port,byte wait)
+{
+    WiFiClientSecure client_tcp;
+
+    if (client_tcp.connect(domain.c_str(), port)) 
+    {
+      Serial.println("GET " + request);
+      client_tcp.println("GET " + request + " HTTP/1.1");
+      client_tcp.println("Host: " + domain);
+      client_tcp.println("Connection: close");
+      client_tcp.println();
+
+      String getResponse="",Feedback="";
+      boolean state = false;
+      int waitTime = 3000;   // timeout 3 seconds
+      long startTime = millis();
+      while ((startTime + waitTime) > millis())
+      {
+        while (client_tcp.available()) 
+        {
+            char c = client_tcp.read();
+            if (c == '\n') 
+            {
+              if (getResponse.length()==0) state=true; 
+              getResponse = "";
+            } 
+            else if (c != '\r')
+              getResponse += String(c);
+            if (state==true) Feedback += String(c);
+            if (wait==1)
+              startTime = millis();
+         }
+         if (wait==0)
+          if ((state==true)&&(Feedback.length()!= 0)) break;
+      }
+      client_tcp.stop();
+      return Feedback;
+    }
+    else
+      return "Connection failed";  
+}
+
+String LineNotify(String token, String request, byte wait)
+{
+  request.replace(" ","%20");
+  request.replace("&","%20");
+  request.replace("#","%20");
+  //request.replace("\'","%27");
+  request.replace("\"","%22");
+  request.replace("\n","%0D%0A");
+  request.replace("%3Cbr%3E","%0D%0A");
+  request.replace("%3Cbr/%3E","%0D%0A");
+  request.replace("%3Cbr%20/%3E","%0D%0A");
+  request.replace("%3CBR%3E","%0D%0A");
+  request.replace("%3CBR/%3E","%0D%0A");
+  request.replace("%3CBR%20/%3E","%0D%0A"); 
+  request.replace("%20stickerPackageId","&stickerPackageId");
+  request.replace("%20stickerId","&stickerId");    
+  
+  WiFiClientSecure client_tcp;
+  
+  if (client_tcp.connect("notify-api.line.me", 443)) 
+  {
+    client_tcp.println("POST /api/notify HTTP/1.1");
+    client_tcp.println("Connection: close"); 
+    client_tcp.println("Host: notify-api.line.me");
+    client_tcp.println("User-Agent: ESP8266/1.0");
+    client_tcp.println("Authorization: Bearer " + token);
+    client_tcp.println("Content-Type: application/x-www-form-urlencoded");
+    client_tcp.println("Content-Length: " + String(request.length()));
+    client_tcp.println();
+    client_tcp.println(request);
+    client_tcp.println();
+    
+    String getResponse="",Feedback="";
+    boolean state = false;
+    int waitTime = 3000;   // timeout 3 seconds
+    long startTime = millis();
+    while ((startTime + waitTime) > millis())
+    {
+      while (client_tcp.available()) 
+      {
+          char c = client_tcp.read();
+          if (c == '\n') 
+          {
+            if (getResponse.length()==0) state=true; 
+            getResponse = "";
+          } 
+          else if (c != '\r')
+            getResponse += String(c);
+          if (state==true) Feedback += String(c);
+          if (wait==1)
+            startTime = millis();
+       }
+       if (wait==0)
+        if ((state==true)&&(Feedback.length()!= 0)) break;
+    }
+    client_tcp.stop();
+    return Feedback;
+  }
+  else
+    return "Connection failed";  
+}
+
+String sendCapturedImageToLineNotify(String myLineNotifyToken)
+{
+  camera_fb_t * fb = NULL;
+  fb = esp_camera_fb_get();  
+  if(!fb) {
+    Serial.println("Camera capture failed");
+    delay(1000);
+    ESP.restart();
+    return "";
+  }
+   
+  WiFiClientSecure client_tcp;
+
+  Serial.println("Connect to notify-api.line.me");
+  
+  if (client_tcp.connect("notify-api.line.me", 443)) 
+  {
+    Serial.println("Connection successful");
+    
+    String message = "Hello World";
+    String head = "--Taiwan\r\nContent-Disposition: form-data; name=\"message\"; \r\n\r\n" + message + "\r\n--Taiwan\r\nContent-Disposition: form-data; name=\"imageFile\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
+    String tail = "\r\n--Taiwan--\r\n";
+
+    uint16_t imageLen = fb->len;
+    uint16_t extraLen = head.length() + tail.length();
+    uint16_t totalLen = imageLen + extraLen;
+  
+    client_tcp.println("POST /api/notify HTTP/1.1");
+    client_tcp.println("Connection: close"); 
+    client_tcp.println("Host: notify-api.line.me");
+    client_tcp.println("Authorization: Bearer " + myLineNotifyToken);
+    client_tcp.println("Content-Length: " + String(totalLen));
+    client_tcp.println("Content-Type: multipart/form-data; boundary=Taiwan");
+    client_tcp.println();
+    client_tcp.print(head);
+    
+    uint8_t *fbBuf = fb->buf;
+    size_t fbLen = fb->len;
+    for (size_t n=0;n<fbLen;n=n+1024) {
+      if (n+1024<fbLen) {
+        client_tcp.write(fbBuf, 1024);
+        fbBuf += 1024;
+      }
+      else if (fbLen%1024>0) {
+        size_t remainder = fbLen%1024;
+        client_tcp.write(fbBuf, remainder);
+      }
+    }  
+    
+    client_tcp.print(tail);
+    client_tcp.println();
+    
+    String getResponse="",Feedback="";
+    boolean state = false;
+    int waitTime = 3000;   // timeout 3 seconds
+    long startTime = millis();
+    while ((startTime + waitTime) > millis())
+    {
+      Serial.print(".");
+      delay(100);      
+      while (client_tcp.available()) 
+      {
+          char c = client_tcp.read();
+          if (c == '\n') 
+          {
+            if (getResponse.length()==0) state=true; 
+            getResponse = "";
+          } 
+          else if (c != '\r')
+            getResponse += String(c);
+          if (state==true) Feedback += String(c);
+          startTime = millis();
+       }
+    }
+    client_tcp.stop();
+    esp_camera_fb_return(fb);
+    Serial.println(Feedback);
+    return Feedback;
+  }
+  else {
+    Serial.println("Connected to notify-api.line.me failed.");
+    esp_camera_fb_return(fb);
+    return "Connected to notify-api.line.me failed.";
   }
 }
