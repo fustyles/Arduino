@@ -4,8 +4,8 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-26 01:00
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
-http://192.168.xxx.xxx:81/stream   //取得串流影像
-http://192.168.xxx.xxx/capture     //取得影像
+http://192.168.xxx.xxx:81/stream   //取得串流影像     <img src="http://192.168.xxx.xxx:81/stream">
+http://192.168.xxx.xxx/capture     //取得影像     <img src="http://192.168.xxx.xxx/capture">
 http://192.168.xxx.xxx/status      //取得視訊參數值
 
 //自訂指令格式(動態設定名字)
