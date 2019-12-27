@@ -262,10 +262,10 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
                 Serial.println(name_length);
                 if (matched_id<name_length) {
                   rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] %s", matched_id, recognize_face_matched_name[matched_id]);
-                  //You can control a relay module to open the door.
                 }
                 else
                   rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] No Name", matched_id);
+                //You can control a relay module to open the door.
             } else {
                 //可增加指令發出陌生人警示訊息
                 Serial.println("No Match Found");
