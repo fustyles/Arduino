@@ -8,7 +8,7 @@ http://192.168.xxx.xxx:81/stream   //取得串流影像     <img src="http://192
 http://192.168.xxx.xxx/capture     //取得影像     <img src="http://192.168.xxx.xxx/capture">
 http://192.168.xxx.xxx/status      //取得視訊參數值
 
-//自訂指令格式(動態設定名字)
+//自訂指令格式(設定姓名)
 http://192.168.xxx.xxx/control?facename=matched_id;name
 
 //設定視訊參數(官方指令格式)
