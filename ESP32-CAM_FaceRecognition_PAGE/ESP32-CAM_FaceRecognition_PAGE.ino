@@ -265,7 +265,24 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
                 }
                 else
                   rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] No Name", matched_id);
-                //You can control a relay module to open the door.
+                /*
+                  //You can control a relay module to open the door.
+                  if (matched_id==0) {	
+
+                  } else if (matched_id==1) {	
+
+                  } else if (matched_id==2) {	
+
+                  } else if (matched_id==3) {	
+
+                  } else if (matched_id==4) {	
+
+                  } else if (matched_id==5) {	
+
+                  } else if (matched_id==6) {
+
+                  }
+                */
             } else {
                 //可增加指令發出陌生人警示訊息
                 Serial.println("No Match Found");
