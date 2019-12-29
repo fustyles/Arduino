@@ -11,70 +11,70 @@ http://APIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 
 Default APIP： 192.168.4.1
-http://192.168.4.1/control?ip
-http://192.168.4.1/control?mac
-http://192.168.4.1/control?restart
-http://192.168.4.1/control?inputpullup=pin
-http://192.168.4.1/control?pinmode=pin;value
-http://192.168.4.1/control?digitalwrite=pin;value
-http://192.168.4.1/control?analogwrite=pin;value
-http://192.168.4.1/control?digitalread=pin
-http://192.168.4.1/control?analogread=pin
-http://192.168.4.1/control?touchread=pin
-http://192.168.4.1/control?tcp=domain;port;request;wait
+http://192.168.xxx.xxx/control?ip
+http://192.168.xxx.xxx/control?mac
+http://192.168.xxx.xxx/control?restart
+http://192.168.xxx.xxx/control?inputpullup=pin
+http://192.168.xxx.xxx/control?pinmode=pin;value
+http://192.168.xxx.xxx/control?digitalwrite=pin;value
+http://192.168.xxx.xxx/control?analogwrite=pin;value
+http://192.168.xxx.xxx/control?digitalread=pin
+http://192.168.xxx.xxx/control?analogread=pin
+http://192.168.xxx.xxx/control?touchread=pin
+http://192.168.xxx.xxx/control?tcp=domain;port;request;wait
 --> wait = 0 or 1  (waiting for response)
 --> request = /xxxx/xxxx
-http://192.168.4.1/control?ifttt=event;key;value1;value2;value3
-http://192.168.4.1/control?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
-http://192.168.4.1/control?thingspeakread=request
+http://192.168.xxx.xxx/control?ifttt=event;key;value1;value2;value3
+http://192.168.xxx.xxx/control?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
+http://192.168.xxx.xxx/control?thingspeakread=request
 --> request = /channels/xxxxx/fields/1.jsoncontrol?results=1
-http://192.168.4.1/control?linenotify=token;request
+http://192.168.xxx.xxx/control?linenotify=token;request
 --> request = message=xxxxx
-http://192.168.4.1/control?flash=value        //vale= 0~255
-http://192.168.4.1/control?servo=value        //vale= 1700~8000
-http://192.168.4.1/control?servo1=value       //vale= 1700~8000
-http://192.168.4.1/control?servo2=value       //vale= 1700~8000
-http://192.168.4.1/control?speedL=value       //vale= 0~255
-http://192.168.4.1/control?speedR=value       //vale= 0~255
-http://192.168.4.1/control?decelerate=value   //vale= 0~100  (%)
-http://192.168.4.1/control?car=state          //state= 1(Front),2(Left),3(Stop),4(Right),5(Back),6(FrontLeft),7(FrontRight),8(LeftAfter),9(RightAfter)
-http://192.168.4.1/control?getstill           //base64
-http://192.168.4.1/control?getstill=img       //<img id='gameimage_getstill' src='base64'>
-http://192.168.4.1/control?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+http://192.168.xxx.xxx/control?flash=value        //vale= 0~255
+http://192.168.xxx.xxx/control?servo=value        //vale= 1700~8000
+http://192.168.xxx.xxx/control?servo1=value       //vale= 1700~8000
+http://192.168.xxx.xxx/control?servo2=value       //vale= 1700~8000
+http://192.168.xxx.xxx/control?speedL=value       //vale= 0~255
+http://192.168.xxx.xxx/control?speedR=value       //vale= 0~255
+http://192.168.xxx.xxx/control?decelerate=value   //vale= 0~100  (%)
+http://192.168.xxx.xxx/control?car=state          //state= 1(Front),2(Left),3(Stop),4(Right),5(Back),6(FrontLeft),7(FrontRight),8(LeftAfter),9(RightAfter)
+http://192.168.xxx.xxx/control?getstill           //base64
+http://192.168.xxx.xxx/control?getstill=img       //<img id='gameimage_getstill' src='base64'>
+http://192.168.xxx.xxx/control?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
-http://192.168.4.1:81/stream   //Stream Video
-http://192.168.4.1/capture   //Image
-http://192.168.4.1/status   //Status
+http://192.168.xxx.xxx:81/stream   //Stream Video
+http://192.168.xxx.xxx/capture   //Image
+http://192.168.xxx.xxx/status   //Status
 
-http://192.168.4.1/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
-http://192.168.4.1/control?var=quality&val=value    // value = 10 ~ 63
-http://192.168.4.1/control?var=brightness&val=value    // value = -2 ~ 2
-http://192.168.4.1/control?var=contrast&val=value    // value = -2 ~ 2
-http://192.168.4.1/control?var=saturation&val=value    // value = -2 ~ 2 
-http://192.168.4.1/control?var=gainceiling&val=value    // value = 0 ~ 6
-http://192.168.4.1/control?var=colorbar&val=value    // value = 0 or 1
-http://192.168.4.1/control?var=awb&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=agc&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=aec&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=hmirror&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=vflip&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=awb_gain&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=agc_gain&val=value    // value = 0 ~ 30
-http://192.168.4.1/control?var=aec_value&val=value    // value = 0 ~ 1200
-http://192.168.4.1/control?var=aec2&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=dcw&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=bpc&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=wpc&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=raw_gma&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=lenc&val=value    // value = 0 or 1 
-http://192.168.4.1/control?var=special_effect&val=value    // value = 0 ~ 6
-http://192.168.4.1/control?var=wb_mode&val=value    // value = 0 ~ 4
-http://192.168.4.1/control?var=ae_level&val=value    // value = -2 ~ 2  
-http://192.168.4.1/control?var=flash&val=value    // value = 0 ~ 255
+http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
+http://192.168.xxx.xxx/control?var=quality&val=value    // value = 10 ~ 63
+http://192.168.xxx.xxx/control?var=brightness&val=value    // value = -2 ~ 2
+http://192.168.xxx.xxx/control?var=contrast&val=value    // value = -2 ~ 2
+http://192.168.xxx.xxx/control?var=saturation&val=value    // value = -2 ~ 2 
+http://192.168.xxx.xxx/control?var=gainceiling&val=value    // value = 0 ~ 6
+http://192.168.xxx.xxx/control?var=colorbar&val=value    // value = 0 or 1
+http://192.168.xxx.xxx/control?var=awb&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=agc&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=aec&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=hmirror&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=vflip&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=awb_gain&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=agc_gain&val=value    // value = 0 ~ 30
+http://192.168.xxx.xxx/control?var=aec_value&val=value    // value = 0 ~ 1200
+http://192.168.xxx.xxx/control?var=aec2&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=dcw&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=bpc&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=wpc&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=raw_gma&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=lenc&val=value    // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=special_effect&val=value    // value = 0 ~ 6
+http://192.168.xxx.xxx/control?var=wb_mode&val=value    // value = 0 ~ 4
+http://192.168.xxx.xxx/control?var=ae_level&val=value    // value = -2 ~ 2  
+http://192.168.xxx.xxx/control?var=flash&val=value    // value = 0 ~ 255
       
 STAIP：
-Query：http://192.168.4.1/control?ip
-Link：http://192.168.4.1/control?resetwifi=ssid;password
+Query：http://192.168.xxx.xxx/control?ip
+Link：http://192.168.xxx.xxx/control?resetwifi=ssid;password
 */
 
 // Enter your WiFi ssid and password
