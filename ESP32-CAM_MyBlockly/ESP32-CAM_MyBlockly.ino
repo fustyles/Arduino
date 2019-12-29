@@ -1,11 +1,13 @@
 /*
-ESP32-CAM 模組 (可跨網域連線)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-26 01:00
+ESP32-CAM MyBlockly (可跨網域連線)
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-29 21:00
 https://www.facebook.com/francefu
-
 
 馬達驅動IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
 伺服馬達 -> gpio2  (or)  Servo1 -> gpio2, Servo2 -> gpio13
+
+Arduino IDE settings
+Partition Scheme : Huge APP (3MB No OTA/1MB SPIFFS)
 
 http://APIP
 http://STAIP
@@ -19,36 +21,37 @@ http://192.168.xxx.xxx/?ip
 http://192.168.xxx.xxx/?mac
 http://192.168.xxx.xxx/?restart
 http://192.168.xxx.xxx/?resetwifi=ssid;password
-http://192.168.4.1/?inputpullup=pin
-http://192.168.4.1/?pinmode=pin;value
-http://192.168.4.1/?digitalwrite=pin;value
-http://192.168.4.1/?analogwrite=pin;value
-http://192.168.4.1/?digitalread=pin
-http://192.168.4.1/?analogread=pin
-http://192.168.4.1/?touchread=pin
-http://192.168.4.1/?tcp=domain;port;request;wait
+http://192.168.xxx.xxx/?inputpullup=pin
+http://192.168.xxx.xxx/?pinmode=pin;value
+http://192.168.xxx.xxx/?digitalwrite=pin;value
+http://192.168.xxx.xxx/?analogwrite=pin;value
+http://192.168.xxx.xxx/?digitalread=pin
+http://192.168.xxx.xxx/?analogread=pin
+http://192.168.xxx.xxx/?touchread=pin
+http://192.168.xxx.xxx/?tcp=domain;port;request;wait
 --> wait = 0 or 1  (持續等待回應)
 --> request = /xxxx/xxxx
-http://192.168.4.1/?ifttt=event;key;value1;value2;value3
-http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
-http://192.168.4.1/?thingspeakread=request
+http://192.168.xxx.xxx/?ifttt=event;key;value1;value2;value3
+http://192.168.xxx.xxx/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
+http://192.168.xxx.xxx/?thingspeakread=request
 --> request = /channels/xxxxx/fields/1.json?results=1
-http://192.168.4.1/?linenotify=token;request
+http://192.168.xxx.xxx/?linenotify=token;request
 --> request = message=xxxxx
 --> request = message=xxxxx&stickerPackageId=xxxxx&stickerId=xxxxx
-http://192.168.4.1/?flash=value        //vale= 0~255  (閃光燈)
-http://192.168.4.1/?servo=value        //vale= 1700~8000   伺服馬達(gpio2)
-http://192.168.4.1/?servo1=value       //vale= 1700~8000   伺服馬達1(gpio2)
-http://192.168.4.1/?servo2=value       //vale= 1700~8000   伺服馬達2(gpio13)
-http://192.168.4.1/?speedL=value       //vale= 0~255  (左輪速度)
-http://192.168.4.1/?speedR=value       //vale= 0~255  (右輪速度)
-http://192.168.4.1/?decelerate=value   //vale= 0~100  (轉彎輪子減速後的速度為原速的百分比%)
-http://192.168.4.1/?car=state          //state= 1(前進),2(左轉),3(停止),4(右轉),5(後退),6(左前轉),7(右前轉),8(左後轉),9(右後轉)
-http://192.168.4.1/?getstill           //回傳base64格式文字
-http://192.168.4.1/?getstill=img       //<img id='gameimage_getstill' src='base64'> 回傳IMG標籤圖檔
-http://192.168.4.1/?framesize=size     //size= CIF,QVGA,HQVGA,QQVGA (支援格式)
-http://192.168.4.1/?sendCapturedImageToLineNotify=token  //傳送影像截圖
-http://192.168.xxx.xxx/?downloadstill   //影像檔案下載
+http://192.168.xxx.xxx/?flash=value        //vale= 0~255  (閃光燈)
+http://192.168.xxx.xxx/?servo=value        //vale= 1700~8000   伺服馬達(gpio2)
+http://192.168.xxx.xxx/?servo1=value       //vale= 1700~8000   伺服馬達1(gpio2)
+http://192.168.xxx.xxx/?servo2=value       //vale= 1700~8000   伺服馬達2(gpio13)
+http://192.168.xxx.xxx/?speedL=value       //vale= 0~255  (左輪速度)
+http://192.168.xxx.xxx/?speedR=value       //vale= 0~255  (右輪速度)
+http://192.168.xxx.xxx/?decelerate=value   //vale= 0~100  (轉彎輪子減速後的速度為原速的百分比%)
+http://192.168.xxx.xxx/?car=state          //state= 1(前進),2(左轉),3(停止),4(右轉),5(後退),6(左前轉),7(右前轉),8(左後轉),9(右後轉)
+http://192.168.xxx.xxx/?getstill           //回傳base64格式文字
+http://192.168.xxx.xxx/?getstill=img       //<img id='gameimage_getstill' src='http://192.168.xxx.xxx/?getstill=img'> 回傳影像
+http://192.168.xxx.xxx/?downloadstill      //影像檔案下載
+http://192.168.xxx.xxx/?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA (支援格式)
+http://192.168.xxx.xxx/?sendCapturedImageToLineNotify=token  //傳送影像截圖至LineNotify
+
 
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
@@ -419,8 +422,18 @@ void ExecuteCommand()
       s->set_framesize(s, FRAMESIZE_QVGA);
     else if (P1=="CIF")
       s->set_framesize(s, FRAMESIZE_CIF);
+    else if (P1=="VGA")
+      s->set_framesize(s, FRAMESIZE_VGA);  
+    else if (P1=="SVGA")
+      s->set_framesize(s, FRAMESIZE_SVGA);
+    else if (P1=="XGA")
+      s->set_framesize(s, FRAMESIZE_XGA);
+    else if (P1=="SXGA")
+      s->set_framesize(s, FRAMESIZE_SXGA);
+    else if (P1=="UXGA")
+      s->set_framesize(s, FRAMESIZE_UXGA);           
     else 
-      s->set_framesize(s, FRAMESIZE_QVGA);   
+      s->set_framesize(s, FRAMESIZE_QVGA);     
   }   
   else if (cmd=="sendCapturedImageToLineNotify") { 
     Feedback=sendCapturedImageToLineNotify(P1);
@@ -489,7 +502,7 @@ void setup() {
 
   //可動態改變視訊框架大小(解析度大小)
   sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_QVGA);  //96x96|QQVGA|QQVGA2|QCIF|HQVGA|240x240|QVGA|CIF|VGA|SVGA|XGA|SXGA|UXGA|QXGA|INVALID
+  s->set_framesize(s, FRAMESIZE_CIF);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
   //閃光燈(GPIO4)
   ledcAttachPin(4, 4);  
@@ -656,7 +669,7 @@ void loop() {
               digitalWrite(4, LOW);               
             }
             else {
-              //回傳TEXT或HTML格式
+              //回傳HTML格式
               client.println("HTTP/1.1 200 OK");
               client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
               client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");

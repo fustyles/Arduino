@@ -1,19 +1,22 @@
 /*
-ESP32-CAM MyBlockly
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-02 21:00
+ESP32-CAM MyBlockly (可跨網域連線)
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-29 21:00
 https://www.facebook.com/francefu
 
-Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
-Servo -> gpio2  (or)  Servo1 -> gpio2, Servo2 -> gpio13
+馬達驅動IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
+伺服馬達 -> gpio2  (or)  Servo1 -> gpio2, Servo2 -> gpio13
+
+Arduino IDE 設定
+Partition Scheme : Huge APP (3MB No OTA/1MB SPIFFS)
 
 http://APIP
 http://STAIP
 
-Command Format :  
+自訂指令格式 : 
 http://APIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://STAIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 
-Default APIP： 192.168.4.1
+預設AP端IP： 192.168.4.1
 http://192.168.4.1/?ip
 http://192.168.4.1/?mac
 http://192.168.4.1/?restart
@@ -26,7 +29,7 @@ http://192.168.4.1/?digitalread=pin
 http://192.168.4.1/?analogread=pin
 http://192.168.4.1/?touchread=pin
 http://192.168.4.1/?tcp=domain;port;request;wait
---> wait = 0 or 1  (waiting for response)
+--> wait = 0 or 1  (持續等待回應)
 --> request = /xxxx/xxxx
 http://192.168.4.1/?ifttt=event;key;value1;value2;value3
 http://192.168.4.1/?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
@@ -36,56 +39,56 @@ http://192.168.4.1/?linenotify=token;request
 --> request = message=xxxxx
 --> request = message=xxxxx&stickerPackageId=xxxxx&stickerId=xxxxx
 
-http://192.168.4.1/?flash=value        //vale= 0~255
-http://192.168.4.1/?servo=value        //vale= 1700~8000
-http://192.168.4.1/?servo1=value       //vale= 1700~8000
-http://192.168.4.1/?servo2=value       //vale= 1700~8000
-http://192.168.4.1/?speedL=value       //vale= 0~255
-http://192.168.4.1/?speedR=value       //vale= 0~255
-http://192.168.4.1/?decelerate=value   //vale= 0~100  (%)
-http://192.168.4.1/?car=state          //state= 1(Front),2(Left),3(Stop),4(Right),5(Back),6(FrontLeft),7(FrontRight),8(LeftAfter),9(RightAfter)
-http://192.168.4.1/?getstill           //base64
-http://192.168.4.1/?getstill=img       //<img id='gameimage_getstill' src='base64'>
-http://192.168.4.1/?framesize=size     //size= CIF,QVGA,HQVGA,QQVGA
-http://192.168.4.1/?sendCapturedImageToLineNotify=token
+http://192.168.4.1/?flash=value        //vale= 0~255  (閃光燈)
+http://192.168.4.1/?servo=value        //vale= 1700~8000   伺服馬達(gpio2)
+http://192.168.4.1/?servo1=value       //vale= 1700~8000   伺服馬達1(gpio2)
+http://192.168.4.1/?servo2=value       //vale= 1700~8000   伺服馬達2(gpio13)
+http://192.168.4.1/?speedL=value       //vale= 0~255  (左輪速度)
+http://192.168.4.1/?speedR=value       //vale= 0~255  (右輪速度)
+http://192.168.4.1/?decelerate=value   //vale= 0~100  (%)  (轉彎輪子減速後的速度為原速的百分比%)
+http://192.168.4.1/?car=state          //state= 1(前進),2(左轉),3(停止),4(右轉),5(後退),6(左前轉),7(右前轉),8(左後轉),9(右後轉)
+http://192.168.4.1/?getstill           //回傳base64格式文字
+http://192.168.4.1/?getstill=img       //<img id='gameimage_getstill' src='base64'> 回傳IMG標籤圖檔
+http://192.168.xxx.xxx/?downloadstill  //影像檔案下載
+http://192.168.4.1/?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA (支援格式)
+http://192.168.4.1/?sendCapturedImageToLineNotify=token  //傳送影像截圖至LineNotify
 
-STAIP：
-Query：http://192.168.4.1/?ip
-Link：http://192.168.4.1/?resetwifi=ssid;password
+查詢Client端IP：
+查詢IP：http://192.168.4.1/?ip
+重設網路：http://192.168.4.1/?resetwifi=ssid;password
 
-If you don't need to get response from ESP8266 and want to execute commands quickly, 
-you can append a parameter value "stop" at the end of command.
-For example:
+如果想快速執行指令不需等待回傳值，可在命令中增加參數值為stop。例如：
 http://192.168.4.1/?digitalwrite=gpio;value;stop
 http://192.168.4.1/?restart=stop
 */
 
-// Enter your WiFi ssid and password
+//輸入WIFI連線帳號密碼
 const char* ssid     = "xxxxx";   //your network SSID
 const char* password = "xxxxx";   //your network password
 
+//輸入AP端連線帳號密碼
 const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
-int speedR = 255;  //You can adjust the speed of the wheel. (gpio12, gpio13)
-int speedL = 255;  //You can adjust the speed of the wheel. (gpio14, gpio15)
+int speedR = 255;  //右輪初速 (gpio12, gpio13)
+int speedL = 255;  //左輪初速 (gpio14, gpio15)
 int servoPin = 2;
 int servo1Pin = 2;
 int servo2Pin = 13;
 double decelerate = 60;
 
 #include <WiFi.h>
-#include <WiFiClientSecure.h>
-#include <esp32-hal-ledc.h>
-#include "esp_camera.h"
-#include "Base64.h"
-#include "soc/soc.h"
-#include "soc/rtc_cntl_reg.h"
+#include <WiFiClientSecure.h>    //用於https加密傳輸協定
+#include <esp32-hal-ledc.h>      //用於控制伺服馬達
+#include "esp_camera.h"          //視訊
+#include "Base64.h"              //用於轉換視訊影像格式為base64格式，易於上傳google雲端硬碟或資料庫
+#include "soc/soc.h"             //用於電源不穩不重開機 
+#include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機
 
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
 //            or another board which has PSRAM enabled
 
-//CAMERA_MODEL_AI_THINKER
+//安可信ESP32-CAM模組腳位設定
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -104,10 +107,11 @@ double decelerate = 60;
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
-WiFiServer server(80);
+WiFiServer server(80);  //伺服器通信協定的埠號 80
 
-String Feedback="", Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";
-byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
+String Feedback="";   //回傳客戶端訊息
+String Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";   //指令參數值
+byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;  //指令拆解狀態值
 
 void ExecuteCommand()
 {
@@ -115,21 +119,22 @@ void ExecuteCommand()
   //Serial.println("Command: "+Command);
   Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
   Serial.println("");
-
+  
+  //自訂指令區塊
  if (cmd=="your cmd") {
     // You can do anything
     // Feedback="{\"data\":\"Sensor data"\"}";
   }
-  else if (cmd=="ip") {
+  else if (cmd=="ip") {  //查詢IP
     Feedback="{\"data\":\""+WiFi.softAPIP().toString()+"\"},{\"data\":\""+WiFi.localIP().toString()+"\"}";
   }  
-  else if (cmd=="mac") {
+  else if (cmd=="mac") {  //查詢MAC
     Feedback="{\"data\":\""+WiFi.macAddress()+"\"}";
   }  
   else if (cmd=="restart") {
     ESP.restart();
   }    
-  else if (cmd=="resetwifi") {
+  else if (cmd=="resetwifi") {  //重設WIFI連線
     WiFi.begin(P1.c_str(), P2.c_str());
     Serial.print("Connecting to ");
     Serial.println(P1);
@@ -428,8 +433,18 @@ void ExecuteCommand()
       s->set_framesize(s, FRAMESIZE_QVGA);
     else if (P1=="CIF")
       s->set_framesize(s, FRAMESIZE_CIF);
+    else if (P1=="VGA")
+      s->set_framesize(s, FRAMESIZE_VGA);  
+    else if (P1=="SVGA")
+      s->set_framesize(s, FRAMESIZE_SVGA);
+    else if (P1=="XGA")
+      s->set_framesize(s, FRAMESIZE_XGA);
+    else if (P1=="SXGA")
+      s->set_framesize(s, FRAMESIZE_SXGA);
+    else if (P1=="UXGA")
+      s->set_framesize(s, FRAMESIZE_UXGA);           
     else 
-      s->set_framesize(s, FRAMESIZE_QVGA);   
+      s->set_framesize(s, FRAMESIZE_QVGA);    
   }   
   else if (cmd=="sendCapturedImageToLineNotify") { 
     Feedback=sendCapturedImageToLineNotify(P1);
@@ -438,16 +453,17 @@ void ExecuteCommand()
   else {
     Feedback="{\"data\":\"Command is not defined\"}";
   }
-  if (Feedback=="") Feedback="{\"data\":\""+Command+"\"}";
+  if (Feedback=="") Feedback="{\"data\":\""+Command+"\"}";  //若沒有設定回傳資料就回傳Command值
 }
 
 void setup() {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
   
   Serial.begin(115200);
-  Serial.setDebugOutput(true);
+  Serial.setDebugOutput(true);  //開啟診斷輸出
   Serial.println();
 
+  //視訊組態設定
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
@@ -468,7 +484,7 @@ void setup() {
   config.pin_pwdn = PWDN_GPIO_NUM;
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
-  config.pixel_format = PIXFORMAT_JPEG;
+  config.pixel_format = PIXFORMAT_JPEG;    //影像格式：RGB565|YUV422|GRAYSCALE|JPEG|RGB888|RAW|RGB444|RGB555
   //init with high specs to pre-allocate larger buffers
   if(psramFound()){
     config.frame_size = FRAMESIZE_UXGA;
@@ -480,7 +496,7 @@ void setup() {
     config.fb_count = 1;
   }
   
-  // camera init
+  //視訊初始化
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
@@ -488,15 +504,15 @@ void setup() {
     ESP.restart();
   }
 
-  //drop down frame size for higher initial frame rate
+  //可動態改變視訊框架大小(解析度大小)
   sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_QVGA);
+  s->set_framesize(s, FRAMESIZE_CIF);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
-  //Flash
+  //閃光燈(GPIO4)
   ledcAttachPin(4, 4);  
   ledcSetup(4, 5000, 8);
   
-  //Wheel
+  //馬達驅動IC腳位初始化
   ledcAttachPin(12, 5);
   ledcSetup(5, 2000, 8);      
   ledcAttachPin(13, 6);
@@ -507,8 +523,9 @@ void setup() {
   ledcAttachPin(14, 8);
   ledcSetup(8, 2000, 8);   
   
-  WiFi.mode(WIFI_AP_STA);
+  WiFi.mode(WIFI_AP_STA);  //其他模式 WiFi.mode(WIFI_AP); WiFi.mode(WIFI_STA);
 
+  //指定Client端靜態IP
   //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
 
   WiFi.begin(ssid, password);
@@ -522,16 +539,16 @@ void setup() {
   while (WiFi.status() != WL_CONNECTED) 
   {
       delay(500);
-      if ((StartTime+10000) < millis()) break;
+      if ((StartTime+10000) < millis()) break;    //等待10秒連線
   } 
 
-  if (WiFi.status() == WL_CONNECTED) {
-    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);         
+  if (WiFi.status() == WL_CONNECTED) {    //若連線成功
+    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP     
     Serial.println("");
     Serial.println("STAIP address: ");
     Serial.println(WiFi.localIP()); 
 
-    for (int i=0;i<5;i++) {
+    for (int i=0;i<5;i++) {   //若連上WIFI設定閃光燈快速閃爍
       ledcWrite(4,10);
       delay(200);
       ledcWrite(4,0);
@@ -541,14 +558,15 @@ void setup() {
   else {
     WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);    
 
-    for (int i=0;i<2;i++) {
+    for (int i=0;i<2;i++) {    //若連不上WIFI設定閃光燈慢速閃爍
       ledcWrite(4,10);
       delay(1000);
       ledcWrite(4,0);
       delay(1000);    
     }      
   }     
-    
+
+  //指定AP端IP
   //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
   Serial.println("");
   Serial.println("APIP address: ");
@@ -556,6 +574,7 @@ void setup() {
   
   server.begin();  
 
+  //設定閃光燈為低電位
   pinMode(4, OUTPUT);
   digitalWrite(4, LOW);      
 }
@@ -573,22 +592,63 @@ void loop() {
       if (client.available()) {
         char c = client.read();             
         
-        getCommand(c);
+        getCommand(c);   //將緩衝區取得的字元猜解出指令參數
                 
         if (c == '\n') {
-          if (currentLine.length() == 0) {    
-            client.println("HTTP/1.1 200 OK");
-            client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
-            client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
-            client.println("Content-Type: application/json;charset=utf-8");
-            client.println("Access-Control-Allow-Origin: *");
-            client.println("Connection: close");
-            client.println();
-            if (Feedback=="")
-              client.println("[{\"data\":\"Hello World\"}]");
-            else
-              client.println("["+Feedback+"]");
-            client.println();
+          if (currentLine.length() == 0) {  
+
+            if (cmd=="downloadstill") {
+              //回傳JPEG格式影像
+              camera_fb_t * fb = NULL;
+              fb = esp_camera_fb_get();  
+              if(!fb) {
+                Serial.println("Camera capture failed");
+                delay(1000);
+                ESP.restart();
+              }
+  
+              client.println("HTTP/1.1 200 OK");
+              client.println("Access-Control-Allow-Origin: *");              
+              client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+              client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
+              client.println("Content-Type: image/jpeg");
+              client.println("Content-Disposition: form-data; name=\"imageFile\"; filename=\"picture.jpg\""); 
+              client.println("Content-Length: " + String(fb->len));             
+              client.println("Connection: close");
+              client.println();
+              uint8_t *fbBuf = fb->buf;
+              size_t fbLen = fb->len;
+              for (size_t n=0;n<fbLen;n=n+1024) {
+                if (n+1024<fbLen) {
+                  client.write(fbBuf, 1024);
+                  fbBuf += 1024;
+                }
+                else if (fbLen%1024>0) {
+                  size_t remainder = fbLen%1024;
+                  client.write(fbBuf, remainder);
+                }
+              }  
+              client.println();
+              esp_camera_fb_return(fb);
+            
+              pinMode(4, OUTPUT);
+              digitalWrite(4, LOW);               
+            }
+            else {
+              //回傳HTML格式
+              client.println("HTTP/1.1 200 OK");
+              client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+              client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
+              client.println("Content-Type: application/json;charset=utf-8");
+              client.println("Access-Control-Allow-Origin: *");
+              client.println("Connection: close");
+              client.println();
+              if (Feedback=="")
+                client.println("[{\"data\":\"Hello World\"}]");
+              else
+                client.println("["+Feedback+"]");
+              client.println();
+            }
             
             Feedback="";
             break;
@@ -600,7 +660,7 @@ void loop() {
           currentLine += c;
         }
 
-        if ((currentLine.indexOf("/?")!=-1)&&(currentLine.indexOf(" HTTP")!=-1)) {
+        if ((currentLine.indexOf("/?")!=-1)&&(currentLine.indexOf(" HTTP")!=-1)) {  //若指令中含關鍵字stop立即斷線 -> http://192.168.xxx.xxx/?cmd=aaa;bbb;ccc;stop
           if (Command.indexOf("stop")!=-1) {
             client.println();
             client.println();
@@ -617,6 +677,7 @@ void loop() {
   }
 }
 
+//拆解命令字串置入變數
 void getCommand(char c) {
   if (c=='?') ReceiveState=1;
   if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
