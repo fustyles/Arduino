@@ -362,7 +362,7 @@ void loop() {
               digitalWrite(4, LOW);               
             }
             else {
-              //回傳TEXT或HTML格式
+              //回傳HTML格式
               client.println("HTTP/1.1 200 OK");
               client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
               client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
