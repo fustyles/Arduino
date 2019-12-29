@@ -1,7 +1,10 @@
 /*
 ESP32-CAM 模組 (暫時無法跨網域連線與使用HTTPS)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-24 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-29 21:00
 https://www.facebook.com/francefu
+
+Arduino IDE settings
+Partition Scheme : Huge APP (3MB No OTA/1MB SPIFFS)
 
 自訂指令格式 :  
 http://APIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
@@ -221,7 +224,7 @@ void setup() {
 
   //可動態改變視訊框架大小(解析度大小)
   sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_QVGA);  //96x96|QQVGA|QQVGA2|QCIF|HQVGA|240x240|QVGA|CIF|VGA|SVGA|XGA|SXGA|UXGA|QXGA|INVALID
+  s->set_framesize(s, FRAMESIZE_CIF);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
   //閃光燈(GPIO4)
   ledcAttachPin(4, 4);  

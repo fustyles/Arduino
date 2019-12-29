@@ -1,7 +1,10 @@
 /*
 ESP32-CAM MyBlock
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-15 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-29 21:00
 https://www.facebook.com/francefu
+
+Arduino IDE settings
+Partition Scheme : Huge APP (3MB No OTA/1MB SPIFFS)
 
 Command Format :  
 http://APIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
@@ -248,7 +251,7 @@ void setup() {
 
   //drop down frame size for higher initial frame rate
   sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_QVGA);
+  s->set_framesize(s, FRAMESIZE_CIF);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
   //Flash
   ledcAttachPin(4, 4);  
