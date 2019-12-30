@@ -261,6 +261,7 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
                 int name_length = sizeof(recognize_face_matched_name) / sizeof(recognize_face_matched_name[0]);
                 //Serial.println(name_length);
                 if (matched_id<name_length) {
+                  //視訊畫面中顯示辨識到的人名
                   rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] %s", matched_id, recognize_face_matched_name[matched_id]);
                 }
                 else
