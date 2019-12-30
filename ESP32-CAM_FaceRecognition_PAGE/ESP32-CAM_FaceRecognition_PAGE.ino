@@ -259,7 +259,7 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
                 //如果偵測到有註冊的人臉可在此區塊自訂顯示人名與開門控制。
                 Serial.printf("Match Face ID: %u\n", matched_id);
                 int name_length = sizeof(recognize_face_matched_name) / sizeof(recognize_face_matched_name[0]);
-                Serial.println(name_length);
+                //Serial.println(name_length);
                 if (matched_id<name_length) {
                   rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] %s", matched_id, recognize_face_matched_name[matched_id]);
                 }
