@@ -627,7 +627,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         // You can do anything
         // Feedback="<font color=\"red\">Hello World</font>";   //可為一般文字或HTML語法
       }
-      else if (cmd=="facename") {  //查詢IP
+      else if (cmd=="facename") {  //設定人名
         recognize_face_matched_name[P1.toInt()] = P2;
       }  
       else {
