@@ -177,7 +177,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             setTimeout(function(){DetectImage();},250);
           }
           catch(e) { 
-            DetectImage();
+            setTimeout(function(){DetectImage();},150);
           } 
         }
       }
