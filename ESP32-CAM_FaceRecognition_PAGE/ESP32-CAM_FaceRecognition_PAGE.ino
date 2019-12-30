@@ -629,6 +629,13 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       }
       else if (cmd=="facename") {  //設定人名
         recognize_face_matched_name[P1.toInt()] = P2;
+        
+        int name_length = sizeof(recognize_face_matched_name) / sizeof(recognize_face_matched_name[0]);
+        Feedback="<table border=\"1\"><tr><td>matched_id</td><td>name</td></tr>";
+        for (int i=0;i<name_length;i++) {
+          Feedback+="<tr><td>"+String(i)+"</td><td>"+recognize_face_matched_name[i]+"</td></tr>";
+        }
+        Feedback+="</table>";
       }  
       else {
         Feedback="Command is not defined";
@@ -1093,20 +1100,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                                 <input id="face_recognize" type="checkbox" class="default-action">
                                 <label class="slider" for="face_recognize"></label>
                             </div>
-                        </div>
-                        <div class="input-group" id="facename-group">
-                            <label for="facename">Face Name</label>
-                            <select id="faceid" class="default-action">
-                              <option value="0">0</option>
-                              <option value="1">1</option>
-                              <option value="2">2</option>
-                              <option value="3">3</option>
-                              <option value="4">4</option>
-                              <option value="5">5</option>
-                              <option value="6">6</option>
-                            </select>
-                            <input type="text" id="facename" size="6" style="height:16px">
-                            <button onclick="try{fetch(document.location.origin+'/control?facename='+document.getElementById('faceid').value+';'+document.getElementById('facename').value);}catch(e){}">Set</button>
                         </div>                        
                         <div class="input-group" id="flash-group">
                             <label for="flash">Flash</label>
@@ -1146,6 +1139,24 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                             <input type="range" id="contrast" min="-2" max="2" value="0" class="default-action">
                             <div class="range-max">2</div>
                         </div>
+                        <div class="input-group" id="facename-group">
+                            <label for="facename">Face Name</label>
+                            <select id="faceid" class="default-action">
+                              <option value="0">0</option>
+                              <option value="1">1</option>
+                              <option value="2">2</option>
+                              <option value="3">3</option>
+                              <option value="4">4</option>
+                              <option value="5">5</option>
+                              <option value="6">6</option>
+                            </select>
+                            <input type="text" id="facename" size="6" style="height:16px">
+                            <button onclick="var ifr = document.getElementById('ifr');var ifrlab = document.getElementById('ifrlab');ifr.style.display='block';ifrlab.style.display='block';ifr.src=document.location.origin+'/control?facename='+document.getElementById('faceid').value+';'+document.getElementById('facename').value;">Set</button>
+                        </div>                        
+                        <div class="input-group" id="contrast-group">
+                            <label id="ifrlab" style="display:none;" for="ifr">Name List</label>
+                            <iframe id="ifr" style="display:none;width:170px"></iframe>
+                        </div>                        
                     </nav>
                 </div>
             </div>
