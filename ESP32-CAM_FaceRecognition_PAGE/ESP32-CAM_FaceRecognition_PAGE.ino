@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Face Recognition
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-26 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-30 22:00
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
