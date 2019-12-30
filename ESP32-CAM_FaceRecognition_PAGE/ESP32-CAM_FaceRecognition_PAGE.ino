@@ -636,7 +636,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
 
       if (Feedback=="") Feedback=Command;  //若沒有設定回傳資料就回傳Command值
     
-      static char response[15000];
+      static char response[1024];
       char * p = response;
       p+=sprintf(p, "%s", Feedback.c_str());   
       *p++ = 0;
