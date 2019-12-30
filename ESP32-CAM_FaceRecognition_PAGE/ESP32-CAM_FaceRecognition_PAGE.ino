@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Face Recognition
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-30 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-26 01:00
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
@@ -13,14 +13,14 @@ http://192.168.xxx.xxx/control?facename=matched_id;name  //設定姓名
 
 //官方指令格式 (設定視訊參數)
 http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
-http://192.168.xxx.xxx/control?var=quality&val=value    // value = 10 to 63
-http://192.168.xxx.xxx/control?var=brightness&val=value    // value = -2 to 2
-http://192.168.xxx.xxx/control?var=contrast&val=value    // value = -2 to 2 
-http://192.168.xxx.xxx/control?var=flash&val=value    // value = 0 to 255
+http://192.168.xxx.xxx/control?var=quality&val=value    // value = 10 ~ 63
+http://192.168.xxx.xxx/control?var=brightness&val=value    // value = -2 ~ 2
+http://192.168.xxx.xxx/control?var=contrast&val=value    // value = -2 ~ 2 
+http://192.168.xxx.xxx/control?var=flash&val=value    // value = 0 ~ 255
 */
 
 //輸入WIFI連線帳號密碼
-const char* ssid = "*****";
+const char* ssid = "****";
 const char* password = "*****";
 
 //輸入AP端連線帳號密碼
@@ -50,25 +50,10 @@ String recognize_face_matched_name[7] = {"Name0","Name1","Name2","Name3","Name4"
 String Feedback="";   //回傳客戶端訊息
 
 //指令參數值
-String Command="";
-String cmd="";
-String P1="";
-String P2="";
-String P3="";
-String P4="";
-String P5="";
-String P6="";
-String P7="";
-String P8="";
-String P9="";
+String Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";
 
 //指令拆解狀態值
-byte ReceiveState=0;
-byte cmdState=1;
-byte strState=1;
-byte questionstate=0;
-byte equalstate=0;
-byte semicolonstate=0;
+byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
 //
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
@@ -631,7 +616,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         recognize_face_matched_name[P1.toInt()] = P2;
         
         int name_length = sizeof(recognize_face_matched_name) / sizeof(recognize_face_matched_name[0]);
-        Feedback="<table border=\"1\"><tr><td>matched_id</td><td>name</td></tr>";
+        Feedback="<table style=\"color:white\"><tr><td>matched_id</td><td>name</td></tr>";
         for (int i=0;i<name_length;i++) {
           Feedback+="<tr><td>"+String(i)+"</td><td>"+recognize_face_matched_name[i]+"</td></tr>";
         }
