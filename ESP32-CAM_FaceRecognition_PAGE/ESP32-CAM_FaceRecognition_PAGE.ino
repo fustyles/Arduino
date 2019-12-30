@@ -8,8 +8,8 @@ http://192.168.xxx.xxx:81/stream   //取得串流影像     <img src="http://192
 http://192.168.xxx.xxx/capture     //取得影像     <img src="http://192.168.xxx.xxx/capture">
 http://192.168.xxx.xxx/status      //取得視訊參數值
 
-//自訂指令格式(設定姓名)
-http://192.168.xxx.xxx/control?facename=matched_id;name
+//自訂指令格式
+http://192.168.xxx.xxx/control?facename=matched_id;name  //設定姓名
 
 //設定視訊參數(官方指令格式)
 http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
