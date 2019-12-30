@@ -16,7 +16,7 @@ http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(16
 http://192.168.xxx.xxx/control?var=quality&val=value    // value = 10 ~ 63
 http://192.168.xxx.xxx/control?var=brightness&val=value    // value = -2 ~ 2
 http://192.168.xxx.xxx/control?var=contrast&val=value    // value = -2 ~ 2 
-http://192.168.xxx.xxx/control?var=flash&val=value    // value = 0 ~ 2 55
+http://192.168.xxx.xxx/control?var=flash&val=value    // value = 0 ~ 255
 */
 
 //輸入WIFI連線帳號密碼
