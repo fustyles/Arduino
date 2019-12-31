@@ -42,6 +42,10 @@ http://192.168.xxx.xxx/control?getstill           //base64
 http://192.168.xxx.xxx/control?getstill=img       //<img id='gameimage_getstill' src='base64'>
 http://192.168.xxx.xxx/control?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
+STAIP：
+Query：http://192.168.4.1/control?ip
+Link：http://192.168.4.1/control?resetwifi=ssid;password
+
 http://192.168.xxx.xxx:81/stream   //Stream Video
 http://192.168.xxx.xxx/capture   //Image
 http://192.168.xxx.xxx/status   //Status
@@ -71,10 +75,6 @@ http://192.168.xxx.xxx/control?var=special_effect&val=value    // value = 0 ~ 6
 http://192.168.xxx.xxx/control?var=wb_mode&val=value    // value = 0 ~ 4
 http://192.168.xxx.xxx/control?var=ae_level&val=value    // value = -2 ~ 2  
 http://192.168.xxx.xxx/control?var=flash&val=value    // value = 0 ~ 255
-      
-STAIP：
-Query：http://192.168.xxx.xxx/control?ip
-Link：http://192.168.xxx.xxx/control?resetwifi=ssid;password
 */
 
 // Enter your WiFi ssid and password
