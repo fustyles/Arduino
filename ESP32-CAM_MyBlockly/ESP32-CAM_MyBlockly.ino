@@ -47,7 +47,7 @@ http://192.168.xxx.xxx/?speedR=value       //vale= 0~255  (右輪速度)
 http://192.168.xxx.xxx/?decelerate=value   //vale= 0~100  (轉彎輪子減速後的速度為原速的百分比%)
 http://192.168.xxx.xxx/?car=state          //state= 1(前進),2(左轉),3(停止),4(右轉),5(後退),6(左前轉),7(右前轉),8(左後轉),9(右後轉)
 http://192.168.xxx.xxx/?getstill           //回傳base64格式文字
-http://192.168.xxx.xxx/?getstill=img       //<img id='gameimage_getstill' src='http://192.168.xxx.xxx/?getstill=img'> 回傳影像
+http://192.168.xxx.xxx/?getstill=img       //<img id='gameimage_getstill' src='base64'> 回傳影像
 http://192.168.xxx.xxx/?downloadstill      //影像檔案下載
 http://192.168.xxx.xxx/?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA (支援格式)
 http://192.168.xxx.xxx/?sendCapturedImageToLineNotify=token  //傳送影像截圖至LineNotify
