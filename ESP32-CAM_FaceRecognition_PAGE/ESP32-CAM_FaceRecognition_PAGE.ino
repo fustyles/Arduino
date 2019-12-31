@@ -20,7 +20,7 @@ http://192.168.xxx.xxx/control?var=flash&val=value    // value = 0 to 255
 */
 
 //輸入WIFI連線帳號密碼
-const char* ssid = "****";
+const char* ssid = "*****";
 const char* password = "*****";
 
 //輸入AP端連線帳號密碼
