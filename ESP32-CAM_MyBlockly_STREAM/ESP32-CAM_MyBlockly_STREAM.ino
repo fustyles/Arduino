@@ -17,8 +17,8 @@ http://192.168.xxx.xxx/control?restart
 http://192.168.xxx.xxx/control?flash=value        //value= 0~255
 
 查詢Client端IP：
-查詢IP：http://192.168.xxx.xxx/?ip
-重設網路：http://192.168.xxx.xxx/?resetwifi=ssid;password
+查詢IP：http://192.168.4.1/?ip
+重設網路：http://192.168.4.1/?resetwifi=ssid;password
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
 http://192.168.xxx.xxx:81/stream   //取得串流影像
