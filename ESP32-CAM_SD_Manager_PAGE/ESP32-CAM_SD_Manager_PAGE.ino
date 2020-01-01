@@ -15,15 +15,15 @@ http://APIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 
 預設AP端IP： 192.168.4.1
-http://192.168.xxx.xxx/control?ip
-http://192.168.xxx.xxx/control?mac
-http://192.168.xxx.xxx/control?restart
-http://192.168.xxx.xxx/control?flash=value        //value= 0~255
-http://192.168.xxx.xxx/control?saveimage=/filename  //filename不含附檔名
-http://192.168.xxx.xxx/control?listimages
-http://192.168.xxx.xxx/control?showimage=/filename
-http://192.168.xxx.xxx/control?deleteimage=/filename
-http://192.168.xxx.xxx/?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA (支援格式)
+http://192.168.xxx.xxx?ip
+http://192.168.xxx.xxx?mac
+http://192.168.xxx.xxx?restart
+http://192.168.xxx.xxx?flash=value        //value= 0~255
+http://192.168.xxx.xxx?saveimage=/filename  //filename不含附檔名
+http://192.168.xxx.xxx?listimages
+http://192.168.xxx.xxx?showimage=/filename
+http://192.168.xxx.xxx?deleteimage=/filename
+http://192.168.xxx.xxx?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA (支援格式)
 
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
