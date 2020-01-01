@@ -437,7 +437,7 @@ void loop() {
               digitalWrite(4, LOW);               
             }  
             else {
-              //回傳HTML格式
+              //回傳HTML首頁或Feedback
               client.println("HTTP/1.1 200 OK");
               client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
               client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
