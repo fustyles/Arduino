@@ -19,7 +19,7 @@ http://192.168.xxx.xxx/control?ip
 http://192.168.xxx.xxx/control?mac
 http://192.168.xxx.xxx/control?restart
 http://192.168.xxx.xxx/control?flash=value        //value= 0~255
-http://192.168.xxx.xxx/control?saveimage=/filename  //不加附檔名
+http://192.168.xxx.xxx/control?saveimage=/filename  //filename不含附檔名
 http://192.168.xxx.xxx/control?listimages
 http://192.168.xxx.xxx/control?showimage=/filename
 http://192.168.xxx.xxx/control?deleteimage=/filename
