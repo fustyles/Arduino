@@ -143,7 +143,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <td></td>
   </tr>
   <tr>
-  <td colspan="3">Flash<input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/?flash='+this.value);}catch(e){}"></td>
+  <td>Flash</td>
+  <td colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/?flash='+this.value);}catch(e){}"></td>
   </tr>  
   </table>  
   <br><img id="stream" src="">
