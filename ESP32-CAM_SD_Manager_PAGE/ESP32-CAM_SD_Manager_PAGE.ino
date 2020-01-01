@@ -506,7 +506,7 @@ String ListImages() {
     if(!file.isDirectory()){
       String filename=String(file.name());
       if (filename=="/"+P1+".jpg")
-        list = "<tr><td><button onclick=\'execute(location.origin+\"/?deleteimage="+String(file.name())+"\");\'>Delete</button></td><td bgcolor=\"red\"><a onclick=\'document.getElementById(\"showimage\").src=location.origin+\"/?showimage="+String(file.name())+"\";\'>"+String(file.name())+"</a></td><td align=\'right\'>"+String(file.size())+" B</td><td><button onclick=\'location.href=location.origin+\"/?showimage="+String(file.name())+"\";\'>download</button></td></tr>"+list;
+        list = "<tr><td><button onclick=\'execute(location.origin+\"/?deleteimage="+String(file.name())+"\");\'>Delete</button></td><td bgcolor=\"yellow\"><a onclick=\'document.getElementById(\"showimage\").src=location.origin+\"/?showimage="+String(file.name())+"\";\'>"+String(file.name())+"</a></td><td align=\'right\'>"+String(file.size())+" B</td><td><button onclick=\'location.href=location.origin+\"/?showimage="+String(file.name())+"\";\'>download</button></td></tr>"+list;
       else
         list = "<tr><td><button onclick=\'execute(location.origin+\"/?deleteimage="+String(file.name())+"\");\'>Delete</button></td><td><a onclick=\'document.getElementById(\"showimage\").src=location.origin+\"/?showimage="+String(file.name())+"\";\'>"+String(file.name())+"</a></td><td align=\'right\'>"+String(file.size())+" B</td><td><button onclick=\'location.href=location.origin+\"/?showimage="+String(file.name())+"\";\'>download</button></td></tr>"+list;        
     }
