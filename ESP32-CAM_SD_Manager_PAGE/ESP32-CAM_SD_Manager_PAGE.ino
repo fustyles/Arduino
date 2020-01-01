@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (SD Card Manager)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-1 17:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-1 17:30
 https://www.facebook.com/francefu
 
 Arduino IDE settings
@@ -23,6 +23,7 @@ http://192.168.xxx.xxx/control?saveimage=/filename  (No Extension)
 http://192.168.xxx.xxx/control?listimages
 http://192.168.xxx.xxx/control?showimage=/filename
 http://192.168.xxx.xxx/control?deleteimage=/filename
+http://192.168.xxx.xxx/?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA (支援格式)
 
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
@@ -116,6 +117,29 @@ void ExecuteCommand()
   else if (cmd=="deleteimage") {
     Feedback=deleteimage(P1)+"<br>"+ListImages(); 
   }    
+  else if (cmd=="framesize") { 
+    sensor_t * s = esp_camera_sensor_get();  
+    if (P1=="QQVGA")
+      s->set_framesize(s, FRAMESIZE_QQVGA);
+    else if (P1=="HQVGA")
+      s->set_framesize(s, FRAMESIZE_HQVGA);
+    else if (P1=="QVGA")
+      s->set_framesize(s, FRAMESIZE_QVGA);
+    else if (P1=="CIF")
+      s->set_framesize(s, FRAMESIZE_CIF);
+    else if (P1=="VGA")
+      s->set_framesize(s, FRAMESIZE_VGA);  
+    else if (P1=="SVGA")
+      s->set_framesize(s, FRAMESIZE_SVGA);
+    else if (P1=="XGA")
+      s->set_framesize(s, FRAMESIZE_XGA);
+    else if (P1=="SXGA")
+      s->set_framesize(s, FRAMESIZE_SXGA);
+    else if (P1=="UXGA")
+      s->set_framesize(s, FRAMESIZE_UXGA);           
+    else 
+      s->set_framesize(s, FRAMESIZE_QVGA);     
+  }     
   else {
     Feedback="Command is not defined.";
   }
@@ -145,7 +169,23 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <tr>
   <td>Flash</td>
   <td colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/?flash='+this.value);}catch(e){}"></td>
-  </tr>  
+  </tr>
+  <tr>
+  <td>Resolution</td> 
+  <td colspan="2">
+  <select id="framesize" onclick="try{fetch(document.location.origin+'/?framesize='+this.value);}catch(e){}">
+      <option value="UXGA">UXGA(1600x1200)</option>
+      <option value="SXGA">SXGA(1280x1024)</option>
+      <option value="XGA">XGA(1024x768)</option>
+      <option value="SVGA">SVGA(800x600)</option>
+      <option value="VGA">VGA(640x480)</option>
+      <option value="CIF">CIF(400x296)</option>
+      <option value="QVGA" selected="selected">QVGA(320x240)</option>
+      <option value="HQVGA">HQVGA(240x176)</option>
+      <option value="QQVGA">QQVGA(160x120)</option>
+  </select> 
+  </td>
+  </tr>
   </table>  
   <br><img id="stream" src="">
   <div id="list">
