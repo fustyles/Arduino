@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (SD Card Manager)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-24 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-1 17:00
 https://www.facebook.com/francefu
 
 Arduino IDE settings
@@ -133,15 +133,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <script>var myVar;</script>
   <table>
   <tr>
-  <td><input type="button" value="Restart" onclick="execute(location.origin+'/?restart');"></td>
-  <td><input type="button" id="get-still" value="Start Stream" onclick="document.getElementById('list').style.display='none';streamState=true;document.getElementById('stream').src=document.location.origin+'/?getstill='+Math.random();"></td>   
-  <td><input type="button" id="stop" value="Stop Stream" onclick="streamState=false;document.getElementById('list').style.display='block';"></td> 
+  <td><input type="button" id="get-still" value="Get Still" onclick="streamState=false;document.getElementById('showimage').src=document.location.origin+'/?getstill='+Math.random();"></td>
+  <td><input type="button" id="get-stream" value="Start Stream" onclick="streamState=true;document.getElementById('stream').src=document.location.origin+'/?getstill='+Math.random();"></td>   
+  <td><input type="button" id="stop" value="Stop Stream" onclick="streamState=false;"></td> 
   </tr>  
   <tr>
-  <td><input type="button" value="Image List" onclick="document.getElementById('list').style.display='block';streamState=false;execute(location.origin+'/?listimages');"></td>              
-  <td><input type="button" value="Save Image" onclick="document.getElementById('list').style.display='block';streamState=false;execute(location.origin+'/?saveimage='+(new Date().getFullYear()*10000000000+(new Date().getMonth()+1)*100000000+new Date().getDay()*1000000+new Date().getHours()*10000+new Date().getMinutes()*100+new Date().getSeconds()).toString());"></td>  
-  <td></td>
-  </tr>
+   <td><input type="button" value="Restart" onclick="execute(location.origin+'/?restart');"></td>
+  <td><input type="button" value="Image List" onclick="streamState=false;execute(location.origin+'/?listimages');"></td>              
+  <td><input type="button" value="Save Image" onclick="streamState=false;execute(location.origin+'/?saveimage='+(new Date().getFullYear()*10000000000+(new Date().getMonth()+1)*100000000+new Date().getDay()*1000000+new Date().getHours()*10000+new Date().getMinutes()*100+new Date().getSeconds()).toString());"></td>  
+ </tr>
   <tr>
   <td>Flash</td>
   <td colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/?flash='+this.value);}catch(e){}"></td>
@@ -157,6 +157,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   
   <script>
     var stream = document.getElementById('stream');
+    var getStream = document.getElementById('get-stream');
     var getStill = document.getElementById('get-still');
     var showimage = document.getElementById('showimage');
     var list = document.getElementById('list');
@@ -167,8 +168,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       clearTimeout(myTimer);
       if (streamState==true) {
         stream.style.display="block";
-        setTimeout(function(){getStill.click();},100);
-        myTimer = setTimeout(function(){getStill.click();},10000);
+        setTimeout(function(){getStream.click();},100);
+        myTimer = setTimeout(function(){getStream.click();},10000);
       }
       else
         stream.style.display="none";
