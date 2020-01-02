@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (SD Card Manager)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-2 18:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-2 22:00
 https://www.facebook.com/francefu
 
 Arduino IDE settings
