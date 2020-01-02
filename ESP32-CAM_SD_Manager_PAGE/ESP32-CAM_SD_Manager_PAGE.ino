@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (SD Card Manager)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-2 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-2 23:00
 https://www.facebook.com/francefu
 
 Arduino IDE settings
@@ -25,7 +25,7 @@ http://192.168.xxx.xxx?listimages               //列出SD卡影像清單
 http://192.168.xxx.xxx?showimage=/filename      //取得SD卡影像
 http://192.168.xxx.xxx?deleteimage=/filename    //刪除SD卡影像
 http://192.168.xxx.xxx?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA 改變影像解析度
-http://192.168.xxx.xxx?sendCapturedImageToLineNotify=token  //傳送影像截圖至LineNotify，最大解析度是SXGA
+http://192.168.xxx.xxx/?sendCapturedImageToLineNotify=token  //傳送影像截圖至LineNotify，最大解析度是SXGA
 
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
@@ -141,6 +141,7 @@ void ExecuteCommand()
   }   
   else if (cmd=="sendCapturedImageToLineNotify") { 
     Feedback=sendCapturedImageToLineNotify(P1);
+    if (Feedback=="") Feedback="The image failed to send. <br>The framesize may be too large.";
   } 
   else {
     Feedback="Command is not defined.";
@@ -222,16 +223,17 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     }
     
     getStream.onclick = function (event) {
+      showimage.src="";
       streamState=true;
       stream.src=location.origin+'/?getstill='+Math.random();
     }
     
     stopStream.onclick = function (event) {
+      showimage.src="";
       streamState=false;
     }
     
     restart.onclick = function (event) {
-      streamState=false;
       fetch(location.origin+'/?restart');
     } 
 
@@ -262,12 +264,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     stream.onload = function (event) {
       clearInterval(myTimer);
       if (streamState==true) {
-        stream.style.display="block";
         setTimeout(function(){getStream.click();},100);
         myTimer = setInterval(function(){getStream.click();},10000);
       }
       else
-        stream.style.display="none";
+        stream.src="";
     }  
 
     function getFeedback(target) {
