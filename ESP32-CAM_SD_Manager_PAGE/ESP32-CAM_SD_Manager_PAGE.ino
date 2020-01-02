@@ -172,6 +172,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <td>Flash</td>
   <td colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(location.origin+'/?flash='+this.value);}catch(e){}"></td>
   </tr>
+  <tr>
   <td>LineToken</td>
   <td colspan="2"><input type="text" id="token"><button onclick="streamState=false;execute(location.origin+'/?sendCapturedImageToLineNotify='+token.value);">Send</button></td>
   </tr>
