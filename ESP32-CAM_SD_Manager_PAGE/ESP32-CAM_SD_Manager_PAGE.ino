@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (SD Card Manager)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-2 02:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-2 18:00
 https://www.facebook.com/francefu
 
 Arduino IDE settings
@@ -25,6 +25,7 @@ http://192.168.xxx.xxx?listimages               //列出SD卡影像清單
 http://192.168.xxx.xxx?showimage=/filename      //取得SD卡影像
 http://192.168.xxx.xxx?deleteimage=/filename    //刪除SD卡影像
 http://192.168.xxx.xxx?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA 改變影像解析度
+http://192.168.4.1/?sendCapturedImageToLineNotify=token  //傳送影像截圖至LineNotify，最大解析度是SVGA
 
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
@@ -137,7 +138,10 @@ void ExecuteCommand()
       s->set_framesize(s, FRAMESIZE_UXGA);           
     else 
       s->set_framesize(s, FRAMESIZE_QVGA);     
-  }     
+  }   
+  else if (cmd=="sendCapturedImageToLineNotify") { 
+    Feedback=sendCapturedImageToLineNotify(P1);
+  } 
   else {
     Feedback="Command is not defined.";
   }
@@ -155,18 +159,21 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <script>var myVar;</script>
   <table>
   <tr>
-  <td><input type="button" id="get-still" value="Get Still" onclick="streamState=false;document.getElementById('showimage').src=document.location.origin+'/?getstill='+Math.random();"></td>
-  <td><input type="button" id="get-stream" value="Start Stream" onclick="streamState=true;document.getElementById('stream').src=document.location.origin+'/?getstill='+Math.random();"></td>   
+  <td><input type="button" id="get-still" value="Get Still" onclick="streamState=false;document.getElementById('showimage').src=location.origin+'/?getstill='+Math.random();"></td>
+  <td><input type="button" id="get-stream" value="Start Stream" onclick="streamState=true;document.getElementById('stream').src=location.origin+'/?getstill='+Math.random();"></td>   
   <td><input type="button" id="stop" value="Stop Stream" onclick="streamState=false;"></td> 
   </tr>  
   <tr>
-   <td><input type="button" value="Restart" onclick="execute(location.origin+'/?restart');"></td>
+  <td><input type="button" value="Restart" onclick="streamState=false;try{fetch(location.origin+'/?restart');}catch(e){}"></td>
   <td><input type="button" value="Image List" onclick="streamState=false;execute(location.origin+'/?listimages');"></td>              
   <td><input type="button" value="Save Image" onclick="streamState=false;execute(location.origin+'/?saveimage='+(new Date().getFullYear()*10000000000+(new Date().getMonth()+1)*100000000+new Date().getDate()*1000000+new Date().getHours()*10000+new Date().getMinutes()*100+new Date().getSeconds()+new Date().getSeconds()*0.001).toString());"></td>  
  </tr>
   <tr>
   <td>Flash</td>
-  <td colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/?flash='+this.value);}catch(e){}"></td>
+  <td colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(location.origin+'/?flash='+this.value);}catch(e){}"></td>
+  </tr>
+  <td>LineNotify</td>
+  <td colspan="2"><input type="text" id="token"><button onclick="streamState=false;execute(location.origin+'/?sendCapturedImageToLineNotify='+token.value);">Send</button></td>
   </tr>
   <tr>
   <td>Resolution</td> 
@@ -199,6 +206,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var getStill = document.getElementById('get-still');
     var showimage = document.getElementById('showimage');
     var list = document.getElementById('list');
+    var token = document.getElementById('token');
     var myTimer;
     var streamState = false;
     
@@ -635,6 +643,94 @@ String saveCapturedImage(String filename) {
   digitalWrite(4, LOW);  
   
   return response;
+}
+
+String sendCapturedImageToLineNotify(String token)
+{
+  camera_fb_t * fb = NULL;
+  fb = esp_camera_fb_get();  
+  if(!fb) {
+    Serial.println("Camera capture failed");
+    delay(1000);
+    ESP.restart();
+    return "";
+  }
+   
+  WiFiClientSecure client_tcp;
+
+  Serial.println("Connect to notify-api.line.me");
+  
+  if (client_tcp.connect("notify-api.line.me", 443)) 
+  {
+    Serial.println("Connection successful");
+    
+    String message = "Welcome to Taiwan.";
+    String head = "--Taiwan\r\nContent-Disposition: form-data; name=\"message\"; \r\n\r\n" + message + "\r\n--Taiwan\r\nContent-Disposition: form-data; name=\"imageFile\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
+    String tail = "\r\n--Taiwan--\r\n";
+
+    uint16_t imageLen = fb->len;
+    uint16_t extraLen = head.length() + tail.length();
+    uint16_t totalLen = imageLen + extraLen;
+  
+    client_tcp.println("POST /api/notify HTTP/1.1");
+    client_tcp.println("Connection: close"); 
+    client_tcp.println("Host: notify-api.line.me");
+    client_tcp.println("Authorization: Bearer " + token);
+    client_tcp.println("Content-Length: " + String(totalLen));
+    client_tcp.println("Content-Type: multipart/form-data; boundary=Taiwan");
+    client_tcp.println();
+    client_tcp.print(head);
+    
+    uint8_t *fbBuf = fb->buf;
+    size_t fbLen = fb->len;
+    for (size_t n=0;n<fbLen;n=n+1024) {
+      if (n+1024<fbLen) {
+        client_tcp.write(fbBuf, 1024);
+        fbBuf += 1024;
+      }
+      else if (fbLen%1024>0) {
+        size_t remainder = fbLen%1024;
+        client_tcp.write(fbBuf, remainder);
+      }
+    }  
+    
+    client_tcp.print(tail);
+    client_tcp.println();
+    
+    String getResponse="",Feedback="";
+    boolean state = false;
+    int waitTime = 3000;   // timeout 3 seconds
+    long startTime = millis();
+    while ((startTime + waitTime) > millis())
+    {
+      Serial.print(".");
+      delay(100);      
+      while (client_tcp.available()) 
+      {
+          char c = client_tcp.read();
+          if (c == '\n') 
+          {
+            if (getResponse.length()==0) state=true; 
+            getResponse = "";
+          } 
+          else if (c != '\r')
+            getResponse += String(c);
+          if (state==true) Feedback += String(c);
+          startTime = millis();
+       }
+    }
+    client_tcp.stop();
+    esp_camera_fb_return(fb);
+    Serial.println(Feedback);
+        
+    return Feedback;
+  }
+  else {
+    esp_camera_fb_return(fb);
+    Serial.println("Connected to notify-api.line.me failed.");
+    
+    return "Connected to notify-api.line.me failed.";
+  }
 }
 
 //拆解命令字串置入變數
