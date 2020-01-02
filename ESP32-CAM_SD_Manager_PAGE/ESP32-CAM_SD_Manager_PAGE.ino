@@ -389,10 +389,11 @@ void loop() {
       if (client.available()) {
         char c = client.read();             
         
-        getCommand(c);   //將緩衝區取得的字元猜解出指令參數
+        getCommand(c);   //將緩衝區取得的字元拆解出指令參數
                 
         if (c == '\n') {
           if (currentLine.length() == 0) {    
+            
             if (cmd=="getstill") {
               //回傳JPEG格式影像
               camera_fb_t * fb = NULL;
