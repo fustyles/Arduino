@@ -338,12 +338,12 @@ void setup() {
   } 
 
   if (WiFi.status() == WL_CONNECTED) {    //若連線成功
-    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);         
+    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP         
     Serial.println("");
     Serial.println("STAIP address: ");
     Serial.println(WiFi.localIP());  
 
-    for (int i=0;i<5;i++) {
+    for (int i=0;i<5;i++) {   //若連上WIFI設定閃光燈快速閃爍
       ledcWrite(4,10);
       delay(200);
       ledcWrite(4,0);
@@ -351,9 +351,9 @@ void setup() {
     }         
   }
   else {
-    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP           
+    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);         
 
-    for (int i=0;i<2;i++) {
+    for (int i=0;i<2;i++) {    //若連不上WIFI設定閃光燈慢速閃爍
       ledcWrite(4,10);
       delay(1000);
       ledcWrite(4,0);
