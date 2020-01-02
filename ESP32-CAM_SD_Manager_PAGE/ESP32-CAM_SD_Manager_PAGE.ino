@@ -410,6 +410,7 @@ void loop() {
               client.println("Content-Length: " + String(fb->len));             
               client.println("Connection: close");
               client.println();
+              
               uint8_t *fbBuf = fb->buf;
               size_t fbLen = fb->len;
               for (size_t n=0;n<fbLen;n=n+1024) {
@@ -422,6 +423,7 @@ void loop() {
                   client.write(fbBuf, remainder);
                 }
               }  
+              
               client.println();
               esp_camera_fb_return(fb);
             
@@ -486,6 +488,7 @@ void loop() {
               client.println("Access-Control-Allow-Origin: *");
               client.println("Connection: close");
               client.println();
+              
               String Data="";
               if (cmd!="")
                 Data = Feedback;
@@ -495,7 +498,8 @@ void loop() {
               int Index;
               for (Index = 0; Index < Data.length(); Index = Index+1000) {
                 client.print(Data.substring(Index, Index+1000));
-              }               
+              }           
+              
               client.println();
             }
                         
