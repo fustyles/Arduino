@@ -94,6 +94,20 @@ void ExecuteCommand()
   else if (cmd=="mac") {
     Feedback="STA MAC: "+WiFi.macAddress();
   }  
+  else if (cmd=="resetwifi") {  //重設WIFI連線
+    WiFi.begin(P1.c_str(), P2.c_str());
+    Serial.print("Connecting to ");
+    Serial.println(P1);
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) 
+    {
+        delay(500);
+        if ((StartTime+5000) < millis()) break;
+    } 
+    Serial.println("");
+    Serial.println("STAIP: "+WiFi.localIP().toString());
+    Feedback="STAIP: "+WiFi.localIP().toString();
+  }    
   else if (cmd=="restart") {
     ESP.restart();
   }    
