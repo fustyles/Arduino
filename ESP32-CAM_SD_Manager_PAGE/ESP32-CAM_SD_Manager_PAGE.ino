@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (SD Card Manager)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-2 00:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-2 02:00
 https://www.facebook.com/francefu
 
 Arduino IDE settings
@@ -18,12 +18,13 @@ http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://192.168.xxx.xxx?ip
 http://192.168.xxx.xxx?mac
 http://192.168.xxx.xxx?restart
-http://192.168.xxx.xxx?flash=value        //value= 0~255
-http://192.168.xxx.xxx?saveimage=/filename  //filename不含附檔名
-http://192.168.xxx.xxx?listimages
-http://192.168.xxx.xxx?showimage=/filename
-http://192.168.xxx.xxx?deleteimage=/filename
-http://192.168.xxx.xxx?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA (支援格式)
+http://192.168.xxx.xxx?flash=value        //value= 0~255 閃光燈
+http://192.168.xxx.xxx?getstill                 //取得視訊影像
+http://192.168.xxx.xxx?saveimage=/filename      //儲存影像至SD卡，filename不含附檔名
+http://192.168.xxx.xxx?listimages               //列出SD卡影像清單
+http://192.168.xxx.xxx?showimage=/filename      //取得SD卡影像
+http://192.168.xxx.xxx?deleteimage=/filename    //刪除SD卡影像
+http://192.168.xxx.xxx?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA 改變影像解析度
 
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
@@ -164,7 +165,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <tr>
    <td><input type="button" value="Restart" onclick="execute(location.origin+'/?restart');"></td>
   <td><input type="button" value="Image List" onclick="streamState=false;execute(location.origin+'/?listimages');"></td>              
-  <td><input type="button" value="Save Image" onclick="streamState=false;execute(location.origin+'/?saveimage='+(new Date().getFullYear()*10000000000+(new Date().getMonth()+1)*100000000+new Date().getDate()*1000000+new Date().getHours()*10000+new Date().getMinutes()*100+new Date().getSeconds()).toString());"></td>  
+  <td><input type="button" value="Save Image" onclick="streamState=false;execute(location.origin+'/?saveimage='+(new Date().getFullYear()*10000000000+(new Date().getMonth()+1)*100000000+new Date().getDate()*1000000+new Date().getHours()*10000+new Date().getMinutes()*100+new Date().getSeconds()+new Date().getSeconds()*0.001).toString());"></td>  
  </tr>
   <tr>
   <td>Flash</td>
@@ -450,7 +451,8 @@ void loop() {
                 client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
                 client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
                 client.println("Content-Type: image/jpeg");
-                client.println("Content-Disposition: form-data; name=\"imageFile\"; filename=\"picture.jpg\""); 
+                P1.replace("/","");
+                client.println("Content-Disposition: form-data; name=\"imageFile\"; filename=\""+P1+"\""); 
                 client.println("Content-Length: " + String(file.size()));             
                 client.println("Connection: close");
                 client.println();
@@ -547,9 +549,9 @@ String ListImages() {
     if(!file.isDirectory()){
       String filename=String(file.name());
       if (filename=="/"+P1+".jpg")
-        list = "<tr><td><button onclick=\'execute(location.origin+\"/?deleteimage="+String(file.name())+"\");\'>Delete</button></td><td bgcolor=\"yellow\"><a onclick=\'document.getElementById(\"showimage\").src=location.origin+\"/?showimage="+String(file.name())+"\";\'>"+String(file.name())+"</a></td><td align=\'right\'>"+String(file.size())+" B</td><td><button onclick=\'location.href=location.origin+\"/?showimage="+String(file.name())+"\";\'>download</button></td></tr>"+list;
+        list = "<tr><td><button onclick=\'execute(location.origin+\"/?deleteimage="+String(file.name())+"\");\'>Delete</button></td><td style=\"border: 2px solid red\"><button onclick=\'document.getElementById(\"showimage\").src=location.origin+\"/?showimage="+String(file.name())+"\";\'>"+String(file.name())+"</button></td><td align=\'right\'>"+String(file.size())+" B</td><td><button onclick=\'location.href=location.origin+\"/?showimage="+String(file.name())+"\";\'>download</button></td></tr>"+list;
       else
-        list = "<tr><td><button onclick=\'execute(location.origin+\"/?deleteimage="+String(file.name())+"\");\'>Delete</button></td><td><a onclick=\'document.getElementById(\"showimage\").src=location.origin+\"/?showimage="+String(file.name())+"\";\'>"+String(file.name())+"</a></td><td align=\'right\'>"+String(file.size())+" B</td><td><button onclick=\'location.href=location.origin+\"/?showimage="+String(file.name())+"\";\'>download</button></td></tr>"+list;        
+        list = "<tr><td><button onclick=\'execute(location.origin+\"/?deleteimage="+String(file.name())+"\");\'>Delete</button></td><td><button onclick=\'document.getElementById(\"showimage\").src=location.origin+\"/?showimage="+String(file.name())+"\";\'>"+String(file.name())+"</button></td><td align=\'right\'>"+String(file.size())+" B</td><td><button onclick=\'location.href=location.origin+\"/?showimage="+String(file.name())+"\";\'>download</button></td></tr>"+list;        
     }
     file = root.openNextFile();
   }
