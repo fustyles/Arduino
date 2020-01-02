@@ -25,7 +25,7 @@ http://192.168.xxx.xxx?listimages               //列出SD卡影像清單
 http://192.168.xxx.xxx?showimage=/filename      //取得SD卡影像
 http://192.168.xxx.xxx?deleteimage=/filename    //刪除SD卡影像
 http://192.168.xxx.xxx?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA 改變影像解析度
-http://192.168.4.1/?sendCapturedImageToLineNotify=token  //傳送影像截圖至LineNotify，最大解析度是SVGA
+http://192.168.4.1/?sendCapturedImageToLineNotify=token  //傳送影像截圖至LineNotify，最大解析度是SXGA
 
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
@@ -159,27 +159,27 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <script>var myVar;</script>
   <table>
   <tr>
-  <td><input type="button" id="get-still" value="Get Still" onclick="streamState=false;document.getElementById('showimage').src=location.origin+'/?getstill='+Math.random();"></td>
-  <td><input type="button" id="get-stream" value="Start Stream" onclick="streamState=true;document.getElementById('stream').src=location.origin+'/?getstill='+Math.random();"></td>   
-  <td><input type="button" id="stop" value="Stop Stream" onclick="streamState=false;"></td> 
+  <td><input type="button" id="getStill" value="Get Still"></td>
+  <td><input type="button" id="getStream" value="Start Stream"></td>   
+  <td><input type="button" id="stopStream" value="Stop Stream"></td> 
   </tr>  
   <tr>
-  <td><input type="button" value="Restart" onclick="streamState=false;try{fetch(location.origin+'/?restart');}catch(e){}"></td>
-  <td><input type="button" value="Image List" onclick="streamState=false;execute(location.origin+'/?listimages');"></td>              
-  <td><input type="button" value="Save Image" onclick="streamState=false;execute(location.origin+'/?saveimage='+(new Date().getFullYear()*10000000000+(new Date().getMonth()+1)*100000000+new Date().getDate()*1000000+new Date().getHours()*10000+new Date().getMinutes()*100+new Date().getSeconds()+new Date().getSeconds()*0.001).toString());"></td>  
+  <td><input type="button" id="restart" value="Restart"></td>
+  <td><input type="button" id="imageList" value="Image List"></td>              
+  <td><input type="button" id="saveImage" value="Save Image"></td>  
  </tr>
   <tr>
   <td>Flash</td>
-  <td colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(location.origin+'/?flash='+this.value);}catch(e){}"></td>
+  <td colspan="2"><input type="range" id="flash" min="0" max="255" value="0"></td>
   </tr>
   <tr>
-  <td>LineToken</td>
-  <td colspan="2"><input type="text" id="token"><button onclick="streamState=false;execute(location.origin+'/?sendCapturedImageToLineNotify='+token.value);">Send</button></td>
+  <td>Line Token</td>
+  <td colspan="2"><input type="text" id="token"><button id="line">Send</button></td>
   </tr>
   <tr>
   <td>Resolution</td> 
   <td colspan="2">
-  <select id="framesize" onclick="try{fetch(document.location.origin+'/?framesize='+this.value);}catch(e){}">
+  <select id="framesize">
       <option value="UXGA">UXGA(1600x1200)</option>
       <option value="SXGA">SXGA(1280x1024)</option>
       <option value="XGA">XGA(1024x768)</option>
@@ -202,38 +202,86 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   </html> 
   
   <script>
+    var getStill = document.getElementById('getStill');
+    var getStream = document.getElementById('getStream');
+    var stopStream = document.getElementById('stopStream');
     var stream = document.getElementById('stream');
-    var getStream = document.getElementById('get-stream');
-    var getStill = document.getElementById('get-still');
     var showimage = document.getElementById('showimage');
     var list = document.getElementById('list');
+    var line = document.getElementById('line');
     var token = document.getElementById('token');
+    var framesize = document.getElementById('framesize');
+    var flash = document.getElementById('flash');
+    var show = document.getElementById('show');
     var myTimer;
     var streamState = false;
+
+    getStill.onclick = function (event) {
+      streamState=false;
+      showimage.src=location.origin+'/?getstill='+Math.random();
+    }
+    
+    getStream.onclick = function (event) {
+      streamState=true;
+      stream.src=location.origin+'/?getstill='+Math.random();
+    }
+    
+    stopStream.onclick = function (event) {
+      streamState=false;
+    }
+    
+    restart.onclick = function (event) {
+      streamState=false;
+      fetch(location.origin+'/?restart');
+    } 
+
+    imageList.onclick = function (event) {
+      streamState=false;
+      getFeedback(location.origin+'/?listimages');
+    }
+
+    saveImage.onclick = function (event) {
+      streamState=false;
+      getFeedback(location.origin+'/?saveimage='+(new Date().getFullYear()*10000000000+(new Date().getMonth()+1)*100000000+new Date().getDate()*1000000+new Date().getHours()*10000+new Date().getMinutes()*100+new Date().getSeconds()+new Date().getSeconds()*0.001).toString());
+    }
+
+    line.onclick = function (event) {
+      show.innerHTML = "Sending...";
+      streamState=false;
+      getFeedback(location.origin+'/?sendCapturedImageToLineNotify='+token.value);
+    }       
+
+    framesize.onclick = function (event) {
+      fetch(document.location.origin+'/?framesize='+this.value);
+    }  
+
+    flash.onchange = function (event) {
+      fetch(location.origin+'/?flash='+this.value);
+    }                 
     
     stream.onload = function (event) {
-      clearTimeout(myTimer);
+      clearInterval(myTimer);
       if (streamState==true) {
         stream.style.display="block";
         setTimeout(function(){getStream.click();},100);
-        myTimer = setTimeout(function(){getStream.click();},10000);
+        myTimer = setInterval(function(){getStream.click();},10000);
       }
       else
         stream.style.display="none";
-    }
+    }  
 
-    function execute(target) {
+    function getFeedback(target) {
       var data = $.ajax({
       type: "get",
       dataType: "text",
       url: target,
       success: function(response)
         {
-          document.getElementById('show').innerHTML = response;
+          show.innerHTML = response;
         },
         error: function(exception)
         {
-          document.getElementById('show').innerHTML = 'fail';
+          show.innerHTML = 'fail';
         }
       });
     }    
@@ -560,9 +608,9 @@ String ListImages() {
     if(!file.isDirectory()){
       String filename=String(file.name());
       if (filename=="/"+P1+".jpg")
-        list = "<tr><td><button onclick=\'execute(location.origin+\"/?deleteimage="+String(file.name())+"\");\'>Delete</button></td><td style=\"border: 2px solid red\"><button onclick=\'document.getElementById(\"showimage\").src=location.origin+\"/?showimage="+String(file.name())+"\";\'>"+String(file.name())+"</button></td><td align=\'right\'>"+String(file.size())+" B</td><td><button onclick=\'location.href=location.origin+\"/?showimage="+String(file.name())+"\";\'>download</button></td></tr>"+list;
+        list = "<tr><td><button onclick=\'getFeedback(location.origin+\"/?deleteimage="+String(file.name())+"\");\'>Delete</button></td><td style=\"border: 2px solid red\"><button onclick=\'showimage.src=location.origin+\"/?showimage="+String(file.name())+"\";\'>"+String(file.name())+"</button></td><td align=\'right\'>"+String(file.size())+" B</td><td><button onclick=\'location.href=location.origin+\"/?showimage="+String(file.name())+"\";\'>download</button></td></tr>"+list;
       else
-        list = "<tr><td><button onclick=\'execute(location.origin+\"/?deleteimage="+String(file.name())+"\");\'>Delete</button></td><td><button onclick=\'document.getElementById(\"showimage\").src=location.origin+\"/?showimage="+String(file.name())+"\";\'>"+String(file.name())+"</button></td><td align=\'right\'>"+String(file.size())+" B</td><td><button onclick=\'location.href=location.origin+\"/?showimage="+String(file.name())+"\";\'>download</button></td></tr>"+list;        
+        list = "<tr><td><button onclick=\'getFeedback(location.origin+\"/?deleteimage="+String(file.name())+"\");\'>Delete</button></td><td><button onclick=\'showimage.src=location.origin+\"/?showimage="+String(file.name())+"\";\'>"+String(file.name())+"</button></td><td align=\'right\'>"+String(file.size())+" B</td><td><button onclick=\'location.href=location.origin+\"/?showimage="+String(file.name())+"\";\'>download</button></td></tr>"+list;        
     }
     file = root.openNextFile();
   }
