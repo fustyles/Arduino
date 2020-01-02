@@ -3,9 +3,6 @@ ESP32-CAM (SD Card Manager)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-2 23:00
 https://www.facebook.com/francefu
 
-Arduino IDE settings
-Partition Scheme : Huge APP (3MB No OTA/1MB SPIFFS)
-
 首頁
 http://APIP
 http://STAIP
