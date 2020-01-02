@@ -314,7 +314,7 @@ void setup() {
   
   SD_MMC.end();   
 
-  //Flash
+  //閃光燈
   ledcAttachPin(4, 4);  
   ledcSetup(4, 5000, 8);    
   
