@@ -109,8 +109,7 @@ void ExecuteCommand()
     ledcWrite(4,val);  
   }  
   else if (cmd=="saveimage") {
-    Feedback=saveCapturedImage(P1)+"<br>";
-    Feedback+=ListImages(); 
+    Feedback=saveCapturedImage(P1)+"<br>"+ListImages(); 
   }  
   else if (cmd=="listimages") {
     Feedback=ListImages();
