@@ -22,7 +22,7 @@ http://192.168.xxx.xxx?listimages               //列出SD卡影像清單
 http://192.168.xxx.xxx?showimage=/filename      //取得SD卡影像
 http://192.168.xxx.xxx?deleteimage=/filename    //刪除SD卡影像
 http://192.168.xxx.xxx?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA 改變影像解析度
-http://192.168.xxx.xxx/?sendCapturedImageToLineNotify=token  //傳送影像截圖至LineNotify，最大解析度是SXGA
+http://192.168.xxx.xxx?sendCapturedImageToLineNotify=token  //傳送影像截圖至LineNotify，最大解析度是SXGA
 
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
