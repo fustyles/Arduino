@@ -121,7 +121,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             top: 320px;
             left: 0;            
             color: red;
-          }          
+          }  
+          stream {
+            position: absolute;
+            top: 0;
+            left: 0;
+          }
           canvas {
             position: absolute;
             top: 0;
@@ -132,9 +137,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
     </head>
     <body>
     <div id="container"></div>
-    <img id="stream" style="display:none"></img>
+    <img id="stream"></img>
     <table id="tools">
-      <tr><td><button id="get-still" onclick="ShowImage.src=document.location.origin+'/?getstill='+Math.random();">Restart</button></td><td></td><td></td></tr>
+      <tr><td><button id="get-still" onclick="ShowImage.src=document.location.origin+'/?getstill='+Math.random();">Restart</button></td><td><input type="checkbox" onclick="if (this.checked) stream.style.display='none'; else stream.style.display='block';" value="">Hide Video</td><td></td></tr>
       <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'?flash='+this.value);}catch(e){}"></td></tr>
       <tr style="display:none"><td colspan="3"><iframe id="ifr"></iframe></td></tr>
     </table>
@@ -161,13 +166,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
       faceapi.nets.ageGenderNet.load(modelPath)
     ])
 
-    message.innerHTML = "Start Detection";
+    message.innerHTML = "Wait a moment.";
     
     async function DetectImage() {
       const detections = await faceapi.detectAllFaces(ShowImage, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks(true).withFaceExpressions().withAgeAndGender()
       const resizedDetections = faceapi.resizeResults(detections, displaySize)
       canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
-      canvas.getContext('2d').drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height); 
+      //canvas.getContext('2d').drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height); 
       faceapi.draw.drawDetections(canvas, resizedDetections)
       faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
       faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
