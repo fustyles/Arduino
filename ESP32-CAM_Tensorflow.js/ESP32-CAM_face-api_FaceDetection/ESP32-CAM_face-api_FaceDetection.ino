@@ -1,7 +1,7 @@
 /*
 ESP32-CAM
 Open the page in Chrome.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-5 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-5 02:00
 https://www.facebook.com/francefu
 
 自訂指令格式 :  
