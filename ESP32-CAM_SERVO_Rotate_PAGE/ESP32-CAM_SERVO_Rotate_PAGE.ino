@@ -209,11 +209,7 @@ void setup() {
   //Servo
   ledcAttachPin(2, 3);  
   ledcSetup(3, 50, 16);
-  ledcWrite(3, 4850);
-
-  ledcAttachPin(13, 5);  
-  ledcSetup(5, 50, 16);
-  ledcWrite(5, 4850);  
+  ledcWrite(3, 4850); 
   
   //Flash
   ledcAttachPin(4, 4);  
