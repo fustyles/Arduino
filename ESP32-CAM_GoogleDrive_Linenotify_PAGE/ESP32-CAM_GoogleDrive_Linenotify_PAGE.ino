@@ -27,7 +27,9 @@ http://STAIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://192.168.xxx.xxx/?ip
 http://192.168.xxx.xxx/?mac
 http://192.168.xxx.xxx/?restart
-http://192.168.xxx.xxx/?flash=value        //value= 0~255
+http://192.168.xxx.xxx/?flash=value        //value= 0 ~ 255
+http://192.168.xxx.xxx/?servo1=value        //value= 1700 ~ 8000
+http://192.168.xxx.xxx/?servo2=value        //value= 1700 ~ 8000
 http://192.168.xxx.xxx/?getstill
 http://192.168.xxx.xxx/?SendCapturedImage=stop
       
