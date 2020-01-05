@@ -152,6 +152,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
     var message = document.getElementById('message');
     var ifr = document.getElementById('ifr');
     
+    //Model Source: https://github.com/fustyles/webduino/tree/master/TensorFlow/Face-api
     const modelPath = 'https://fustyles.github.io/webduino/TensorFlow/Face-api/';
     let currentStream;
     let displaySize = { width:320, height: 240 }
