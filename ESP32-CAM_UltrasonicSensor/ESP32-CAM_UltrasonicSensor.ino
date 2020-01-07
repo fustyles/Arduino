@@ -4,10 +4,10 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-7 21:00
 https://www.facebook.com/francefu
 */
 
-//Ping Ultrasonic Sensor
+//Ping Ultrasonic Sensor (If you use Ping Ultrasonic Sensor, you can't use SD card library at the same time.)
 int trigPin = 2;   //Trig
 int echoPin = 13 ;   //Echo
-int limitDistance = 15;
+int distanceLimit = 15;  //cm
 //Flash
 boolean flashState = false;
 
@@ -102,10 +102,10 @@ void loop() {
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
   unsigned long distance_cm = pulseIn(echoPin, HIGH)/58;  
-  unsigned long distance_in = distance_cm*2.54;  
-  Serial.println(String(distance_cm)+" cm, " + String(distance_in)+" inch");
+  unsigned long distance_inch = distance_cm*2.54;  
+  Serial.println(String(distance_cm)+" cm, " + String(distance_inch)+" inch");
   
-  if (distance_cm>0&&distance_cm<=limitDistance) {
+  if (distance_cm>0&&distance_cm<=distanceLimit) {
     if (flashState==false) {
       flashState = true;
       ledcWrite(4,20); //Turn on the flash.
