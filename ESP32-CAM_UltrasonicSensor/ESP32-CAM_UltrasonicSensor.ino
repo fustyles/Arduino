@@ -1,11 +1,12 @@
 /*
 ESP32-CAM Ping Ultrasonic Sensor (Control Flash)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-7 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-7 21:30
 https://www.facebook.com/francefu
 
 //Ping Ultrasonic Sensor (If you use Ping Ultrasonic Sensor, you can't use SD card library at the same time.)
-trigPin -> gpio2;
-echoPin -> gpio13 ;
+trigPin -> gpio2
+echoPin -> gpio13
+
 
 AP IP: 192.168.4.1
 
@@ -16,32 +17,6 @@ http://192.168.xxx.xxx/status      //取得視訊參數值
 
 設定視訊參數(官方指令格式)  http://192.168.xxx.xxx/control?var=*****&val=*****
 http://192.168.xxx.xxx/control?var=flash&val=value        //value= 0~255
-http://192.168.xxx.xxx/control?var=servo&val=value        //value= 1700~8000
-
-http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
-http://192.168.xxx.xxx/control?var=quality&val=value    // value = 10 ~ 63
-http://192.168.xxx.xxx/control?var=brightness&val=value    // value = -2 ~ 2
-http://192.168.xxx.xxx/control?var=contrast&val=value    // value = -2 ~ 2
-http://192.168.xxx.xxx/control?var=saturation&val=value    // value = -2 ~ 2 
-http://192.168.xxx.xxx/control?var=gainceiling&val=value    // value = 0 ~ 6
-http://192.168.xxx.xxx/control?var=colorbar&val=value    // value = 0 or 1
-http://192.168.xxx.xxx/control?var=awb&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=agc&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=aec&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=hmirror&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=vflip&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=awb_gain&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=agc_gain&val=value    // value = 0 ~ 30
-http://192.168.xxx.xxx/control?var=aec_value&val=value    // value = 0 ~ 1200
-http://192.168.xxx.xxx/control?var=aec2&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=dcw&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=bpc&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=wpc&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=raw_gma&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=lenc&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=special_effect&val=value    // value = 0 ~ 6
-http://192.168.xxx.xxx/control?var=wb_mode&val=value    // value = 0 ~ 4
-http://192.168.xxx.xxx/control?var=ae_level&val=value    // value = -2 ~ 2  
 */
 
 const char* ssid = "*****";
