@@ -13,7 +13,6 @@ boolean flashState = false;
 
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
-
 #include "esp_camera.h"
 
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
