@@ -1,5 +1,5 @@
 /*
-ESP32-CAM
+ESP32-CAM Face Detection (face-api.js)
 Open the page in Chrome.
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-5 02:00
 https://www.facebook.com/francefu
