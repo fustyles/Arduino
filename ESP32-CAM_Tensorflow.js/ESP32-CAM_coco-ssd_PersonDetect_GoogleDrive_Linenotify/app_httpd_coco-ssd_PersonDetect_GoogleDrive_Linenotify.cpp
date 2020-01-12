@@ -544,6 +544,12 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     else if(!strcmp(variable, "flash")) {
       ledcWrite(4,val);
     }  
+    else if(!strcmp(variable, "detect")) {
+      if (val=="1")
+        Serial.println("person");
+      else
+        Serial.println("nobody");
+    }          
     else {
         res = -1;
     }
@@ -846,6 +852,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         
     <!-- Object Detection -->    
     <script>
+      var ifr = document.getElementById('sendcapturedimage');
       var myForm = document.getElementById('myForm');
       var myStartDetection = document.getElementById('myStartDetection');
       var myGoogleScript = document.getElementById('myGoogleScript');
@@ -902,6 +909,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               if ((myStartDetection.checked)&&(personState == false)&&(Predictions[i].class=="person")) {
                 personState = true;
                 SendCapturedImage();
+                //ifr.src = document.location.origin+'/control?var=detect&val=1';
                 setTimeout(function(){ personState = false; }, 15000);
               }  
             }
