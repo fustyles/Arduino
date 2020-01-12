@@ -1,6 +1,6 @@
 /*
 ESP32-CAM COCO-SSD Person Detect (Send captured image to GoogleDrive and Linenotify)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-13 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-12 14:00
 https://www.facebook.com/francefu
 
 Class
