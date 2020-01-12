@@ -159,6 +159,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
               if ((myStartDetection.checked)&&(personState == false)&&(Predictions[i].class=="person")) {
                 personState = true;
                 console.log("send");
+                //ifr.src = document.location.origin+'/?message=person';
                 ifr.src = document.location.origin+'/?SendCapturedImage=stop';
                 setTimeout(function(){ personState = false; }, 20000);   // 20s
               }  
@@ -229,7 +230,12 @@ void ExecuteCommand()
      
     int val = P1.toInt();
     ledcWrite(4,val);  
-}  
+  }  
+  else if (cmd=="message")
+  {
+    Serial.println(P1);    
+    Feedback=P1; 
+  }       
   else {
     Feedback="Command is not defined.";
   }
