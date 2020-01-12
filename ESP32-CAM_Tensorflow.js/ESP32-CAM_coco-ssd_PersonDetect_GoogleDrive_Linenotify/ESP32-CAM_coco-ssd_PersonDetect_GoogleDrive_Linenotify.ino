@@ -1,5 +1,5 @@
 /*
-ESP32-CAM COCO-SSD
+ESP32-CAM COCO-SSD Person Detect (Send captured image to GoogleDrive and Linenotify)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-13 21:00
 https://www.facebook.com/francefu
 
