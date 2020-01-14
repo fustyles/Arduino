@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Ping Ultrasonic Sensor (Control Flash)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-7 21:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-15 02:00
 https://www.facebook.com/francefu
 
 //Ping Ultrasonic Sensor (If you use Ping Ultrasonic Sensor, you can't use SD card library at the same time.)
@@ -14,9 +14,6 @@ http://192.168.xxx.xxx             //網頁首頁管理介面
 http://192.168.xxx.xxx:81/stream   //取得串流影像
 http://192.168.xxx.xxx/capture     //取得影像
 http://192.168.xxx.xxx/status      //取得視訊參數值
-
-設定視訊參數(官方指令格式)  http://192.168.xxx.xxx/control?var=*****&val=*****
-http://192.168.xxx.xxx/control?var=flash&val=value        //value= 0~255
 */
 
 const char* ssid = "*****";
@@ -25,13 +22,19 @@ const char* password = "*****";
 //Ping Ultrasonic Sensor (If you use Ping Ultrasonic Sensor, you can't use SD card library at the same time.)
 int trigPin = 2;   //Trig
 int echoPin = 13 ;   //Echo
-int distanceLimit = 15;  //cm
+int distanceLimit = 20;  //cm
+unsigned long distance_cm = 0;  
+unsigned long distance_inch = 0; 
 
 //Flash
 boolean flashState = false;
 
 char* apssid = "ESP32-CAM";
 char* appassword = "12345678";         //AP password require at least 8 characters.
+
+String Feedback="";   //回傳客戶端訊息
+String Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";   //指令參數值
+byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;  //指令拆解狀態值
 
 #include <WiFi.h>
 #include "soc/soc.h"
@@ -45,18 +48,6 @@ char* appassword = "12345678";         //AP password require at least 8 characte
 #include "fb_gfx.h"
 #include "fd_forward.h"
 #include "fr_forward.h"
-
-#define ENROLL_CONFIRM_TIMES 5
-#define FACE_ID_SAVE_NUMBER 7
-
-#define FACE_COLOR_WHITE  0x00FFFFFF
-#define FACE_COLOR_BLACK  0x00000000
-#define FACE_COLOR_RED    0x000000FF
-#define FACE_COLOR_GREEN  0x0000FF00
-#define FACE_COLOR_BLUE   0x00FF0000
-#define FACE_COLOR_YELLOW (FACE_COLOR_RED | FACE_COLOR_GREEN)
-#define FACE_COLOR_CYAN   (FACE_COLOR_BLUE | FACE_COLOR_GREEN)
-#define FACE_COLOR_PURPLE (FACE_COLOR_BLUE | FACE_COLOR_RED)
 
 typedef struct {
         size_t size; //number of values used for filtering
@@ -242,8 +233,8 @@ void loop() {
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
-  unsigned long distance_cm = pulseIn(echoPin, HIGH)/58;  
-  unsigned long distance_inch = distance_cm*2.54;  
+  distance_cm = pulseIn(echoPin, HIGH)/58;  
+  distance_inch = distance_cm*2.54;  
   Serial.println(String(distance_cm)+" cm, " + String(distance_inch)+" inch");
   
   if (distance_cm>0&&distance_cm<=distanceLimit) {
@@ -312,84 +303,6 @@ static int rgb_printf(dl_matrix3du_t *image_matrix, uint32_t color, const char *
     return len;
 }
 
-static void draw_face_boxes(dl_matrix3du_t *image_matrix, box_array_t *boxes, int face_id){
-    int x, y, w, h, i;
-    uint32_t color = FACE_COLOR_YELLOW;
-    if(face_id < 0){
-        color = FACE_COLOR_RED;
-    } else if(face_id > 0){
-        color = FACE_COLOR_GREEN;
-    }
-    fb_data_t fb;
-    fb.width = image_matrix->w;
-    fb.height = image_matrix->h;
-    fb.data = image_matrix->item;
-    fb.bytes_per_pixel = 3;
-    fb.format = FB_BGR888;
-    for (i = 0; i < boxes->len; i++){
-        // rectangle box
-        x = (int)boxes->box[i].box_p[0];
-        y = (int)boxes->box[i].box_p[1];
-        w = (int)boxes->box[i].box_p[2] - x + 1;
-        h = (int)boxes->box[i].box_p[3] - y + 1;
-        fb_gfx_drawFastHLine(&fb, x, y, w, color);
-        fb_gfx_drawFastHLine(&fb, x, y+h-1, w, color);
-        fb_gfx_drawFastVLine(&fb, x, y, h, color);
-        fb_gfx_drawFastVLine(&fb, x+w-1, y, h, color);
-#if 0
-        // landmark
-        int x0, y0, j;
-        for (j = 0; j < 10; j+=2) {
-            x0 = (int)boxes->landmark[i].landmark_p[j];
-            y0 = (int)boxes->landmark[i].landmark_p[j+1];
-            fb_gfx_fillRect(&fb, x0, y0, 3, 3, color);
-        }
-#endif
-    }
-}
-
-static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_boxes){
-    dl_matrix3du_t *aligned_face = NULL;
-    int matched_id = 0;
-
-    aligned_face = dl_matrix3du_alloc(1, FACE_WIDTH, FACE_HEIGHT, 3);
-    if(!aligned_face){
-        Serial.println("Could not allocate face recognition buffer");
-        return matched_id;
-    }
-    if (align_face(net_boxes, image_matrix, aligned_face) == ESP_OK){
-        if (is_enrolling == 1){
-            int8_t left_sample_face = enroll_face(&id_list, aligned_face);
-
-            if(left_sample_face == (ENROLL_CONFIRM_TIMES - 1)){
-                Serial.printf("Enrolling Face ID: %d\n", id_list.tail);
-            }
-            Serial.printf("Enrolling Face ID: %d sample %d\n", id_list.tail, ENROLL_CONFIRM_TIMES - left_sample_face);
-            rgb_printf(image_matrix, FACE_COLOR_CYAN, "ID[%u] Sample[%u]", id_list.tail, ENROLL_CONFIRM_TIMES - left_sample_face);
-            if (left_sample_face == 0){
-                is_enrolling = 0;
-                Serial.printf("Enrolled Face ID: %d\n", id_list.tail);
-            }
-        } else {
-            matched_id = recognize_face(&id_list, aligned_face);
-            if (matched_id >= 0) {
-                Serial.printf("Match Face ID: %u\n", matched_id);
-                rgb_printf(image_matrix, FACE_COLOR_GREEN, "Hello Subject %u", matched_id);
-            } else {
-                Serial.println("No Match Found");
-                rgb_print(image_matrix, FACE_COLOR_RED, "Intruder Alert!");
-                matched_id = -1;
-            }
-        }
-    } else {
-        Serial.println("Face Not Aligned");
-        //rgb_print(image_matrix, FACE_COLOR_YELLOW, "Human Detected");
-    }
-
-    dl_matrix3du_free(aligned_face);
-    return matched_id;
-}
-
 static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size_t len){
     jpg_chunking_t *j = (jpg_chunking_t *)arg;
     if(!index){
@@ -402,7 +315,9 @@ static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size
     return len;
 }
 
+//影像截圖
 static esp_err_t capture_handler(httpd_req_t *req){
+
     camera_fb_t * fb = NULL;
     esp_err_t res = ESP_OK;
     int64_t fr_start = esp_timer_get_time();
@@ -420,9 +335,7 @@ static esp_err_t capture_handler(httpd_req_t *req){
     size_t out_len, out_width, out_height;
     uint8_t * out_buf;
     bool s;
-    bool detected = false;
-    int face_id = 0;
-    if(!detection_enabled || fb->width > 400){
+    if(fb->width > 400){
         size_t fb_len = 0;
         if(fb->format == PIXFORMAT_JPEG){
             fb_len = fb->len;
@@ -461,18 +374,8 @@ static esp_err_t capture_handler(httpd_req_t *req){
         return ESP_FAIL;
     }
 
-    box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);
-
-    if (net_boxes){
-        detected = true;
-        if(recognition_enabled){
-            face_id = run_face_recognition(image_matrix, net_boxes);
-        }
-        draw_face_boxes(image_matrix, net_boxes, face_id);
-        free(net_boxes->box);
-        free(net_boxes->landmark);
-        free(net_boxes);
-    }
+    //Print distance
+    rgb_printf(image_matrix, 0x000000FF, "Distance: %s cm", String(distance_cm));
 
     jpg_chunking_t jchunk = {req, 0};
     s = fmt2jpg_cb(out_buf, out_len, out_width, out_height, PIXFORMAT_RGB888, 90, jpg_encode_stream, &jchunk);
@@ -483,10 +386,10 @@ static esp_err_t capture_handler(httpd_req_t *req){
     }
 
     int64_t fr_end = esp_timer_get_time();
-    Serial.printf("FACE: %uB %ums %s%d\n", (uint32_t)(jchunk.len), (uint32_t)((fr_end - fr_start)/1000), detected?"DETECTED ":"", face_id);
     return res;
 }
 
+//影像串流
 static esp_err_t stream_handler(httpd_req_t *req){
     camera_fb_t * fb = NULL;
     esp_err_t res = ESP_OK;
@@ -494,13 +397,8 @@ static esp_err_t stream_handler(httpd_req_t *req){
     uint8_t * _jpg_buf = NULL;
     char * part_buf[64];
     dl_matrix3du_t *image_matrix = NULL;
-    bool detected = false;
-    int face_id = 0;
     int64_t fr_start = 0;
     int64_t fr_ready = 0;
-    int64_t fr_face = 0;
-    int64_t fr_recognize = 0;
-    int64_t fr_encode = 0;
 
     static int64_t last_frame = 0;
     if(!last_frame) {
@@ -513,8 +411,6 @@ static esp_err_t stream_handler(httpd_req_t *req){
     }
 
     while(true){
-        detected = false;
-        face_id = 0;
         fb = esp_camera_fb_get();
         if (!fb) {
             Serial.println("Camera capture failed");
@@ -522,11 +418,9 @@ static esp_err_t stream_handler(httpd_req_t *req){
         } else {
             fr_start = esp_timer_get_time();
             fr_ready = fr_start;
-            fr_face = fr_start;
-            fr_encode = fr_start;
-            fr_recognize = fr_start;
-            if(!detection_enabled || fb->width > 400){
+            if(fb->width > 400){
                 if(fb->format != PIXFORMAT_JPEG){
+                  
                     bool jpeg_converted = frame2jpg(fb, 80, &_jpg_buf, &_jpg_buf_len);
                     esp_camera_fb_return(fb);
                     fb = NULL;
@@ -545,30 +439,14 @@ static esp_err_t stream_handler(httpd_req_t *req){
                 if (!image_matrix) {
                     Serial.println("dl_matrix3du_alloc failed");
                     res = ESP_FAIL;
-                } else {
+                } else {   
                     if(!fmt2rgb888(fb->buf, fb->len, fb->format, image_matrix->item)){
                         Serial.println("fmt2rgb888 failed");
                         res = ESP_FAIL;
                     } else {
                         fr_ready = esp_timer_get_time();
-                        box_array_t *net_boxes = NULL;
-                        if(detection_enabled){
-                            net_boxes = face_detect(image_matrix, &mtmn_config);
-                        }
-                        fr_face = esp_timer_get_time();
-                        fr_recognize = fr_face;
-                        if (net_boxes || fb->format != PIXFORMAT_JPEG){
-                            if(net_boxes){
-                                detected = true;
-                                if(recognition_enabled){
-                                    face_id = run_face_recognition(image_matrix, net_boxes);
-                                }
-                                fr_recognize = esp_timer_get_time();
-                                draw_face_boxes(image_matrix, net_boxes, face_id);
-                                free(net_boxes->box);
-                                free(net_boxes->landmark);
-                                free(net_boxes);
-                            }
+                            
+                        if (fb->format != PIXFORMAT_JPEG){ 
                             if(!fmt2jpg(image_matrix->item, fb->width*fb->height*3, fb->width, fb->height, PIXFORMAT_RGB888, 90, &_jpg_buf, &_jpg_buf_len)){
                                 Serial.println("fmt2jpg failed");
                                 res = ESP_FAIL;
@@ -579,7 +457,6 @@ static esp_err_t stream_handler(httpd_req_t *req){
                             _jpg_buf = fb->buf;
                             _jpg_buf_len = fb->len;
                         }
-                        fr_encode = esp_timer_get_time();
                     }
                     dl_matrix3du_free(image_matrix);
                 }
@@ -609,10 +486,6 @@ static esp_err_t stream_handler(httpd_req_t *req){
         int64_t fr_end = esp_timer_get_time();
 
         int64_t ready_time = (fr_ready - fr_start)/1000;
-        int64_t face_time = (fr_face - fr_ready)/1000;
-        int64_t recognize_time = (fr_recognize - fr_face)/1000;
-        int64_t encode_time = (fr_encode - fr_recognize)/1000;
-        int64_t process_time = (fr_encode - fr_start)/1000;
         
         int64_t frame_time = fr_end - last_frame;
         last_frame = fr_end;
@@ -621,9 +494,7 @@ static esp_err_t stream_handler(httpd_req_t *req){
         Serial.printf("MJPG: %uB %ums (%.1ffps), AVG: %ums (%.1ffps), %u+%u+%u+%u=%u %s%d\n",
             (uint32_t)(_jpg_buf_len),
             (uint32_t)frame_time, 1000.0 / (uint32_t)frame_time,
-            avg_frame_time, 1000.0 / avg_frame_time,
-            (uint32_t)ready_time, (uint32_t)face_time, (uint32_t)recognize_time, (uint32_t)encode_time, (uint32_t)process_time,
-            (detected)?"DETECTED ":"", face_id
+            avg_frame_time, 1000.0 / avg_frame_time
         );
     }
 
@@ -631,12 +502,12 @@ static esp_err_t stream_handler(httpd_req_t *req){
     return res;
 }
 
+//指令參數控制
 static esp_err_t cmd_handler(httpd_req_t *req){
-    char*  buf;
+    char*  buf;  //存取網址後帶的參數字串
     size_t buf_len;
-    char variable[32] = {0,};
-    char value[32] = {0,};
-
+    char variable[128] = {0,};  //存取參數var值
+    char value[128] = {0,};  //存取參數val值
     buf_len = httpd_req_get_url_query_len(req) + 1;
     if (buf_len > 1) {
         buf = (char*)malloc(buf_len);
@@ -666,49 +537,17 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     int val = atoi(value);
     sensor_t * s = esp_camera_sensor_get();
     int res = 0;
-    
+
+    //官方指令區塊，也可在此自訂指令  http://192.168.xxx.xxx/control?var=xxx&val=xxx
     if(!strcmp(variable, "framesize")) {
-        if(s->pixformat == PIXFORMAT_JPEG) res = s->set_framesize(s, (framesize_t)val);
+      if(s->pixformat == PIXFORMAT_JPEG) 
+        res = s->set_framesize(s, (framesize_t)val);
     }
     else if(!strcmp(variable, "quality")) res = s->set_quality(s, val);
     else if(!strcmp(variable, "contrast")) res = s->set_contrast(s, val);
     else if(!strcmp(variable, "brightness")) res = s->set_brightness(s, val);
-    else if(!strcmp(variable, "saturation")) res = s->set_saturation(s, val);
-    else if(!strcmp(variable, "gainceiling")) res = s->set_gainceiling(s, (gainceiling_t)val);
-    else if(!strcmp(variable, "colorbar")) res = s->set_colorbar(s, val);
-    else if(!strcmp(variable, "awb")) res = s->set_whitebal(s, val);
-    else if(!strcmp(variable, "agc")) res = s->set_gain_ctrl(s, val);
-    else if(!strcmp(variable, "aec")) res = s->set_exposure_ctrl(s, val);
     else if(!strcmp(variable, "hmirror")) res = s->set_hmirror(s, val);
-    else if(!strcmp(variable, "vflip")) res = s->set_vflip(s, val);
-    else if(!strcmp(variable, "awb_gain")) res = s->set_awb_gain(s, val);
-    else if(!strcmp(variable, "agc_gain")) res = s->set_agc_gain(s, val);
-    else if(!strcmp(variable, "aec_value")) res = s->set_aec_value(s, val);
-    else if(!strcmp(variable, "aec2")) res = s->set_aec2(s, val);
-    else if(!strcmp(variable, "dcw")) res = s->set_dcw(s, val);
-    else if(!strcmp(variable, "bpc")) res = s->set_bpc(s, val);
-    else if(!strcmp(variable, "wpc")) res = s->set_wpc(s, val);
-    else if(!strcmp(variable, "raw_gma")) res = s->set_raw_gma(s, val);
-    else if(!strcmp(variable, "lenc")) res = s->set_lenc(s, val);
-    else if(!strcmp(variable, "special_effect")) res = s->set_special_effect(s, val);
-    else if(!strcmp(variable, "wb_mode")) res = s->set_wb_mode(s, val);
-    else if(!strcmp(variable, "ae_level")) res = s->set_ae_level(s, val);
-    else if(!strcmp(variable, "face_detect")) {
-        detection_enabled = val;
-        if(!detection_enabled) {
-            recognition_enabled = 0;
-        }
-    }
-    else if(!strcmp(variable, "face_enroll")) is_enrolling = val;
-    else if(!strcmp(variable, "face_recognize")) {
-        recognition_enabled = val;
-        if(recognition_enabled){
-            detection_enabled = val;
-        }
-    } 
-    else if(!strcmp(variable, "flash")) {
-      ledcWrite(4,val);
-    }  
+    else if(!strcmp(variable, "vflip")) res = s->set_vflip(s, val);        
     else {
         res = -1;
     }
@@ -717,50 +556,40 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         return httpd_resp_send_500(req);
     }
 
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-    return httpd_resp_send(req, NULL, 0);
+    if (buf) {
+      Feedback = String(buf);
+      static char response[128];
+      char * p = response;
+      p+=sprintf(p, "%s", Feedback.c_str());   
+      *p++ = 0;
+      httpd_resp_set_type(req, "text/html");
+      httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+      return httpd_resp_send(req, response, strlen(response));  //回傳參數字串
+    }
+    else {
+      httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+      return httpd_resp_send(req, NULL, 0);
+    }
 }
 
+//顯示視訊參數狀態
 static esp_err_t status_handler(httpd_req_t *req){
-    static char json_response[1024];
+    static char response[1024];
 
     sensor_t * s = esp_camera_sensor_get();
-    char * p = json_response;
-    *p++ = '{';
-
-    p+=sprintf(p, "\"framesize\":%u,", s->status.framesize);
-    p+=sprintf(p, "\"quality\":%u,", s->status.quality);
-    p+=sprintf(p, "\"brightness\":%d,", s->status.brightness);
-    p+=sprintf(p, "\"contrast\":%d,", s->status.contrast);
-    p+=sprintf(p, "\"saturation\":%d,", s->status.saturation);
-    p+=sprintf(p, "\"special_effect\":%u,", s->status.special_effect);
-    p+=sprintf(p, "\"wb_mode\":%u,", s->status.wb_mode);
-    p+=sprintf(p, "\"awb\":%u,", s->status.awb);
-    p+=sprintf(p, "\"awb_gain\":%u,", s->status.awb_gain);
-    p+=sprintf(p, "\"aec\":%u,", s->status.aec);
-    p+=sprintf(p, "\"aec2\":%u,", s->status.aec2);
-    p+=sprintf(p, "\"ae_level\":%d,", s->status.ae_level);
-    p+=sprintf(p, "\"aec_value\":%u,", s->status.aec_value);
-    p+=sprintf(p, "\"agc\":%u,", s->status.agc);
-    p+=sprintf(p, "\"agc_gain\":%u,", s->status.agc_gain);
-    p+=sprintf(p, "\"gainceiling\":%u,", s->status.gainceiling);
-    p+=sprintf(p, "\"bpc\":%u,", s->status.bpc);
-    p+=sprintf(p, "\"wpc\":%u,", s->status.wpc);
-    p+=sprintf(p, "\"raw_gma\":%u,", s->status.raw_gma);
-    p+=sprintf(p, "\"lenc\":%u,", s->status.lenc);
-    p+=sprintf(p, "\"vflip\":%u,", s->status.vflip);
-    p+=sprintf(p, "\"hmirror\":%u,", s->status.hmirror);
-    p+=sprintf(p, "\"dcw\":%u,", s->status.dcw);
-    p+=sprintf(p, "\"colorbar\":%u,", s->status.colorbar);
-    p+=sprintf(p, "\"face_detect\":%u,", detection_enabled);
-    p+=sprintf(p, "\"face_enroll\":%u,", is_enrolling);
-    p+=sprintf(p, "\"face_recognize\":%u", recognition_enabled);
-    *p++ = '}';
+    char * p = response;
+    p+=sprintf(p, "framesize:%u<br>", s->status.framesize);
+    p+=sprintf(p, "quality:%u<br>", s->status.quality);
+    p+=sprintf(p, "brightness:%d<br>", s->status.brightness);
+    p+=sprintf(p, "contrast:%d<br>", s->status.contrast);
+    p+=sprintf(p, "vflip:%u<br>", s->status.vflip);
+    p+=sprintf(p, "hmirror:%u<br>", s->status.hmirror);
     *p++ = 0;
-    httpd_resp_set_type(req, "application/json");
+    httpd_resp_set_type(req, "text/html");
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-    return httpd_resp_send(req, json_response, strlen(json_response));
+    return httpd_resp_send(req, response, strlen(response));
 }
+
 
 static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 <!doctype html>
@@ -770,7 +599,289 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <title>ESP32 OV2460</title>
         <style>
-          body{font-family:Arial,Helvetica,sans-serif;background:#181818;color:#EFEFEF;font-size:16px}h2{font-size:18px}section.main{display:flex}#menu,section.main{flex-direction:column}#menu{display:none;flex-wrap:nowrap;min-width:340px;background:#363636;padding:8px;border-radius:4px;margin-top:-10px;margin-right:10px}#content{display:flex;flex-wrap:wrap;align-items:stretch}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}figure img{display:block;width:100%;height:auto;border-radius:4px;margin-top:8px}@media (min-width: 800px) and (orientation:landscape){#content{display:flex;flex-wrap:nowrap;align-items:stretch}figure img{display:block;max-width:100%;max-height:calc(100vh - 40px);width:auto;height:auto}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}}section#buttons{display:flex;flex-wrap:nowrap;justify-content:space-between}#nav-toggle{cursor:pointer;display:block}#nav-toggle-cb{outline:0;opacity:0;width:0;height:0}#nav-toggle-cb:checked+#menu{display:flex}.input-group{display:flex;flex-wrap:nowrap;line-height:22px;margin:5px 0}.input-group>label{display:inline-block;padding-right:10px;min-width:47%}.input-group input,.input-group select{flex-grow:1}.range-max,.range-min{display:inline-block;padding:0 5px}button{display:block;margin:5px;padding:0 12px;border:0;line-height:28px;cursor:pointer;color:#fff;background:#ff3034;border-radius:5px;font-size:16px;outline:0}button:hover{background:#ff494d}button:active{background:#f21c21}button.disabled{cursor:default;background:#a0a0a0}input[type=range]{-webkit-appearance:none;width:100%;height:22px;background:#363636;cursor:pointer;margin:0}input[type=range]:focus{outline:0}input[type=range]::-webkit-slider-runnable-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-webkit-slider-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;-webkit-appearance:none;margin-top:-11.5px}input[type=range]:focus::-webkit-slider-runnable-track{background:#EFEFEF}input[type=range]::-moz-range-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-moz-range-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer}input[type=range]::-ms-track{width:100%;height:2px;cursor:pointer;background:0 0;border-color:transparent;color:transparent}input[type=range]::-ms-fill-lower{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-fill-upper{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;height:2px}input[type=range]:focus::-ms-fill-lower{background:#EFEFEF}input[type=range]:focus::-ms-fill-upper{background:#363636}.switch{display:block;position:relative;line-height:22px;font-size:16px;height:22px}.switch input{outline:0;opacity:0;width:0;height:0}.slider{width:50px;height:22px;border-radius:22px;cursor:pointer;background-color:grey}.slider,.slider:before{display:inline-block;transition:.4s}.slider:before{position:relative;content:"";border-radius:50%;height:16px;width:16px;left:4px;top:3px;background-color:#fff}input:checked+.slider{background-color:#ff3034}input:checked+.slider:before{-webkit-transform:translateX(26px);transform:translateX(26px)}select{border:1px solid #363636;font-size:14px;height:22px;outline:0;border-radius:5px}.image-container{position:relative;min-width:160px}.close{position:absolute;right:5px;top:5px;background:#ff3034;width:16px;height:16px;border-radius:100px;color:#fff;text-align:center;line-height:18px;cursor:pointer}.hidden{display:none}
+            body {
+                font-family: Arial,Helvetica,sans-serif;
+                background: #181818;
+                color: #EFEFEF;
+                font-size: 16px
+            }
+            h2 {
+                font-size: 18px
+            }
+            section.main {
+                display: flex
+            }
+            #menu,section.main {
+                flex-direction: column
+            }
+            #menu {
+                display: none;
+                flex-wrap: nowrap;
+                min-width: 340px;
+                background: #363636;
+                padding: 8px;
+                border-radius: 4px;
+                margin-top: -10px;
+                margin-right: 10px;
+            }
+            #content {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: stretch
+            }
+            figure {
+                padding: 0px;
+                margin: 0;
+                -webkit-margin-before: 0;
+                margin-block-start: 0;
+                -webkit-margin-after: 0;
+                margin-block-end: 0;
+                -webkit-margin-start: 0;
+                margin-inline-start: 0;
+                -webkit-margin-end: 0;
+                margin-inline-end: 0
+            }
+            figure img {
+                display: block;
+                width: 100%;
+                height: auto;
+                border-radius: 4px;
+                margin-top: 8px;
+            }
+            @media (min-width: 800px) and (orientation:landscape) {
+                #content {
+                    display:flex;
+                    flex-wrap: nowrap;
+                    align-items: stretch
+                }
+                figure img {
+                    display: block;
+                    max-width: 100%;
+                    max-height: calc(100vh - 40px);
+                    width: auto;
+                    height: auto
+                }
+                figure {
+                    padding: 0 0 0 0px;
+                    margin: 0;
+                    -webkit-margin-before: 0;
+                    margin-block-start: 0;
+                    -webkit-margin-after: 0;
+                    margin-block-end: 0;
+                    -webkit-margin-start: 0;
+                    margin-inline-start: 0;
+                    -webkit-margin-end: 0;
+                    margin-inline-end: 0
+                }
+            }
+            section#buttons {
+                display: flex;
+                flex-wrap: nowrap;
+                justify-content: space-between
+            }
+            #nav-toggle {
+                cursor: pointer;
+                display: block
+            }
+            #nav-toggle-cb {
+                outline: 0;
+                opacity: 0;
+                width: 0;
+                height: 0
+            }
+            #nav-toggle-cb:checked+#menu {
+                display: block
+            }
+            .input-group {
+                display: flex;
+                flex-wrap: nowrap;
+                line-height: 22px;
+                margin: 5px 0
+            }
+            .input-group>label {
+                display: inline-block;
+                padding-right: 10px;
+                min-width: 47%
+            }
+            .input-group input,.input-group select {
+                flex-grow: 1
+            }
+            .range-max,.range-min {
+                display: inline-block;
+                padding: 0 5px
+            }
+            button {
+                display: block;
+                margin: 5px;
+                padding: 0 12px;
+                border: 0;
+                line-height: 28px;
+                cursor: pointer;
+                color: #fff;
+                background: #ff3034;
+                border-radius: 5px;
+                font-size: 16px;
+                outline: 0
+            }
+            button:hover {
+                background: #ff494d
+            }
+            button:active {
+                background: #f21c21
+            }
+            button.disabled {
+                cursor: default;
+                background: #a0a0a0
+            }
+            input[type=range] {
+                -webkit-appearance: none;
+                width: 100%;
+                height: 22px;
+                background: #363636;
+                cursor: pointer;
+                margin: 0
+            }
+            input[type=range]:focus {
+                outline: 0
+            }
+            input[type=range]::-webkit-slider-runnable-track {
+                width: 100%;
+                height: 2px;
+                cursor: pointer;
+                background: #EFEFEF;
+                border-radius: 0;
+                border: 0 solid #EFEFEF
+            }
+            input[type=range]::-webkit-slider-thumb {
+                border: 1px solid rgba(0,0,30,0);
+                height: 22px;
+                width: 22px;
+                border-radius: 50px;
+                background: #ff3034;
+                cursor: pointer;
+                -webkit-appearance: none;
+                margin-top: -11.5px
+            }
+            input[type=range]:focus::-webkit-slider-runnable-track {
+                background: #EFEFEF
+            }
+            input[type=range]::-moz-range-track {
+                width: 100%;
+                height: 2px;
+                cursor: pointer;
+                background: #EFEFEF;
+                border-radius: 0;
+                border: 0 solid #EFEFEF
+            }
+            input[type=range]::-moz-range-thumb {
+                border: 1px solid rgba(0,0,30,0);
+                height: 22px;
+                width: 22px;
+                border-radius: 50px;
+                background: #ff3034;
+                cursor: pointer
+            }
+            input[type=range]::-ms-track {
+                width: 100%;
+                height: 2px;
+                cursor: pointer;
+                background: 0 0;
+                border-color: transparent;
+                color: transparent
+            }
+            input[type=range]::-ms-fill-lower {
+                background: #EFEFEF;
+                border: 0 solid #EFEFEF;
+                border-radius: 0
+            }
+            input[type=range]::-ms-fill-upper {
+                background: #EFEFEF;
+                border: 0 solid #EFEFEF;
+                border-radius: 0
+            }
+            input[type=range]::-ms-thumb {
+                border: 1px solid rgba(0,0,30,0);
+                height: 22px;
+                width: 22px;
+                border-radius: 50px;
+                background: #ff3034;
+                cursor: pointer;
+                height: 2px
+            }
+            input[type=range]:focus::-ms-fill-lower {
+                background: #EFEFEF
+            }
+            input[type=range]:focus::-ms-fill-upper {
+                background: #363636
+            }
+            .switch {
+                display: block;
+                position: relative;
+                line-height: 22px;
+                font-size: 16px;
+                height: 22px
+            }
+            .switch input {
+                outline: 0;
+                opacity: 0;
+                width: 0;
+                height: 0
+            }
+            .slider {
+                width: 50px;
+                height: 22px;
+                border-radius: 22px;
+                cursor: pointer;
+                background-color: grey
+            }
+            .slider,.slider:before {
+                display: inline-block;
+                transition: .4s
+            }
+            .slider:before {
+                position: relative;
+                content: "";
+                border-radius: 50%;
+                height: 16px;
+                width: 16px;
+                left: 4px;
+                top: 3px;
+                background-color: #fff
+            }
+            input:checked+.slider {
+                background-color: #ff3034
+            }
+            input:checked+.slider:before {
+                -webkit-transform: translateX(26px);
+                transform: translateX(26px)
+            }
+            select {
+                border: 1px solid #363636;
+                font-size: 14px;
+                height: 22px;
+                outline: 0;
+                border-radius: 5px
+            }
+            .image-container {
+                position: relative;
+                min-width: 160px
+            }
+            .close {
+                position: absolute;
+                right: 5px;
+                top: 5px;
+                background: #ff3034;
+                width: 16px;
+                height: 16px;
+                border-radius: 100px;
+                color: #fff;
+                text-align: center;
+                line-height: 18px;
+                cursor: pointer
+            }
+            .hidden {
+                display: none
+            }
         </style>
     </head>
     <body>
@@ -783,17 +894,16 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <section class="main">
             <section id="buttons">
                 <table>
-                <tr><td align="center"><button id="get-still">Get Still</button></td><td align="center"><button id="toggle-stream">Start Stream</button></td><td align="center"><button id="face_enroll" class="disabled" disabled="disabled">Enroll Face</button></td></tr>
-                <tr><td>Servo1</td><td align="center" colspan="2"><input type="range" id="servo" min="1700" max="8000" step="35" value="4850" onchange="try{fetch(document.location.origin+'/control?var=servo&val='+this.value);}catch(e){}"></td></tr>
-                <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}"></td></tr>
-                <tr><td>Rotate</td><td align="center" colspan="2">
+                <tr style="display:none"><td align="center"></td><td align="center"><button id="toggle-stream">Start Stream</button></td><td align="center"><button id="face_enroll" class="disabled" disabled="disabled">Enroll Face</button></td></tr>
+                <tr><td>Rotate</td><td align="center">
                     <select onchange="document.getElementById('stream').style.transform='rotate('+this.value+')';">
                       <option value="0deg">0deg</option>
                       <option value="90deg">90deg</option>
                       <option value="180deg">180deg</option>
                       <option value="270deg">270deg</option>
                     </select>
-                </td></tr>                
+                </td><td align="center"><button id="get-still">Start</button></td>
+                </tr>                
                 </table>
             </section>         
             <div id="logo">
@@ -813,8 +923,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                                 <option value="6">VGA(640x480)</option>
                                 <option value="5" selected="selected">CIF(400x296)</option>
                                 <option value="4">QVGA(320x240)</option>
-                                <option value="3">HQVGA(240x176)</option>
-                                <option value="0">QQVGA(160x120)</option>
                             </select>
                         </div>
                         <div class="input-group" id="quality-group">
@@ -835,121 +943,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                             <input type="range" id="contrast" min="-2" max="2" value="0" class="default-action">
                             <div class="range-max">2</div>
                         </div>
-                        <div class="input-group" id="saturation-group">
-                            <label for="saturation">Saturation</label>
-                            <div class="range-min">-2</div>
-                            <input type="range" id="saturation" min="-2" max="2" value="0" class="default-action">
-                            <div class="range-max">2</div>
-                        </div>
-                        <div class="input-group" id="special_effect-group">
-                            <label for="special_effect">Special Effect</label>
-                            <select id="special_effect" class="default-action">
-                                <option value="0" selected="selected">No Effect</option>
-                                <option value="1">Negative</option>
-                                <option value="2">Grayscale</option>
-                                <option value="3">Red Tint</option>
-                                <option value="4">Green Tint</option>
-                                <option value="5">Blue Tint</option>
-                                <option value="6">Sepia</option>
-                            </select>
-                        </div>
-                        <div class="input-group" id="awb-group">
-                            <label for="awb">AWB</label>
-                            <div class="switch">
-                                <input id="awb" type="checkbox" class="default-action" checked="checked">
-                                <label class="slider" for="awb"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="awb_gain-group">
-                            <label for="awb_gain">AWB Gain</label>
-                            <div class="switch">
-                                <input id="awb_gain" type="checkbox" class="default-action" checked="checked">
-                                <label class="slider" for="awb_gain"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="wb_mode-group">
-                            <label for="wb_mode">WB Mode</label>
-                            <select id="wb_mode" class="default-action">
-                                <option value="0" selected="selected">Auto</option>
-                                <option value="1">Sunny</option>
-                                <option value="2">Cloudy</option>
-                                <option value="3">Office</option>
-                                <option value="4">Home</option>
-                            </select>
-                        </div>
-                        <div class="input-group" id="aec-group">
-                            <label for="aec">AEC SENSOR</label>
-                            <div class="switch">
-                                <input id="aec" type="checkbox" class="default-action" checked="checked">
-                                <label class="slider" for="aec"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="aec2-group">
-                            <label for="aec2">AEC DSP</label>
-                            <div class="switch">
-                                <input id="aec2" type="checkbox" class="default-action" checked="checked">
-                                <label class="slider" for="aec2"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="ae_level-group">
-                            <label for="ae_level">AE Level</label>
-                            <div class="range-min">-2</div>
-                            <input type="range" id="ae_level" min="-2" max="2" value="0" class="default-action">
-                            <div class="range-max">2</div>
-                        </div>
-                        <div class="input-group" id="aec_value-group">
-                            <label for="aec_value">Exposure</label>
-                            <div class="range-min">0</div>
-                            <input type="range" id="aec_value" min="0" max="1200" value="204" class="default-action">
-                            <div class="range-max">1200</div>
-                        </div>
-                        <div class="input-group" id="agc-group">
-                            <label for="agc">AGC</label>
-                            <div class="switch">
-                                <input id="agc" type="checkbox" class="default-action" checked="checked">
-                                <label class="slider" for="agc"></label>
-                            </div>
-                        </div>
-                        <div class="input-group hidden" id="agc_gain-group">
-                            <label for="agc_gain">Gain</label>
-                            <div class="range-min">1x</div>
-                            <input type="range" id="agc_gain" min="0" max="30" value="5" class="default-action">
-                            <div class="range-max">31x</div>
-                        </div>
-                        <div class="input-group" id="gainceiling-group">
-                            <label for="gainceiling">Gain Ceiling</label>
-                            <div class="range-min">2x</div>
-                            <input type="range" id="gainceiling" min="0" max="6" value="0" class="default-action">
-                            <div class="range-max">128x</div>
-                        </div>
-                        <div class="input-group" id="bpc-group">
-                            <label for="bpc">BPC</label>
-                            <div class="switch">
-                                <input id="bpc" type="checkbox" class="default-action">
-                                <label class="slider" for="bpc"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="wpc-group">
-                            <label for="wpc">WPC</label>
-                            <div class="switch">
-                                <input id="wpc" type="checkbox" class="default-action" checked="checked">
-                                <label class="slider" for="wpc"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="raw_gma-group">
-                            <label for="raw_gma">Raw GMA</label>
-                            <div class="switch">
-                                <input id="raw_gma" type="checkbox" class="default-action" checked="checked">
-                                <label class="slider" for="raw_gma"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="lenc-group">
-                            <label for="lenc">Lens Correction</label>
-                            <div class="switch">
-                                <input id="lenc" type="checkbox" class="default-action" checked="checked">
-                                <label class="slider" for="lenc"></label>
-                            </div>
-                        </div>
                         <div class="input-group" id="hmirror-group">
                             <label for="hmirror">H-Mirror</label>
                             <div class="switch">
@@ -964,40 +957,187 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                                 <label class="slider" for="vflip"></label>
                             </div>
                         </div>
-                        <div class="input-group" id="dcw-group">
-                            <label for="dcw">DCW (Downsize EN)</label>
-                            <div class="switch">
-                                <input id="dcw" type="checkbox" class="default-action" checked="checked">
-                                <label class="slider" for="dcw"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="colorbar-group">
-                            <label for="colorbar">Color Bar</label>
-                            <div class="switch">
-                                <input id="colorbar" type="checkbox" class="default-action">
-                                <label class="slider" for="colorbar"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="face_detect-group">
-                            <label for="face_detect">Face Detection</label>
-                            <div class="switch">
-                                <input id="face_detect" type="checkbox" class="default-action">
-                                <label class="slider" for="face_detect"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="face_recognize-group">
-                            <label for="face_recognize">Face Recognition</label>
-                            <div class="switch">
-                                <input id="face_recognize" type="checkbox" class="default-action">
-                                <label class="slider" for="face_recognize"></label>
-                            </div>
-                        </div>
                     </nav>
                 </div>
             </div>
         </section>
         <script>
-          document.addEventListener('DOMContentLoaded',function(){function b(B){let C;switch(B.type){case'checkbox':C=B.checked?1:0;break;case'range':case'select-one':C=B.value;break;case'button':case'submit':C='1';break;default:return;}const D=`${c}/control?var=${B.id}&val=${C}`;fetch(D).then(E=>{console.log(`request to ${D} finished, status: ${E.status}`)})}var c=document.location.origin;const e=B=>{B.classList.add('hidden')},f=B=>{B.classList.remove('hidden')},g=B=>{B.classList.add('disabled'),B.disabled=!0},h=B=>{B.classList.remove('disabled'),B.disabled=!1},i=(B,C,D)=>{D=!(null!=D)||D;let E;'checkbox'===B.type?(E=B.checked,C=!!C,B.checked=C):(E=B.value,B.value=C),D&&E!==C?b(B):!D&&('aec'===B.id?C?e(v):f(v):'agc'===B.id?C?(f(t),e(s)):(e(t),f(s)):'awb_gain'===B.id?C?f(x):e(x):'face_recognize'===B.id&&(C?h(n):g(n)))};document.querySelectorAll('.close').forEach(B=>{B.onclick=()=>{e(B.parentNode)}}),fetch(`${c}/status`).then(function(B){return B.json()}).then(function(B){document.querySelectorAll('.default-action').forEach(C=>{i(C,B[C.id],!1)})});const j=document.getElementById('stream'),k=document.getElementById('stream-container'),l=document.getElementById('get-still'),m=document.getElementById('toggle-stream'),n=document.getElementById('face_enroll'),o=document.getElementById('close-stream'),p=()=>{window.stop(),m.innerHTML='Start Stream'},q=()=>{j.src=`${c+':81'}/stream`,f(k),m.innerHTML='Stop Stream'};l.onclick=()=>{p(),j.src=`${c}/capture?_cb=${Date.now()}`,f(k)},o.onclick=()=>{p(),e(k)},m.onclick=()=>{const B='Stop Stream'===m.innerHTML;B?p():q()},n.onclick=()=>{b(n)},document.querySelectorAll('.default-action').forEach(B=>{B.onchange=()=>b(B)});const r=document.getElementById('agc'),s=document.getElementById('agc_gain-group'),t=document.getElementById('gainceiling-group');r.onchange=()=>{b(r),r.checked?(f(t),e(s)):(e(t),f(s))};const u=document.getElementById('aec'),v=document.getElementById('aec_value-group');u.onchange=()=>{b(u),u.checked?e(v):f(v)};const w=document.getElementById('awb_gain'),x=document.getElementById('wb_mode-group');w.onchange=()=>{b(w),w.checked?f(x):e(x)};const y=document.getElementById('face_detect'),z=document.getElementById('face_recognize'),A=document.getElementById('framesize');A.onchange=()=>{b(A),5<A.value&&(i(y,!1),i(z,!1))},y.onchange=()=>{return 5<A.value?(alert('Please select CIF or lower resolution before enabling this feature!'),void i(y,!1)):void(b(y),!y.checked&&(g(n),i(z,!1)))},z.onchange=()=>{return 5<A.value?(alert('Please select CIF or lower resolution before enabling this feature!'),void i(z,!1)):void(b(z),z.checked?(h(n),i(y,!0)):g(n))}});
+          document.addEventListener('DOMContentLoaded', function (event) {
+            var baseHost = document.location.origin
+            var streamUrl = baseHost + ':81'
+          
+            const hide = el => {
+              el.classList.add('hidden')
+            }
+            const show = el => {
+              el.classList.remove('hidden')
+            }
+          
+            const disable = el => {
+              el.classList.add('disabled')
+              el.disabled = true
+            }
+          
+            const enable = el => {
+              el.classList.remove('disabled')
+              el.disabled = false
+            }
+          
+            const updateValue = (el, value, updateRemote) => {
+              updateRemote = updateRemote == null ? true : updateRemote
+              let initialValue
+              if (el.type === 'checkbox') {
+                initialValue = el.checked
+                value = !!value
+                el.checked = value
+              } else {
+                initialValue = el.value
+                el.value = value
+              }
+          
+              if (updateRemote && initialValue !== value) {
+                updateConfig(el);
+              } else if(!updateRemote){
+                if(el.id === "aec"){
+                  value ? hide(exposure) : show(exposure)
+                } else if(el.id === "agc"){
+                  if (value) {
+                    show(gainCeiling)
+                    hide(agcGain)
+                  } else {
+                    hide(gainCeiling)
+                    show(agcGain)
+                  }
+                } else if(el.id === "awb_gain"){
+                  value ? show(wb) : hide(wb)
+                } else if(el.id === "face_recognize"){
+                  value ? enable(enrollButton) : disable(enrollButton)
+                }
+              }
+            }
+          
+            function updateConfig (el) {
+              let value
+              switch (el.type) {
+                case 'checkbox':
+                  value = el.checked ? 1 : 0
+                  break
+                case 'range':
+                case 'select-one':
+                  value = el.value
+                  break
+                case 'button':
+                case 'submit':
+                  value = '1'
+                  break
+                default:
+                  return
+              }
+          
+              const query = `${baseHost}/control?var=${el.id}&val=${value}`
+          
+              fetch(query)
+                .then(response => {
+                  console.log(`request to ${query} finished, status: ${response.status}`)
+                })
+            }
+          
+            document
+              .querySelectorAll('.close')
+              .forEach(el => {
+                el.onclick = () => {
+                  hide(el.parentNode)
+                }
+              })
+          
+            // read initial values
+            fetch(`${baseHost}/status`)
+              .then(function (response) {
+                return response.json()
+              })
+              .then(function (state) {
+                document
+                  .querySelectorAll('.default-action')
+                  .forEach(el => {
+                    updateValue(el, state[el.id], false)
+                  })
+              })
+          
+            const view = document.getElementById('stream')
+            const viewContainer = document.getElementById('stream-container')
+            const stillButton = document.getElementById('get-still')
+            const streamButton = document.getElementById('toggle-stream')
+            const enrollButton = document.getElementById('face_enroll')
+            const closeButton = document.getElementById('close-stream')           
+                  
+            const stopStream = () => {
+              window.stop();
+              streamButton.innerHTML = 'Start Stream'
+            }
+          
+            const startStream = () => {
+              view.src = `${streamUrl}/stream`
+              show(viewContainer)
+              streamButton.innerHTML = 'Stop Stream'
+            }
+          
+            // Attach actions to buttons
+            stillButton.onclick = () => {
+              stopStream()
+              view.src = `${baseHost}/capture?_cb=${Date.now()}`
+              show(viewContainer)
+            }
+          
+            closeButton.onclick = () => {
+              stopStream()
+              hide(viewContainer)
+            }
+          
+            streamButton.onclick = () => {
+              const streamEnabled = streamButton.innerHTML === 'Stop Stream'
+              if (streamEnabled) {
+                stopStream()
+              } else {
+                startStream()
+              }
+            }
+          
+            enrollButton.onclick = () => {
+              updateConfig(enrollButton)
+            }
+          
+            // Attach default on change action
+            document
+              .querySelectorAll('.default-action')
+              .forEach(el => {
+                el.onchange = () => updateConfig(el)
+              })
+          
+            const framesize = document.getElementById('framesize')
+          
+            framesize.onchange = () => {
+              updateConfig(framesize)
+              if (framesize.value > 5) {
+                updateValue(detect, false)
+                updateValue(recognize, false)
+              }
+            }
+          })
+
+          var getStream = document.getElementById('get-still');
+          var stream = document.getElementById('stream');
+          var myTimer;
+          var streamState = true;           
+
+          stream.onload = function (event) {
+            clearInterval(myTimer);
+            if (streamState==true) {
+              setTimeout(function(){getStream.click();},100);
+              myTimer = setInterval(function(){getStream.click();},10000);
+            }
+            else
+              stream.src="";
+          }           
         </script>
     </body>
 </html>
@@ -1061,8 +1201,6 @@ void startCameraServer(){
     mtmn_config.o_threshold.score = 0.7;
     mtmn_config.o_threshold.nms = 0.4;
     mtmn_config.o_threshold.candidate_number = 1;
-    
-    face_id_init(&id_list, FACE_ID_SAVE_NUMBER, ENROLL_CONFIRM_TIMES);
     
     Serial.printf("Starting web server on port: '%d'\n", config.server_port);
     if (httpd_start(&camera_httpd, &config) == ESP_OK) {
