@@ -1,5 +1,5 @@
 /*
-ESP32-CAM (Save a captured photo to Telegram)
+ESP32-CAM save a captured photo to Telegram
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-16 00:00
 https://www.facebook.com/francefu
 */
