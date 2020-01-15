@@ -373,7 +373,7 @@ static esp_err_t capture_handler(httpd_req_t *req){
         return ESP_FAIL;
     }
 
-    //Print distance
+    //Print distance value in the photo.
     rgb_printf(image_matrix, 0x000000FF, "Distance: %s cm", String(distance_cm));
 
     jpg_chunking_t jchunk = {req, 0};
