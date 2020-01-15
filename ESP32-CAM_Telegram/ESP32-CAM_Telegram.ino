@@ -8,8 +8,8 @@ https://www.facebook.com/francefu
 const char* ssid     = "*****";   //your network SSID
 const char* password = "*****";   //your network password
 
-String token = "*****:*************************";   // Create your bot and get token by https://telegram.me/fatherbot
-String chat_id = "*****";   // Get chat_id by https://telegram.me/userinfobot
+String token = "*****:*************************";   // Create your bot and get the token -> https://telegram.me/fatherbot
+String chat_id = "*****";   // Get chat_id -> https://telegram.me/userinfobot
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
