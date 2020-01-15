@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Ping Ultrasonic Sensor (Control Flash)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-15 02:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-15 17:00
 https://www.facebook.com/francefu
 
 //Ping Ultrasonic Sensor (If you use Ping Ultrasonic Sensor, you can't use SD card library at the same time.)
