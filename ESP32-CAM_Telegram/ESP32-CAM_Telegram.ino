@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (Save a captured photo to Telegram)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-15 20:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-16 00:00
 https://www.facebook.com/francefu
 */
 
@@ -8,8 +8,8 @@ https://www.facebook.com/francefu
 const char* ssid     = "*****";   //your network SSID
 const char* password = "*****";   //your network password
 
-String myTelegramRequest = "/bot*****:********************/sendPhoto";  // Create your bot by https://telegram.me/fatherbot
-String chat_id = "**********";   // Get chat_id by https://telegram.me/userinfobot
+String token = "*****:*************************";   // Create your bot and get token by https://telegram.me/fatherbot
+String chat_id = "*****";   // Get chat_id by https://telegram.me/userinfobot
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -170,7 +170,7 @@ void sendCapturedImage2Telegram()
     uint16_t extraLen = head.length() + tail.length();
     uint16_t totalLen = imageLen + extraLen;
   
-    client_tcp.println("POST "+myTelegramRequest+" HTTP/1.1");
+    client_tcp.println("POST /bot"+token+"/sendPhoto HTTP/1.1");
     client_tcp.println("Connection: close"); 
     client_tcp.println("Host: api.telegram.org");
     client_tcp.println("Content-Length: " + String(totalLen));
