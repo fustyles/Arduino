@@ -8,7 +8,7 @@ https://www.facebook.com/francefu
 const char* ssid     = "*****";   //your network SSID
 const char* password = "*****";   //your network password
 
-String myTelegramRequest = "/bot*****:********************/sendPhoto";  // From https://telegram.me/fatherbot
+String myTelegramRequest = "/bot*****:********************/sendPhoto";  // Set up your bot by https://telegram.me/fatherbot
 String chat_id = "**********";   // From https://telegram.me/userinfobot
 
 #include <WiFi.h>
