@@ -19,7 +19,6 @@ http://192.168.xxx.xxx/status      //取得視訊參數值
 const char* ssid = "*****";
 const char* password = "*****";
 
-//Ping Ultrasonic Sensor (If you use Ping Ultrasonic Sensor, you can't use SD card library at the same time.)
 int trigPin = 2;   //Trig
 int echoPin = 13 ;   //Echo
 int distanceLimit = 20;  //cm
