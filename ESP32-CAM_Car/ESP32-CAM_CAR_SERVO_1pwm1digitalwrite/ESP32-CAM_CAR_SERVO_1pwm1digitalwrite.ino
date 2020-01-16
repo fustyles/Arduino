@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Remote Control Car 
+ESP32-CAM Remote Control Car for Motor Driver IC L9110(s)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-3 11:00
 https://www.facebook.com/francefu
 
