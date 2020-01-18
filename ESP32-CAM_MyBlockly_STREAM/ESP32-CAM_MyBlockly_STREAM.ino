@@ -1,12 +1,12 @@
 /*
 ESP32-CAM 模組 (暫時無法跨網域連線與使用HTTPS)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-29 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-18 20:00
 https://www.facebook.com/francefu
 
 Arduino IDE settings
 Partition Scheme : Huge APP (3MB No OTA/1MB SPIFFS)
 
-自訂指令格式 :  
+預設AP端IP： 192.168.4.1 
 http://APIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 
@@ -14,7 +14,31 @@ http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://192.168.xxx.xxx/control?ip
 http://192.168.xxx.xxx/control?mac
 http://192.168.xxx.xxx/control?restart
-http://192.168.xxx.xxx/control?flash=value        //value= 0~255
+http://192.168.xxx.xxx/control?inputpullup=pin
+http://192.168.xxx.xxx/control?pinmode=pin;value
+http://192.168.xxx.xxx/control?digitalwrite=pin;value
+http://192.168.xxx.xxx/control?analogwrite=pin;value
+http://192.168.xxx.xxx/control?digitalread=pin
+http://192.168.xxx.xxx/control?analogread=pin
+http://192.168.xxx.xxx/control?touchread=pin
+http://192.168.xxx.xxx/control?tcp=domain;port;request;wait
+--> wait = 0 or 1  (waiting for response)
+--> request = /xxxx/xxxx
+http://192.168.xxx.xxx/control?ifttt=event;key;value1;value2;value3
+http://192.168.xxx.xxx/control?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
+http://192.168.xxx.xxx/control?thingspeakread=request
+--> request = /channels/xxxxx/fields/1.jsoncontrol?results=1
+http://192.168.xxx.xxx/control?linenotify=token;request
+--> request = message=xxxxx
+http://192.168.xxx.xxx/control?flash=value        //vale= 0~255
+http://192.168.xxx.xxx/control?servo=value        //vale= 1700~8000
+http://192.168.xxx.xxx/control?servo1=value       //vale= 1700~8000
+http://192.168.xxx.xxx/control?servo2=value       //vale= 1700~8000
+http://192.168.xxx.xxx/control?speedL=value       //vale= 0~255
+http://192.168.xxx.xxx/control?speedR=value       //vale= 0~255
+http://192.168.xxx.xxx/control?decelerate=value   //vale= 0~100  (%)
+http://192.168.xxx.xxx/control?car=state          //state= 1(Front),2(Left),3(Stop),4(Right),5(Back),6(FrontLeft),7(FrontRight),8(LeftAfter),9(RightAfter)
+http://192.168.xxx.xxx/control?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
@@ -49,7 +73,8 @@ http://192.168.xxx.xxx/control?var=raw_gma&val=value    // value = 0 or 1
 http://192.168.xxx.xxx/control?var=lenc&val=value    // value = 0 or 1 
 http://192.168.xxx.xxx/control?var=special_effect&val=value    // value = 0 ~ 6
 http://192.168.xxx.xxx/control?var=wb_mode&val=value    // value = 0 ~ 4
-http://192.168.xxx.xxx/control?var=ae_level&val=value    // value = -2 ~ 2  
+http://192.168.xxx.xxx/control?var=ae_level&val=value    // value = -2 ~ 2 
+http://192.168.xxx.xxx/control?var=flash&val=value    // value = 0 ~ 255  
 */
 
 //輸入WIFI連線帳號密碼
@@ -58,10 +83,18 @@ const char* password = "*****";   //your network password
 
 //輸入AP端連線帳號密碼
 const char* apssid = "ESP32-CAM";
-const char* appassword = "12345678";         //AP密碼至少要8個字元以上
+const char* appassword = "12345678";         //AP password require at least 8 characters.
+
+int speedR = 255;  //You can adjust the speed of the wheel. (gpio12, gpio13)
+int speedL = 255;  //You can adjust the speed of the wheel. (gpio14, gpio15)
+int servoPin = 2;
+int servo1Pin = 2;
+int servo2Pin = 13;
+double decelerate = 60;
 
 #include <WiFi.h>
-#include <esp32-hal-ledc.h>      //用於控制伺服馬達
+#include <HTTPClient.h>
+HTTPClient http;
 #include "esp_camera.h"          //視訊
 #include "Base64.h"              //用於轉換視訊影像格式為base64格式，易於上傳google雲端硬碟或資料庫
 #include "soc/soc.h"             //用於電源不穩不重開機 
@@ -72,6 +105,7 @@ const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 #include "esp_timer.h"
 #include "esp_camera.h"
 #include "img_converters.h"
+
 #include "fb_gfx.h"
 #include "fd_forward.h"
 #include "fr_forward.h"
@@ -201,8 +235,7 @@ void setup() {
   config.pin_pwdn = PWDN_GPIO_NUM;
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
-  //https://github.com/espressif/esp32-camera/blob/master/driver/include/sensor.h
-  config.pixel_format = PIXFORMAT_JPEG;    //影像格式：RGB565|YUV422|GRAYSCALE|JPEG|RGB888|RAW|RGB444|RGB555
+  config.pixel_format = PIXFORMAT_JPEG;
   //init with high specs to pre-allocate larger buffers
   if(psramFound()){
     config.frame_size = FRAMESIZE_UXGA;
@@ -230,7 +263,18 @@ void setup() {
   ledcAttachPin(4, 4);  
   ledcSetup(4, 5000, 8);
   
-  WiFi.mode(WIFI_AP_STA);  //其他模式 WiFi.mode(WIFI_AP); WiFi.mode(WIFI_STA);
+  //馬達驅動IC
+  ledcAttachPin(12, 5);
+  ledcSetup(5, 2000, 8);      
+  ledcAttachPin(13, 6);
+  ledcSetup(6, 2000, 8);
+  ledcWrite(6, 0);  
+  ledcAttachPin(15, 7);
+  ledcSetup(7, 2000, 8);      
+  ledcAttachPin(14, 8);
+  ledcSetup(8, 2000, 8);   
+  
+  WiFi.mode(WIFI_AP_STA);
 
   //指定Client端靜態IP
   //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
@@ -243,9 +287,10 @@ void setup() {
   Serial.println(ssid);
   
   long int StartTime=millis();
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    if ((StartTime+10000) < millis()) break;    //等待10秒連線
+  while (WiFi.status() != WL_CONNECTED) 
+  {
+      delay(500);
+      if ((StartTime+10000) < millis()) break;    //等待10秒連線
   } 
 
   if (WiFi.status() == WL_CONNECTED) {    //若連線成功
@@ -277,6 +322,7 @@ void setup() {
   Serial.println("");
   Serial.println("APIP address: ");
   Serial.println(WiFi.softAPIP());    
+  Serial.println("");
   
   startCameraServer(); 
 
@@ -542,12 +588,282 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if (cmd=="restart") {  //重設WIFI連線
         ESP.restart();
       }           
+      else if (cmd=="inputpullup") {
+        pinMode(P1.toInt(), INPUT_PULLUP);
+      }  
+      else if (cmd=="pinmode") {
+        if (P2.toInt()==1)
+          pinMode(P1.toInt(), OUTPUT);
+        else
+          pinMode(P1.toInt(), INPUT);
+      }        
+      else if (cmd=="digitalwrite") {
+        ledcDetachPin(P1.toInt());
+        pinMode(P1.toInt(), OUTPUT);
+        digitalWrite(P1.toInt(), P2.toInt());
+      }   
+      else if (cmd=="digitalread") {
+        Feedback=String(digitalRead(P1.toInt()));
+      }
+      else if (cmd=="analogwrite") {
+        if (P1=="2") {
+          ledcAttachPin(2, 3);  
+          ledcSetup(3, 5000, 8);
+          ledcWrite(3,P2.toInt());     
+        }    
+        else if (P1=="4") {
+          ledcAttachPin(4, 4);  
+          ledcSetup(4, 5000, 8);
+          ledcWrite(4,P2.toInt());     
+        }
+        else if (P1=="12") {
+          ledcAttachPin(12, 5);  
+          ledcSetup(5, 5000, 8);
+          ledcWrite(5,P2.toInt());     
+        }
+        else if (P1=="13") {
+          ledcAttachPin(13, 6);  
+          ledcSetup(6, 5000, 8);
+          ledcWrite(6,P2.toInt());     
+        }
+        else if (P1=="14") {
+          ledcAttachPin(14, 8);  
+          ledcSetup(8, 5000, 8);
+          ledcWrite(8,P2.toInt());     
+        }
+        else if (P1=="15") {
+          ledcAttachPin(15, 7);  
+          ledcSetup(7, 5000, 8);
+          ledcWrite(7,P2.toInt());     
+        }
+        else {
+          ledcAttachPin(P1.toInt(), 9);
+          ledcSetup(9, 5000, 8);
+          ledcWrite(9,P2.toInt());
+        }
+      }       
+      else if (cmd=="analogread") {
+        Feedback=String(analogRead(P1.toInt()));
+      }
+      else if (cmd=="touchread") {
+        Feedback=String(touchRead(P1.toInt()));
+      }   
+      else if (cmd=="tcp") {
+        String domain=P1;
+        int port=P2.toInt();
+        String request=P3;
+        int wait=P4.toInt();      // wait = 0 or 1
+    
+        Feedback=tcp_http(domain,request,port,wait);  
+      }
+      else if (cmd=="ifttt") {
+        String domain="maker.ifttt.com";
+        String request = "/trigger/" + P1 + "/with/key/" + P2;
+        request += "?value1="+P3+"&value2="+P4+"&value3="+P5;
+        Feedback=tcp_http(domain,request,80,0);
+      }
+      else if (cmd=="thingspeakupdate") {
+        String domain="api.thingspeak.com";
+        String request = "/update?api_key=" + P1;
+        request += "&field1="+P2+"&field2="+P3+"&field3="+P4+"&field4="+P5+"&field5="+P6+"&field6="+P7+"&field7="+P8+"&field8="+P9;
+        Feedback=tcp_http(domain,request,80,0);
+      }    
+      else if (cmd=="thingspeakread") {
+        String domain="api.thingspeak.com";
+        String request = P1;
+        Feedback=tcp_http(domain,request,80,1);
+        int s=Feedback.indexOf("feeds");
+        Feedback=Feedback.substring(s+8);
+        int e=Feedback.indexOf("]");
+        Feedback=Feedback.substring(0,e);
+        Feedback.replace("},{",";");
+        Feedback.replace("\":\"",",");
+        Feedback.replace("\":",",");
+        Feedback.replace("\",\"",","); 
+        Feedback.replace("\"","");
+        Feedback.replace("{","");
+        Feedback.replace("}","");
+        Feedback.replace("[","");
+        Feedback.replace("]","");
+        Feedback.replace(",\"",",");
+        Feedback.replace("\":",",");
+      } 
+      else if (cmd=="linenotify") {
+        String token = P1;
+        String request = P2;
+        Feedback=LineNotify(token,request,1);
+        //Serial.println(Feedback);
+        if (Feedback.indexOf("status")!=-1) {
+          int s=Feedback.indexOf("<body>");
+          Feedback=Feedback.substring(s+6);
+          int e=Feedback.indexOf("<");
+          Feedback=Feedback.substring(0,e);
+        }
+      } 
       else if (cmd=="flash") {  //控制內建閃光燈
         ledcAttachPin(4, 4);  
         ledcSetup(4, 5000, 8);   
          
         int val = P1.toInt();
         ledcWrite(4,val);  
+      }  
+      else if (cmd=="servo") {
+        ledcAttachPin(servoPin, 3);  
+        ledcSetup(3, 50, 16);
+        
+        int val = P1.toInt();      
+        if (val > 8000)
+           val = 8000;
+        else if (val < 1700)
+          val = 1700;   
+        val = 1700 + (8000 - val);   
+        ledcWrite(3, val); 
+      }  
+      else if (cmd=="servo1") {
+        ledcAttachPin(servo1Pin, 3);  
+        ledcSetup(3, 50, 16); 
+        
+        int val = P1.toInt();     
+        if (val > 8000)
+           val = 8000;
+        else if (val < 1700)
+          val = 1700;   
+        val = 1700 + (8000 - val);   
+        ledcWrite(3, val); 
+      }  
+      else if (cmd=="servo2") {
+        ledcAttachPin(servo2Pin, 6);  
+        ledcSetup(6, 50, 16); 
+        
+        int val = P1.toInt();     
+        if (val > 8000)
+           val = 8000;
+        else if (val < 1700)
+          val = 1700;   
+        val = 1700 + (8000 - val);   
+        ledcWrite(6, val); 
+      }
+      else if (cmd=="speedL") {
+        int val = P1.toInt();
+        if (val > 255)
+           val = 255;
+        else if (val < 0)
+          val = 0;       
+        speedL = val;
+        Serial.println("LeftSpeed = " + String(val)); 
+      }  
+      else if (cmd=="speedR") {
+        int val = P1.toInt();
+        if (val > 255)
+           val = 255;
+        else if (val < 0)
+          val = 0;       
+        speedR = val;
+        Serial.println("RightSpeed = " + String(val)); 
+      }  
+      else if (cmd=="decelerate") { 
+        int val = P1.toInt();      
+        decelerate = val;
+        Serial.println("Decelerate = " + String(val)); 
+      }   
+      else if (cmd=="car") {
+        ledcAttachPin(12, 5);
+        ledcSetup(5, 2000, 8);      
+        ledcAttachPin(13, 6);
+        ledcSetup(6, 2000, 8);
+        ledcWrite(6, 0);  
+        ledcAttachPin(15, 7);
+        ledcSetup(7, 2000, 8);      
+        ledcAttachPin(14, 8);
+        ledcSetup(8, 2000, 8); 
+          
+        int val = P1.toInt();
+        if (val==1) {
+          Serial.println("Front");     
+          ledcWrite(5,speedR);
+          ledcWrite(6,0);
+          ledcWrite(7,speedL);
+          ledcWrite(8,0);   
+        }
+        else if (val==2) {
+          Serial.println("Left");     
+          ledcWrite(5,speedR*decelerate/100);
+          ledcWrite(6,0);
+          ledcWrite(7,0);
+          ledcWrite(8,speedL*decelerate/100);  
+        }
+        else if (val==3) {
+          Serial.println("Stop");      
+          ledcWrite(5,0);
+          ledcWrite(6,0);
+          ledcWrite(7,0);
+          ledcWrite(8,0);    
+        }
+        else if (val==4) {
+          Serial.println("Right");
+          ledcWrite(5,0);
+          ledcWrite(6,speedR*decelerate/100);
+          ledcWrite(7,speedL*decelerate/100);
+          ledcWrite(8,0);          
+        }
+        else if (val==5) {
+          Serial.println("Back");      
+          ledcWrite(5,0);
+          ledcWrite(6,speedR);
+          ledcWrite(7,0);
+          ledcWrite(8,speedL);
+        }  
+        else if (val==6) {
+          Serial.println("FrontLeft");     
+          ledcWrite(5,speedR);
+          ledcWrite(6,0);
+          ledcWrite(7,speedL*decelerate/100);
+          ledcWrite(8,0);   
+        }
+        else if (val==7) {
+          Serial.println("FrontRight");     
+          ledcWrite(5,speedR*decelerate/100);
+          ledcWrite(6,0);
+          ledcWrite(7,speedL);
+          ledcWrite(8,0);   
+        }  
+        else if (val==8) {
+          Serial.println("LeftAfter");      
+          ledcWrite(5,0);
+          ledcWrite(6,speedR);
+          ledcWrite(7,0);
+          ledcWrite(8,speedL*decelerate/100);
+        } 
+        else if (val==9) {
+          Serial.println("RightAfter");      
+          ledcWrite(5,0);
+          ledcWrite(6,speedR*decelerate/100);
+          ledcWrite(7,0);
+          ledcWrite(8,speedL);
+        }       
+      }     
+      else if (cmd=="framesize") { 
+        sensor_t * s = esp_camera_sensor_get();  
+        if (P1=="QQVGA")
+          s->set_framesize(s, FRAMESIZE_QQVGA);
+        else if (P1=="HQVGA")
+          s->set_framesize(s, FRAMESIZE_HQVGA);
+        else if (P1=="QVGA")
+          s->set_framesize(s, FRAMESIZE_QVGA);
+        else if (P1=="CIF")
+          s->set_framesize(s, FRAMESIZE_CIF);
+        else if (P1=="VGA")
+          s->set_framesize(s, FRAMESIZE_VGA);
+        else if (P1=="SVGA")
+          s->set_framesize(s, FRAMESIZE_SVGA);
+        else if (P1=="XGA")
+          s->set_framesize(s, FRAMESIZE_XGA);
+        else if (P1=="SXGA")
+          s->set_framesize(s, FRAMESIZE_SXGA);
+        else if (P1=="UXGA")
+          s->set_framesize(s, FRAMESIZE_UXGA);          
+        else 
+          s->set_framesize(s, FRAMESIZE_CIF);    
       }  
       else {
         Feedback="Command is not defined";
@@ -570,8 +886,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
 
       //官方指令區塊，也可在此自訂指令  http://192.168.xxx.xxx/control?var=xxx&val=xxx
       if(!strcmp(variable, "framesize")) {
-        if(s->pixformat == PIXFORMAT_JPEG) 
-          res = s->set_framesize(s, (framesize_t)val);
+          if(s->pixformat == PIXFORMAT_JPEG) res = s->set_framesize(s, (framesize_t)val);
       }
       else if(!strcmp(variable, "quality")) res = s->set_quality(s, val);
       else if(!strcmp(variable, "contrast")) res = s->set_contrast(s, val);
@@ -595,7 +910,10 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if(!strcmp(variable, "lenc")) res = s->set_lenc(s, val);
       else if(!strcmp(variable, "special_effect")) res = s->set_special_effect(s, val);
       else if(!strcmp(variable, "wb_mode")) res = s->set_wb_mode(s, val);
-      else if(!strcmp(variable, "ae_level")) res = s->set_ae_level(s, val);         
+      else if(!strcmp(variable, "ae_level")) res = s->set_ae_level(s, val);   
+      else if(!strcmp(variable, "flash")) {
+        ledcWrite(4,val);
+      }       
       else {
           res = -1;
       }
@@ -617,7 +935,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else {
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         return httpd_resp_send(req, NULL, 0);
-      }
+      }    
     }
 }
 
@@ -711,7 +1029,27 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <option value="ip">ip</option>
         <option value="mac">mac</option>
         <option value="restart">restart</option>
-        <option value="flash">flash(value)</option>   
+        <option value="inputpullup">inputpullup</option>
+        <option value="pinmode">pinmode</option>
+        <option value="digitalwrite">digitalwrite(gpio,value)</option>
+        <option value="analogwrite">analogwrite(gpio,value)</option>
+        <option value="digitalread">digitalread(gpio)</option>
+        <option value="analogread">analogread(gpio)</option>
+        <option value="touchread">touchread(gpio)</option>
+        <option value="tcp">tcp(domain,port,request,wait)</option>
+        <option value="ifttt">ifttt(event,key,value1,value2,value3)</option>
+        <option value="thingspeakupdate">thingspeakupdate(key,field1~field8)</option>
+        <option value="thingspeakread">thingspeakread(request)</option>
+        <option value="linenotify">linenotify(token,request)</option>
+        <option value="flash">flash(value)</option>
+        <option value="servo">servo(value)</option>
+        <option value="servo1">servo1(value)</option>
+        <option value="servo2">servo2(value)</option>
+        <option value="speedL">speedL(value)</option>
+        <option value="speedR">speedR(value)</option>
+        <option value="decelerate">decelerate(value)</option>
+        <option value="car">car(state)</option>
+        <option value="framesize">framesize(size)</option>     
         </select>
         <br>
       <tr>
@@ -742,6 +1080,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           <option value="special_effect">special_effect(value)</option>  
           <option value="wb_mode">wb_mode(value)</option>  
           <option value="ae_level">ae_level(value)</option>  
+          <option value="flash">flash(value)</option>  
         </select>
         <br>        
         <input type="radio" name="choice" id="choice3">
@@ -784,7 +1123,29 @@ static esp_err_t index_handler(httpd_req_t *req){
 }
 
 void startCameraServer(){
-  httpd_config_t config = HTTPD_DEFAULT_CONFIG();  //可在HTTPD_DEFAULT_CONFIG()中設定Server Port 
+/*
+  #define HTTPD_DEFAULT_CONFIG() {                   \
+     .task_priority      = tskIDLE_PRIORITY+5,       \
+     .stack_size         = 4096,                     \    
+     .server_port        = 80,                       \  
+     .ctrl_port          = 32768,                    \
+     .max_open_sockets   = 7,                        \
+     .max_uri_handlers   = 8,                        \
+     .max_resp_headers   = 8,                        \
+     .backlog_conn       = 5,                        \
+     .lru_purge_enable   = false,                    \
+     .recv_wait_timeout  = 5,                        \
+     .send_wait_timeout  = 5,                        \
+     .global_user_ctx = NULL,                        \
+     .global_user_ctx_free_fn = NULL,                \
+     .global_transport_ctx = NULL,                   \
+     .global_transport_ctx_free_fn = NULL,           \
+     .open_fn = NULL,                                \
+     .close_fn = NULL,                               \
+  } 
+*/  
+
+  httpd_config_t config = HTTPD_DEFAULT_CONFIG();  //可在HTTPD_DEFAULT_CONFIG()中設定Server Port
 
   //可自訂網址路徑
   //http://192.168.xxx.xxx/
@@ -795,7 +1156,6 @@ void startCameraServer(){
       .user_ctx  = NULL
   };
 
-  //http://192.168.xxx.xxx/status
   httpd_uri_t status_uri = {
       .uri       = "/status",
       .method    = HTTP_GET,
@@ -803,7 +1163,6 @@ void startCameraServer(){
       .user_ctx  = NULL
   };
 
-  //http://192.168.xxx.xxx/control
   httpd_uri_t cmd_uri = {
       .uri       = "/control",
       .method    = HTTP_GET,
@@ -811,7 +1170,6 @@ void startCameraServer(){
       .user_ctx  = NULL
   }; 
 
-  //http://192.168.xxx.xxx/capture
   httpd_uri_t capture_uri = {
       .uri       = "/capture",
       .method    = HTTP_GET,
@@ -819,7 +1177,6 @@ void startCameraServer(){
       .user_ctx  = NULL
   };
 
-  //http://192.168.xxx.xxx:81/stream
   httpd_uri_t stream_uri = {
       .uri       = "/stream",
       .method    = HTTP_GET,
@@ -874,4 +1231,106 @@ void getCommand(char c)
     if (c=='=') equalstate=1;
     if ((strState>=9)&&(c==';')) semicolonstate=1;
   }
+}
+
+//https://github.com/zenmanenergy/ESP8266-Arduino-Examples/
+String urlencode(String str)
+{
+    String encodedString="";
+    char c;
+    char code0;
+    char code1;
+    char code2;
+    for (int i =0; i < str.length(); i++){
+      c=str.charAt(i);
+      if (c == ' '){
+        encodedString+= '+';
+      } else if (isalnum(c)){
+        encodedString+=c;
+      } else{
+        code1=(c & 0xf)+'0';
+        if ((c & 0xf) >9){
+            code1=(c & 0xf) - 10 + 'A';
+        }
+        c=(c>>4)&0xf;
+        code0=c+'0';
+        if (c > 9){
+            code0=c - 10 + 'A';
+        }
+        code2='\0';
+        encodedString+='%';
+        encodedString+=code0;
+        encodedString+=code1;
+        //encodedString+=code2;
+      }
+      yield();
+    }
+    return encodedString;
+}
+          
+String tcp_http(String domain,String request,int port,byte wait)
+{
+  String getAll="", getBody="";
+
+  WiFiClient client_tcp;
+  if (client_tcp.connect(domain.c_str(), port)) {
+    Serial.println("GET " + request);
+    client_tcp.println("GET " + request + " HTTP/1.1");
+    client_tcp.println("Host: " + domain);
+    client_tcp.println("Connection: close");
+    client_tcp.println();
+
+    boolean state = false;
+    int waitTime = 10000;   // timeout 10 seconds
+    long startTime = millis();
+    while ((startTime + waitTime) > millis()) {
+      while (client_tcp.available()) {
+        char c = client_tcp.read();
+        if (c == '\n') {
+          if (getAll.length()==0) state=true; 
+          getAll = "";
+        } 
+        else if (c != '\r')
+          getAll += String(c);
+        if (state==true) getBody += String(c);
+        if (wait==1)
+          startTime = millis();
+       }
+       if (wait==0)
+        if (getBody.length()!= 0) break;
+    }
+    client_tcp.stop();
+    Serial.println(getBody);
+  }
+  else {
+    getBody="Connected to "+domain+" failed.";
+    Serial.println("Connected to "+domain+" failed.");
+  }
+  
+  return getBody; 
+}
+
+String LineNotify(String token, String message, byte wait)
+{
+  message.replace(" ","%20");
+  message.replace("&","%20");
+  message.replace("#","%20");
+  //message.replace("\'","%27");
+  message.replace("\"","%22");
+  message.replace("\n","%0D%0A");
+  message.replace("%3Cbr%3E","%0D%0A");
+  message.replace("%3Cbr/%3E","%0D%0A");
+  message.replace("%3Cbr%20/%3E","%0D%0A");
+  message.replace("%3CBR%3E","%0D%0A");
+  message.replace("%3CBR/%3E","%0D%0A");
+  message.replace("%3CBR%20/%3E","%0D%0A");     
+  message.replace("%20stickerPackageId","&stickerPackageId");
+  message.replace("%20stickerId","&stickerId");    
+  
+  http.begin("http://linenotify.com/notify.php?token="+token+"&"+message);
+  int httpCode = http.GET();
+  if(httpCode > 0) {
+      return http.getString();
+  } else 
+      return "Connection Error!";
 }

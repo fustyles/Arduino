@@ -1,6 +1,6 @@
 /*
 ESP32-CAM MyBlock
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-29 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-18 20:00
 https://www.facebook.com/francefu
 
 Arduino IDE settings
@@ -38,8 +38,6 @@ http://192.168.xxx.xxx/control?speedL=value       //vale= 0~255
 http://192.168.xxx.xxx/control?speedR=value       //vale= 0~255
 http://192.168.xxx.xxx/control?decelerate=value   //vale= 0~100  (%)
 http://192.168.xxx.xxx/control?car=state          //state= 1(Front),2(Left),3(Stop),4(Right),5(Back),6(FrontLeft),7(FrontRight),8(LeftAfter),9(RightAfter)
-http://192.168.xxx.xxx/control?getstill           //base64
-http://192.168.xxx.xxx/control?getstill=img       //<img id='gameimage_getstill' src='base64'>
 http://192.168.xxx.xxx/control?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
 STAIP：
@@ -73,13 +71,13 @@ http://192.168.xxx.xxx/control?var=raw_gma&val=value    // value = 0 or 1
 http://192.168.xxx.xxx/control?var=lenc&val=value    // value = 0 or 1 
 http://192.168.xxx.xxx/control?var=special_effect&val=value    // value = 0 ~ 6
 http://192.168.xxx.xxx/control?var=wb_mode&val=value    // value = 0 ~ 4
-http://192.168.xxx.xxx/control?var=ae_level&val=value    // value = -2 ~ 2  
-http://192.168.xxx.xxx/control?var=flash&val=value    // value = 0 ~ 255
+http://192.168.xxx.xxx/control?var=ae_level&val=value    // value = -2 ~ 2 
+http://192.168.xxx.xxx/control?var=flash&val=value    // value = 0 ~ 255  
 */
 
 // Enter your WiFi ssid and password
-const char* ssid     = "xxxxx";   //your network SSID
-const char* password = "xxxxx";   //your network password
+const char* ssid     = "*****";   //your network SSID
+const char* password = "*****";   //your network password
 
 const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
@@ -314,6 +312,7 @@ void setup() {
   Serial.println("");
   Serial.println("APIP address: ");
   Serial.println(WiFi.softAPIP());    
+  Serial.println("");
   
   startCameraServer(); 
 
@@ -828,12 +827,6 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           ledcWrite(8,speedL);
         }       
       }    
-      else if (cmd=="getstill") { 
-        if (P1=="img")
-          Feedback="\<img id=\'gameimage_getstill\' src=\'"+getstill()+"\'\>";
-        else
-          Feedback=getstill();
-      } 
       else if (cmd=="framesize") { 
         sensor_t * s = esp_camera_sensor_get();  
         if (P1=="QQVGA")
@@ -1048,7 +1041,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <option value="speedR">speedR(value)</option>
         <option value="decelerate">decelerate(value)</option>
         <option value="car">car(state)</option>
-        <option value="getstill">getstill</option>
         <option value="framesize">framesize(size)</option>     
         </select>
         <br>
@@ -1269,43 +1261,44 @@ String urlencode(String str)
           
 String tcp_http(String domain,String request,int port,byte wait)
 {
-    WiFiClient client_tcp;
+  String getAll="", getBody="";
 
-    if (client_tcp.connect(domain.c_str(), port)) 
-    {
-      client_tcp.println("GET " + request + " HTTP/1.1");
-      client_tcp.println("Host: " + domain);
-      client_tcp.println("Connection: close");
-      client_tcp.println();
+  WiFiClient client_tcp;
+  if (client_tcp.connect(domain.c_str(), port)) {
+    Serial.println("GET " + request);
+    client_tcp.println("GET " + request + " HTTP/1.1");
+    client_tcp.println("Host: " + domain);
+    client_tcp.println("Connection: close");
+    client_tcp.println();
 
-      String getResponse="",Feedback="";
-      boolean state = false;
-      int waitTime = 3000;   // timeout 3 seconds
-      long startTime = millis();
-      while ((startTime + waitTime) > millis())
-      {
-        while (client_tcp.available()) 
-        {
-            char c = client_tcp.read();
-            if (c == '\n') 
-            {
-              if (getResponse.length()==0) state=true; 
-              getResponse = "";
-            } 
-            else if (c != '\r')
-              getResponse += String(c);
-            if (state==true) Feedback += String(c);
-            if (wait==1)
-              startTime = millis();
-         }
-         if (wait==0)
-          if ((state==true)&&(Feedback.length()!= 0)) break;
-      }
-      client_tcp.stop();
-      return Feedback;
+    boolean state = false;
+    int waitTime = 10000;   // timeout 10 seconds
+    long startTime = millis();
+    while ((startTime + waitTime) > millis()) {
+      while (client_tcp.available()) {
+        char c = client_tcp.read();
+        if (c == '\n') {
+          if (getAll.length()==0) state=true; 
+          getAll = "";
+        } 
+        else if (c != '\r')
+          getAll += String(c);
+        if (state==true) getBody += String(c);
+        if (wait==1)
+          startTime = millis();
+       }
+       if (wait==0)
+        if (getBody.length()!= 0) break;
     }
-    else
-      return "Connection failed";  
+    client_tcp.stop();
+    Serial.println(getBody);
+  }
+  else {
+    getBody="Connected to "+domain+" failed.";
+    Serial.println("Connected to "+domain+" failed.");
+  }
+  
+  return getBody; 
 }
 
 String LineNotify(String token, String message, byte wait)
@@ -1331,27 +1324,4 @@ String LineNotify(String token, String message, byte wait)
       return http.getString();
   } else 
       return "Connection Error!";
-}
-
-String getstill() { 
-  camera_fb_t * fb = NULL;
-  fb = esp_camera_fb_get();  
-  if(!fb) {
-    Serial.println("Camera capture failed");
-    return "Camera capture failed";
-  }
-
-  String imageFile = "data:image/jpeg;base64,";
-  char *input = (char *)fb->buf;
-  char output[base64_enc_len(3)];
-  for (int i=0;i<fb->len;i++) {
-    base64_encode(output, (input++), 3);
-    if (i%3==0) imageFile += urlencode(String(output));
-  }
-  esp_camera_fb_return(fb);
-
-  pinMode(4, OUTPUT);
-  digitalWrite(4, LOW); 
-  Serial.println(imageFile);
-  return imageFile;
 }
