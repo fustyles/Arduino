@@ -1,6 +1,6 @@
  /*
 ESP32-CAM save a captured photo to Telegram
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-18 14:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-18 16:00
 https://www.facebook.com/francefu
 */
 
@@ -55,7 +55,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
     <body>
       <table>
       <tr><td colspan="3"><img id="stream" src=""></td></tr>
-      <tr><td><button id="get-still">Stream</button></td><td><button id="stop">Stop</button></td><td></td></tr>
+      <tr><td><button id="restart">Reatart</button></td><td><button id="get-still">Stream</button></td><td><button id="stop">Stop</button></td></tr>
       <tr><td>Token</td><td align="center"><input type="text" id="token" value=""></td><td rowspan="2"><button id="send-image">Send</button></td></tr>
       <tr><td>chat_id</td><td align="center"><input type="text" id="chat_id" value=""></td></tr>
       <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/?flash='+this.value);}catch(e){}"></td></tr>
@@ -90,6 +90,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
     <script>
       var stream = document.getElementById('stream');
       var getStream = document.getElementById('get-still');
+      var restart = document.getElementById('restart');
       var stopStream = document.getElementById('stop');      
       var sendimage = document.getElementById('send-image');
       var token = document.getElementById('token');
@@ -98,6 +99,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
       var myTimer;
       var streamState = false;
 
+      restart.onclick = function (event) {
+        fetch(location.origin+'/?restart=stop');
+      } 
       getStream.onclick = function (event) {
         streamState=true;
         stream.onload = function (event) {
@@ -131,11 +135,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         url: target,
         success: function(response)
           {
-            show.innerHTML = response;           
+            show.innerHTML = response;
+            if (streamState==true) getStream.onclick;           
           },
           error: function(exception)
           {
             show.innerHTML = 'fail';
+            if (streamState==true) getStream.onclick;
           }
         });
       }       
@@ -454,6 +460,91 @@ void loop() {
   }
 }
 
+String sendCapturedImage2Telegram(String token, String chat_id) {
+  const char* myDomain = "api.telegram.org";
+  String getAll="", getBody = "";
+  boolean state = false;
+  
+  Serial.println("Connect to " + String(myDomain));
+  WiFiClientSecure client_tcp;
+  
+  if (client_tcp.connect(myDomain, 443)) {
+    Serial.println("Connection successful");
+
+    camera_fb_t * fb = NULL;
+    fb = esp_camera_fb_get();  
+    if(!fb) {
+      Serial.println("Camera capture failed");
+      delay(1000);
+      ESP.restart();
+      return "Camera capture failed";
+    }
+    
+    String head = "--Taiwan\r\nContent-Disposition: form-data; name=\"chat_id\"; \r\n\r\n" + chat_id + "\r\n--Taiwan\r\nContent-Disposition: form-data; name=\"photo\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
+    String tail = "\r\n--Taiwan--\r\n";
+
+    uint16_t imageLen = fb->len;
+    uint16_t extraLen = head.length() + tail.length();
+    uint16_t totalLen = imageLen + extraLen;
+  
+    client_tcp.println("POST /bot"+token+"/sendPhoto HTTP/1.1");
+    client_tcp.println("Host: " + String(myDomain));
+    client_tcp.println("Content-Length: " + String(totalLen));
+    client_tcp.println("Content-Type: multipart/form-data; boundary=Taiwan");
+    client_tcp.println();
+    client_tcp.print(head);
+  
+    uint8_t *fbBuf = fb->buf;
+    size_t fbLen = fb->len;
+    for (size_t n=0;n<fbLen;n=n+1024) {
+      if (n+1024<fbLen) {
+        client_tcp.write(fbBuf, 1024);
+        fbBuf += 1024;
+      }
+      else if (fbLen%1024>0) {
+        size_t remainder = fbLen%1024;
+        client_tcp.write(fbBuf, remainder);
+      }
+    }  
+    
+    client_tcp.print(tail);
+    
+    esp_camera_fb_return(fb);
+    
+    int waitTime = 10000;   // timeout 10 seconds
+    long startTime = millis();
+    while ((startTime + waitTime) > millis())
+    {
+      Serial.print(".");
+      delay(100);      
+      while (client_tcp.available()) 
+      {
+          char c = client_tcp.read();
+          if (c == '\n') 
+          {
+            if (getAll.length()==0) state=true; 
+            getAll = "";
+          } 
+          else if (c != '\r')
+            getAll += String(c);
+          if (state==true) getBody += String(c);
+          startTime = millis();
+       }
+       if (getBody.length()>0) break;
+    }
+    client_tcp.stop();
+    //Serial.println(getAll); 
+    Serial.println(getBody);
+  }
+  else {
+    getAll="Connected to api.telegram.org failed.";
+    getBody="Connected to api.telegram.org failed.";
+    Serial.println("Connected to api.telegram.org failed.");
+  }
+  
+  //return getAll;
+  return getBody;
+}
 
 
 //拆解命令字串置入變數
@@ -484,89 +575,4 @@ void getCommand(char c)
     if (c=='=') equalstate=1;
     if ((strState>=9)&&(c==';')) semicolonstate=1;
   }
-}
-
-String sendCapturedImage2Telegram(String token, String chat_id) {
-  String response = "";
-  
-  camera_fb_t * fb = NULL;
-  fb = esp_camera_fb_get();  
-  if(!fb) {
-    Serial.println("Camera capture failed");
-    delay(1000);
-    ESP.restart();
-    return "Camera capture failed";
-  }
-   
-  WiFiClientSecure client_tcp;
-
-  Serial.println("Connect to api.telegram.org");
-  
-  if (client_tcp.connect("api.telegram.org", 443)) 
-  {
-    Serial.println("Connection successful");
-    
-    String head = "--Taiwan\r\nContent-Disposition: form-data; name=\"chat_id\"; \r\n\r\n" + chat_id + "\r\n--Taiwan\r\nContent-Disposition: form-data; name=\"photo\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
-    String tail = "\r\n--Taiwan--\r\n";
-
-    uint16_t imageLen = fb->len;
-    uint16_t extraLen = head.length() + tail.length();
-    uint16_t totalLen = imageLen + extraLen;
-  
-    client_tcp.println("POST /bot"+token+"/sendPhoto HTTP/1.1");
-    client_tcp.println("Connection: close"); 
-    client_tcp.println("Host: api.telegram.org");
-    client_tcp.println("Content-Length: " + String(totalLen));
-    client_tcp.println("Content-Type: multipart/form-data; boundary=Taiwan");
-    client_tcp.println();
-    client_tcp.print(head);
-    
-    uint8_t *fbBuf = fb->buf;
-    size_t fbLen = fb->len;
-    for (size_t n=0;n<fbLen;n=n+1024) {
-      if (n+1024<fbLen) {
-        client_tcp.write(fbBuf, 1024);
-        fbBuf += 1024;
-      }
-      else if (fbLen%1024>0) {
-        size_t remainder = fbLen%1024;
-        client_tcp.write(fbBuf, remainder);
-      }
-    }  
-    
-    client_tcp.print(tail);
-    client_tcp.println();
-    
-    String getResponse="",Feedback="";
-    boolean state = false;
-    int waitTime = 3000;   // timeout 3 seconds
-    long startTime = millis();
-    while ((startTime + waitTime) > millis())
-    {
-      Serial.print(".");
-      delay(100);      
-      while (client_tcp.available()) 
-      {
-          char c = client_tcp.read();
-          if (c == '\n') 
-          {
-            if (getResponse.length()==0) state=true; 
-            getResponse = "";
-          } 
-          else if (c != '\r')
-            getResponse += String(c);
-          if (state==true) response += String(c);
-          startTime = millis();
-       }
-    }
-    client_tcp.stop();
-    Serial.println(response);
-  }
-  else {
-    response="Connected to api.telegram.org failed.";
-    Serial.println("Connected to api.telegram.org failed.");
-  }
-  esp_camera_fb_return(fb);
-  
-  return response;
 }
