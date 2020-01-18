@@ -561,16 +561,13 @@ String SendCapturedImage(String myRecipient, String mySubject) {
        if (getBody.length()>0) break;
     }
     client_tcp.stop();
-    //Serial.println(getAll); 
     Serial.println(getBody);
   }
   else {
-    getAll="Connected to " + String(myDomain) + " failed.";
     getBody="Connected to " + String(myDomain) + " failed.";
     Serial.println("Connected to " + String(myDomain) + " failed.");
   }
   
-  //return getAll;
   return getBody;
 }
 
