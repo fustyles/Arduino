@@ -231,15 +231,12 @@ String sendCapturedImage2LineNotify()
        if (getBody.length()>0) break;
     }
     client_tcp.stop();
-    //Serial.println(getAll); 
     Serial.println(getBody);
   }
   else {
-    getAll="Connected to notify-api.line.me failed.";
     getBody="Connected to notify-api.line.me failed.";
     Serial.println("Connected to notify-api.line.me failed.");
   }
   
-  //return getAll;
   return getBody;
 }
