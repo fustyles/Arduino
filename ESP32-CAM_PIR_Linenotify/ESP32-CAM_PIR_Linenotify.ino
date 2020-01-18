@@ -8,9 +8,10 @@ The maximum size of post-upload image is XGA(1024*768).
 */
 
 // Enter your WiFi ssid and password
-const char* ssid     = "xxxxx";   //your network SSID
-const char* password = "xxxxx";   //your network password
-String myLineNotifyToken = "xxxxxxxxxxxxxxxxxxxx";    //Line Notify Token
+const char* ssid     = "webduino.io";   //your network SSID
+const char* password = "webduino";   //your network password
+
+String myLineNotifyToken = "lHaUbj8vv1ZCvoxzwhpoarxNYR4PKYIHtVOS72qS6Lt";    //Line Notify Token
 int gpioPIR = 13;   //PIR Motion Sensor
 
 #include <WiFi.h>
@@ -152,15 +153,17 @@ void loop()
   delay(1000);  
 }
 
-void sendCapturedImage2LineNotify()
+String sendCapturedImage2LineNotify()
 {
+  String getAll="", getBody = "";
+  
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();  
   if(!fb) {
     Serial.println("Camera capture failed");
     delay(1000);
     ESP.restart();
-    return;
+    return "Camera capture failed";
   }
    
   WiFiClientSecure client_tcp;
@@ -171,7 +174,7 @@ void sendCapturedImage2LineNotify()
   {
     Serial.println("Connection successful");
     
-    String message = "Hello World";
+    String message = "Welcome to Taiwan";
     String head = "--Taiwan\r\nContent-Disposition: form-data; name=\"message\"; \r\n\r\n" + message + "\r\n--Taiwan\r\nContent-Disposition: form-data; name=\"imageFile\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
     String tail = "\r\n--Taiwan--\r\n";
 
@@ -202,12 +205,12 @@ void sendCapturedImage2LineNotify()
     }  
     
     client_tcp.print(tail);
-    client_tcp.println();
+    esp_camera_fb_return(fb);
     
-    String getResponse="",Feedback="";
-    boolean state = false;
-    int waitTime = 3000;   // timeout 3 seconds
+    int waitTime = 10000;   // timeout 10 seconds
     long startTime = millis();
+    boolean state = false;
+    
     while ((startTime + waitTime) > millis())
     {
       Serial.print(".");
@@ -217,20 +220,26 @@ void sendCapturedImage2LineNotify()
           char c = client_tcp.read();
           if (c == '\n') 
           {
-            if (getResponse.length()==0) state=true; 
-            getResponse = "";
+            if (getAll.length()==0) state=true; 
+            getAll = "";
           } 
           else if (c != '\r')
-            getResponse += String(c);
-          if (state==true) Feedback += String(c);
+            getAll += String(c);
+          if (state==true) getBody += String(c);
           startTime = millis();
        }
+       if (getBody.length()>0) break;
     }
     client_tcp.stop();
-    Serial.println(Feedback);
+    //Serial.println(getAll); 
+    Serial.println(getBody);
   }
   else {
+    getAll="Connected to notify-api.line.me failed.";
+    getBody="Connected to notify-api.line.me failed.";
     Serial.println("Connected to notify-api.line.me failed.");
   }
-  esp_camera_fb_return(fb);
+  
+  //return getAll;
+  return getBody;
 }
