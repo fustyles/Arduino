@@ -534,16 +534,13 @@ String sendCapturedImage2Telegram(String token, String chat_id) {
        if (getBody.length()>0) break;
     }
     client_tcp.stop();
-    //Serial.println(getAll); 
     Serial.println(getBody);
   }
   else {
-    getAll="Connected to api.telegram.org failed.";
     getBody="Connected to api.telegram.org failed.";
     Serial.println("Connected to api.telegram.org failed.");
   }
   
-  //return getAll;
   return getBody;
 }
 
