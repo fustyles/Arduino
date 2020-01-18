@@ -100,24 +100,24 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
 
       getStream.onclick = function (event) {
         streamState=true;
+        stream.onload = function (event) {
+          clearInterval(myTimer);
+          if (streamState==true) {
+            setTimeout(function(){getStream.click();},100);
+            myTimer = setInterval(function(){getStream.click();},10000);
+          }
+          else
+            stream.src="";
+        }        
         stream.src=location.origin+'/?getstill='+Math.random();    
       }
   
       stopStream.onclick = function (event) {
         clearInterval(myTimer);
-        streamState=false;       
+        streamState=false;  
+        stream.onload = function (event) {}             
         stream.src="";
       }          
-      
-      stream.onload = function (event) {
-        clearInterval(myTimer);
-        if (streamState==true) {
-          setTimeout(function(){getStream.click();},100);
-          myTimer = setInterval(function(){getStream.click();},10000);
-        }
-        else
-          stream.src="";
-      }
 
       sendimage.onclick = function (event) {
         show.innerHTML='Sending...';
@@ -131,13 +131,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         url: target,
         success: function(response)
           {
-            show.innerHTML = response;
-            clearInterval(myTimer);
-            if (streamState==true) {
-              setTimeout(function(){getStream.click();},100);
-              setTimeout(function(){show.innerHTML="";},3000);
-              myTimer = setInterval(function(){getStream.click();},10000);
-            }            
+            show.innerHTML = response;           
           },
           error: function(exception)
           {
