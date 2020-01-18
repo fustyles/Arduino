@@ -1,13 +1,10 @@
 /*
 ESP32-CAM MyBlockly (可跨網域連線)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-29 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-18 19:00
 https://www.facebook.com/francefu
 
 馬達驅動IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
 伺服馬達 -> gpio2  (or)  Servo1 -> gpio2, Servo2 -> gpio13
-
-Arduino IDE settings
-Partition Scheme : Huge APP (3MB No OTA/1MB SPIFFS)
 
 http://APIP
 http://STAIP
@@ -804,90 +801,92 @@ String urlencode(String str)
           
 String tcp_http(String domain,String request,int port,byte wait)
 {
-    WiFiClient client_tcp;
+  String getAll="", getBody="";
 
-    if (client_tcp.connect(domain.c_str(), port)) 
-    {
-      Serial.println("GET " + request);
-      client_tcp.println("GET " + request + " HTTP/1.1");
-      client_tcp.println("Host: " + domain);
-      client_tcp.println("Connection: close");
-      client_tcp.println();
+  WiFiClient client_tcp;
+  if (client_tcp.connect(domain.c_str(), port)) {
+    Serial.println("GET " + request);
+    client_tcp.println("GET " + request + " HTTP/1.1");
+    client_tcp.println("Host: " + domain);
+    client_tcp.println("Connection: close");
+    client_tcp.println();
 
-      String getResponse="",Feedback="";
-      boolean state = false;
-      int waitTime = 3000;   // timeout 3 seconds
-      long startTime = millis();
-      while ((startTime + waitTime) > millis())
-      {
-        while (client_tcp.available()) 
-        {
-            char c = client_tcp.read();
-            if (c == '\n') 
-            {
-              if (getResponse.length()==0) state=true; 
-              getResponse = "";
-            } 
-            else if (c != '\r')
-              getResponse += String(c);
-            if (state==true) Feedback += String(c);
-            if (wait==1)
-              startTime = millis();
-         }
-         if (wait==0)
-          if ((state==true)&&(Feedback.length()!= 0)) break;
-      }
-      client_tcp.stop();
-      return Feedback;
+    boolean state = false;
+    int waitTime = 10000;   // timeout 10 seconds
+    long startTime = millis();
+    while ((startTime + waitTime) > millis()) {
+      while (client_tcp.available()) {
+        char c = client_tcp.read();
+        if (c == '\n') {
+          if (getAll.length()==0) state=true; 
+          getAll = "";
+        } 
+        else if (c != '\r')
+          getAll += String(c);
+        if (state==true) getBody += String(c);
+        if (wait==1)
+          startTime = millis();
+       }
+       if (wait==0)
+        if (getBody.length()!= 0) break;
     }
-    else
-      return "Connection failed";  
+    client_tcp.stop();
+    Serial.println(getBody);
+  }
+  else {
+    getBody="Connected to "+domain+" failed.";
+    Serial.println("Connected to "+domain+" failed.");
+  }
+  
+  return getBody; 
 }
 
 String tcp_https(String domain,String request,int port,byte wait)
 {
-    WiFiClientSecure client_tcp;
+  String getAll="", getBody="";
 
-    if (client_tcp.connect(domain.c_str(), port)) 
-    {
-      Serial.println("GET " + request);
-      client_tcp.println("GET " + request + " HTTP/1.1");
-      client_tcp.println("Host: " + domain);
-      client_tcp.println("Connection: close");
-      client_tcp.println();
+  WiFiClientSecure client_tcp;
+  if (client_tcp.connect(domain.c_str(), port)) {
+    Serial.println("GET " + request);
+    client_tcp.println("GET " + request + " HTTP/1.1");
+    client_tcp.println("Host: " + domain);
+    client_tcp.println("Connection: close");
+    client_tcp.println();
 
-      String getResponse="",Feedback="";
-      boolean state = false;
-      int waitTime = 3000;   // timeout 3 seconds
-      long startTime = millis();
-      while ((startTime + waitTime) > millis())
-      {
-        while (client_tcp.available()) 
-        {
-            char c = client_tcp.read();
-            if (c == '\n') 
-            {
-              if (getResponse.length()==0) state=true; 
-              getResponse = "";
-            } 
-            else if (c != '\r')
-              getResponse += String(c);
-            if (state==true) Feedback += String(c);
-            if (wait==1)
-              startTime = millis();
-         }
-         if (wait==0)
-          if ((state==true)&&(Feedback.length()!= 0)) break;
-      }
-      client_tcp.stop();
-      return Feedback;
+    boolean state = false;
+    int waitTime = 10000;   // timeout 10 seconds
+    long startTime = millis();
+    while ((startTime + waitTime) > millis()) {
+      while (client_tcp.available()) {
+        char c = client_tcp.read();
+        if (c == '\n') {
+          if (getAll.length()==0) state=true; 
+          getAll = "";
+        } 
+        else if (c != '\r')
+          getAll += String(c);
+        if (state==true) getBody += String(c);
+        if (wait==1)
+          startTime = millis();
+       }
+       if (wait==0)
+        if (getBody.length()!= 0) break;
     }
-    else
-      return "Connection failed";  
+    client_tcp.stop();
+    Serial.println(getBody);
+  }
+  else {
+    getBody="Connected to "+domain+" failed.";
+    Serial.println("Connected to "+domain+" failed.");
+  }
+  
+  return getBody;
 }
 
 String LineNotify(String token, String request, byte wait)
 {
+  String getAll="", getBody="";
+  
   request.replace(" ","%20");
   request.replace("&","%20");
   request.replace("#","%20");
@@ -905,8 +904,7 @@ String LineNotify(String token, String request, byte wait)
   
   WiFiClientSecure client_tcp;
   
-  if (client_tcp.connect("notify-api.line.me", 443)) 
-  {
+  if (client_tcp.connect("notify-api.line.me", 443)) {
     client_tcp.println("POST /api/notify HTTP/1.1");
     client_tcp.println("Connection: close"); 
     client_tcp.println("Host: notify-api.line.me");
@@ -918,56 +916,57 @@ String LineNotify(String token, String request, byte wait)
     client_tcp.println(request);
     client_tcp.println();
     
-    String getResponse="",Feedback="";
     boolean state = false;
-    int waitTime = 3000;   // timeout 3 seconds
+    int waitTime = 10000;   // timeout 3 seconds
     long startTime = millis();
-    while ((startTime + waitTime) > millis())
-    {
-      while (client_tcp.available()) 
-      {
-          char c = client_tcp.read();
-          if (c == '\n') 
-          {
-            if (getResponse.length()==0) state=true; 
-            getResponse = "";
-          } 
-          else if (c != '\r')
-            getResponse += String(c);
-          if (state==true) Feedback += String(c);
-          if (wait==1)
-            startTime = millis();
+    while ((startTime + waitTime) > millis()) {
+      while (client_tcp.available()) {
+        char c = client_tcp.read();
+        if (c == '\n') {
+          if (getAll.length()==0) state=true; 
+          getAll = "";
+        } 
+        else if (c != '\r')
+          getAll += String(c);
+        if (state==true) getBody += String(c);
+        if (wait==1)
+          startTime = millis();
        }
-       if (wait==0)
-        if ((state==true)&&(Feedback.length()!= 0)) break;
+       if (getBody.length()!= 0) break;
     }
     client_tcp.stop();
-    return Feedback;
+    client_tcp.stop();
+    Serial.println(getBody);
   }
-  else
-    return "Connection failed";  
+  else {
+    getBody="Connected to notify-api.line.me failed.";
+    Serial.println("Connected to notify-api.line.me failed.");
+  }
+  
+  return getBody;
 }
 
 String sendCapturedImageToLineNotify(String myLineNotifyToken)
 {
+  String getAll="", getBody = "";
+  
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();  
   if(!fb) {
     Serial.println("Camera capture failed");
     delay(1000);
     ESP.restart();
-    return "";
+    return "Camera capture failed";
   }
    
   WiFiClientSecure client_tcp;
 
   Serial.println("Connect to notify-api.line.me");
   
-  if (client_tcp.connect("notify-api.line.me", 443)) 
-  {
+  if (client_tcp.connect("notify-api.line.me", 443)) {
     Serial.println("Connection successful");
     
-    String message = "Hello World";
+    String message = "Welcome to Taiwan";
     String head = "--Taiwan\r\nContent-Disposition: form-data; name=\"message\"; \r\n\r\n" + message + "\r\n--Taiwan\r\nContent-Disposition: form-data; name=\"imageFile\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
     String tail = "\r\n--Taiwan--\r\n";
 
@@ -998,38 +997,35 @@ String sendCapturedImageToLineNotify(String myLineNotifyToken)
     }  
     
     client_tcp.print(tail);
-    client_tcp.println();
+    esp_camera_fb_return(fb);
     
-    String getResponse="",Feedback="";
-    boolean state = false;
-    int waitTime = 3000;   // timeout 3 seconds
+    int waitTime = 10000;   // timeout 10 seconds
     long startTime = millis();
-    while ((startTime + waitTime) > millis())
-    {
+    boolean state = false;
+    
+    while ((startTime + waitTime) > millis()) {
       Serial.print(".");
       delay(100);      
-      while (client_tcp.available()) 
-      {
-          char c = client_tcp.read();
-          if (c == '\n') 
-          {
-            if (getResponse.length()==0) state=true; 
-            getResponse = "";
-          } 
-          else if (c != '\r')
-            getResponse += String(c);
-          if (state==true) Feedback += String(c);
-          startTime = millis();
+      while (client_tcp.available()) {
+        char c = client_tcp.read();
+        if (c == '\n') {
+          if (getAll.length()==0) state=true; 
+          getAll = "";
+        } 
+        else if (c != '\r')
+          getAll += String(c);
+        if (state==true) getBody += String(c);
+        startTime = millis();
        }
+       if (getBody.length()>0) break;
     }
     client_tcp.stop();
-    esp_camera_fb_return(fb);
-    Serial.println(Feedback);
-    return Feedback;
+    Serial.println(getBody);
   }
   else {
+    getBody="Connected to notify-api.line.me failed.";
     Serial.println("Connected to notify-api.line.me failed.");
-    esp_camera_fb_return(fb);
-    return "Connected to notify-api.line.me failed.";
   }
+  
+  return getBody;
 }
