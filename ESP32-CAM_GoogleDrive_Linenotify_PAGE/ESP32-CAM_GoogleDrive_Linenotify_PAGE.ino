@@ -174,7 +174,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         url: target,
         success: function(response)
           {
-            show.innerHTML = response;           
+            show.innerHTML = response; 
+            if (streamState==true) getStream.onclick;
           },
           error: function(exception)
           {
