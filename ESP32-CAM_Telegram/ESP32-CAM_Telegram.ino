@@ -1,6 +1,6 @@
 /*
 ESP32-CAM save a captured photo to Telegram
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-16 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-18 19:00
 https://www.facebook.com/francefu
 */
 
@@ -8,7 +8,7 @@ https://www.facebook.com/francefu
 const char* ssid     = "*****";   //your network SSID
 const char* password = "*****";   //your network password
 
-String token = "*****:*************************";   // Create your bot and get the token -> https://telegram.me/fatherbot
+String token = "*****:*****";   // Create your bot and get the token -> https://telegram.me/fatherbot
 String chat_id = "*****";   // Get chat_id -> https://telegram.me/userinfobot
 
 #include <WiFi.h>
@@ -140,27 +140,27 @@ void setup()
 
 void loop()
 {
-  sendCapturedImage2Telegram();
+  sendCapturedImage2Telegram(token, chat_id);
   delay(72000);
 }
 
-void sendCapturedImage2Telegram()
-{
+String sendCapturedImage2Telegram(String token, String chat_id) {
+  const char* myDomain = "api.telegram.org";
+  String getAll="", getBody = "";
+
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();  
   if(!fb) {
     Serial.println("Camera capture failed");
     delay(1000);
     ESP.restart();
-    return;
-  }
-   
-  WiFiClientSecure client_tcp;
-
-  Serial.println("Connect to api.telegram.org");
+    return "Camera capture failed";
+  }  
   
-  if (client_tcp.connect("api.telegram.org", 443)) 
-  {
+  Serial.println("Connect to " + String(myDomain));
+  WiFiClientSecure client_tcp;
+  
+  if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
     
     String head = "--Taiwan\r\nContent-Disposition: form-data; name=\"chat_id\"; \r\n\r\n" + chat_id + "\r\n--Taiwan\r\nContent-Disposition: form-data; name=\"photo\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
@@ -171,13 +171,12 @@ void sendCapturedImage2Telegram()
     uint16_t totalLen = imageLen + extraLen;
   
     client_tcp.println("POST /bot"+token+"/sendPhoto HTTP/1.1");
-    client_tcp.println("Connection: close"); 
-    client_tcp.println("Host: api.telegram.org");
+    client_tcp.println("Host: " + String(myDomain));
     client_tcp.println("Content-Length: " + String(totalLen));
     client_tcp.println("Content-Type: multipart/form-data; boundary=Taiwan");
     client_tcp.println();
     client_tcp.print(head);
-    
+  
     uint8_t *fbBuf = fb->buf;
     size_t fbLen = fb->len;
     for (size_t n=0;n<fbLen;n=n+1024) {
@@ -192,12 +191,13 @@ void sendCapturedImage2Telegram()
     }  
     
     client_tcp.print(tail);
-    client_tcp.println();
     
-    String getResponse="",Feedback="";
-    boolean state = false;
-    int waitTime = 3000;   // timeout 3 seconds
+    esp_camera_fb_return(fb);
+    
+    int waitTime = 10000;   // timeout 10 seconds
     long startTime = millis();
+    boolean state = false;
+    
     while ((startTime + waitTime) > millis())
     {
       Serial.print(".");
@@ -207,20 +207,23 @@ void sendCapturedImage2Telegram()
           char c = client_tcp.read();
           if (c == '\n') 
           {
-            if (getResponse.length()==0) state=true; 
-            getResponse = "";
+            if (getAll.length()==0) state=true; 
+            getAll = "";
           } 
           else if (c != '\r')
-            getResponse += String(c);
-          if (state==true) Feedback += String(c);
+            getAll += String(c);
+          if (state==true) getBody += String(c);
           startTime = millis();
        }
+       if (getBody.length()>0) break;
     }
     client_tcp.stop();
-    Serial.println(Feedback);
+    Serial.println(getBody);
   }
   else {
+    getBody="Connected to api.telegram.org failed.";
     Serial.println("Connected to api.telegram.org failed.");
   }
-  esp_camera_fb_return(fb);
+  
+  return getBody;
 }
