@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (SD Card Manager)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-2 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-18 17:00
 https://www.facebook.com/francefu
 
 首頁
@@ -208,7 +208,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <br><img id="stream" src="">
   <div id="list">
   <img id="showimage" src="">   
-  <br><span id="show"></span>
+  <br><span id="show" style="color:red"></span>
   </div>
   </body>
   </html> 
@@ -236,12 +236,24 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     getStream.onclick = function (event) {
       showimage.src="";
       streamState=true;
+      stream.onload = function (event) {
+        clearInterval(myTimer);
+        if (streamState==true) {
+          setTimeout(function(){getStream.click();},100);
+          myTimer = setInterval(function(){getStream.click();},10000);
+        }
+        else
+          stream.src="";
+      }       
       stream.src=location.origin+'/?getstill='+Math.random();
     }
     
     stopStream.onclick = function (event) {
+      clearInterval(myTimer);
       showimage.src="";
       streamState=false;
+      stream.onload = function (event) {}
+      stream.src="";
     }
     
     restart.onclick = function (event) {
@@ -260,7 +272,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 
     line.onclick = function (event) {
       show.innerHTML = "Sending...";
-      streamState=false;
       getFeedback(location.origin+'/?sendCapturedImageToLineNotify='+token.value);
     }       
 
@@ -272,16 +283,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       fetch(location.origin+'/?flash='+this.value);
     }                 
     
-    stream.onload = function (event) {
-      clearInterval(myTimer);
-      if (streamState==true) {
-        setTimeout(function(){getStream.click();},100);
-        myTimer = setInterval(function(){getStream.click();},10000);
-      }
-      else
-        stream.src="";
-    }  
-
     function getFeedback(target) {
       var data = $.ajax({
       type: "get",
@@ -290,10 +291,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       success: function(response)
         {
           show.innerHTML = response;
+          if (streamState==true) getStream.onclick;
         },
         error: function(exception)
         {
           show.innerHTML = 'fail';
+          if (streamState==true) getStream.onclick;
         }
       });
     }    
@@ -706,8 +709,10 @@ String saveCapturedImage(String filename) {
   return response;
 }
 
-String sendCapturedImageToLineNotify(String token)
+String sendCapturedImageToLineNotify(String token) 
 {
+  String getAll="", getBody = "";
+  
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();  
   if(!fb) {
@@ -715,16 +720,14 @@ String sendCapturedImageToLineNotify(String token)
     delay(1000);
     ESP.restart();
     return "";
-  }
-   
+  }  
+      
   WiFiClientSecure client_tcp;
-
   Serial.println("Connect to notify-api.line.me");
   
-  if (client_tcp.connect("notify-api.line.me", 443)) 
-  {
+  if (client_tcp.connect("notify-api.line.me", 443)) {
     Serial.println("Connection successful");
-    
+
     String message = "Welcome to Taiwan.";
     String head = "--Taiwan\r\nContent-Disposition: form-data; name=\"message\"; \r\n\r\n" + message + "\r\n--Taiwan\r\nContent-Disposition: form-data; name=\"imageFile\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
     String tail = "\r\n--Taiwan--\r\n";
@@ -756,12 +759,11 @@ String sendCapturedImageToLineNotify(String token)
     }  
     
     client_tcp.print(tail);
-    client_tcp.println();
+    esp_camera_fb_return(fb);
     
-    String getResponse="",Feedback="";
-    boolean state = false;
-    int waitTime = 3000;   // timeout 3 seconds
+    int waitTime = 10000;   // timeout 10 seconds
     long startTime = millis();
+    boolean state = false;
     while ((startTime + waitTime) > millis())
     {
       Serial.print(".");
@@ -771,27 +773,28 @@ String sendCapturedImageToLineNotify(String token)
           char c = client_tcp.read();
           if (c == '\n') 
           {
-            if (getResponse.length()==0) state=true; 
-            getResponse = "";
+            if (getAll.length()==0) state=true; 
+            getAll = "";
           } 
           else if (c != '\r')
-            getResponse += String(c);
-          if (state==true) Feedback += String(c);
+            getAll += String(c);
+          if (state==true) getBody += String(c);
           startTime = millis();
        }
+       if (getBody.length()>0) break;
     }
     client_tcp.stop();
-    esp_camera_fb_return(fb);
-    Serial.println(Feedback);
-        
-    return Feedback;
+    //Serial.println(getAll); 
+    Serial.println(getBody);
   }
   else {
-    esp_camera_fb_return(fb);
+    getAll="Connected to notify-api.line.me failed.";
+    getBody="Connected to notify-api.line.me failed.";
     Serial.println("Connected to notify-api.line.me failed.");
-    
-    return "Connected to notify-api.line.me failed.";
   }
+  
+  //return getAll;
+  return getBody;
 }
 
 //拆解命令字串置入變數
