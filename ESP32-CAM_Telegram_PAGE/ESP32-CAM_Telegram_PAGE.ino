@@ -1,6 +1,6 @@
  /*
 ESP32-CAM save a captured photo to Telegram
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-18 13:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-18 14:00
 https://www.facebook.com/francefu
 */
 
