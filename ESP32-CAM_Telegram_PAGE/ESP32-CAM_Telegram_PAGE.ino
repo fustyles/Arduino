@@ -463,22 +463,21 @@ void loop() {
 String sendCapturedImage2Telegram(String token, String chat_id) {
   const char* myDomain = "api.telegram.org";
   String getAll="", getBody = "";
-  boolean state = false;
+
+  camera_fb_t * fb = NULL;
+  fb = esp_camera_fb_get();  
+  if(!fb) {
+    Serial.println("Camera capture failed");
+    delay(1000);
+    ESP.restart();
+    return "Camera capture failed";
+  }  
   
   Serial.println("Connect to " + String(myDomain));
   WiFiClientSecure client_tcp;
   
   if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
-
-    camera_fb_t * fb = NULL;
-    fb = esp_camera_fb_get();  
-    if(!fb) {
-      Serial.println("Camera capture failed");
-      delay(1000);
-      ESP.restart();
-      return "Camera capture failed";
-    }
     
     String head = "--Taiwan\r\nContent-Disposition: form-data; name=\"chat_id\"; \r\n\r\n" + chat_id + "\r\n--Taiwan\r\nContent-Disposition: form-data; name=\"photo\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
     String tail = "\r\n--Taiwan--\r\n";
@@ -513,6 +512,8 @@ String sendCapturedImage2Telegram(String token, String chat_id) {
     
     int waitTime = 10000;   // timeout 10 seconds
     long startTime = millis();
+    boolean state = false;
+    
     while ((startTime + waitTime) > millis())
     {
       Serial.print(".");

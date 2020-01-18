@@ -498,7 +498,15 @@ void loop() {
 String SendCapturedImage(String myRecipient, String mySubject) {
   const char* myDomain = "script.google.com";
   String getAll="", getBody = "";
-  boolean state = false;
+  
+  camera_fb_t * fb = NULL;
+  fb = esp_camera_fb_get();  
+  if(!fb) {
+    Serial.println("Camera capture failed");
+    delay(1000);
+    ESP.restart();
+    return "Camera capture failed";
+  }
   
   Serial.println("Connect to " + String(myDomain));
   WiFiClientSecure client_tcp;
@@ -506,15 +514,6 @@ String SendCapturedImage(String myRecipient, String mySubject) {
   if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
     
-    camera_fb_t * fb = NULL;
-    fb = esp_camera_fb_get();  
-    if(!fb) {
-      Serial.println("Camera capture failed");
-      delay(1000);
-      ESP.restart();
-      return "Camera capture failed";
-    }
-  
     char *input = (char *)fb->buf;
     char output[base64_enc_len(3)];
     String imageFile = "data:image/jpeg;base64,";
@@ -540,6 +539,8 @@ String SendCapturedImage(String myRecipient, String mySubject) {
     
     int waitTime = 10000;   // timeout 10 seconds
     long startTime = millis();
+    boolean state = false;
+    
     while ((startTime + waitTime) > millis())
     {
       Serial.print(".");
