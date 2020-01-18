@@ -1,6 +1,6 @@
 /*
 ESP32-CAM PIR Motion Sensor (Save a captured photo to Line Notify)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-9-14 02:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-18 18:00
 https://www.facebook.com/francefu
 
 You could only send up to 50 images to Line Notify in one hour.
