@@ -1,6 +1,6 @@
 /*
 ESP32-CAM PIR Motion Sensor (Save a captured image to Google Drive and LineNotify)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-21 13:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-18 16:00
 https://www.facebook.com/francefu
 
 PIR Motion Sensor -> GND, gpio13, 3.3V
@@ -18,13 +18,13 @@ https://drive.google.com/drive/my-drive
 */
 
 // Enter your WiFi ssid and password
-const char* ssid     = "xxxxx";   //your network SSID
-const char* password = "xxxxx";   //your network password
+const char* ssid     = "*****";   //your network SSID
+const char* password = "*****";   //your network password
 int gpioPIR = 13;   //PIR Motion Sensor
 
 const char* myDomain = "script.google.com";
-String myScript = "/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxx/exec";    //Create your Google Apps Script and replace the "myScript" path.
-String myLineNotifyToken = "myToken=xxxxxxxxxx";    //Line Notify Token. You can set the value of xxxxxxxxxx empty if you don't want to send picture to Linenotify.
+String myScript = "/macros/s/**********/exec";    //Create your Google Apps Script and replace the "myScript" path.
+String myLineNotifyToken = "myToken=*****";    //Line Notify Token. You can set the value of xxxxxxxxxx empty if you don't want to send picture to Linenotify.
 String myFoldername = "&myFoldername=ESP32-CAM";
 String myFilename = "&myFilename=ESP32-CAM.jpg";
 String myImage = "&myFile=";
@@ -160,30 +160,33 @@ void loop()
 {
   pinMode(gpioPIR, INPUT_PULLUP);
   int v = digitalRead(gpioPIR);
-  Serial.println(v);
+  //Serial.println(v);
   if (v==1) {
-    saveCapturedImage();
+    SendCapturedImage();
     delay(10000);
   }
   delay(1000);
 }
 
-void saveCapturedImage() {
-  Serial.println("Connect to " + String(myDomain));
-  WiFiClientSecure client;
+String SendCapturedImage() {
+  const char* myDomain = "script.google.com";
+  String getAll="", getBody = "";
   
-  if (client.connect(myDomain, 443)) {
+  camera_fb_t * fb = NULL;
+  fb = esp_camera_fb_get();  
+  if(!fb) {
+    Serial.println("Camera capture failed");
+    delay(1000);
+    ESP.restart();
+    return "Camera capture failed";
+  }  
+  
+  Serial.println("Connect to " + String(myDomain));
+  WiFiClientSecure client_tcp;
+  
+  if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
     
-    camera_fb_t * fb = NULL;
-    fb = esp_camera_fb_get();  
-    if(!fb) {
-      Serial.println("Camera capture failed");
-      delay(1000);
-      ESP.restart();
-      return;
-    }
-  
     char *input = (char *)fb->buf;
     char output[base64_enc_len(3)];
     String imageFile = "data:image/jpeg;base64,";
@@ -193,55 +196,54 @@ void saveCapturedImage() {
     }
     String Data = myLineNotifyToken+myFoldername+myFilename+myImage;
     
-    esp_camera_fb_return(fb);
+    client_tcp.println("POST " + myScript + " HTTP/1.1");
+    client_tcp.println("Host: " + String(myDomain));
+    client_tcp.println("Content-Length: " + String(Data.length()+imageFile.length()));
+    client_tcp.println("Content-Type: application/x-www-form-urlencoded");
+    client_tcp.println();
     
-    Serial.println("Send a captured image to Google Drive.");
-    
-    client.println("POST " + myScript + " HTTP/1.1");
-    client.println("Host: " + String(myDomain));
-    client.println("Content-Length: " + String(Data.length()+imageFile.length()));
-    client.println("Content-Type: application/x-www-form-urlencoded");
-    client.println();
-    
-    client.print(Data);
+    client_tcp.print(Data);
     int Index;
     for (Index = 0; Index < imageFile.length(); Index = Index+1000) {
-      client.print(imageFile.substring(Index, Index+1000));
+      client_tcp.print(imageFile.substring(Index, Index+1000));
     }
+    esp_camera_fb_return(fb);
     
-    Serial.println("Waiting for response.");
-    long int StartTime=millis();
-    while (!client.available()) 
+    int waitTime = 10000;   // timeout 10 seconds
+    long startTime = millis();
+    boolean state = false;
+    
+    while ((startTime + waitTime) > millis())
     {
       Serial.print(".");
-      delay(100);
-      if ((StartTime+10000) < millis()) {
-        Serial.println();
-        Serial.println("No response.");
-        break;
-      }
+      delay(100);      
+      while (client_tcp.available()) 
+      {
+          char c = client_tcp.read();
+          if (c == '\n') 
+          {
+            if (getAll.length()==0) state=true; 
+            getAll = "";
+          } 
+          else if (c != '\r')
+            getAll += String(c);
+          if (state==true) getBody += String(c);
+          startTime = millis();
+       }
+       if (getBody.length()>0) break;
     }
-    Serial.println();   
-    while (client.available()) {
-      Serial.print(char(client.read()));
-      //client.read();
-    }  
+    client_tcp.stop();
+    Serial.println(getBody);
   }
   else {
-    ledcAttachPin(4, 3);
-    ledcSetup(3, 5000, 8);
-    ledcWrite(3,10);
-    delay(200);
-    ledcWrite(3,0);
-    delay(200);    
-    ledcDetachPin(3);
-          
+    getBody="Connected to " + String(myDomain) + " failed.";
     Serial.println("Connected to " + String(myDomain) + " failed.");
   }
-  client.stop();
+  
+  return getBody;
 }
 
-//From: https://github.com/zenmanenergy/ESP8266-Arduino-Examples/
+//https://github.com/zenmanenergy/ESP8266-Arduino-Examples/
 String urlencode(String str)
 {
     String encodedString="";
