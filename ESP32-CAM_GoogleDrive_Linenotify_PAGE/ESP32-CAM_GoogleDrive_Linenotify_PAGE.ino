@@ -180,6 +180,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           error: function(exception)
           {
             show.innerHTML = 'fail';
+            if (streamState==true) getStream.onclick;
           }
         });
       }       
