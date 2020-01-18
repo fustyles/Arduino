@@ -104,6 +104,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
       }
   
       stopStream.onclick = function (event) {
+        clearInterval(myTimer);
         streamState=false;       
         stream.src="";
       }          
