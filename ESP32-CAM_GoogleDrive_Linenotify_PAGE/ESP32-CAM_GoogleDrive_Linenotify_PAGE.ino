@@ -1,7 +1,7 @@
 /*
 ESP32-CAM 
 Open the page in Chrome.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-30 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-18 15:00
 https://www.facebook.com/francefu
 
 Servo1 -> gpio2 (common ground)
@@ -47,8 +47,8 @@ const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 const char* myDomain = "script.google.com";
-String myScript = "/macros/s/xxxxxxxxxx/exec";    //Create your Google Apps Script and replace the "myScript" path.
-String myLineNotifyToken = "myToken=xxxxxxxxxx";    //Line Notify Token. You can set the value of xxxxxxxxxx empty if you don't want to send picture to Linenotify.
+String myScript = "/macros/s/**********/exec";    //Create your Google Apps Script and replace the "myScript" path.
+String myLineNotifyToken = "myToken=**********";    //Line Notify Token. You can set the value of xxxxxxxxxx empty if you don't want to send picture to Linenotify.
 String myFoldername = "&myFoldername=ESP32-CAM";
 String myFilename = "&myFilename=ESP32-CAM.jpg";
 String myImage = "&myFile=";
@@ -89,6 +89,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
+        <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script> 
         <title>ESP32 OV2460</title>
         <style>
           body{font-family:Arial,Helvetica,sans-serif;background:#181818;color:#EFEFEF;font-size:16px}h2{font-size:18px}section.main{display:flex}#menu,section.main{flex-direction:column}#menu{display:none;flex-wrap:nowrap;min-width:340px;background:#363636;padding:8px;border-radius:4px;margin-top:-10px;margin-right:10px}#content{display:flex;flex-wrap:wrap;align-items:stretch}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}figure img{display:block;width:100%;height:auto;border-radius:4px;margin-top:8px}@media (min-width: 800px) and (orientation:landscape){#content{display:flex;flex-wrap:nowrap;align-items:stretch}figure img{display:block;max-width:100%;max-height:calc(100vh - 40px);width:auto;height:auto}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}}section#buttons{display:flex;flex-wrap:nowrap;justify-content:space-between}#nav-toggle{cursor:pointer;display:block}#nav-toggle-cb{outline:0;opacity:0;width:0;height:0}#nav-toggle-cb:checked+#menu{display:flex}.input-group{display:flex;flex-wrap:nowrap;line-height:22px;margin:5px 0}.input-group>label{display:inline-block;padding-right:10px;min-width:47%}.input-group input,.input-group select{flex-grow:1}.range-max,.range-min{display:inline-block;padding:0 5px}button{display:block;margin:5px;padding:0 12px;border:0;line-height:28px;cursor:pointer;color:#fff;background:#ff3034;border-radius:5px;font-size:16px;outline:0}button:hover{background:#ff494d}button:active{background:#f21c21}button.disabled{cursor:default;background:#a0a0a0}input[type=range]{-webkit-appearance:none;width:100%;height:22px;background:#363636;cursor:pointer;margin:0}input[type=range]:focus{outline:0}input[type=range]::-webkit-slider-runnable-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-webkit-slider-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;-webkit-appearance:none;margin-top:-11.5px}input[type=range]:focus::-webkit-slider-runnable-track{background:#EFEFEF}input[type=range]::-moz-range-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-moz-range-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer}input[type=range]::-ms-track{width:100%;height:2px;cursor:pointer;background:0 0;border-color:transparent;color:transparent}input[type=range]::-ms-fill-lower{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-fill-upper{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;height:2px}input[type=range]:focus::-ms-fill-lower{background:#EFEFEF}input[type=range]:focus::-ms-fill-upper{background:#363636}.switch{display:block;position:relative;line-height:22px;font-size:16px;height:22px}.switch input{outline:0;opacity:0;width:0;height:0}.slider{width:50px;height:22px;border-radius:22px;cursor:pointer;background-color:grey}.slider,.slider:before{display:inline-block;transition:.4s}.slider:before{position:relative;content:"";border-radius:50%;height:16px;width:16px;left:4px;top:3px;background-color:#fff}input:checked+.slider{background-color:#ff3034}input:checked+.slider:before{-webkit-transform:translateX(26px);transform:translateX(26px)}select{border:1px solid #363636;font-size:14px;height:22px;outline:0;border-radius:5px}.image-container{position:relative;min-width:160px}.close{position:absolute;right:5px;top:5px;background:#ff3034;width:16px;height:16px;border-radius:100px;color:#fff;text-align:center;line-height:18px;cursor:pointer}.hidden{display:none}
@@ -97,11 +98,25 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
     <body>
       <table>
       <tr><td colspan="3"><img id="stream" src=""></td></tr>
-      <tr><td colspan="3"><br><br><br></td></tr>
-      <tr><td><button id="get-still" onclick="document.getElementById('stream').src=document.location.origin+'/?getstill='+Math.random();">Stream</button></td><td><button id="stop" onclick="clearTimeout(myTimer);document.getElementById('stream').src='';">Stop</button></td><td></td></tr>
+      <tr><td><button id="get-still">Stream</button></td><td><button id="stop">Stop</button></td><td><button id="send-image">Send</button></td></tr>
       <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/?flash='+this.value);}catch(e){}"></td></tr>
       <tr><td>Servo1</td><td align="center" colspan="2"><input type="range" id="servo1" min="1700" max="8000" step="35" value="4850" onchange="try{fetch(document.location.origin+'/?servo1='+this.value);}catch(e){}"></td></tr>
       <tr><td>Servo2</td><td align="center" colspan="2"><input type="range" id="servo2" min="1700" max="8000" step="35" value="4850" onchange="try{fetch(document.location.origin+'/?servo2='+this.value);}catch(e){}"></td></tr>
+        <td>Resolution</td> 
+        <td colspan="2">
+          <select id="framesize" onclick="try{fetch(document.location.origin+'/?framesize='+this.value);}catch(e){}">
+              <option value="UXGA">UXGA(1600x1200)</option>
+              <option value="SXGA">SXGA(1280x1024)</option>
+              <option value="XGA">XGA(1024x768)</option>
+              <option value="SVGA">SVGA(800x600)</option>
+              <option value="VGA">VGA(640x480)</option>
+              <option value="CIF">CIF(400x296)</option>
+              <option value="QVGA" selected="selected">QVGA(320x240)</option>
+              <option value="HQVGA">HQVGA(240x176)</option>
+              <option value="QQVGA">QQVGA(160x120)</option>
+          </select> 
+        </td>
+      </tr>
       <tr><td>Rotate</td><td align="left" colspan="2">
           <select onchange="document.getElementById('stream').style.transform='rotate('+this.value+')';">
             <option value="0deg">0deg</option>
@@ -109,20 +124,59 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             <option value="180deg">180deg</option>
             <option value="270deg">270deg</option>
           </select>
-      </td></tr> 
-      </table>
-      <button onclick="try{fetch(document.location.origin+'/?SendCapturedImage=stop');}catch(e){}">Send Captured Image</button>
+      </td></tr>
+      </table><br>
+      <span id="show" style="color:red"></span>
     </body>
     <script>
       var stream = document.getElementById('stream');
-      var getStill = document.getElementById('get-still');
+      var getStream = document.getElementById('get-still');
+      var stopStream = document.getElementById('stop');      
+      var sendimage = document.getElementById('send-image');
+      var token = document.getElementById('token');
+      var chat_id = document.getElementById('chat_id');
+      var show = document.getElementById('show');
       var myTimer;
-      
-      stream.onload = function (event) {
-        clearTimeout(myTimer);
-        setTimeout(function(){getStill.click();},100);
-        myTimer = setTimeout(function(){getStill.click();},10000);
+      var streamState = false;
+      getStream.onclick = function (event) {
+        streamState=true;
+        stream.onload = function (event) {
+          clearInterval(myTimer);
+          if (streamState==true) {
+            setTimeout(function(){getStream.click();},100);
+            myTimer = setInterval(function(){getStream.click();},10000);
+          }
+          else
+            stream.src="";
+        }        
+        stream.src=location.origin+'/?getstill='+Math.random();    
       }
+  
+      stopStream.onclick = function (event) {
+        clearInterval(myTimer);
+        streamState=false;  
+        stream.onload = function (event) {}             
+        stream.src="";
+      }          
+      sendimage.onclick = function (event) {
+        show.innerHTML='Sending...';
+        getFeedback(location.origin+'/?SendCapturedImage='+(new Date().getFullYear()*10000000000+(new Date().getMonth()+1)*100000000+new Date().getDate()*1000000+new Date().getHours()*10000+new Date().getMinutes()*100+new Date().getSeconds()+new Date().getSeconds()*0.001).toString());
+      }      
+      function getFeedback(target) {
+        var data = $.ajax({
+        type: "get",
+        dataType: "text",
+        url: target,
+        success: function(response)
+          {
+            show.innerHTML = response;           
+          },
+          error: function(exception)
+          {
+            show.innerHTML = 'fail';
+          }
+        });
+      }       
     </script>
 </html>
 )rawliteral";
@@ -155,7 +209,8 @@ void ExecuteCommand()
     ESP.restart();
   }    
   else if (cmd=="SendCapturedImage") {
-    SendCapturedImage();
+    Feedback=SendCapturedImage();
+    if (Feedback=="") Feedback="The image failed to send. <br>The framesize may be too large.";
   }
   else if (cmd=="servo1") {
     int val = P1.toInt();
@@ -185,6 +240,29 @@ void ExecuteCommand()
      
     int val = P1.toInt();
     ledcWrite(4,val);  
+  } 
+  else if (cmd=="framesize") { 
+    sensor_t * s = esp_camera_sensor_get();  
+    if (P1=="QQVGA")
+      s->set_framesize(s, FRAMESIZE_QQVGA);
+    else if (P1=="HQVGA")
+      s->set_framesize(s, FRAMESIZE_HQVGA);
+    else if (P1=="QVGA")
+      s->set_framesize(s, FRAMESIZE_QVGA);
+    else if (P1=="CIF")
+      s->set_framesize(s, FRAMESIZE_CIF);
+    else if (P1=="VGA")
+      s->set_framesize(s, FRAMESIZE_VGA);  
+    else if (P1=="SVGA")
+      s->set_framesize(s, FRAMESIZE_SVGA);
+    else if (P1=="XGA")
+      s->set_framesize(s, FRAMESIZE_XGA);
+    else if (P1=="SXGA")
+      s->set_framesize(s, FRAMESIZE_SXGA);
+    else if (P1=="UXGA")
+      s->set_framesize(s, FRAMESIZE_UXGA);           
+    else 
+      s->set_framesize(s, FRAMESIZE_QVGA);     
   }  
   else {
     Feedback="Command is not defined.";
@@ -372,7 +450,14 @@ void loop() {
               client.println("Access-Control-Allow-Origin: *");
               client.println("Connection: close");
               client.println();
-              String Data = String((const char *)INDEX_HTML);
+              
+              String Data="";
+              if (cmd!="")
+                Data = Feedback;
+              else {
+                Data = String((const char *)INDEX_HTML);
+              }
+              
               int Index;
               for (Index = 0; Index < Data.length(); Index = Index+1000) {
                 client.print(Data.substring(Index, Index+1000));
@@ -407,7 +492,78 @@ void loop() {
   }
 }
 
-
+String SendCapturedImage() {
+  String response = "";
+  
+  Serial.println("Connect to " + String(myDomain));
+  WiFiClientSecure client_tcp;
+  
+  if (client_tcp.connect(myDomain, 443)) {
+    Serial.println("Connection successful");
+    
+    camera_fb_t * fb = NULL;
+    fb = esp_camera_fb_get();  
+    if(!fb) {
+      Serial.println("Camera capture failed");
+      delay(1000);
+      ESP.restart();
+      return "Camera capture failed";
+    }
+  
+    char *input = (char *)fb->buf;
+    char output[base64_enc_len(3)];
+    String imageFile = "data:image/jpeg;base64,";
+    for (int i=0;i<fb->len;i++) {
+      base64_encode(output, (input++), 3);
+      if (i%3==0) imageFile += urlencode(String(output));
+    }
+    String Data = myLineNotifyToken+myFoldername+myFilename+myImage;
+    
+    client_tcp.println("POST " + myScript + " HTTP/1.1");
+    client_tcp.println("Host: " + String(myDomain));
+    client_tcp.println("Content-Length: " + String(Data.length()+imageFile.length()));
+    client_tcp.println("Content-Type: application/x-www-form-urlencoded");
+    client_tcp.println();
+    
+    client_tcp.print(Data);
+    int Index;
+    for (Index = 0; Index < imageFile.length(); Index = Index+1000) {
+      client_tcp.print(imageFile.substring(Index, Index+1000));
+    }
+    esp_camera_fb_return(fb);
+    
+    String getResponse="",Feedback="";
+    boolean state = false;
+    int waitTime = 3000;   // timeout 3 seconds
+    long startTime = millis();
+    while ((startTime + waitTime) > millis())
+    {
+      Serial.print(".");
+      delay(100);      
+      while (client_tcp.available()) 
+      {
+          char c = client_tcp.read();
+          if (c == '\n') 
+          {
+            if (getResponse.length()==0) state=true; 
+            getResponse = "";
+          } 
+          else if (c != '\r')
+            getResponse += String(c);
+          if (state==true) response += String(c);
+          startTime = millis();
+       }
+    }
+    client_tcp.stop();
+    Serial.println(response);
+  }
+  else {
+    response="Connected to " + String(myDomain) + " failed.";
+    Serial.println("Connected to " + String(myDomain) + " failed.");
+  }
+  
+  return response;
+}
 
 //拆解命令字串置入變數
 void getCommand(char c)
@@ -439,79 +595,6 @@ void getCommand(char c)
   }
 }
 
-void SendCapturedImage() {
-    
-  Serial.println("Connect to " + String(myDomain));
-  WiFiClientSecure client_tcp;
-  
-  if (client_tcp.connect(myDomain, 443)) {
-    Serial.println("Connection successful");
-    
-    camera_fb_t * fb = NULL;
-    fb = esp_camera_fb_get();  
-    if(!fb) {
-      Serial.println("Camera capture failed");
-      delay(1000);
-      ESP.restart();
-      return;
-    }
-  
-    char *input = (char *)fb->buf;
-    char output[base64_enc_len(3)];
-    String imageFile = "data:image/jpeg;base64,";
-    for (int i=0;i<fb->len;i++) {
-      base64_encode(output, (input++), 3);
-      if (i%3==0) imageFile += urlencode(String(output));
-    }
-    String Data = myLineNotifyToken+myFoldername+myFilename+myImage;
-    
-    esp_camera_fb_return(fb);
-    
-    Serial.println("Send a captured image to Google Drive.");
-    
-    client_tcp.println("POST " + myScript + " HTTP/1.1");
-    client_tcp.println("Host: " + String(myDomain));
-    client_tcp.println("Content-Length: " + String(Data.length()+imageFile.length()));
-    client_tcp.println("Content-Type: application/x-www-form-urlencoded");
-    client_tcp.println();
-    
-    client_tcp.print(Data);
-    int Index;
-    for (Index = 0; Index < imageFile.length(); Index = Index+1000) {
-      client_tcp.print(imageFile.substring(Index, Index+1000));
-    }
-    
-    Serial.println("Waiting for response.");
-    long int StartTime=millis();
-    while (!client_tcp.available()) 
-    {
-      Serial.print(".");
-      delay(100);
-      if ((StartTime+10000) < millis()) {
-        Serial.println();
-        Serial.println("No response.");
-        break;
-      }
-    }
-    Serial.println();   
-    while (client_tcp.available()) {
-      Serial.print(char(client_tcp.read()));
-      //client_tcp.read();
-    }  
-  }
-  else {
-    ledcAttachPin(4, 3);
-    ledcSetup(3, 5000, 8);
-    ledcWrite(3,10);
-    delay(200);
-    ledcWrite(3,0);
-    delay(200);    
-    ledcDetachPin(3);
-          
-    Serial.println("Connected to " + String(myDomain) + " failed.");
-  }
-  client_tcp.stop();
-}
 
 //https://github.com/zenmanenergy/ESP8266-Arduino-Examples/
 String urlencode(String str)
