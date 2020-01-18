@@ -1,7 +1,7 @@
 /*
 ESP32-CAM 
 Open the page in Chrome.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-18 15:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-18 16:00
 https://www.facebook.com/francefu
 
 Servo1 -> gpio2 (common ground)
@@ -46,7 +46,6 @@ const char* password = "*****";   //your network password
 const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
-const char* myDomain = "script.google.com";
 String myScript = "/macros/s/**********/exec";    //Create your Google Apps Script and replace the "myScript" path.
 String myLineNotifyToken = "myToken=**********";    //Line Notify Token. You can set the value of xxxxxxxxxx empty if you don't want to send picture to Linenotify.
 String myFoldername = "&myFoldername=ESP32-CAM";
@@ -98,7 +97,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
     <body>
       <table>
       <tr><td colspan="3"><img id="stream" src=""></td></tr>
-      <tr><td><button id="get-still">Stream</button></td><td><button id="stop">Stop</button></td><td><button id="send-image">Send</button></td></tr>
+      <tr><td><button id="restart">Reatart</button></td><td><button id="get-still">Stream</button></td><td><button id="stop">Stop</button></td></tr>
+      <tr><td></td><td></td><td><button id="send-image">Send</button></td></tr>
       <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/?flash='+this.value);}catch(e){}"></td></tr>
       <tr><td>Servo1</td><td align="center" colspan="2"><input type="range" id="servo1" min="1700" max="8000" step="35" value="4850" onchange="try{fetch(document.location.origin+'/?servo1='+this.value);}catch(e){}"></td></tr>
       <tr><td>Servo2</td><td align="center" colspan="2"><input type="range" id="servo2" min="1700" max="8000" step="35" value="4850" onchange="try{fetch(document.location.origin+'/?servo2='+this.value);}catch(e){}"></td></tr>
@@ -130,6 +130,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
     </body>
     <script>
       var stream = document.getElementById('stream');
+      var restart = document.getElementById('restart');
       var getStream = document.getElementById('get-still');
       var stopStream = document.getElementById('stop');      
       var sendimage = document.getElementById('send-image');
@@ -138,6 +139,10 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
       var show = document.getElementById('show');
       var myTimer;
       var streamState = false;
+
+      restart.onclick = function (event) {
+        fetch(location.origin+'/?restart=stop');
+      }      
       getStream.onclick = function (event) {
         streamState=true;
         stream.onload = function (event) {
@@ -493,7 +498,9 @@ void loop() {
 }
 
 String SendCapturedImage() {
-  String response = "";
+  const char* myDomain = "script.google.com";
+  String getAll="", getBody = "";
+  boolean state = false;
   
   Serial.println("Connect to " + String(myDomain));
   WiFiClientSecure client_tcp;
@@ -532,9 +539,7 @@ String SendCapturedImage() {
     }
     esp_camera_fb_return(fb);
     
-    String getResponse="",Feedback="";
-    boolean state = false;
-    int waitTime = 3000;   // timeout 3 seconds
+    int waitTime = 10000;   // timeout 10 seconds
     long startTime = millis();
     while ((startTime + waitTime) > millis())
     {
@@ -545,24 +550,28 @@ String SendCapturedImage() {
           char c = client_tcp.read();
           if (c == '\n') 
           {
-            if (getResponse.length()==0) state=true; 
-            getResponse = "";
+            if (getAll.length()==0) state=true; 
+            getAll = "";
           } 
           else if (c != '\r')
-            getResponse += String(c);
-          if (state==true) response += String(c);
+            getAll += String(c);
+          if (state==true) getBody += String(c);
           startTime = millis();
        }
+       if (getBody.length()>0) break;
     }
     client_tcp.stop();
-    Serial.println(response);
+    //Serial.println(getAll); 
+    Serial.println(getBody);
   }
   else {
-    response="Connected to " + String(myDomain) + " failed.";
+    getAll="Connected to " + String(myDomain) + " failed.";
+    getBody="Connected to " + String(myDomain) + " failed.";
     Serial.println("Connected to " + String(myDomain) + " failed.");
   }
   
-  return response;
+  //return getAll;
+  return getBody;
 }
 
 //拆解命令字串置入變數
