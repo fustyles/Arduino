@@ -3,6 +3,8 @@ ESP32-CAM PIR Motion Sensor (Send a captured photo by using Gmail)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-18 18:00
 https://www.facebook.com/francefu
 
+PIR Motion Sensor -> GND, gpio13, 3.3V
+
 Google Apps Script
 https://github.com/fustyles/webduino/blob/gs/SendCapturedImageByGmail_doPost.gs
 You must allow anyone and anonymous to execute the google script.
