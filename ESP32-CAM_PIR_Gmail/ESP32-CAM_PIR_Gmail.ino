@@ -158,7 +158,7 @@ void loop()
 {
   pinMode(gpioPIR, INPUT_PULLUP);
   int v = digitalRead(gpioPIR);
-  //Serial.println(v);
+  Serial.println(v);
   if (v==1) {
     SendCapturedImage(myRecipient, mySubject);
     delay(10000);
