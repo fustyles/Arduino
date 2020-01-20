@@ -3,6 +3,8 @@ ESP32-CAM PIR Motion Sensor (Save a captured photo to Line Notify)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-18 18:00
 https://www.facebook.com/francefu
 
+PIR Motion Sensor -> GND, gpio13, 3.3V
+
 You could only send up to 50 images to Line Notify in one hour.
 The maximum size of post-upload image is XGA(1024*768).
 */
