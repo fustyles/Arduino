@@ -1,7 +1,10 @@
 /*
 ESP32-CAM COCO-SSD Person Detect (Send captured image to GoogleDrive and Linenotify)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-12 14:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-23 14:00
 https://www.facebook.com/francefu
+
+If the code can't run well because Chrome blocks the funtion, you can use the other code below.
+https://github.com/fustyles/Arduino/tree/master/ESP32-CAM_Tensorflow.js/ESP32-CAM_coco-ssd_PersonDetect_GoogleDrive_Linenotify/ESP32-CAM_coco-ssd_PersonDetect_GoogleDrive_Linenotify_new
 
 Class
 https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
