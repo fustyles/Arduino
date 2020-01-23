@@ -18,6 +18,9 @@ https://script.google.com/home/executions
 https://drive.google.com/drive/my-drive
 
 Open the page in Chrome.
+
+If the code can't run well, you can use the code below.
+https://github.com/fustyles/Arduino/tree/master/ESP32-CAM_Tensorflow.js/ESP32-CAM_coco-ssd_PersonDetect_GoogleDrive_Linenotify/ESP32-CAM_coco-ssd_PersonDetect_GoogleDrive_Linenotify_new
 */
 
 const char* ssid = "xxxxx";
