@@ -1,7 +1,7 @@
 /*
 ESP32-CAM Person Detect (COCO-SSD) (偵測人體傳送畫面通知)
 Open the page in Chrome.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-28 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-24 09:00
 https://www.facebook.com/francefu
 
 物件類別清單
@@ -45,8 +45,8 @@ const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 const char* myDomain = "script.google.com";
-String myScript = "/macros/s/***************/exec";    //Create your Google Apps Script and replace the "myScript" path.
-String myLineNotifyToken = "myToken=***************";    //Line Notify Token. You can set the value of xxxxxxxxxx empty if you don't want to send picture to Linenotify.
+String myScript = "/macros/s/********************/exec";    //Create your Google Apps Script and replace the "myScript" path.
+String myLineNotifyToken = "myToken=********************";    //Line Notify Token. You can set the value of xxxxxxxxxx empty if you don't want to send picture to Linenotify.
 String myFoldername = "&myFoldername=ESP32-CAM";
 String myFilename = "&myFilename=ESP32-CAM.jpg";
 String myImage = "&myFile=";
@@ -98,14 +98,58 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
     </head>
     <body>
       <table>
-      <tr><td><button id="get-still" style="display:none" onclick="document.getElementById('stream').src=document.location.origin+'/?getstill='+Math.random();">Restart</button></td><td></td><td></td></tr>
-      <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/?flash='+this.value);}catch(e){}"></td></tr>
-      <tr><td colspan="3"><canvas id="canvas" width="0" height="0"></canvas></td></tr>
+      <tr><td colspan="3"><img id="stream" src="" style="display:none"><canvas id="canvas" width="0" height="0"></canvas></td></tr>
+      <tr>
+      <td>Resolution</td> 
+      <td colspan="2">
+      <select id="framesize" onchange="try{fetch(document.location.origin+'/?framesize='+this.value+';stop');}catch(e){}">
+          <option value="UXGA">UXGA(1600x1200)</option>
+          <option value="SXGA">SXGA(1280x1024)</option>
+          <option value="XGA">XGA(1024x768)</option>
+          <option value="SVGA">SVGA(800x600)</option>
+          <option value="VGA">VGA(640x480)</option>
+          <option value="CIF">CIF(400x296)</option>
+          <option value="QVGA" selected="selected">QVGA(320x240)</option>
+          <option value="HQVGA">HQVGA(240x176)</option>
+          <option value="QQVGA">QQVGA(160x120)</option>
+      </select> 
+      </td>
+      </tr>  
+      <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/?flash='+this.value+';stop');}catch(e){}"></td></tr>
+      <tr>
+        <td>Quality</td> 
+        <td colspan="2">
+        <input type="range" id="quality" min="10" max="63" value="10" onchange="try{fetch(document.location.origin+'/?quality='+this.value+';stop');}catch(e){}">
+        </td>
+      </tr> 
+      <tr>
+        <td>Brightness</td> 
+        <td colspan="2">
+        <input type="range" id="brightness" min="-2" max="2" value="0" onchange="try{fetch(document.location.origin+'/?brightness='+this.value+';stop');}catch(e){}">
+        </td>
+      </tr> 
+      <tr>
+        <td>Contrast</td> 
+        <td colspan="2">
+        <input type="range" id="contrast" min="-2" max="2" value="0" onchange="try{fetch(document.location.origin+'/?contrast='+this.value+';stop');}catch(e){}">
+        </td>
+      </tr> 
+      <tr>
+        <td>
+        <button id="get-still" style="display:none" onclick="document.getElementById('stream').src=document.location.origin+'/?getstill='+Math.random();">Restart</button>
+        </td> 
+        <td colspan="2">
+        <button onclick="result.innerHTML = 'Sending...';ifr.src=document.location.origin+'/?SendCapturedImage=stop';">Send Captured Image</button>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3">
+        <input type="checkbox" id="myStartDetection" name="myStartDetection">Start Person Detection (20s)
+        </td>
+      </tr>        
       </table>
-      <img id="stream" src="" style="display:none">
       <iframe id="ifr" style="display:none"></iframe>
-      <button onclick="ifr.src=document.location.origin+'/?SendCapturedImage=stop';">Send Captured Image</button><input type="checkbox" id="myStartDetection" name="myStartDetection">Start Person Detection (20s)<br>
-      <div id="result"><div>
+      <div id="result" style="color:red"><div>
       
     <!-- Object Detection -->    
     <script>
@@ -160,6 +204,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 personState = true;
                 console.log("send");
                 //ifr.src = document.location.origin+'/?message=person';
+                result.innerHTML = "Sending...";
                 ifr.src = document.location.origin+'/?SendCapturedImage=stop';
                 setTimeout(function(){ personState = false; }, 20000);   // 20s
               }  
@@ -218,21 +263,55 @@ void ExecuteCommand()
   else if (cmd=="restart")
   {
     ESP.restart();
-  }    
-  else if (cmd=="SendCapturedImage")
-  {
+  } 
+  else if (cmd=="framesize") { 
+    sensor_t * s = esp_camera_sensor_get();  
+    if (P1=="QQVGA")
+      s->set_framesize(s, FRAMESIZE_QQVGA);
+    else if (P1=="HQVGA")
+      s->set_framesize(s, FRAMESIZE_HQVGA);
+    else if (P1=="QVGA")
+      s->set_framesize(s, FRAMESIZE_QVGA);
+    else if (P1=="CIF")
+      s->set_framesize(s, FRAMESIZE_CIF);
+    else if (P1=="VGA")
+      s->set_framesize(s, FRAMESIZE_VGA);  
+    else if (P1=="SVGA")
+      s->set_framesize(s, FRAMESIZE_SVGA);
+    else if (P1=="XGA")
+      s->set_framesize(s, FRAMESIZE_XGA);
+    else if (P1=="SXGA")
+      s->set_framesize(s, FRAMESIZE_SXGA);
+    else if (P1=="UXGA")
+      s->set_framesize(s, FRAMESIZE_UXGA);           
+    else 
+      s->set_framesize(s, FRAMESIZE_QVGA);     
+  }  
+  else if (cmd=="quality") {
+    sensor_t * s = esp_camera_sensor_get(); 
+    int val = P1.toInt();
+    s->set_quality(s, val);
+  }
+  else if (cmd=="contrast") {
+    sensor_t * s = esp_camera_sensor_get();
+    int val = P1.toInt(); 
+    s->set_contrast(s, val);
+  }
+  else if (cmd=="brightness") {
+    sensor_t * s = esp_camera_sensor_get(); 
+    int val = P1.toInt();
+    s->set_brightness(s, val);
+  }
+  else if (cmd=="SendCapturedImage") {
     SendCapturedImage();
   }  
-  else if (cmd=="flash")
-  {
+  else if (cmd=="flash") {
     ledcAttachPin(4, 4);  
     ledcSetup(4, 5000, 8);   
-     
     int val = P1.toInt();
     ledcWrite(4,val);  
   }  
-  else if (cmd=="message")
-  {
+  else if (cmd=="message") {
     Serial.println(P1);    
     Feedback=P1; 
   }       
@@ -518,8 +597,8 @@ void SendCapturedImage() {
     
     client_tcp.print(Data);
     int Index;
-    for (Index = 0; Index < imageFile.length(); Index = Index+1000) {
-      client_tcp.print(imageFile.substring(Index, Index+1000));
+    for (Index = 0; Index < imageFile.length(); Index = Index+1024) {
+      client_tcp.print(imageFile.substring(Index, Index+1024));
     }
     
     Serial.println("Waiting for response.");
