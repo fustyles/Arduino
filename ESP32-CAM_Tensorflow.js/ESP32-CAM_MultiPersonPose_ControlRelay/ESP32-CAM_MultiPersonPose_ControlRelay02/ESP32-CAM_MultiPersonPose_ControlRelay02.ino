@@ -11,9 +11,6 @@ Turn off: Raise your two hands above your nose
 
 Relay: gpio2
 
-示範影片
-https://www.youtube.com/watch?v=0v-ZWXZSndA
-
 自訂指令格式 :  
 http://APIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
