@@ -1,5 +1,5 @@
 /*
-ESP32-CAM BodyPix
+ESP32-CAM BodyPix V1
 Open the page in Chrome.
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-28 01:00
 https://www.facebook.com/francefu
