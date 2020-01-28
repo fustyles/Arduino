@@ -16,6 +16,7 @@ http://192.168.xxx.xxx/control?mac
 http://192.168.xxx.xxx/control?restart
 http://192.168.xxx.xxx/control?flash=value        //value= 0~255
 
+遙控車自訂指令
 http://192.168.xxx.xxx/control?speedL=value  //左輪車速 value= 0~255 
 http://192.168.xxx.xxx/control?speedR=value  //右輪車速 value= 0~255
 http://192.168.xxx.xxx/control?decelerate=value  //轉彎減速為原速的比例% vale= 0~100
