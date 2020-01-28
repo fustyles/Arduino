@@ -7,7 +7,7 @@ https://www.facebook.com/francefu
 Servo1(水平旋轉) -> gpio2 (伺服馬達與ESP32-CAM共地外接電源)
 Servo2(垂直旋轉) -> gpio13 (伺服馬達與ESP32-CAM共地外接電源)
 
-Refer to the video
+影片示範
 https://www.youtube.com/watch?v=5SrbBRbmaaw
 
 自訂指令格式 :  
