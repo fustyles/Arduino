@@ -7,6 +7,8 @@ https://www.facebook.com/francefu
 Servo1(水平旋轉) -> gpio2 (伺服馬達與ESP32-CAM共地外接電源)
 Servo2(垂直旋轉) -> gpio13 (伺服馬達與ESP32-CAM共地外接電源)
 
+https://www.youtube.com/watch?v=5SrbBRbmaaw
+
 自訂指令格式 :  
 http://APIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
