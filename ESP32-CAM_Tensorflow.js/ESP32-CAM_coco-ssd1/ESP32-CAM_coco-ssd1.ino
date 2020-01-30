@@ -3,8 +3,6 @@ ESP32-CAM (tfjs coco-ssd)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-30 18:00
 https://www.facebook.com/francefu
 
-Please open in Firfox.
-
 首頁
 http://APIP
 http://STAIP
