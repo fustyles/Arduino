@@ -1,11 +1,7 @@
 /*
 ESP32-CAM Person Detect (COCO-SSD) (偵測人體傳送畫面通知)
-Open the page in Chrome.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-24 09:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-3 00:00
 https://www.facebook.com/francefu
-
-物件類別清單
-https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
 
 建立Google Apps Script，可應用於雲端硬碟、試算表等存取。設定權限任何能都能存取。
 https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doPost.gs
@@ -16,21 +12,31 @@ https://www.youtube.com/watch?v=f46VBqWwUuI
 Google Script管理介面
 https://script.google.com/home
 https://script.google.com/home/executions
+
 Google雲端硬碟管理介面
 https://drive.google.com/drive/my-drive
 
+首頁
+http://APIP
+http://STAIP
+
 自訂指令格式 :  
-http://APIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
-http://STAIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+http://APIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 
 預設AP端IP： 192.168.4.1
-http://192.168.xxx.xxx/?ip
-http://192.168.xxx.xxx/?mac
-http://192.168.xxx.xxx/?restart
-http://192.168.xxx.xxx/?flash=value        //value= 0~255
-http://192.168.xxx.xxx/?getstill
+http://192.168.xxx.xxx?ip
+http://192.168.xxx.xxx?mac
+http://192.168.xxx.xxx?restart
+http://192.168.xxx.xxx?flash=value        //value= 0~255 閃光燈
+http://192.168.xxx.xxx?getstill                 //取得視訊影像
+http://192.168.xxx.xxx?saveimage=/filename      //儲存影像至SD卡，filename不含附檔名
+http://192.168.xxx.xxx?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA 改變影像解析度
+http://192.168.xxx.xxx?quality=value    // value = 10 to 63
+http://192.168.xxx.xxx?brightness=value    // value = -2 to 2
+http://192.168.xxx.xxx?contrast=value    // value = -2 to 2 
 http://192.168.xxx.xxx/?SendCapturedImage=stop
-      
+
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
 重設網路：http://192.168.4.1/?resetwifi=ssid;password
@@ -40,28 +46,34 @@ http://192.168.xxx.xxx/?SendCapturedImage=stop
 const char* ssid     = "*****";   //your network SSID
 const char* password = "*****";   //your network password
 
-//輸入AP端連線帳號密碼
-const char* apssid = "ESP32-CAM";
-const char* appassword = "12345678";         //AP password require at least 8 characters.
-
 const char* myDomain = "script.google.com";
-String myScript = "/macros/s/********************/exec";    //Create your Google Apps Script and replace the "myScript" path.
-String myLineNotifyToken = "myToken=********************";    //Line Notify Token. You can set the value of xxxxxxxxxx empty if you don't want to send picture to Linenotify.
+String myScript = "/macros/s/**********/exec";    //Create your Google Apps Script and replace the "myScript" path.
+String myLineNotifyToken = "myToken=**********";    //Line Notify Token. You can set the value of xxxxxxxxxx empty if you don't want to send picture to Linenotify.
 String myFoldername = "&myFoldername=ESP32-CAM";
 String myFilename = "&myFilename=ESP32-CAM.jpg";
 String myImage = "&myFile=";
 
+//輸入AP端連線帳號密碼
+const char* apssid = "ESP32-CAM";
+const char* appassword = "12345678";    //AP端密碼至少要八個字元以上
+
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
-#include "esp_camera.h"          //視訊
+#include "esp_camera.h"         //視訊
 #include "Base64.h"              //用於轉換視訊影像格式為base64格式，易於上傳google雲端硬碟或資料庫
 #include "soc/soc.h"             //用於電源不穩不重開機 
 #include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機 
 
+String Feedback="";   //回傳客戶端訊息
+//指令參數值
+String Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";
+//指令拆解狀態值
+byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
+
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
 //            or another board which has PSRAM enabled
 
-//CAMERA_MODEL_AI_THINKER  指定安可信ESP32-CAM模組腳位設定
+//安可信ESP32-CAM模組腳位設定
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -80,247 +92,7 @@ String myImage = "&myFile=";
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
-//自訂網頁首頁
-static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width,initial-scale=1">
-        <meta http-equiv="Access-Control-Allow-Headers" content="Origin, X-Requested-With, Content-Type, Accept">
-        <meta http-equiv="Access-Control-Allow-Methods" content="GET,POST,PUT,DELETE,OPTIONS">
-        <meta http-equiv="Access-Control-Allow-Origin" content="*">
-        <title>ESP32 OV2460</title>
-        <style>
-          body{font-family:Arial,Helvetica,sans-serif;background:#181818;color:#EFEFEF;font-size:16px}h2{font-size:18px}section.main{display:flex}#menu,section.main{flex-direction:column}#menu{display:none;flex-wrap:nowrap;min-width:340px;background:#363636;padding:8px;border-radius:4px;margin-top:-10px;margin-right:10px}#content{display:flex;flex-wrap:wrap;align-items:stretch}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}figure img{display:block;width:100%;height:auto;border-radius:4px;margin-top:8px}@media (min-width: 800px) and (orientation:landscape){#content{display:flex;flex-wrap:nowrap;align-items:stretch}figure img{display:block;max-width:100%;max-height:calc(100vh - 40px);width:auto;height:auto}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}}section#buttons{display:flex;flex-wrap:nowrap;justify-content:space-between}#nav-toggle{cursor:pointer;display:block}#nav-toggle-cb{outline:0;opacity:0;width:0;height:0}#nav-toggle-cb:checked+#menu{display:flex}.input-group{display:flex;flex-wrap:nowrap;line-height:22px;margin:5px 0}.input-group>label{display:inline-block;padding-right:10px;min-width:47%}.input-group input,.input-group select{flex-grow:1}.range-max,.range-min{display:inline-block;padding:0 5px}button{display:block;margin:5px;padding:0 12px;border:0;line-height:28px;cursor:pointer;color:#fff;background:#ff3034;border-radius:5px;font-size:16px;outline:0}button:hover{background:#ff494d}button:active{background:#f21c21}button.disabled{cursor:default;background:#a0a0a0}input[type=range]{-webkit-appearance:none;width:100%;height:22px;background:#363636;cursor:pointer;margin:0}input[type=range]:focus{outline:0}input[type=range]::-webkit-slider-runnable-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-webkit-slider-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;-webkit-appearance:none;margin-top:-11.5px}input[type=range]:focus::-webkit-slider-runnable-track{background:#EFEFEF}input[type=range]::-moz-range-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-moz-range-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer}input[type=range]::-ms-track{width:100%;height:2px;cursor:pointer;background:0 0;border-color:transparent;color:transparent}input[type=range]::-ms-fill-lower{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-fill-upper{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;height:2px}input[type=range]:focus::-ms-fill-lower{background:#EFEFEF}input[type=range]:focus::-ms-fill-upper{background:#363636}.switch{display:block;position:relative;line-height:22px;font-size:16px;height:22px}.switch input{outline:0;opacity:0;width:0;height:0}.slider{width:50px;height:22px;border-radius:22px;cursor:pointer;background-color:grey}.slider,.slider:before{display:inline-block;transition:.4s}.slider:before{position:relative;content:"";border-radius:50%;height:16px;width:16px;left:4px;top:3px;background-color:#fff}input:checked+.slider{background-color:#ff3034}input:checked+.slider:before{-webkit-transform:translateX(26px);transform:translateX(26px)}select{border:1px solid #363636;font-size:14px;height:22px;outline:0;border-radius:5px}.image-container{position:relative;min-width:160px}.close{position:absolute;right:5px;top:5px;background:#ff3034;width:16px;height:16px;border-radius:100px;color:#fff;text-align:center;line-height:18px;cursor:pointer}.hidden{display:none}
-        </style>
-        <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.4"> </script>
-        <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"> </script>          
-    </head>
-    <body>
-      <table>
-      <tr><td colspan="3"><img id="stream" src="" style="display:none"><canvas id="canvas" width="0" height="0"></canvas></td></tr>
-      <tr>
-      <td>Resolution</td> 
-      <td colspan="2">
-      <select id="framesize" onchange="try{fetch(document.location.origin+'/?framesize='+this.value+';stop');}catch(e){}">
-          <option value="UXGA">UXGA(1600x1200)</option>
-          <option value="SXGA">SXGA(1280x1024)</option>
-          <option value="XGA">XGA(1024x768)</option>
-          <option value="SVGA">SVGA(800x600)</option>
-          <option value="VGA">VGA(640x480)</option>
-          <option value="CIF">CIF(400x296)</option>
-          <option value="QVGA" selected="selected">QVGA(320x240)</option>
-          <option value="HQVGA">HQVGA(240x176)</option>
-          <option value="QQVGA">QQVGA(160x120)</option>
-      </select> 
-      </td>
-      </tr>  
-      <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/?flash='+this.value+';stop');}catch(e){}"></td></tr>
-      <tr>
-        <td>Quality</td> 
-        <td colspan="2">
-        <input type="range" id="quality" min="10" max="63" value="10" onchange="try{fetch(document.location.origin+'/?quality='+this.value+';stop');}catch(e){}">
-        </td>
-      </tr> 
-      <tr>
-        <td>Brightness</td> 
-        <td colspan="2">
-        <input type="range" id="brightness" min="-2" max="2" value="0" onchange="try{fetch(document.location.origin+'/?brightness='+this.value+';stop');}catch(e){}">
-        </td>
-      </tr> 
-      <tr>
-        <td>Contrast</td> 
-        <td colspan="2">
-        <input type="range" id="contrast" min="-2" max="2" value="0" onchange="try{fetch(document.location.origin+'/?contrast='+this.value+';stop');}catch(e){}">
-        </td>
-      </tr> 
-      <tr>
-        <td>
-        <button id="get-still" style="display:none" onclick="document.getElementById('stream').src=document.location.origin+'/?getstill='+Math.random();">Restart</button>
-        </td> 
-        <td colspan="2">
-        <button onclick="result.innerHTML = 'Sending...';ifr.src=document.location.origin+'/?SendCapturedImage=stop';">Send Captured Image</button>
-        </td>
-      </tr>
-      <tr>
-        <td colspan="3">
-        <input type="checkbox" id="myStartDetection" name="myStartDetection">Start Person Detection (20s)
-        </td>
-      </tr>        
-      </table>
-      <iframe id="ifr" style="display:none"></iframe>
-      <div id="result" style="color:red"><div>
-      
-    <!-- Object Detection -->    
-    <script>
-      var personState = false;
-      
-      var getStill = document.getElementById('get-still');
-      var ShowImage = document.getElementById('stream');
-      var canvas = document.getElementById("canvas");
-      var context = canvas.getContext("2d");  
-      var result = document.getElementById('result');
-      var Model;
-      
-      function ObjectDetect() {
-        result.innerHTML = "Please wait for loading model.";
-        cocoSsd.load().then(cocoSsd_Model => {
-          Model = cocoSsd_Model;
-          result.innerHTML = "";
-          getStill.style.display = "block";
-          getStill.click();
-        }); 
-      }
-      
-      function DetectImage() {
-        Model.detect(ShowImage).then(Predictions => {
-          canvas.setAttribute("width", ShowImage.width);
-          canvas.setAttribute("height", ShowImage.height);      
-          context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height); 
-          var s = (ShowImage.width>ShowImage.height)?ShowImage.width:ShowImage.height;
-          
-          //console.log('Predictions: ', Predictions);
-          if (Predictions.length>0) {
-            result.innerHTML = "";
-            for (var i=0;i<Predictions.length;i++) {
-              const x = Predictions[i].bbox[0];
-              const y = Predictions[i].bbox[1];
-              const width = Predictions[i].bbox[2];
-              const height = Predictions[i].bbox[3];
-              context.lineWidth = Math.round(s/200);
-              context.strokeStyle = "#00FFFF";
-              context.beginPath();
-              context.rect(x, y, width, height);
-              context.stroke(); 
-              context.lineWidth = "2";
-              context.fillStyle = "red";
-              context.font = Math.round(s/30) + "px Arial";
-              context.fillText(Predictions[i].class, x, y);
-              //context.fillText(i, x, y);
-              result.innerHTML+= "[ "+i+" ] "+Predictions[i].class+", "+Math.round(Predictions[i].score*100)+"%, "+Math.round(x)+", "+Math.round(y)+", "+Math.round(width)+", "+Math.round(height)+"<br>";
-              
-              //https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
-              if ((myStartDetection.checked)&&(personState == false)&&(Predictions[i].class=="person")) {
-                personState = true;
-                console.log("send");
-                //ifr.src = document.location.origin+'/?message=person';
-                result.innerHTML = "Sending...";
-                ifr.src = document.location.origin+'/?SendCapturedImage=stop';
-                setTimeout(function(){ personState = false; }, 20000);   // 20s
-              }  
-            }
-          }
-          else
-            result.innerHTML = "Unrecognizable";          
-          getStill.click();
-        });   
-      }
-      
-      ShowImage.onload = function (event) {
-        if (Model) {
-          try { 
-            document.createEvent("TouchEvent");
-            setTimeout(function(){DetectImage();},250);
-          }
-          catch(e) { 
-            setTimeout(function(){DetectImage();},150);
-          } 
-        }
-      }
-      window.onload = function () { ObjectDetect(); }
-    </script>
-    </body>
-</html>
-)rawliteral";
-
 WiFiServer server(80);
-
-String Feedback="", Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";
-byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
-
-void ExecuteCommand()
-{
-  Serial.println("");
-  //Serial.println("Command: "+Command);
-  Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
-  Serial.println("");
-  
-  if (cmd=="your cmd")
-  {
-    // You can do anything
-    // Feedback="<font color=\"red\">Hello World</font>";
-  }
-  else if (cmd=="ip")
-  {
-    Feedback="AP IP: "+WiFi.softAPIP().toString();    
-    Feedback+=", ";
-    Feedback+="STA IP: "+WiFi.localIP().toString();
-  }  
-  else if (cmd=="mac")
-  {
-    Feedback="STA MAC: "+WiFi.macAddress();
-  }  
-  else if (cmd=="restart")
-  {
-    ESP.restart();
-  } 
-  else if (cmd=="framesize") { 
-    sensor_t * s = esp_camera_sensor_get();  
-    if (P1=="QQVGA")
-      s->set_framesize(s, FRAMESIZE_QQVGA);
-    else if (P1=="HQVGA")
-      s->set_framesize(s, FRAMESIZE_HQVGA);
-    else if (P1=="QVGA")
-      s->set_framesize(s, FRAMESIZE_QVGA);
-    else if (P1=="CIF")
-      s->set_framesize(s, FRAMESIZE_CIF);
-    else if (P1=="VGA")
-      s->set_framesize(s, FRAMESIZE_VGA);  
-    else if (P1=="SVGA")
-      s->set_framesize(s, FRAMESIZE_SVGA);
-    else if (P1=="XGA")
-      s->set_framesize(s, FRAMESIZE_XGA);
-    else if (P1=="SXGA")
-      s->set_framesize(s, FRAMESIZE_SXGA);
-    else if (P1=="UXGA")
-      s->set_framesize(s, FRAMESIZE_UXGA);           
-    else 
-      s->set_framesize(s, FRAMESIZE_QVGA);     
-  }  
-  else if (cmd=="quality") {
-    sensor_t * s = esp_camera_sensor_get(); 
-    int val = P1.toInt();
-    s->set_quality(s, val);
-  }
-  else if (cmd=="contrast") {
-    sensor_t * s = esp_camera_sensor_get();
-    int val = P1.toInt(); 
-    s->set_contrast(s, val);
-  }
-  else if (cmd=="brightness") {
-    sensor_t * s = esp_camera_sensor_get(); 
-    int val = P1.toInt();
-    s->set_brightness(s, val);
-  }
-  else if (cmd=="SendCapturedImage") {
-    SendCapturedImage();
-  }  
-  else if (cmd=="flash") {
-    ledcAttachPin(4, 4);  
-    ledcSetup(4, 5000, 8);   
-    int val = P1.toInt();
-    ledcWrite(4,val);  
-  }  
-  else if (cmd=="message") {
-    Serial.println(P1);    
-    Feedback=P1; 
-  }       
-  else {
-    Feedback="Command is not defined.";
-  }
-  if (Feedback=="") Feedback=Command;  
-}
-
 void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
   
@@ -349,8 +121,7 @@ void setup() {
   config.pin_pwdn = PWDN_GPIO_NUM;
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
-  //https://github.com/espressif/esp32-camera/blob/master/driver/include/sensor.h
-  config.pixel_format = PIXFORMAT_JPEG;    //影像格式：RGB565|YUV422|GRAYSCALE|JPEG|RGB888|RAW|RGB444|RGB555
+  config.pixel_format = PIXFORMAT_JPEG;
   //init with high specs to pre-allocate larger buffers
   if(psramFound()){
     config.frame_size = FRAMESIZE_UXGA;
@@ -362,7 +133,7 @@ void setup() {
     config.fb_count = 1;
   }
   
-  //視訊初始化
+  // camera init
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
@@ -370,16 +141,16 @@ void setup() {
     ESP.restart();
   }
 
-  //可動態改變視訊框架大小(解析度大小)
+  //drop down frame size for higher initial frame rate
   sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_QVGA);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+  s->set_framesize(s, FRAMESIZE_QVGA);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA  設定初始化影像解析度
 
-  //閃光燈(GPIO4)
+  //閃光燈
   ledcAttachPin(4, 4);  
-  ledcSetup(4, 5000, 8);
+  ledcSetup(4, 5000, 8);    
   
-  WiFi.mode(WIFI_AP_STA);  //其他模式 WiFi.mode(WIFI_AP); WiFi.mode(WIFI_STA);
-
+  WiFi.mode(WIFI_AP_STA);
+  
   //指定Client端靜態IP
   //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
 
@@ -391,143 +162,347 @@ void setup() {
   Serial.println(ssid);
   
   long int StartTime=millis();
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    if ((StartTime+10000) < millis()) break;    //等待10秒連線
+  while (WiFi.status() != WL_CONNECTED) 
+  {
+      delay(500);
+      if ((StartTime+10000) < millis()) break;    //等待10秒連線
   } 
 
   if (WiFi.status() == WL_CONNECTED) {    //若連線成功
     WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP         
     Serial.println("");
     Serial.println("STAIP address: ");
-    Serial.println(WiFi.localIP()); 
+    Serial.println(WiFi.localIP());  
 
     for (int i=0;i<5;i++) {   //若連上WIFI設定閃光燈快速閃爍
       ledcWrite(4,10);
       delay(200);
       ledcWrite(4,0);
       delay(200);    
-    }    
+    }         
   }
   else {
-    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);    
+    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);         
 
     for (int i=0;i<2;i++) {    //若連不上WIFI設定閃光燈慢速閃爍
       ledcWrite(4,10);
       delay(1000);
       ledcWrite(4,0);
       delay(1000);    
-    }      
+    }
   }     
 
-  //指定AP端IP
+  //指定AP端IP    
   //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
   Serial.println("");
   Serial.println("APIP address: ");
-  Serial.println(WiFi.softAPIP());  
+  Serial.println(WiFi.softAPIP());    
 
-  server.begin();         
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);  
+
+  server.begin();          
 }
 
-void loop() {
-  Feedback="";Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
-  ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
+//自訂網頁首頁管理介面
+static const char PROGMEM INDEX_HTML[] = R"rawliteral(
+  <!DOCTYPE html>
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+  <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.1"> </script>
+  <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"> </script>   
+  </head><body>
+  <img id="ShowImage" src="" style="display:none">
+  <canvas id="canvas" width="0" height="0"></canvas>  
+  <table>
+  <tr>
+  <td><input type="button" id="restart" value="Restart"></td> 
+  <td colspan="2"><input type="button" id="getStill" value="Start Detect" style="display:none"></td>
+  <tr>
+  <td colspan="3"><input type="checkbox" id="Detect">Start Person Detection (30s)</td>
+  </tr>  
+  <td>Object</td> 
+    <td>
+        <select id="object" onchange="count.innerHTML='';">
+          <option value="person">person</option>
+          <option value="bicycle">bicycle</option>
+          <option value="car">car</option>
+          <option value="motorcycle">motorcycle</option>
+          <option value="airplane">airplane</option>
+          <option value="bus">bus</option>
+          <option value="train">train</option>
+          <option value="truck">truck</option>
+          <option value="boat">boat</option>
+          <option value="traffic light">traffic light</option>
+          <option value="fire hydrant">fire hydrant</option>
+          <option value="stop sign">stop sign</option>
+          <option value="parking meter">parking meter</option>
+          <option value="bench">bench</option>
+          <option value="bird">bird</option>
+          <option value="cat">cat</option>
+          <option value="dog">dog</option>
+          <option value="horse">horse</option>
+          <option value="sheep">sheep</option>
+          <option value="cow">cow</option>
+          <option value="elephant">elephant</option>
+          <option value="bear">bear</option>
+          <option value="zebra">zebra</option>
+          <option value="giraffe">giraffe</option>
+          <option value="backpack">backpack</option>
+          <option value="umbrella">umbrella</option>
+          <option value="handbag">handbag</option>
+          <option value="tie">tie</option>
+          <option value="suitcase">suitcase</option>
+          <option value="frisbee">frisbee</option>
+          <option value="skis">skis</option>
+          <option value="snowboard">snowboard</option>
+          <option value="sports ball">sports ball</option>
+          <option value="kite">kite</option>
+          <option value="baseball bat">baseball bat</option>
+          <option value="baseball glove">baseball glove</option>
+          <option value="skateboard">skateboard</option>
+          <option value="surfboard">surfboard</option>
+          <option value="tennis racket">tennis racket</option>
+          <option value="bottle">bottle</option>
+          <option value="wine glass">wine glass</option>
+          <option value="cup">cup</option>
+          <option value="fork">fork</option>
+          <option value="knife">knife</option>
+          <option value="spoon">spoon</option>
+          <option value="bowl">bowl</option>
+          <option value="banana">banana</option>
+          <option value="apple">apple</option>
+          <option value="sandwich">sandwich</option>
+          <option value="orange">orange</option>
+          <option value="broccoli">broccoli</option>
+          <option value="carrot">carrot</option>
+          <option value="hot dog">hot dog</option>
+          <option value="pizza">pizza</option>
+          <option value="donut">donut</option>
+          <option value="cake">cake</option>
+          <option value="chair">chair</option>
+          <option value="couch">couch</option>
+          <option value="potted plant">potted plant</option>
+          <option value="bed">bed</option>
+          <option value="dining table">dining table</option>
+          <option value="toilet">toilet</option>
+          <option value="tv">tv</option>
+          <option value="laptop">laptop</option>
+          <option value="mouse">mouse</option>
+          <option value="remote">remote</option>
+          <option value="keyboard">keyboard</option>
+          <option value="cell phone">cell phone</option>
+          <option value="microwave">microwave</option>
+          <option value="oven">oven</option>
+          <option value="toaster">toaster</option>
+          <option value="sink">sink</option>
+          <option value="refrigerator">refrigerator</option>
+          <option value="book">book</option>
+          <option value="clock">clock</option>
+          <option value="vase">vase</option>
+          <option value="scissors">scissors</option>
+          <option value="teddy bear">teddy bear</option>
+          <option value="hair drier">hair drier</option>
+          <option value="toothbrush">toothbrush</option>
+        </select>
+    </td>
+    <td><span id="count" style="color:red"><span>
+    </td>
+  <tr>
+  <td>Resolution</td> 
+    <td colspan="2">
+    <select id="framesize">
+        <option value="UXGA">UXGA(1600x1200)</option>
+        <option value="SXGA">SXGA(1280x1024)</option>
+        <option value="XGA">XGA(1024x768)</option>
+        <option value="SVGA">SVGA(800x600)</option>
+        <option value="VGA">VGA(640x480)</option>
+        <option value="CIF">CIF(400x296)</option>
+        <option value="QVGA" selected="selected">QVGA(320x240)</option>
+        <option value="HQVGA">HQVGA(240x176)</option>
+        <option value="QQVGA">QQVGA(160x120)</option>
+    </select> 
+    </td>
+  <tr>
+  <td>Flash</td>
+  <td colspan="2"><input type="range" id="flash" min="0" max="255" value="0"></td>
+  </tr>
+  <tr>    
+  </tr>
+  <tr>
+    <td>Quality</td>
+    <td colspan="2"><input type="range" id="quality" min="10" max="63" value="10"></td>
+    </tr>
+  <tr>
+  <tr>
+    <td>Brightness</td>
+    <td colspan="2"><input type="range" id="brightness" min="-2" max="2" value="0"></td>
+    </tr>
+  <tr>
+  <tr>
+    <td>Contrast</td>
+    <td colspan="2"><input type="range" id="contrast" min="-2" max="2" value="0"></td>
+    </tr>
+  <tr>
+  <tr><td>Rotate</td>
+    <td align="left" colspan="2">
+        <select onchange="document.getElementById('canvas').style.transform='rotate('+this.value+')';">
+          <option value="0deg">0deg</option>
+          <option value="90deg">90deg</option>
+          <option value="180deg">180deg</option>
+          <option value="270deg">270deg</option>
+        </select>
+    </td>
+  </tr>  
+  </table>
+  <iframe id="ifr" style="display:none"></iframe>
+  <div id="result" style="color:red"><div>
+  </div>
+  </body>
+  </html> 
   
-   WiFiClient client = server.available();
+  <script>
+    var getStill = document.getElementById('getStill');
+    var ShowImage = document.getElementById('ShowImage');
+    var canvas = document.getElementById("canvas");
+    var context = canvas.getContext("2d"); 
+    var object = document.getElementById('object');
+    var Detect = document.getElementById('Detect');
+    var count = document.getElementById('count'); 
+    var result = document.getElementById('result');
+    var flash = document.getElementById('flash'); 
+    var ifr = document.getElementById('ifr');
+    var lastValue="";
+    var myTimer;   
+    var Model;
+    var objectState = false;    
 
-  if (client) { 
-    String currentLine = "";
-
-    while (client.connected()) {
-      if (client.available()) {
-        char c = client.read();             
-        
-        getCommand(c);   //將緩衝區取得的字元猜解出指令參數
-                
-        if (c == '\n') {
-          if (currentLine.length() == 0) {    
-            if (cmd=="getstill") {
-              //回傳JPEG格式影像
-              camera_fb_t * fb = NULL;
-              fb = esp_camera_fb_get();  
-              if(!fb) {
-                Serial.println("Camera capture failed");
-                delay(1000);
-                ESP.restart();
-              }
-  
-              client.println("HTTP/1.1 200 OK");
-              client.println("Access-Control-Allow-Origin: *");              
-              client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
-              client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
-              client.println("Content-Type: image/jpeg");
-              client.println("Content-Disposition: form-data; name=\"imageFile\"; filename=\"picture.jpg\""); 
-              client.println("Content-Length: " + String(fb->len));             
-              client.println("Connection: close");
-              client.println();
-              uint8_t *fbBuf = fb->buf;
-              size_t fbLen = fb->len;
-              for (size_t n=0;n<fbLen;n=n+1024) {
-                if (n+1024<fbLen) {
-                  client.write(fbBuf, 1024);
-                  fbBuf += 1024;
-                }
-                else if (fbLen%1024>0) {
-                  size_t remainder = fbLen%1024;
-                  client.write(fbBuf, remainder);
-                }
-              }  
-              client.println();
-              esp_camera_fb_return(fb);
-            
-              pinMode(4, OUTPUT);
-              digitalWrite(4, LOW);               
-            }
-            else {
-              //回傳TEXT或HTML格式
-              client.println("HTTP/1.1 200 OK");
-              client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
-              client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
-              client.println("Content-Type: text/html; charset=utf-8");
-              client.println("Access-Control-Allow-Origin: *");
-              client.println("Connection: close");
-              client.println();
-              String Data = String((const char *)INDEX_HTML);
-              int Index;
-              for (Index = 0; Index < Data.length(); Index = Index+1000) {
-                client.print(Data.substring(Index, Index+1000));
-              } 
-              client.println();
-            }
-                        
-            Feedback="";
-            break;
-          } else {
-            currentLine = "";
-          }
-        } 
-        else if (c != '\r') {
-          currentLine += c;
-        }
-
-        if ((currentLine.indexOf("/?")!=-1)&&(currentLine.indexOf(" HTTP")!=-1)) {
-          if (Command.indexOf("stop")!=-1) {  //若指令中含關鍵字stop立即斷線 -> http://192.168.xxx.xxx/?cmd=aaa;bbb;ccc;stop
-            client.println();
-            client.println();
-            client.stop();
-          }
-          currentLine="";
-          Feedback="";
-          ExecuteCommand();
-        }
-      }
+    getStill.onclick = function (event) {  
+      myTimer = setInterval(function(){getStill.click();},20000);
+      ShowImage.src=location.origin+'/?getstill='+Math.random();
     }
-    delay(1);
-    client.stop();
-  }
-}
 
+    ShowImage.onload = function (event) {
+      clearInterval(myTimer);
+      if (Model) {
+        try { 
+          document.createEvent("TouchEvent");
+          setTimeout(function(){DetectImage();},250);
+        }
+        catch(e) { 
+          setTimeout(function(){DetectImage();},150);
+        } 
+      }          
+    }     
+    
+    restart.onclick = function (event) {
+      fetch(location.origin+'/?restart=stop');
+    }    
 
+    framesize.onclick = function (event) {
+      fetch(document.location.origin+'/?framesize='+this.value+';stop');
+    }  
+
+    flash.onchange = function (event) {
+      fetch(location.origin+'/?flash='+this.value+';stop');
+    } 
+
+    quality.onclick = function (event) {
+      fetch(document.location.origin+'/?quality='+this.value+';stop');
+    } 
+
+    brightness.onclick = function (event) {
+      fetch(document.location.origin+'/?brightness='+this.value+';stop');
+    } 
+
+    contrast.onclick = function (event) {
+      fetch(document.location.origin+'/?contrast='+this.value+';stop');
+    }                             
+    
+    function ObjectDetect() {
+      result.innerHTML = "Please wait for loading model.";
+      cocoSsd.load().then(cocoSsd_Model => {
+        Model = cocoSsd_Model;
+        result.innerHTML = "";
+        getStill.style.display = "block";
+      }); 
+    }
+    
+    function DetectImage() {
+      Model.detect(ShowImage).then(Predictions => {
+        canvas.setAttribute("width", ShowImage.width);
+        canvas.setAttribute("height", ShowImage.height);      
+        context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height); 
+        var s = (ShowImage.width>ShowImage.height)?ShowImage.width:ShowImage.height;
+        var objectCount=0;
+        
+        //console.log('Predictions: ', Predictions);
+        if (Predictions.length>0) {
+          result.innerHTML = "";
+          for (var i=0;i<Predictions.length;i++) {
+            const x = Predictions[i].bbox[0];
+            const y = Predictions[i].bbox[1];
+            const width = Predictions[i].bbox[2];
+            const height = Predictions[i].bbox[3];
+            context.lineWidth = Math.round(s/200);
+            context.strokeStyle = "#00FFFF";
+            context.beginPath();
+            context.rect(x, y, width, height);
+            context.stroke(); 
+            context.lineWidth = "2";
+            context.fillStyle = "red";
+            context.font = Math.round(s/30) + "px Arial";
+            context.fillText(Predictions[i].class, x, y);
+            //context.fillText(i, x, y);
+            result.innerHTML+= "[ "+i+" ] "+Predictions[i].class+", "+Math.round(Predictions[i].score*100)+"%, "+Math.round(x)+", "+Math.round(y)+", "+Math.round(width)+", "+Math.round(height)+"<br>";
+            
+            //https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
+            if ((Detect.checked)&&(objectState == false)&&(Predictions[i].class==object.value)) {
+              objectState = true;
+              console.log("Sending...");
+              result.innerHTML = "Sending...";
+              ifr.src = document.location.origin+'/?SendCapturedImage=stop';
+              setTimeout(function(){ objectState = false; }, 30000);   // 30s              
+            } 
+            if (Predictions[i].class==object.value) {
+              objectCount++;
+            } 
+          }
+          count.innerHTML = objectCount;
+        }
+        else {
+          result.innerHTML = "Unrecognizable";
+          count.innerHTML = "0";
+        }
+
+        getStill.click();
+      });
+    }
+
+    function getFeedback(target) {
+      var data = $.ajax({
+      type: "get",
+      dataType: "text",
+      url: target,
+      success: function(response)
+        {
+          show.innerHTML = response;
+          if (streamState==true) getStream.onclick;
+        },
+        error: function(exception)
+        {
+          show.innerHTML = 'fail';
+          if (streamState==true) getStream.onclick;
+        }
+      });
+    }      
+
+    window.onload = function () { ObjectDetect(); }    
+  </script>      
+  </script>  
+)rawliteral";
 
 //拆解命令字串置入變數
 void getCommand(char c)
@@ -556,6 +531,203 @@ void getCommand(char c)
     if (c=='?') questionstate=1;
     if (c=='=') equalstate=1;
     if ((strState>=9)&&(c==';')) semicolonstate=1;
+  }
+}
+
+void ExecuteCommand()
+{
+  //Serial.println("");
+  //Serial.println("Command: "+Command);
+  //Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
+  //Serial.println("");
+  
+  if (cmd=="your cmd") {
+    // You can do anything.
+    // Feedback="<font color=\"red\">Hello World</font>";
+  }
+  else if (cmd=="ip") {
+    Feedback="AP IP: "+WiFi.softAPIP().toString();    
+    Feedback+=", ";
+    Feedback+="STA IP: "+WiFi.localIP().toString();
+  }  
+  else if (cmd=="mac") {
+    Feedback="STA MAC: "+WiFi.macAddress();
+  }  
+  else if (cmd=="resetwifi") {  //重設WIFI連線
+    WiFi.begin(P1.c_str(), P2.c_str());
+    Serial.print("Connecting to ");
+    Serial.println(P1);
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) 
+    {
+        delay(500);
+        if ((StartTime+5000) < millis()) break;
+    } 
+    Serial.println("");
+    Serial.println("STAIP: "+WiFi.localIP().toString());
+    Feedback="STAIP: "+WiFi.localIP().toString();
+  }    
+  else if (cmd=="restart") {
+    ESP.restart();
+  }    
+  else if (cmd=="flash") {
+    ledcAttachPin(4, 4);  
+    ledcSetup(4, 5000, 8);   
+     
+    int val = P1.toInt();
+    ledcWrite(4,val);  
+  }  
+  else if (cmd=="framesize") { 
+    sensor_t * s = esp_camera_sensor_get();  
+    if (P1=="QQVGA")
+      s->set_framesize(s, FRAMESIZE_QQVGA);
+    else if (P1=="HQVGA")
+      s->set_framesize(s, FRAMESIZE_HQVGA);
+    else if (P1=="QVGA")
+      s->set_framesize(s, FRAMESIZE_QVGA);
+    else if (P1=="CIF")
+      s->set_framesize(s, FRAMESIZE_CIF);
+    else if (P1=="VGA")
+      s->set_framesize(s, FRAMESIZE_VGA);  
+    else if (P1=="SVGA")
+      s->set_framesize(s, FRAMESIZE_SVGA);
+    else if (P1=="XGA")
+      s->set_framesize(s, FRAMESIZE_XGA);
+    else if (P1=="SXGA")
+      s->set_framesize(s, FRAMESIZE_SXGA);
+    else if (P1=="UXGA")
+      s->set_framesize(s, FRAMESIZE_UXGA);           
+    else 
+      s->set_framesize(s, FRAMESIZE_QVGA);     
+  }
+  else if (cmd=="quality") { 
+    sensor_t * s = esp_camera_sensor_get();
+    int val = P1.toInt(); 
+    s->set_quality(s, val);
+  }
+  else if (cmd=="contrast") {
+    sensor_t * s = esp_camera_sensor_get();
+    int val = P1.toInt(); 
+    s->set_contrast(s, val);
+  }
+  else if (cmd=="brightness") {
+    sensor_t * s = esp_camera_sensor_get();
+    int val = P1.toInt();  
+    s->set_brightness(s, val);  
+  }
+  else if (cmd=="SendCapturedImage") {
+    SendCapturedImage();
+  }  
+  else {
+    Feedback="Command is not defined.";
+  }
+  if (Feedback=="") Feedback=Command;  
+}
+
+void loop() {
+  Feedback="";Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
+  ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
+  
+   WiFiClient client = server.available();
+
+  if (client) { 
+    String currentLine = "";
+
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();             
+        
+        getCommand(c);   //將緩衝區取得的字元拆解出指令參數
+                
+        if (c == '\n') {
+          if (currentLine.length() == 0) {    
+            
+            if (cmd=="getstill") {
+              //回傳JPEG格式影像
+              camera_fb_t * fb = NULL;
+              fb = esp_camera_fb_get();  
+              if(!fb) {
+                Serial.println("Camera capture failed");
+                delay(1000);
+                ESP.restart();
+              }
+  
+              client.println("HTTP/1.1 200 OK");
+              client.println("Access-Control-Allow-Origin: *");              
+              client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+              client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
+              client.println("Content-Type: image/jpeg");
+              client.println("Content-Disposition: form-data; name=\"imageFile\"; filename=\"picture.jpg\""); 
+              client.println("Content-Length: " + String(fb->len));             
+              client.println("Connection: close");
+              client.println();
+              
+              uint8_t *fbBuf = fb->buf;
+              size_t fbLen = fb->len;
+              for (size_t n=0;n<fbLen;n=n+1024) {
+                if (n+1024<fbLen) {
+                  client.write(fbBuf, 1024);
+                  fbBuf += 1024;
+                }
+                else if (fbLen%1024>0) {
+                  size_t remainder = fbLen%1024;
+                  client.write(fbBuf, remainder);
+                }
+              }  
+              
+              esp_camera_fb_return(fb);
+            
+              pinMode(4, OUTPUT);
+              digitalWrite(4, LOW);               
+            }
+            else {
+              //回傳HTML首頁或Feedback
+              client.println("HTTP/1.1 200 OK");
+              client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+              client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
+              client.println("Content-Type: text/html; charset=utf-8");
+              client.println("Access-Control-Allow-Origin: *");
+              client.println("Connection: close");
+              client.println();
+              
+              String Data="";
+              if (cmd!="")
+                Data = Feedback;
+              else {
+                Data = String((const char *)INDEX_HTML);
+              }
+              int Index;
+              for (Index = 0; Index < Data.length(); Index = Index+1000) {
+                client.print(Data.substring(Index, Index+1000));
+              }           
+              
+              client.println();
+            }
+                        
+            Feedback="";
+            break;
+          } else {
+            currentLine = "";
+          }
+        } 
+        else if (c != '\r') {
+          currentLine += c;
+        }
+
+        if ((currentLine.indexOf("/?")!=-1)&&(currentLine.indexOf(" HTTP")!=-1)) {
+          if (Command.indexOf("stop")!=-1) {  //若指令中含關鍵字stop立即斷線 -> http://192.168.xxx.xxx/?cmd=aaa;bbb;ccc;stop
+            client.println();
+            client.println();
+            client.stop();
+          }
+          currentLine="";
+          Feedback="";
+          ExecuteCommand();
+        }
+      }
+    }
+    delay(1);
+    client.stop();
   }
 }
 
