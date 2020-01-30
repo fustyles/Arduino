@@ -3,6 +3,8 @@ ESP32-CAM (tfjs coco-ssd)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-30 18:00
 https://www.facebook.com/francefu
 
+Please open in Firfox.
+
 首頁
 http://APIP
 http://STAIP
@@ -22,10 +24,11 @@ http://192.168.xxx.xxx?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVG
 http://192.168.xxx.xxx?quality=value    // value = 10 to 63
 http://192.168.xxx.xxx?brightness=value    // value = -2 to 2
 http://192.168.xxx.xxx?contrast=value    // value = -2 to 2 
-http://192.168.4.1/?tcp=domain;port;request;wait
-http://192.168.4.1/?linenotify=token;request
+http://192.168.xxx.xxx/?tcp=domain;port;request;wait
+http://192.168.xxx.xxx/?linenotify=token;request
 --> request = message=xxxxx
 --> request = message=xxxxx&stickerPackageId=xxxxx&stickerId=xxxxx
+http://192.168.xxx.xxx?sendCapturedImageToLineNotify=token  //傳送影像截圖至LineNotify，最大解析度是SXGA
 
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
@@ -193,7 +196,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
-  <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.4"> </script>
+  <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.1"> </script>
   <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"> </script>   
   </head><body>
   <img id="ShowImage" src="" style="display:none">
@@ -353,17 +356,27 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var result = document.getElementById('result');
     var flash = document.getElementById('flash'); 
     var ifr = document.getElementById('ifr');
-    var lastValue="";   
+    var lastValue="";
+    var myTimer;   
     var Model;    
 
-    getStill.onclick = function (event) {
-      try {
-        ShowImage.src=location.origin+'/?getstill='+Math.random();
-      }
-      catch (e) {
-        ShowImage.src=location.origin+'/?getstill='+Math.random();
-      }
+    getStill.onclick = function (event) {  
+      myTimer = setInterval(function(){getStill.click();},5000);
+      ShowImage.src=location.origin+'/?getstill='+Math.random();
     }
+
+    ShowImage.onload = function (event) {
+      clearInterval(myTimer);
+      if (Model) {
+        try { 
+          document.createEvent("TouchEvent");
+          setTimeout(function(){DetectImage();},250);
+        }
+        catch(e) { 
+          setTimeout(function(){DetectImage();},150);
+        } 
+      }          
+    }     
     
     restart.onclick = function (event) {
       fetch(location.origin+'/?restart=stop');
@@ -437,25 +450,14 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           result.innerHTML = "Unrecognizable";
           count.innerHTML = "0";
         }
-        
-        //if (count.innerHTML != lastValue) { 
-          lastValue = count.innerHTML;
-          ifr.src = document.location.origin+'/?detectCount='+object.value+';'+String(objectCount)+';stop';        
-        //}
-        setTimeout(function(){getStill.click();},100);
-      });   
-    }
     
-    ShowImage.onload = function (event) {
-      if (Model) {
-        try { 
-          document.createEvent("TouchEvent");
-          setTimeout(function(){DetectImage();},250);
-        }
-        catch(e) { 
-          setTimeout(function(){DetectImage();},150);
-        } 
-      }
+      //if (count.innerHTML != lastValue) { 
+        lastValue = count.innerHTML;
+        ifr.src = document.location.origin+'/?detectCount='+object.value+';'+String(objectCount)+';stop';        
+      //}
+
+        getStill.click();
+      });
     }
 
     function getFeedback(target) {
@@ -515,7 +517,7 @@ void ExecuteCommand()
 {
   //Serial.println("");
   //Serial.println("Command: "+Command);
-  Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
+  //Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
   //Serial.println("");
   
   if (cmd=="your cmd") {
@@ -619,7 +621,11 @@ void ExecuteCommand()
       Feedback.replace("{","");
       Feedback.replace("}","");
     }
-  }  
+  }
+  else if (cmd=="sendCapturedImageToLineNotify") { 
+    Feedback=sendCapturedImageToLineNotify(P1);
+    if (Feedback=="") Feedback="The image failed to send. <br>The framesize may be too large.";
+  } 
   else {
     Feedback="Command is not defined.";
   }
@@ -677,7 +683,6 @@ void loop() {
                 }
               }  
               
-              client.println();
               esp_camera_fb_return(fb);
             
               pinMode(4, OUTPUT);
@@ -878,4 +883,92 @@ String LineNotify(String token, String request, byte wait)
   }
   else
     return "Connection failed";  
+}
+
+String sendCapturedImageToLineNotify(String token) 
+{
+  String getAll="", getBody = "";
+  
+  camera_fb_t * fb = NULL;
+  fb = esp_camera_fb_get();  
+  if(!fb) {
+    Serial.println("Camera capture failed");
+    delay(1000);
+    ESP.restart();
+    return "";
+  }  
+      
+  WiFiClientSecure client_tcp;
+  Serial.println("Connect to notify-api.line.me");
+  
+  if (client_tcp.connect("notify-api.line.me", 443)) {
+    Serial.println("Connection successful");
+
+    String message = "Welcome to Taiwan.";
+    String head = "--Taiwan\r\nContent-Disposition: form-data; name=\"message\"; \r\n\r\n" + message + "\r\n--Taiwan\r\nContent-Disposition: form-data; name=\"imageFile\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
+    String tail = "\r\n--Taiwan--\r\n";
+
+    uint16_t imageLen = fb->len;
+    uint16_t extraLen = head.length() + tail.length();
+    uint16_t totalLen = imageLen + extraLen;
+  
+    client_tcp.println("POST /api/notify HTTP/1.1");
+    client_tcp.println("Connection: close"); 
+    client_tcp.println("Host: notify-api.line.me");
+    client_tcp.println("Authorization: Bearer " + token);
+    client_tcp.println("Content-Length: " + String(totalLen));
+    client_tcp.println("Content-Type: multipart/form-data; boundary=Taiwan");
+    client_tcp.println();
+    client_tcp.print(head);
+    
+    uint8_t *fbBuf = fb->buf;
+    size_t fbLen = fb->len;
+    for (size_t n=0;n<fbLen;n=n+1024) {
+      if (n+1024<fbLen) {
+        client_tcp.write(fbBuf, 1024);
+        fbBuf += 1024;
+      }
+      else if (fbLen%1024>0) {
+        size_t remainder = fbLen%1024;
+        client_tcp.write(fbBuf, remainder);
+      }
+    }  
+    
+    client_tcp.print(tail);
+    esp_camera_fb_return(fb);
+    
+    int waitTime = 10000;   // timeout 10 seconds
+    long startTime = millis();
+    boolean state = false;
+    while ((startTime + waitTime) > millis())
+    {
+      Serial.print(".");
+      delay(100);      
+      while (client_tcp.available()) 
+      {
+          char c = client_tcp.read();
+          if (c == '\n') 
+          {
+            if (getAll.length()==0) state=true; 
+            getAll = "";
+          } 
+          else if (c != '\r')
+            getAll += String(c);
+          if (state==true) getBody += String(c);
+          startTime = millis();
+       }
+       if (getBody.length()>0) break;
+    }
+    client_tcp.stop();
+    //Serial.println(getAll); 
+    Serial.println(getBody);
+  }
+  else {
+    getAll="Connected to notify-api.line.me failed.";
+    getBody="Connected to notify-api.line.me failed.";
+    Serial.println("Connected to notify-api.line.me failed.");
+  }
+  
+  //return getAll;
+  return getBody;
 }
