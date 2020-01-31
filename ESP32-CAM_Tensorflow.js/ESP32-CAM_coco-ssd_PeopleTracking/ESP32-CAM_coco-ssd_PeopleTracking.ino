@@ -28,6 +28,8 @@ http://192.168.xxx.xxx?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVG
 http://192.168.xxx.xxx?quality=value    // value = 10 to 63
 http://192.168.xxx.xxx?brightness=value    // value = -2 to 2
 http://192.168.xxx.xxx?contrast=value    // value = -2 to 2 
+http://192.168.xxx.xxx?servo1=value        //value= 1700~8000
+http://192.168.xxx.xxx?servo2=value        //value= 1700~8000
 
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
