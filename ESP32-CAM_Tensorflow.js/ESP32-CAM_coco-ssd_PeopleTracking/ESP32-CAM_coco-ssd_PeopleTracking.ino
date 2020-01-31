@@ -70,7 +70,7 @@ const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 #include "soc/soc.h"             //用於電源不穩不重開機 
 #include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機 
 #include <esp32-hal-ledc.h>      //用於控制伺服馬達
-int angle1Value1 = 4850;         //
+int angle1Value1 = 4850;
 int angle1Value2 = 4850;
 
 //官方函式庫
