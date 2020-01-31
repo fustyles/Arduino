@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (tfjs coco-ssd)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-30 18:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-31 22:00
 https://www.facebook.com/francefu
 
 首頁
@@ -34,8 +34,8 @@ http://192.168.xxx.xxx?sendCapturedImageToLineNotify=token  //傳送影像截圖
 */
 
 //輸入WIFI連線帳號密碼
-const char* ssid     = "*****";   //your network SSID
-const char* password = "*****";   //your network password
+const char* ssid     = "3COM";   //your network SSID
+const char* password = "godblessyou";   //your network password
 
 //輸入AP端連線帳號密碼
 const char* apssid = "ESP32-CAM";
@@ -76,6 +76,126 @@ byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolon
 #define PCLK_GPIO_NUM     22
 
 WiFiServer server(80);
+
+void ExecuteCommand()
+{
+  //Serial.println("");
+  //Serial.println("Command: "+Command);
+  //Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
+  //Serial.println("");
+  
+  if (cmd=="your cmd") {
+    // You can do anything.
+    // Feedback="<font color=\"red\">Hello World</font>";
+  }
+  else if (cmd=="ip") {
+    Feedback="AP IP: "+WiFi.softAPIP().toString();    
+    Feedback+=", ";
+    Feedback+="STA IP: "+WiFi.localIP().toString();
+  }  
+  else if (cmd=="mac") {
+    Feedback="STA MAC: "+WiFi.macAddress();
+  }  
+  else if (cmd=="resetwifi") {  //重設WIFI連線
+    WiFi.begin(P1.c_str(), P2.c_str());
+    Serial.print("Connecting to ");
+    Serial.println(P1);
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) 
+    {
+        delay(500);
+        if ((StartTime+5000) < millis()) break;
+    } 
+    Serial.println("");
+    Serial.println("STAIP: "+WiFi.localIP().toString());
+    Feedback="STAIP: "+WiFi.localIP().toString();
+  }    
+  else if (cmd=="restart") {
+    ESP.restart();
+  }    
+  else if (cmd=="flash") {
+    ledcAttachPin(4, 4);  
+    ledcSetup(4, 5000, 8);   
+     
+    int val = P1.toInt();
+    ledcWrite(4,val);  
+  }  
+  else if (cmd=="framesize") { 
+    sensor_t * s = esp_camera_sensor_get();  
+    if (P1=="QQVGA")
+      s->set_framesize(s, FRAMESIZE_QQVGA);
+    else if (P1=="HQVGA")
+      s->set_framesize(s, FRAMESIZE_HQVGA);
+    else if (P1=="QVGA")
+      s->set_framesize(s, FRAMESIZE_QVGA);
+    else if (P1=="CIF")
+      s->set_framesize(s, FRAMESIZE_CIF);
+    else if (P1=="VGA")
+      s->set_framesize(s, FRAMESIZE_VGA);  
+    else if (P1=="SVGA")
+      s->set_framesize(s, FRAMESIZE_SVGA);
+    else if (P1=="XGA")
+      s->set_framesize(s, FRAMESIZE_XGA);
+    else if (P1=="SXGA")
+      s->set_framesize(s, FRAMESIZE_SXGA);
+    else if (P1=="UXGA")
+      s->set_framesize(s, FRAMESIZE_UXGA);           
+    else 
+      s->set_framesize(s, FRAMESIZE_QVGA);     
+  }
+  else if (cmd=="quality") { 
+    sensor_t * s = esp_camera_sensor_get();
+    int val = P1.toInt(); 
+    s->set_quality(s, val);
+  }
+  else if (cmd=="contrast") {
+    sensor_t * s = esp_camera_sensor_get();
+    int val = P1.toInt(); 
+    s->set_contrast(s, val);
+  }
+  else if (cmd=="brightness") {
+    sensor_t * s = esp_camera_sensor_get();
+    int val = P1.toInt();  
+    s->set_brightness(s, val);  
+  }
+  else if (cmd=="detectCount") {
+    Serial.println(P1+" = "+P2); 
+  }
+  else if (cmd=="tcp") {
+    String domain=P1;
+    int port=P2.toInt();
+    String request=P3;
+    int wait=P4.toInt();      // wait = 0 or 1
+
+    if ((port==443)||(domain.indexOf("https")==0)||(domain.indexOf("HTTPS")==0))
+      Feedback=tcp_https(domain,request,port,wait);
+    else
+      Feedback=tcp_http(domain,request,port,wait);  
+  }
+  else if (cmd=="linenotify") {    //message=xxx&stickerPackageId=xxx&stickerId=xxx
+    String token = P1;
+    String request = P2;
+    Feedback=LineNotify(token,request,1);
+    if (Feedback.indexOf("status")!=-1) {
+      int s=Feedback.indexOf("{");
+      Feedback=Feedback.substring(s);
+      int e=Feedback.indexOf("}");
+      Feedback=Feedback.substring(0,e);
+      Feedback.replace("\"","");
+      Feedback.replace("{","");
+      Feedback.replace("}","");
+    }
+  }
+  else if (cmd=="sendCapturedImageToLineNotify") { 
+    Feedback=sendCapturedImageToLineNotify(P1);
+    if (Feedback=="") Feedback="The image failed to send. <br>The framesize may be too large.";
+  } 
+  else {
+    Feedback="Command is not defined.";
+  }
+  if (Feedback=="") Feedback=Command;  
+}
+
 void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
   
@@ -365,14 +485,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 
     ShowImage.onload = function (event) {
       clearInterval(myTimer);
+      canvas.setAttribute("width", ShowImage.width);
+      canvas.setAttribute("height", ShowImage.height);
+      context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height);
       if (Model) {
-        try { 
-          document.createEvent("TouchEvent");
-          setTimeout(function(){DetectImage();},250);
-        }
-        catch(e) { 
-          setTimeout(function(){DetectImage();},150);
-        } 
+        DetectImage();
       }          
     }     
     
@@ -410,11 +527,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     }
     
     function DetectImage() {
-      Model.detect(ShowImage).then(Predictions => {
-        canvas.setAttribute("width", ShowImage.width);
-        canvas.setAttribute("height", ShowImage.height);      
-        context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height); 
-        var s = (ShowImage.width>ShowImage.height)?ShowImage.width:ShowImage.height;
+      Model.detect(canvas).then(Predictions => {    
+        var s = (canvas.width>canvas.height)?canvas.width:canvas.height;
         var objectCount=0;
         
         //console.log('Predictions: ', Predictions);
@@ -454,7 +568,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         ifr.src = document.location.origin+'/?detectCount='+object.value+';'+String(objectCount)+';stop';        
       //}
 
-        getStill.click();
+        try { 
+          document.createEvent("TouchEvent");
+          setTimeout(function(){getStill.click();},250);
+        }
+        catch(e) { 
+          setTimeout(function(){getStill.click();},150);
+        } 
       });
     }
 
@@ -481,154 +601,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   </script>  
 )rawliteral";
 
-//拆解命令字串置入變數
-void getCommand(char c)
-{
-  if (c=='?') ReceiveState=1;
-  if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
-  
-  if (ReceiveState==1)
-  {
-    Command=Command+String(c);
-    
-    if (c=='=') cmdState=0;
-    if (c==';') strState++;
-  
-    if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
-    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) P1=P1+String(c);
-    if ((cmdState==0)&&(strState==2)&&(c!=';')) P2=P2+String(c);
-    if ((cmdState==0)&&(strState==3)&&(c!=';')) P3=P3+String(c);
-    if ((cmdState==0)&&(strState==4)&&(c!=';')) P4=P4+String(c);
-    if ((cmdState==0)&&(strState==5)&&(c!=';')) P5=P5+String(c);
-    if ((cmdState==0)&&(strState==6)&&(c!=';')) P6=P6+String(c);
-    if ((cmdState==0)&&(strState==7)&&(c!=';')) P7=P7+String(c);
-    if ((cmdState==0)&&(strState==8)&&(c!=';')) P8=P8+String(c);
-    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) P9=P9+String(c);
-    
-    if (c=='?') questionstate=1;
-    if (c=='=') equalstate=1;
-    if ((strState>=9)&&(c==';')) semicolonstate=1;
-  }
-}
 
-void ExecuteCommand()
-{
-  //Serial.println("");
-  //Serial.println("Command: "+Command);
-  //Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
-  //Serial.println("");
-  
-  if (cmd=="your cmd") {
-    // You can do anything.
-    // Feedback="<font color=\"red\">Hello World</font>";
-  }
-  else if (cmd=="ip") {
-    Feedback="AP IP: "+WiFi.softAPIP().toString();    
-    Feedback+=", ";
-    Feedback+="STA IP: "+WiFi.localIP().toString();
-  }  
-  else if (cmd=="mac") {
-    Feedback="STA MAC: "+WiFi.macAddress();
-  }  
-  else if (cmd=="resetwifi") {  //重設WIFI連線
-    WiFi.begin(P1.c_str(), P2.c_str());
-    Serial.print("Connecting to ");
-    Serial.println(P1);
-    long int StartTime=millis();
-    while (WiFi.status() != WL_CONNECTED) 
-    {
-        delay(500);
-        if ((StartTime+5000) < millis()) break;
-    } 
-    Serial.println("");
-    Serial.println("STAIP: "+WiFi.localIP().toString());
-    Feedback="STAIP: "+WiFi.localIP().toString();
-  }    
-  else if (cmd=="restart") {
-    ESP.restart();
-  }    
-  else if (cmd=="flash") {
-    ledcAttachPin(4, 4);  
-    ledcSetup(4, 5000, 8);   
-     
-    int val = P1.toInt();
-    ledcWrite(4,val);  
-  }  
-  else if (cmd=="framesize") { 
-    sensor_t * s = esp_camera_sensor_get();  
-    if (P1=="QQVGA")
-      s->set_framesize(s, FRAMESIZE_QQVGA);
-    else if (P1=="HQVGA")
-      s->set_framesize(s, FRAMESIZE_HQVGA);
-    else if (P1=="QVGA")
-      s->set_framesize(s, FRAMESIZE_QVGA);
-    else if (P1=="CIF")
-      s->set_framesize(s, FRAMESIZE_CIF);
-    else if (P1=="VGA")
-      s->set_framesize(s, FRAMESIZE_VGA);  
-    else if (P1=="SVGA")
-      s->set_framesize(s, FRAMESIZE_SVGA);
-    else if (P1=="XGA")
-      s->set_framesize(s, FRAMESIZE_XGA);
-    else if (P1=="SXGA")
-      s->set_framesize(s, FRAMESIZE_SXGA);
-    else if (P1=="UXGA")
-      s->set_framesize(s, FRAMESIZE_UXGA);           
-    else 
-      s->set_framesize(s, FRAMESIZE_QVGA);     
-  }
-  else if (cmd=="quality") { 
-    sensor_t * s = esp_camera_sensor_get();
-    int val = P1.toInt(); 
-    s->set_quality(s, val);
-  }
-  else if (cmd=="contrast") {
-    sensor_t * s = esp_camera_sensor_get();
-    int val = P1.toInt(); 
-    s->set_contrast(s, val);
-  }
-  else if (cmd=="brightness") {
-    sensor_t * s = esp_camera_sensor_get();
-    int val = P1.toInt();  
-    s->set_brightness(s, val);  
-  }
-  else if (cmd=="detectCount") {
-    Serial.println(P1+" = "+P2); 
-  }
-  else if (cmd=="tcp") {
-    String domain=P1;
-    int port=P2.toInt();
-    String request=P3;
-    int wait=P4.toInt();      // wait = 0 or 1
-
-    if ((port==443)||(domain.indexOf("https")==0)||(domain.indexOf("HTTPS")==0))
-      Feedback=tcp_https(domain,request,port,wait);
-    else
-      Feedback=tcp_http(domain,request,port,wait);  
-  }
-  else if (cmd=="linenotify") {    //message=xxx&stickerPackageId=xxx&stickerId=xxx
-    String token = P1;
-    String request = P2;
-    Feedback=LineNotify(token,request,1);
-    if (Feedback.indexOf("status")!=-1) {
-      int s=Feedback.indexOf("{");
-      Feedback=Feedback.substring(s);
-      int e=Feedback.indexOf("}");
-      Feedback=Feedback.substring(0,e);
-      Feedback.replace("\"","");
-      Feedback.replace("{","");
-      Feedback.replace("}","");
-    }
-  }
-  else if (cmd=="sendCapturedImageToLineNotify") { 
-    Feedback=sendCapturedImageToLineNotify(P1);
-    if (Feedback=="") Feedback="The image failed to send. <br>The framesize may be too large.";
-  } 
-  else {
-    Feedback="Command is not defined.";
-  }
-  if (Feedback=="") Feedback=Command;  
-}
 
 void loop() {
   Feedback="";Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
@@ -734,6 +707,36 @@ void loop() {
     }
     delay(1);
     client.stop();
+  }
+}
+
+//拆解命令字串置入變數
+void getCommand(char c)
+{
+  if (c=='?') ReceiveState=1;
+  if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
+  
+  if (ReceiveState==1)
+  {
+    Command=Command+String(c);
+    
+    if (c=='=') cmdState=0;
+    if (c==';') strState++;
+  
+    if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
+    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) P1=P1+String(c);
+    if ((cmdState==0)&&(strState==2)&&(c!=';')) P2=P2+String(c);
+    if ((cmdState==0)&&(strState==3)&&(c!=';')) P3=P3+String(c);
+    if ((cmdState==0)&&(strState==4)&&(c!=';')) P4=P4+String(c);
+    if ((cmdState==0)&&(strState==5)&&(c!=';')) P5=P5+String(c);
+    if ((cmdState==0)&&(strState==6)&&(c!=';')) P6=P6+String(c);
+    if ((cmdState==0)&&(strState==7)&&(c!=';')) P7=P7+String(c);
+    if ((cmdState==0)&&(strState==8)&&(c!=';')) P8=P8+String(c);
+    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) P9=P9+String(c);
+    
+    if (c=='?') questionstate=1;
+    if (c=='=') equalstate=1;
+    if ((strState>=9)&&(c==';')) semicolonstate=1;
   }
 }
 
