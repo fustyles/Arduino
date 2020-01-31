@@ -1,8 +1,11 @@
 /*
 ESP32-CAM Face Detection (face-api.js)
-Open the page in Chrome.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-5 02:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-1 02:00
 https://www.facebook.com/francefu
+
+首頁
+http://APIP
+http://STAIP
 
 自訂指令格式 :  
 http://APIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
@@ -12,8 +15,14 @@ http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://192.168.xxx.xxx?ip
 http://192.168.xxx.xxx?mac
 http://192.168.xxx.xxx?restart
-http://192.168.xxx.xxx?flash=value        //value= 0~255
-      
+http://192.168.xxx.xxx?flash=value        //value= 0~255 閃光燈
+http://192.168.xxx.xxx?getstill                 //取得視訊影像
+http://192.168.xxx.xxx?saveimage=/filename      //儲存影像至SD卡，filename不含附檔名
+http://192.168.xxx.xxx?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA 改變影像解析度
+http://192.168.xxx.xxx?quality=value    // value = 10 to 63
+http://192.168.xxx.xxx?brightness=value    // value = -2 to 2
+http://192.168.xxx.xxx?contrast=value    // value = -2 to 2 
+
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
 重設網路：http://192.168.4.1/?resetwifi=ssid;password
@@ -65,10 +74,10 @@ WiFiServer server(80);
 
 void ExecuteCommand()
 {
-  Serial.println("");
+  //Serial.println("");
   //Serial.println("Command: "+Command);
-  Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
-  Serial.println("");
+  //Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
+  //Serial.println("");
   
   if (cmd=="your cmd") {
     // You can do anything.
@@ -82,137 +91,73 @@ void ExecuteCommand()
   else if (cmd=="mac") {
     Feedback="STA MAC: "+WiFi.macAddress();
   }  
+  else if (cmd=="resetwifi") {  //重設WIFI連線
+    WiFi.begin(P1.c_str(), P2.c_str());
+    Serial.print("Connecting to ");
+    Serial.println(P1);
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) 
+    {
+        delay(500);
+        if ((StartTime+5000) < millis()) break;
+    } 
+    Serial.println("");
+    Serial.println("STAIP: "+WiFi.localIP().toString());
+    Feedback="STAIP: "+WiFi.localIP().toString();
+  }    
+  else if (cmd=="restart") {
+    ESP.restart();
+  }    
   else if (cmd=="flash") {
     ledcAttachPin(4, 4);  
     ledcSetup(4, 5000, 8);   
      
     int val = P1.toInt();
     ledcWrite(4,val);  
-  }    
+  }  
+  else if (cmd=="framesize") { 
+    sensor_t * s = esp_camera_sensor_get();  
+    if (P1=="QQVGA")
+      s->set_framesize(s, FRAMESIZE_QQVGA);
+    else if (P1=="HQVGA")
+      s->set_framesize(s, FRAMESIZE_HQVGA);
+    else if (P1=="QVGA")
+      s->set_framesize(s, FRAMESIZE_QVGA);
+    else if (P1=="CIF")
+      s->set_framesize(s, FRAMESIZE_CIF);
+    else if (P1=="VGA")
+      s->set_framesize(s, FRAMESIZE_VGA);  
+    else if (P1=="SVGA")
+      s->set_framesize(s, FRAMESIZE_SVGA);
+    else if (P1=="XGA")
+      s->set_framesize(s, FRAMESIZE_XGA);
+    else if (P1=="SXGA")
+      s->set_framesize(s, FRAMESIZE_SXGA);
+    else if (P1=="UXGA")
+      s->set_framesize(s, FRAMESIZE_UXGA);           
+    else 
+      s->set_framesize(s, FRAMESIZE_QVGA);     
+  }
+  else if (cmd=="quality") { 
+    sensor_t * s = esp_camera_sensor_get();
+    int val = P1.toInt(); 
+    s->set_quality(s, val);
+  }
+  else if (cmd=="contrast") {
+    sensor_t * s = esp_camera_sensor_get();
+    int val = P1.toInt(); 
+    s->set_contrast(s, val);
+  }
+  else if (cmd=="brightness") {
+    sensor_t * s = esp_camera_sensor_get();
+    int val = P1.toInt();  
+    s->set_brightness(s, val);  
+  }   
   else {
     Feedback="Command is not defined.";
   }
   if (Feedback=="") Feedback=Command;  
 }
-
-//自訂網頁首頁
-static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width,initial-scale=1">
-        <meta http-equiv="Access-Control-Allow-Headers" content="Origin, X-Requested-With, Content-Type, Accept">
-        <meta http-equiv="Access-Control-Allow-Methods" content="GET,POST,PUT,DELETE,OPTIONS">
-        <meta http-equiv="Access-Control-Allow-Origin" content="*">
-        <title>ESP32 OV2460</title>
-        <script src="https:\/\/code.jquery.com/jquery-3.3.1.min.js"></script>
-        <script src='https:\/\/fustyles.github.io/webduino/TensorFlow/Face-api/face-api.min.js'></script>
-        <style>
-          #container {
-            padding: 0;
-          }
-          #tools {
-            position: absolute;
-            top: 250px;
-            left: 0;
-          }
-          #message {
-            position: absolute;
-            top: 320px;
-            left: 0;            
-            color: red;
-          }  
-          stream {
-            position: absolute;
-            top: 0;
-            left: 0;
-          }
-          canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index:999;
-          }
-        </style>
-    </head>
-    <body>
-    <div id="container"></div>
-    <img id="stream"></img>
-    <table id="tools">
-      <tr><td><button id="get-still" onclick="ShowImage.src=document.location.origin+'/?getstill='+Math.random();">Restart</button></td><td><input type="checkbox" onclick="if (this.checked) stream.style.display='none'; else stream.style.display='block';" value="">Hide Video</td><td></td></tr>
-      <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'?flash='+this.value);}catch(e){}"></td></tr>
-      <tr style="display:none"><td colspan="3"><iframe id="ifr"></iframe></td></tr>
-    </table>
-    <span id="message">Please wait for loading model.</span>
- 
-    <!-- Face Detection -->    
-    <script>
-    var getStill = document.getElementById('get-still');
-    var ShowImage = document.getElementById('stream');
-    var message = document.getElementById('message');
-    var ifr = document.getElementById('ifr');
-    
-    //Model: https://github.com/fustyles/webduino/tree/master/TensorFlow/Face-api
-    const modelPath = 'https://fustyles.github.io/webduino/TensorFlow/Face-api/';
-    let currentStream;
-    let displaySize = { width:320, height: 240 }
-    let convas;
-    let faceDetection;
-    
-    Promise.all([
-      faceapi.nets.tinyFaceDetector.load(modelPath),
-      faceapi.nets.faceLandmark68TinyNet.load(modelPath),
-      faceapi.nets.faceRecognitionNet.load(modelPath),
-      faceapi.nets.faceExpressionNet.load(modelPath),
-      faceapi.nets.ageGenderNet.load(modelPath)
-    ])
-
-    message.innerHTML = "Wait a moment.";
-    
-    async function DetectImage() {
-      const detections = await faceapi.detectAllFaces(ShowImage, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks(true).withFaceExpressions().withAgeAndGender()
-      const resizedDetections = faceapi.resizeResults(detections, displaySize)
-      canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
-      //canvas.getContext('2d').drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height); 
-      faceapi.draw.drawDetections(canvas, resizedDetections)
-      faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
-      faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
-      resizedDetections.forEach(result => {
-        const { age, gender, genderProbability } = result
-        message.innerHTML = JSON.stringify(result);
-        new faceapi.draw.DrawTextField(
-          [
-            `${faceapi.round(age, 0)} years`,
-            `${gender} (${faceapi.round(genderProbability)})`
-          ],
-          result.detection.box.bottomRight
-        ).draw(canvas)
-      })
-      getStill.click();      
-    }
-    
-    ShowImage.onload = function (event) {
-      try { 
-        document.createEvent("TouchEvent");
-        setTimeout(function(){DetectImage();},250);
-      }
-      catch(e) { 
-        setTimeout(function(){DetectImage();},150);
-      }       
-    }
-    
-    window.onload = function () { 
-      if( document.getElementsByTagName("canvas").length == 0 ) {
-        canvas = faceapi.createCanvasFromMedia(ShowImage)
-        document.getElementById('container').append(canvas)
-        faceapi.matchDimensions(canvas, displaySize)
-      }        
-      getStill.click();
-    }
-    </script>
-    </body>
-</html>
-)rawliteral";
 
 void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
@@ -264,8 +209,8 @@ void setup() {
 
   //drop down frame size for higher initial frame rate
   sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_QVGA);
-
+  s->set_framesize(s, FRAMESIZE_QVGA);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA  設定初始化影像解析度
+  
   //閃光燈
   ledcAttachPin(4, 4);  
   ledcSetup(4, 5000, 8);    
@@ -325,6 +270,226 @@ void setup() {
   server.begin();          
 }
 
+//自訂網頁首頁管理介面
+static const char PROGMEM INDEX_HTML[] = R"rawliteral(
+  <!DOCTYPE html>
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script src="https:\/\/code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src='https:\/\/fustyles.github.io/webduino/TensorFlow/Face-api/face-api.min.js'></script>
+  </head><body>
+  <div id="container"></div>
+  <img id="ShowImage" src="" style="display:none">
+  <canvas id="canvas" style="display:none"></canvas>  
+  <table>
+  <tr>
+  <td><input type="button" id="restart" value="Restart"></td> 
+  <td colspan="2"><input type="button" id="getStill" value="Start Detect" style="display:none"></td> 
+  </tr>
+  <tr>
+  <td>MirrorImage</td> 
+    <td colspan="2">  
+      <select id="mirrorimage">
+        <option value="1">yes</option>
+        <option value="0">no</option>
+      </select>
+    </td>
+  </tr>   
+  <tr>
+  <td>Resolution</td> 
+    <td colspan="2">
+    <select id="framesize">
+        <option value="UXGA">UXGA(1600x1200)</option>
+        <option value="SXGA">SXGA(1280x1024)</option>
+        <option value="XGA">XGA(1024x768)</option>
+        <option value="SVGA">SVGA(800x600)</option>
+        <option value="VGA">VGA(640x480)</option>
+        <option value="CIF">CIF(400x296)</option>
+        <option value="QVGA" selected="selected">QVGA(320x240)</option>
+        <option value="HQVGA">HQVGA(240x176)</option>
+        <option value="QQVGA">QQVGA(160x120)</option>
+    </select> 
+    </td>
+  <tr>
+  <td>Flash</td>
+  <td colspan="2"><input type="range" id="flash" min="0" max="255" value="0"></td>
+  </tr>
+  <tr>    
+  </tr>
+  <tr>
+    <td>Quality</td>
+    <td colspan="2"><input type="range" id="quality" min="10" max="63" value="10"></td>
+    </tr>
+  <tr>
+  <tr>
+    <td>Brightness</td>
+    <td colspan="2"><input type="range" id="brightness" min="-2" max="2" value="0"></td>
+    </tr>
+  <tr>
+  <tr>
+    <td>Contrast</td>
+    <td colspan="2"><input type="range" id="contrast" min="-2" max="2" value="0"></td>
+    </tr>
+  <tr>
+  <tr><td>Rotate</td>
+    <td align="left" colspan="2">
+        <select onchange="document.getElementById('canvas').style.transform='rotate('+this.value+')';">
+          <option value="0deg">0deg</option>
+          <option value="90deg">90deg</option>
+          <option value="180deg">180deg</option>
+          <option value="270deg">270deg</option>
+        </select>
+    </td>
+  </tr>  
+  </table>
+  <iframe id="ifr" style="display:none"></iframe>
+  <div id="message" style="color:red"><div>
+  </div>
+  </body>
+  </html> 
+  
+  <script>
+    var getStill = document.getElementById('getStill');
+    var ShowImage = document.getElementById('ShowImage');
+    var canvas = document.getElementById("canvas");
+    var context = canvas.getContext("2d"); 
+    var mirrorimage = document.getElementById("mirrorimage");  
+    var message = document.getElementById('message');
+    var flash = document.getElementById('flash'); 
+    var ifr = document.getElementById('ifr');
+    var myTimer;   
+
+    //Model: https://github.com/fustyles/webduino/tree/master/TensorFlow/Face-api
+    const modelPath = 'https://fustyles.github.io/webduino/TensorFlow/Face-api/';
+    let currentStream;
+    let displaySize = { width:320, height: 240 }
+    let faceDetection;
+    
+    Promise.all([
+      faceapi.nets.tinyFaceDetector.load(modelPath),
+      faceapi.nets.faceLandmark68TinyNet.load(modelPath),
+      faceapi.nets.faceRecognitionNet.load(modelPath),
+      faceapi.nets.faceExpressionNet.load(modelPath),
+      faceapi.nets.ageGenderNet.load(modelPath)
+    ])           
+
+    getStill.onclick = function (event) {  
+      myTimer = setInterval(function(){getStill.click();},5000);
+      ShowImage.src=location.origin+'/?getstill='+Math.random();
+    }
+
+    getStill.style.display = "block";
+
+    ShowImage.onload = function (event) {
+      clearInterval(myTimer);
+      canvas.setAttribute("width", ShowImage.width);
+      canvas.setAttribute("height", ShowImage.height);
+      canvas.style.display = "block";
+      
+      if (mirrorimage.value==1) {
+        context.translate((canvas.width + ShowImage.width) / 2, 0);
+        context.scale(-1, 1);
+        context.drawImage(ShowImage, 0, 0, ShowImage.width, ShowImage.height);
+        context.setTransform(1, 0, 0, 1, 0, 0);
+      }
+      else
+        context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height);
+      DetectImage();        
+    }     
+    
+    restart.onclick = function (event) {
+      fetch(location.origin+'/?restart=stop');
+    }    
+
+    framesize.onclick = function (event) {
+      fetch(document.location.origin+'/?framesize='+this.value+';stop');
+    }  
+
+    flash.onchange = function (event) {
+      fetch(location.origin+'/?flash='+this.value+';stop');
+    } 
+
+    quality.onclick = function (event) {
+      fetch(document.location.origin+'/?quality='+this.value+';stop');
+    } 
+
+    brightness.onclick = function (event) {
+      fetch(document.location.origin+'/?brightness='+this.value+';stop');
+    } 
+
+    contrast.onclick = function (event) {
+      fetch(document.location.origin+'/?contrast='+this.value+';stop');
+    }                             
+    
+    async function DetectImage() {
+      const detections = await faceapi.detectAllFaces(canvas, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks(true).withFaceExpressions().withAgeAndGender()
+      const resizedDetections = faceapi.resizeResults(detections, displaySize)
+      faceapi.draw.drawDetections(canvas, resizedDetections)
+      faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
+      faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
+      resizedDetections.forEach(result => {
+        const { detection,expressions,gender,genderProbability,age } = result
+        //message.innerHTML = JSON.stringify(result);
+        
+        var i=0;
+        message.innerHTML ="";
+
+        var maxEmotion="neutral";
+        var maxProbability=expressions.neutral;
+        if (expressions.happy>maxProbability) {
+          maxProbability=expressions.happy;
+          maxEmotion="happy";
+        }
+        if (expressions.sad>maxProbability) {
+          maxProbability=expressions.sad;
+          maxEmotion="sad";
+        }
+        if (expressions.angry>maxProbability) {
+          maxProbability=expressions.angry;
+          maxEmotion="angry";
+        }
+        if (expressions.fearful>maxProbability) {
+          maxProbability=expressions.fearful;
+          maxEmotion="fearful";
+        }
+        if (expressions.disgusted>maxProbability) {
+          maxProbability=expressions.disgusted;
+          maxEmotion="disgusted";
+        }
+        if (expressions.surprised>maxProbability) {
+          maxProbability=expressions.surprised;
+          maxEmotion="surprised";
+        }
+
+        message.innerHTML+= i+",age,"+Math.round(age)+",gender,"+gender+",genderProbability,"+Round(genderProbability)+",emotion,"+maxEmotion+",neutral,"+Round(expressions.neutral)+",happy,"+Round(expressions.happy)+",sad,"+Round(expressions.sad)+",angry,"+Round(expressions.angry)+",fearful,"+Round(expressions.fearful)+",disgusted,"+Round(expressions.disgusted)+",surprised,"+Round(expressions.surprised)+",boxX,"+Round(detection._box._x)+",boxY,"+Round(detection._box._y)+",boxWidth,"+Round(detection._box._width)+",boxHeight,"+Round(detection._box._height)+"<br>";
+                
+        new faceapi.draw.DrawTextField(
+          [
+            `${faceapi.round(age, 0)} years`,
+            `${gender} (${faceapi.round(genderProbability)})`
+          ],
+          result.detection.box.bottomRight
+        ).draw(canvas)
+      })
+
+      try { 
+        document.createEvent("TouchEvent");
+        setTimeout(function(){getStill.click();},250);
+      }
+      catch(e) { 
+        setTimeout(function(){getStill.click();},150);
+      } 
+    }   
+
+    function Round(n) {
+      return Math.round(Number(n)*100)/100;
+    }      
+  </script>   
+)rawliteral";
+
+
+
 void loop() {
   Feedback="";Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
   ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
@@ -376,7 +541,6 @@ void loop() {
                 }
               }  
               
-              client.println();
               esp_camera_fb_return(fb);
             
               pinMode(4, OUTPUT);
@@ -417,10 +581,15 @@ void loop() {
         }
 
         if ((currentLine.indexOf("/?")!=-1)&&(currentLine.indexOf(" HTTP")!=-1)) {
+          if (Command.indexOf("stop")!=-1) {  //若指令中含關鍵字stop立即斷線 -> http://192.168.xxx.xxx/?cmd=aaa;bbb;ccc;stop
+            client.println();
+            client.println();
+            client.stop();
+          }
           currentLine="";
           Feedback="";
           ExecuteCommand();
-        }        
+        }
       }
     }
     delay(1);
