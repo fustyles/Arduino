@@ -28,11 +28,6 @@ http://192.168.xxx.xxx?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVG
 http://192.168.xxx.xxx?quality=value    // value = 10 to 63
 http://192.168.xxx.xxx?brightness=value    // value = -2 to 2
 http://192.168.xxx.xxx?contrast=value    // value = -2 to 2 
-http://192.168.xxx.xxx/?tcp=domain;port;request;wait
-http://192.168.xxx.xxx/?linenotify=token;request
---> request = message=xxxxx
---> request = message=xxxxx&stickerPackageId=xxxxx&stickerId=xxxxx
-http://192.168.xxx.xxx?sendCapturedImageToLineNotify=token  //傳送影像截圖至LineNotify，最大解析度是SXGA
 
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
