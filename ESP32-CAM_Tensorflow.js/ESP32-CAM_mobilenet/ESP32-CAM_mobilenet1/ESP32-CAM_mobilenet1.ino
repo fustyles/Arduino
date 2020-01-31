@@ -326,7 +326,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <tr>
   <td><input type="button" id="restart" value="Restart"></td> 
   <td colspan="2"><input type="button" id="getStill" value="Start Detect" style="display:none"></td> 
-  </tr>  
+  </tr>
+  <tr>
   <td>Object Keyword</td> 
     <td colspan="2">
         <input type="text" id="object" value="suit" onchange="count.innerHTML='';">
@@ -348,6 +349,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <option value="QQVGA">QQVGA(160x120)</option>
     </select> 
     </td>
+  </tr>
   <tr>
   <td>Flash</td>
   <td colspan="2"><input type="range" id="flash" min="0" max="255" value="0"></td>
