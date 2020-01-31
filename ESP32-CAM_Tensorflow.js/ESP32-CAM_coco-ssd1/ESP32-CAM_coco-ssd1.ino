@@ -597,8 +597,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     }      
 
     window.onload = function () { ObjectDetect(); }    
-  </script>      
-  </script>  
+  </script>   
 )rawliteral";
 
 
