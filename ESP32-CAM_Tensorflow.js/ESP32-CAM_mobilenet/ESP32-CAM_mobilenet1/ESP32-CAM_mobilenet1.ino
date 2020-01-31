@@ -329,7 +329,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   </tr>  
   <td>Object Keyword</td> 
     <td colspan="2">
-        <input type="text" id="object" value="phone" onchange="count.innerHTML='';">
+        <input type="text" id="object" value="suit" onchange="count.innerHTML='';">
     </td>
     <td><span id="count" style="color:red"><span>
     </td>
