@@ -1,5 +1,5 @@
 /*
-ESP32-CAM (tfjs coco-ssd)
+ESP32-CAM Person Detect using tfjs coco-ssd (Send captured image to GoogleDrive and Linenotify)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-31 23:00
 https://www.facebook.com/francefu
 
