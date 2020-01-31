@@ -3,7 +3,7 @@ ESP32-CAM (tfjs mobilenet)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-31 22:00
 https://www.facebook.com/francefu
 
-Classes
+物件列表
 https://github.com/tensorflow/tfjs-models/blob/master/mobilenet/src/imagenet_classes.ts
 
 首頁
