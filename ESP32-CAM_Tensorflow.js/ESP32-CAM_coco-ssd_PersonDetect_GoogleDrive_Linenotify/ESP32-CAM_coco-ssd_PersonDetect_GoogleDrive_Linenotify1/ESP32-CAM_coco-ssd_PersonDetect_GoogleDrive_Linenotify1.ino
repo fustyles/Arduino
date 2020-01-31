@@ -317,7 +317,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   </tr>
   <tr>
   <td colspan="3"><input type="checkbox" id="Detect">Start Person Detection (30s)</td>
-  </tr> 
+  </tr>
+  <tr>
   <td>Object</td> 
     <td colspan="2">
         <select id="object" onchange="count.innerHTML='';">
@@ -405,6 +406,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     </td>
     <td><span id="count" style="color:red"><span>
     </td>
+  </tr>
   <tr>
   <td>Resolution</td> 
     <td colspan="2">
