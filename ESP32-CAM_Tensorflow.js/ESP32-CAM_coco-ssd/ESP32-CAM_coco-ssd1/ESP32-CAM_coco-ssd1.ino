@@ -3,6 +3,9 @@ ESP32-CAM (tfjs coco-ssd)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-31 22:00
 https://www.facebook.com/francefu
 
+物件類別
+https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
+
 首頁
 http://APIP
 http://STAIP
@@ -551,7 +554,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             //context.fillText(i, x, y);
             result.innerHTML+= "[ "+i+" ] "+Predictions[i].class+", "+Math.round(Predictions[i].score*100)+"%, "+Math.round(x)+", "+Math.round(y)+", "+Math.round(width)+", "+Math.round(height)+"<br>";
             
-            //https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
             if (Predictions[i].class==object.value) {
               objectCount++;
             }  
