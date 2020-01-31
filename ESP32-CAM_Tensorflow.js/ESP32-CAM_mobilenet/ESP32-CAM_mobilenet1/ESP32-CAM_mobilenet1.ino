@@ -459,7 +459,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             //context.fillText(i, x, y);
             result.innerHTML+= "[ "+i+" ] "+Math.round(Predictions[i].probability*100)+"%, "+Predictions[i].className+"<br>";
            
-            //https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
             if (Predictions[i].className.indexOf(object.value)!=-1) {
               objectCount++;
             }  
