@@ -231,7 +231,16 @@ void setup() {
   //可動態改變視訊框架大小(解析度大小)
   sensor_t * s = esp_camera_sensor_get();
   s->set_framesize(s, FRAMESIZE_QVGA);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+      
+  //Servo
+  ledcAttachPin(2, 3);  
+  ledcSetup(3, 50, 16);
+  ledcWrite(3, 4850);
 
+  ledcAttachPin(13, 5);  
+  ledcSetup(5, 50, 16);
+  ledcWrite(5, 4850);  
+  
   //閃光燈(GPIO4)
   ledcAttachPin(4, 4);  
   ledcSetup(4, 5000, 8);
