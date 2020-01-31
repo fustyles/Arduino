@@ -37,8 +37,8 @@ http://192.168.xxx.xxx?sendCapturedImageToLineNotify=token  //傳送影像截圖
 */
 
 //輸入WIFI連線帳號密碼
-const char* ssid     = "3COM";   //your network SSID
-const char* password = "godblessyou";   //your network password
+const char* ssid     = "*****";   //your network SSID
+const char* password = "*****";   //your network password
 
 //輸入AP端連線帳號密碼
 const char* apssid = "ESP32-CAM";
