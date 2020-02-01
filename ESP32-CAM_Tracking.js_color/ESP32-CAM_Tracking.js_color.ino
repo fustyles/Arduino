@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Tracking.js Color Dection
+ESP32-CAM Tracking.js Color Detection
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-1 15:00
 https://www.facebook.com/francefu
 
