@@ -1,8 +1,11 @@
 /*
 ESP32-CAM knn-classifier
 Open the page in Chrome.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-1 18:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-1 21:00
 https://www.facebook.com/francefu
+
+Line 429, Line 582
+You can set the value of remote model url and load model automatically.
 
 首頁
 http://APIP
@@ -328,27 +331,28 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     <td colspan="2"><input type="button" id="getStill" value="getStill" style="display:none"></td> 
   </tr>
   <tr>
-    <td><button id="addExample">Train</button></td>
-    <td><select id="Class">
-      <option value="1">1</option>
-      <option value="2">2</option>
-      <option value="3">3</option>
-      <option value="4">4</option>
-      <option value="5">5</option>
-      <option value="6">6</option>
-      <option value="7">7</option>
-      <option value="8">8</option>
-      <option value="9">9</option>
-    </select></td>
-    <td><span id="count" style="color:red">0</span></td>
+    <td><button onclick="saveModel();">Save Model</button></td>
+    <td colspan="2"><input type="file" id="getModel" style="width:100px"></input></td>
   </tr>
   <tr>
     <td><button id="clearAllClasses">Clear Classes</button></td>
     <td colspan="2"><input type="checkbox" id="startdetection">Start Detection</td>
-  </tr>
+  </tr>  
   <tr>
-    <td><button onclick="saveModel();">Save Model</button></td>
-    <td colspan="2"><input type="file" id="getModel" style="width:100px"></input></td>
+    <td><button id="addExample">Train</button></td>
+    <td>
+      <select id="Class">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+      </select></td>
+    <td><span id="count" style="color:red">0</span></td>
   </tr>
   <tr>
     <td>Probability Limit</td> 
@@ -360,24 +364,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <option value="0.9">0.9</option>
       </select>
     </td>
-  </tr>        
-  <tr>
-    <td>MirrorImage</td> 
-    <td colspan="2">  
-      <select id="mirrorimage">
-        <option value="1">yes</option>
-        <option value="0">no</option>
-      </select>
-    </td>
-  </tr>     
-  <tr>
-    <td>Resolution</td> 
-    <td colspan="2">
-      <select id="framesize">
-        <option value="QVGA">QVGA(320x240)</option>
-      </select> 
-    </td>
-  </tr>    
+  </tr>            
   <tr>
     <td>Flash</td>
     <td colspan="2"><input type="range" id="flash" min="0" max="255" value="0"></td>
@@ -395,16 +382,42 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     <td colspan="2"><input type="range" id="contrast" min="-2" max="2" value="0"></td>
   </tr>
   <tr>
+    <td>Resolution</td> 
+    <td colspan="2">
+      <select id="framesize">
+        <option value="UXGA">UXGA(1600x1200)</option>
+        <option value="SXGA">SXGA(1280x1024)</option>
+        <option value="XGA">XGA(1024x768)</option>
+        <option value="SVGA">SVGA(800x600)</option>
+        <option value="VGA">VGA(640x480)</option>
+        <option value="CIF">CIF(400x296)</option>
+        <option value="QVGA" selected="selected">QVGA(320x240)</option>
+        <option value="HQVGA">HQVGA(240x176)</option>
+        <option value="QQVGA">QQVGA(160x120)</option>
+      </select> 
+    </td>
+  </tr>
+  <tr>
     <td>Rotate</td>
     <td align="left" colspan="2">
-        <select onchange="document.getElementById('canvas').style.transform='rotate('+this.value+')';">
-          <option value="0deg">0deg</option>
-          <option value="90deg">90deg</option>
-          <option value="180deg">180deg</option>
-          <option value="270deg">270deg</option>
-        </select>
+      <select onchange="document.getElementById('canvas').style.transform='rotate('+this.value+')';">
+        <option value="0deg">0deg</option>
+        <option value="90deg">90deg</option>
+        <option value="180deg">180deg</option>
+        <option value="270deg">270deg</option>
+      </select>
     </td>
-  </tr>  
+  </tr>   
+  <tr>
+    <td>MirrorImage</td> 
+    <td colspan="2">  
+      <select id="mirrorimage">
+        <option value="1">yes</option>
+        <option value="0">no</option>
+      </select>
+    </td>
+  </tr>   
+
   </table>
   <iframe id="ifr" style="display:none"></iframe>
   <div id="message" style="display:none"></div>
@@ -413,6 +426,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   </html> 
   
   <script>
+    var modelPath = "";    // https:\/\/***.***.***.***/model.json  
     var getStill = document.getElementById('getStill');
     var ShowImage = document.getElementById('ShowImage');
     var canvas = document.getElementById("canvas");
@@ -436,8 +450,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var mobilenetModule;
 
     function stopDetection() {
-      document.getElementById('startdetection').checked = false;
-      document.getElementById('message').innerHTML = "";
+      startdetection.checked = false;
+      message.innerHTML = "";
+      result.innerHTML = "";
     }
           
     getStill.onclick = function (event) {  
@@ -561,6 +576,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         mobilenetModule = Module;
         result.innerHTML = "";
         getStill.style.display = "block";
+        getStill.click();
+        
+        if (modelPath!="") {
+          getRemoteModel(modelPath);
+        }
       }); 
     }
     
@@ -602,18 +622,28 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       }
     }
 
-    function getFeedback(target) {
+    function getRemoteModel(target) {
       var data = $.ajax({
       type: "get",
       dataType: "text",
       url: target,
       success: function(response)
         {
-          result.innerHTML = response;
+          try {
+            var myDataset = JSON.parse(response)
+            Object.keys(myDataset).forEach((key) => {
+              myDataset[key] = tf.tensor(myDataset[key], [myDataset[key].length / 1024, 1024]);
+            })
+            classifier.setClassifierDataset(myDataset);
+            result.innerHTML = "Load model successfully.";
+          }
+          catch (e) {
+            result.innerHTML = "Load model failed.";
+          }
         },
         error: function(exception)
         {
-          result.innerHTML = 'fail';
+          result.innerHTML = "Load model failed.";
         }
       });
     }      
