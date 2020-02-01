@@ -492,8 +492,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         }
         return false;
       }); 
-
-       
     }
 
     ShowImage.onload = function (event) {
@@ -515,7 +513,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       tracker.on('track', function(event) {
         result.innerHTML = "";
         event.data.forEach(function(rect) {
-          
           if (rect.color === 'custom') {
             rect.color = tracker.customColor;
           }
