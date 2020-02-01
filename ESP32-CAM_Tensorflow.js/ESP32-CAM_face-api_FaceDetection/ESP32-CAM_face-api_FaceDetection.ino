@@ -342,7 +342,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   </table>
   <iframe id="ifr" style="display:none"></iframe>
   <div id="message" style="color:red"><div>
-  </div>
+
   </body>
   </html> 
   
