@@ -530,16 +530,14 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       url: target,
       success: function(response)
         {
-          show.innerHTML = response;
-          if (streamState==true) getStream.onclick;
+          result.innerHTML = response;
         },
         error: function(exception)
         {
-          show.innerHTML = 'fail';
-          if (streamState==true) getStream.onclick;
+          result.innerHTML = 'fail';
         }
       });
-    }      
+    }     
 
     window.onload = function () { ObjectDetect(); }    
   </script>   
