@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (tfjs coco-ssd)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-31 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-1 15:00
 https://www.facebook.com/francefu
 
 物件類別
@@ -417,6 +417,33 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     </td>
   </tr>
   <tr>
+  <td>ScoreLimit</td> 
+    <td colspan="2">
+      <select id="score">
+        <option value="1.0">1</option>
+        <option value="0.9">0.9</option>
+        <option value="0.8">0.8</option>
+        <option value="0.7">0.7</option>
+        <option value="0.6">0.6</option>
+        <option value="0.5">0.5</option>
+        <option value="0.4">0.4</option>
+        <option value="0.3">0.3</option>
+        <option value="0.2">0.2</option>
+        <option value="0.1">0.1</option>
+        <option value="0" selected="selected">0</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+  <td>MirrorImage</td> 
+    <td colspan="2">  
+      <select id="mirrorimage">
+        <option value="1">yes</option>
+        <option value="0">no</option>
+      </select>
+    </td>
+  </tr>     
+  <tr>
   <td>Resolution</td> 
     <td colspan="2">
     <select id="framesize">
@@ -475,6 +502,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var canvas = document.getElementById("canvas");
     var context = canvas.getContext("2d"); 
     var object = document.getElementById('object');
+    var score = document.getElementById("score");
+    var mirrorimage = document.getElementById("mirrorimage");      
     var count = document.getElementById('count'); 
     var result = document.getElementById('result');
     var flash = document.getElementById('flash'); 
@@ -492,7 +521,14 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       clearInterval(myTimer);
       canvas.setAttribute("width", ShowImage.width);
       canvas.setAttribute("height", ShowImage.height);
-      context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height);
+      if (mirrorimage.value==1) {
+        context.translate((canvas.width + ShowImage.width) / 2, 0);
+        context.scale(-1, 1);
+        context.drawImage(ShowImage, 0, 0, ShowImage.width, ShowImage.height);
+        context.setTransform(1, 0, 0, 1, 0, 0);
+      }
+      else
+        context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height);
       if (Model) {
         DetectImage();
       }          
@@ -556,7 +592,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             //context.fillText(i, x, y);
             result.innerHTML+= "[ "+i+" ] "+Predictions[i].class+", "+Math.round(Predictions[i].score*100)+"%, "+Math.round(x)+", "+Math.round(y)+", "+Math.round(width)+", "+Math.round(height)+"<br>";
             
-            if (Predictions[i].class==object.value) {
+            if (Predictions[i].class==object.value&&Predictions[i].score>=score.value) {
               objectCount++;
             }  
           }
