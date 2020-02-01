@@ -324,17 +324,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <canvas id="canvas" width="0" height="0"></canvas>  
   <table>
   <tr>
-  <td><input type="button" id="restart" value="Restart"></td> 
-  <td colspan="2"><input type="button" id="getStill" value="Start Detect" style="display:none"></td> 
+    <td><input type="button" id="restart" value="Restart"></td> 
+    <td colspan="2"><input type="button" id="getStill" value="Start Detect" style="display:none"></td> 
   </tr>
   <tr>
-  <td>Object Keyword</td> 
-    <td colspan="2">
-        <input type="text" id="object" value="suit" onchange="count.innerHTML='';">
-    </td>
-    <td><span id="count" style="color:red"><span>
-    </td>
+    <td>Object Keyword</td> 
+    <td colspan="2"><input type="text" id="object" value="suit" onchange="count.innerHTML='';"></td>
+    <td><span id="count" style="color:red"><span></td>
   </tr>
+  <tr>  
     <td>ScoreLimit</td> 
     <td colspan="2">
       <select id="probability">
@@ -353,7 +351,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     </td>
   </tr>
   <tr>
-  <td>MirrorImage</td> 
+    <td>MirrorImage</td> 
     <td colspan="2">  
       <select id="mirrorimage">
         <option value="1">yes</option>
@@ -362,7 +360,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     </td>
   </tr>       
   <tr>
-  <td>Resolution</td> 
+    <td>Resolution</td> 
     <td colspan="2">
     <select id="framesize">
         <option value="UXGA">UXGA(1600x1200)</option>
@@ -378,27 +376,23 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     </td>
   </tr>
   <tr>
-  <td>Flash</td>
-  <td colspan="2"><input type="range" id="flash" min="0" max="255" value="0"></td>
-  </tr>
-  <tr>    
+    <td>Flash</td>
+    <td colspan="2"><input type="range" id="flash" min="0" max="255" value="0"></td>
   </tr>
   <tr>
     <td>Quality</td>
     <td colspan="2"><input type="range" id="quality" min="10" max="63" value="10"></td>
-    </tr>
-  <tr>
+  </tr>
   <tr>
     <td>Brightness</td>
     <td colspan="2"><input type="range" id="brightness" min="-2" max="2" value="0"></td>
-    </tr>
-  <tr>
+  </tr>
   <tr>
     <td>Contrast</td>
     <td colspan="2"><input type="range" id="contrast" min="-2" max="2" value="0"></td>
-    </tr>
+  </tr>
   <tr>
-  <tr><td>Rotate</td>
+    <td>Rotate</td>
     <td align="left" colspan="2">
         <select onchange="document.getElementById('canvas').style.transform='rotate('+this.value+')';">
           <option value="0deg">0deg</option>
