@@ -17,7 +17,6 @@ http://192.168.xxx.xxx?mac
 http://192.168.xxx.xxx?restart
 http://192.168.xxx.xxx?flash=value        //value= 0~255 閃光燈
 http://192.168.xxx.xxx?getstill                 //取得視訊影像
-http://192.168.xxx.xxx?saveimage=/filename      //儲存影像至SD卡，filename不含附檔名
 http://192.168.xxx.xxx?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA 改變影像解析度
 http://192.168.xxx.xxx?quality=value    // value = 10 to 63
 http://192.168.xxx.xxx?brightness=value    // value = -2 to 2
