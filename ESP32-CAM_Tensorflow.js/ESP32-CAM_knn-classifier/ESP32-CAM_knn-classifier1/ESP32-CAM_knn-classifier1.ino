@@ -426,7 +426,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   </html> 
   
   <script>
-    var modelPath = "";    // https:\/\/***.***.***.***/model.json  
+    var modelPath = "";    //網頁開啟時自動載入遠端模型  https:\/\/***.***.***.***/model.json   
     var getStill = document.getElementById('getStill');
     var ShowImage = document.getElementById('ShowImage');
     var canvas = document.getElementById("canvas");
