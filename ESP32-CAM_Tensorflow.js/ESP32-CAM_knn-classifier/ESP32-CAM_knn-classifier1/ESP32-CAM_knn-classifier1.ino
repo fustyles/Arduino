@@ -362,7 +362,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     </td>
   </tr>        
   <tr>
-  <td>MirrorImage</td> 
+    <td>MirrorImage</td> 
     <td colspan="2">  
       <select id="mirrorimage">
         <option value="1">yes</option>
@@ -371,34 +371,31 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     </td>
   </tr>     
   <tr>
-  <td>Resolution</td> 
+    <td>Resolution</td> 
     <td colspan="2">
-    <select id="framesize">
-      <option value="QVGA">QVGA(320x240)</option>
-    </select> 
+      <select id="framesize">
+        <option value="QVGA">QVGA(320x240)</option>
+      </select> 
     </td>
+  </tr>    
   <tr>
-  <td>Flash</td>
-  <td colspan="2"><input type="range" id="flash" min="0" max="255" value="0"></td>
-  </tr>
-  <tr>    
+    <td>Flash</td>
+    <td colspan="2"><input type="range" id="flash" min="0" max="255" value="0"></td>
   </tr>
   <tr>
     <td>Quality</td>
     <td colspan="2"><input type="range" id="quality" min="10" max="63" value="10"></td>
-    </tr>
-  <tr>
+  </tr>
   <tr>
     <td>Brightness</td>
     <td colspan="2"><input type="range" id="brightness" min="-2" max="2" value="0"></td>
-    </tr>
-  <tr>
+  </tr>
   <tr>
     <td>Contrast</td>
     <td colspan="2"><input type="range" id="contrast" min="-2" max="2" value="0"></td>
-    </tr>
+  </tr>
   <tr>
-  <tr><td>Rotate</td>
+    <td>Rotate</td>
     <td align="left" colspan="2">
         <select onchange="document.getElementById('canvas').style.transform='rotate('+this.value+')';">
           <option value="0deg">0deg</option>
