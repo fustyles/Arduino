@@ -1,5 +1,5 @@
 /*
-ESP32-CAM (tfjs coco-ssd)
+ESP32-CAM Tracking.js Color Dection
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-1 15:00
 https://www.facebook.com/francefu
 
