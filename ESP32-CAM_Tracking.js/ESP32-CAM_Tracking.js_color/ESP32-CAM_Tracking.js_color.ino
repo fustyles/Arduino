@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Tracking.js Detect Color
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-3 01:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-3 02:00
 https://www.facebook.com/francefu
 
 Color List
@@ -558,13 +558,14 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var ShowImage = document.getElementById('ShowImage');
     var canvas = document.getElementById("canvas");
     var context = canvas.getContext("2d"); 
+    var myColor = document.getElementById('myColor');
     var mirrorimage = document.getElementById("mirrorimage");   
     var result = document.getElementById('result');
     var flash = document.getElementById('flash'); 
     var ifr = document.getElementById('ifr');
     var lastValue="";
     var myTimer; 
-    var myColor,myColor_r_min,myColor_r_max,myColor_g_min,myColor_g_max,myColor_b_min,myColor_b_max;
+    var myColor_r_min,myColor_r_max,myColor_g_min,myColor_g_max,myColor_b_min,myColor_b_max;
 
     var tracker = new tracking.ColorTracker();         
 
@@ -603,7 +604,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       myTimer = setInterval(function(){getStill.click();},5000);
       ShowImage.src=location.origin+'/?getstill='+Math.random();
 
-      myColor = document.getElementById('myColor').value;
       myColor_r_min = document.getElementById('myColor_r_min').value;
       myColor_r_max = document.getElementById('myColor_r_max').value;
       myColor_g_min = document.getElementById('myColor_g_min').value;
@@ -714,7 +714,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         trackedColors[color] = true;
       });
   
-      tracker.customColor = myColor;
+      tracker.customColor = myColor.value;
   
       function createCustomColor(value) {
         var components = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(value);
