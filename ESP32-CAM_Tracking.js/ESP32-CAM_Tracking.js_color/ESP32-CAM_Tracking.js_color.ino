@@ -564,6 +564,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var ifr = document.getElementById('ifr');
     var lastValue="";
     var myTimer; 
+    var myColor,myColor_r_min,myColor_r_max,myColor_g_min,myColor_g_max,myColor_b_min,myColor_b_max;
 
     var tracker = new tracking.ColorTracker();         
 
