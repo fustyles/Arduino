@@ -19,6 +19,8 @@ http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://192.168.xxx.xxx?ip
 http://192.168.xxx.xxx?mac
 http://192.168.xxx.xxx?restart
+http://192.168.xxx.xxx?digitalwrite=pin;value
+http://192.168.xxx.xxx?analogwrite=pin;value
 http://192.168.xxx.xxx?flash=value        //value= 0~255 閃光燈
 http://192.168.xxx.xxx?getstill                 //取得視訊影像
 http://192.168.xxx.xxx?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA 改變影像解析度
@@ -115,7 +117,17 @@ void ExecuteCommand()
   }    
   else if (cmd=="restart") {
     ESP.restart();
-  }    
+  }  
+  else if (cmd=="digitalwrite") {
+    ledcDetachPin(P1.toInt());
+    pinMode(P1.toInt(), OUTPUT);
+    digitalWrite(P1.toInt(), P2.toInt());
+  }   
+  else if (cmd=="analogwrite") {
+    ledcAttachPin(P1.toInt(), 1);
+    ledcSetup(1, 5000, 8);
+    ledcWrite(1,P2.toInt());
+  }  
   else if (cmd=="flash") {
     ledcAttachPin(4, 4);  
     ledcSetup(4, 5000, 8);   
