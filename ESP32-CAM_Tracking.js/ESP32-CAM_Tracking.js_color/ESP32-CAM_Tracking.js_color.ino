@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Tracking.js Detect Color
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-3 02:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-3 23:00
 https://www.facebook.com/francefu
 
 Color List
