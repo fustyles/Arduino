@@ -633,8 +633,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           msg = "<br><br>"+msg; 
         result.innerHTML = msg; 
         
-        if (lastValue.innerHTML==predict.label) return;  //若辨識結果維持不變，則不重複執行外部控制指令，避免快速重複執行相同指令造成耗用資源或晶片當機
         if (MaxProbability>=probabilityLimit.value) {   //若辨識結果可能性大於等於設定的底限則執行外部指令
+          if (lastValue.innerHTML==predict.label) return;  //若辨識結果維持不變，則不重複執行外部控制指令，避免快速重複執行相同指令造成耗用資源或晶片當機
           lastValue.innerHTML= predict.label;    //更新紀錄目前偵測結果
         
           //依辨識結果predict.label執行ESP32-CAM自訂網址參數指令
