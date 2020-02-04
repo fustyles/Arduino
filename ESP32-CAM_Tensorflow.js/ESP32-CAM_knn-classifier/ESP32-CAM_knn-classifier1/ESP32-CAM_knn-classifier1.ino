@@ -124,10 +124,17 @@ void ExecuteCommand()
     digitalWrite(P1.toInt(), P2.toInt());
   }   
   else if (cmd=="analogwrite") {
-    ledcAttachPin(P1.toInt(), 1);
-    ledcSetup(1, 5000, 8);
-    ledcWrite(1,P2.toInt());
-  }  
+    if (P1="4") {
+      ledcAttachPin(4, 4);  
+      ledcSetup(4, 5000, 8);   
+      ledcWrite(4,P1.toInt());  
+    }
+    else {
+      ledcAttachPin(P1.toInt(), 5);
+      ledcSetup(5, 5000, 8);
+      ledcWrite(5,P2.toInt());
+    }
+  }   
   else if (cmd=="flash") {
     ledcAttachPin(4, 4);  
     ledcSetup(4, 5000, 8);   
