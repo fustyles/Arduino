@@ -684,7 +684,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
             */
           }
-          else if (rect.color=="magenta"&&lastValue!="magenta") {  //當偵測到自訂顏色時執行指令
+          else if (rect.color=="magenta"&&lastValue!="magenta") {
             lastValue = "magenta";
             /*
             var gpio = 4;
@@ -693,7 +693,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
             */
           }
-          else if (rect.color=="cyan"&&lastValue!="cyan") {  //當偵測到自訂顏色時執行指令
+          else if (rect.color=="cyan"&&lastValue!="cyan") {
             lastValue = "cyan";
             /*
             var gpio = 4;
@@ -702,7 +702,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
             */
           } 
-          else if (rect.color=="yellow"&&lastValue!="yellow") {  //當偵測到自訂顏色時執行指令
+          else if (rect.color=="yellow"&&lastValue!="yellow") {
             lastValue = "yellow";
             /*
             var gpio = 4;
