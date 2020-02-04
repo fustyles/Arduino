@@ -623,7 +623,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         var msg = "";
         var MaxProbability = 0;
         for (i=0;i<Class.length;i++) {
-          if (predict.confidences[i.toString()]>=0) msg += "[train "+i+"] " + predict.confidences[i.toString()] + "<br>";
+          if (predict.confidences[i.toString()]>=0) msg += "[class "+i+"] " + predict.confidences[i.toString()] + "<br>";
           if (i==predict.label) MaxProbability = Number(predict.confidences[i.toString()]);    //取得可能性最大的Class
         }
         if (MaxProbability>=probabilityLimit.value) {   //若辨識結果可能性大於等於設定的底限則畫面顯示結果
