@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Tracking.js Color Detection
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-3 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-4 18:00
 https://www.facebook.com/francefu
 
 Color List
@@ -582,7 +582,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var flash = document.getElementById('flash'); 
     var ifr = document.getElementById('ifr');
     var lastValue = "";
-    var myTimer; 
+    var myTimer;
+    var restartCount=0;  
     var myColor_r_min,myColor_r_max,myColor_g_min,myColor_g_max,myColor_b_min,myColor_b_max;
 
     var tracker = new tracking.ColorTracker();         
@@ -639,13 +640,20 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     }
 
     function error_handle() {
+      restartCount++;
       clearInterval(myTimer);
-      myTimer = setInterval(function(){getStill.click();},10000);
-      ifr.src = document.location.origin+'?restart';
-    }    
+      if (restartCount<=2) {
+        result.innerHTML = "Get still error. <br>Restart ESP32-CAM "+restartCount+" times.";
+        myTimer = setInterval(function(){getStill.click();},10000);
+        ifr.src = document.location.origin+'?restart';
+      }
+      else
+        result.innerHTML = "Get still error. <br>Please close the page and check ESP32-CAM.";
+    }  
 
     ShowImage.onload = function (event) {
       clearInterval(myTimer);
+      restartCount=0;      
       canvas.setAttribute("width", ShowImage.width);
       canvas.setAttribute("height", ShowImage.height);
       
