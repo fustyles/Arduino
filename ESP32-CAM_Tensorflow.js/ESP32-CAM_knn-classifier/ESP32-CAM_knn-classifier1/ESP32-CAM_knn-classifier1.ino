@@ -1,7 +1,7 @@
 /*
 ESP32-CAM knn-classifier
 Open the page in Chrome.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-1 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-3 23:00
 https://www.facebook.com/francefu
 
 Line 429, Line 582
@@ -82,16 +82,19 @@ byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolon
 
 WiFiServer server(80);
 
+//執行自訂指令
 void ExecuteCommand()
 {
   //Serial.println("");
   //Serial.println("Command: "+Command);
-  //Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
-  //Serial.println("");
+  if (cmd!="getstill") {
+    Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
+    Serial.println("");
+  }
   
   if (cmd=="your cmd") {
     // You can do anything.
-    // Feedback="<font color=\"red\">Hello World</font>";
+    // Feedback="<font color=\"red\">Hello World</font>";  可自訂回傳的HTML程式碼
   }
   else if (cmd=="ip") {
     Feedback="AP IP: "+WiFi.softAPIP().toString();    
@@ -127,14 +130,14 @@ void ExecuteCommand()
     if (P1="4") {
       ledcAttachPin(4, 4);  
       ledcSetup(4, 5000, 8);   
-      ledcWrite(4,P1.toInt());  
+      ledcWrite(4,P2.toInt());  
     }
     else {
       ledcAttachPin(P1.toInt(), 5);
       ledcSetup(5, 5000, 8);
       ledcWrite(5,P2.toInt());
     }
-  }   
+  }  
   else if (cmd=="flash") {
     ledcAttachPin(4, 4);  
     ledcSetup(4, 5000, 8);   
@@ -194,7 +197,7 @@ void ExecuteCommand()
     else
       Feedback=tcp_http(domain,request,port,wait);  
   }
-  else if (cmd=="linenotify") {    //message=xxx&stickerPackageId=xxx&stickerId=xxx
+  else if (cmd=="linenotify") {    // message=xxx&stickerPackageId=xxx&stickerId=xxx
     String token = P1;
     String request = P2;
     Feedback=LineNotify(token,request,1);
@@ -258,7 +261,7 @@ void setup() {
     config.fb_count = 1;
   }
   
-  // camera init
+  //視訊初始化
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
@@ -266,7 +269,7 @@ void setup() {
     ESP.restart();
   }
 
-  //drop down frame size for higher initial frame rate
+  //設定視訊畫面解析度初始值
   sensor_t * s = esp_camera_sensor_get();
   s->set_framesize(s, FRAMESIZE_QVGA);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA  設定初始化影像解析度
 
@@ -287,8 +290,7 @@ void setup() {
   Serial.println(ssid);
   
   long int StartTime=millis();
-  while (WiFi.status() != WL_CONNECTED) 
-  {
+  while (WiFi.status() != WL_CONNECTED) {
       delay(500);
       if ((StartTime+10000) < millis()) break;    //等待10秒連線
   } 
@@ -315,6 +317,7 @@ void setup() {
       ledcWrite(4,0);
       delay(1000);    
     }
+    //ESP.restart();    //重開機執行WIFI連線
   }     
 
   //指定AP端IP    
@@ -324,12 +327,12 @@ void setup() {
   Serial.println(WiFi.softAPIP());    
 
   pinMode(4, OUTPUT);
-  digitalWrite(4, LOW);  
+  digitalWrite(4, LOW);
 
   server.begin();          
 }
 
-//自訂網頁首頁管理介面
+//自訂網頁首頁管理介面  程式碼中網址 https:// 須增加脫位字元為 https:\/\/
 static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <!DOCTYPE html>
   <head>
@@ -360,6 +363,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     <td><button id="addExample">Train</button></td>
     <td>
       <select id="Class">
+        <option value="0">0</option>      
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="3">3</option>
@@ -438,7 +442,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 
   </table>
   <iframe id="ifr" style="display:none"></iframe>
-  <div id="message" style="display:none"></div>
+  <div id="lastValue" style="display:none"></div>
   <div id="result" style="color:red">Please wait for loading model.</div>
   </body>
   </html> 
@@ -473,9 +477,16 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       result.innerHTML = "";
     }
           
-    getStill.onclick = function (event) {  
-      myTimer = setInterval(function(){getStill.click();},5000);
+    getStill.onclick = function (event) {
+      clearInterval(myTimer);  
+      myTimer = setInterval(function(){error_handle();},5000);
       ShowImage.src=location.origin+'/?getstill='+Math.random();
+    }
+
+    function error_handle() {
+      clearInterval(myTimer);
+      myTimer = setInterval(function(){getStill.click();},10000);
+      ifr.src = document.location.origin+'?restart';
     }
 
     ShowImage.onload = function (event) {     
@@ -613,27 +624,100 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         var MaxProbability = 0;
         for (i=0;i<Class.length;i++) {
           if (predict.confidences[i.toString()]>=0) msg += "[train "+i+"] " + predict.confidences[i.toString()] + "<br>";
-          if (i==predict.label) MaxProbability = Number(predict.confidences[i.toString()]);
+          if (i==predict.label) MaxProbability = Number(predict.confidences[i.toString()]);    //取得可能性最大的Class
         }
-        if (MaxProbability>=probabilityLimit.value) {
+        if (MaxProbability>=probabilityLimit.value) {   //若辨識結果可能性大於等於設定的底限則畫面顯示結果
           msg = "<font color='red'>Result : class " + predict.label + "</font><br><br>"+msg;              
         }
         else
           msg = "<br><br>"+msg; 
         result.innerHTML = msg; 
         
-        if (message.innerHTML==predict.label) return;
-        if (MaxProbability>=probabilityLimit.value) {
-          message.innerHTML= predict.label;
-          /*
-            //可在此依辨識結果predict.label執行對應網址指令回傳ESP32-CAM
-            if (predict.label=="1") {
-              ifr.src = document.location.origin+'?cmd='+predict.label;
-            }
-            else {
-              ifr.src = document.location.origin+'?cmd='+predict.label;
-            }                    
-          */
+        if (lastValue.innerHTML==predict.label) return;  //若辨識結果維持不變，則不重複執行外部控制指令，避免快速重複執行相同指令造成耗用資源或晶片當機
+        if (MaxProbability>=probabilityLimit.value) {   //若辨識結果可能性大於等於設定的底限則執行外部指令
+          lastValue.innerHTML= predict.label;    //更新紀錄目前偵測結果
+        
+          //依辨識結果predict.label執行ESP32-CAM自訂網址參數指令
+          if (predict.label=="0") {
+            /*
+            var gpio = 4;
+            var val = 0;
+            var cmd = "analogwrite";  //digitalwrite
+            ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
+            */            
+          }
+          else if (predict.label=="1") {
+            /*
+            var gpio = 4;
+            var val = 10;
+            var cmd = "analogwrite";  //digitalwrite
+            ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
+            */            
+          }
+          else if (predict.label=="2") {
+            /*
+            var gpio = 4;
+            var val = 0;
+            var cmd = "analogwrite";  //digitalwrite
+            ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
+            */
+          }
+          else if (predict.label=="3") {
+            /*
+            var gpio = 4;
+            var val = 0;
+            var cmd = "analogwrite";  //digitalwrite
+            ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
+            */
+          }
+          else if (predict.label=="4") {
+            /*
+            var gpio = 4;
+            var val = 0;
+            var cmd = "analogwrite";  //digitalwrite
+            ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
+            */
+          }
+          else if (predict.label=="5") {
+            /*
+            var gpio = 4;
+            var val = 0;
+            var cmd = "analogwrite";  //digitalwrite
+            ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
+            */
+          }
+          else if (predict.label=="6") {
+            /*
+            var gpio = 4;
+            var val = 0;
+            var cmd = "analogwrite";  //digitalwrite
+            ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
+            */
+          }
+          else if (predict.label=="7") {
+            /*
+            var gpio = 4;
+            var val = 0;
+            var cmd = "analogwrite";  //digitalwrite
+            ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
+            */
+          }
+          else if (predict.label=="8") {
+            /*
+            var gpio = 4;
+            var val = 0;
+            var cmd = "analogwrite";  //digitalwrite
+            ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
+            */
+          }
+          else if (predict.label=="9") {
+            /*
+            var gpio = 4;
+            var val = 0;
+            var cmd = "analogwrite";  //digitalwrite
+            ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
+            */
+          } 
         }
         else
           message.innerHTML = "";
