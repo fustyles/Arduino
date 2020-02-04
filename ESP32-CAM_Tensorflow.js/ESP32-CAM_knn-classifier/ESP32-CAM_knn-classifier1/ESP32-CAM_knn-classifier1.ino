@@ -464,7 +464,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var mirrorimage = document.getElementById("mirrorimage");      
     var count = document.getElementById('count'); 
     var result = document.getElementById('result');
-    var message = document.getElementById('message');
+    var lastValue = document.getElementById('lastValue');
     var flash = document.getElementById('flash'); 
     var ifr = document.getElementById('ifr');
     var myTimer; 
@@ -473,7 +473,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 
     function stopDetection() {
       startdetection.checked = false;
-      message.innerHTML = "";
+      lastValue.innerHTML = "";
       result.innerHTML = "";
     }
           
