@@ -1,7 +1,7 @@
 /*
 ESP32-CAM knn-classifier
 Open the page in Chrome.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-3 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-4 18:00
 https://www.facebook.com/francefu
 
 Line 451, Line 611
@@ -468,6 +468,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var flash = document.getElementById('flash'); 
     var ifr = document.getElementById('ifr');
     var myTimer; 
+    var restartCount=0;
     var classifier;
     var mobilenetModule;
 
@@ -478,19 +479,26 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     }
           
     getStill.onclick = function (event) {
-      clearInterval(myTimer);  
+      clearInterval(myTimer);
       myTimer = setInterval(function(){error_handle();},5000);
       ShowImage.src=location.origin+'/?getstill='+Math.random();
     }
 
     function error_handle() {
+      restartCount++;
       clearInterval(myTimer);
-      myTimer = setInterval(function(){getStill.click();},10000);
-      ifr.src = document.location.origin+'?restart';
+      if (restartCount<=2) {
+        result.innerHTML = "Get still error. <br>Restart ESP32-CAM "+restartCount+" times.";
+        myTimer = setInterval(function(){getStill.click();},10000);
+        ifr.src = document.location.origin+'?restart';
+      }
+      else
+        result.innerHTML = "Get still error. <br>Please close the page and check ESP32-CAM.";
     }
 
     ShowImage.onload = function (event) {     
       clearInterval(myTimer);
+      restartCount=0;
       canvas.setAttribute("width", ShowImage.width);
       canvas.setAttribute("height", ShowImage.height);
       if (mirrorimage.value==1) {
