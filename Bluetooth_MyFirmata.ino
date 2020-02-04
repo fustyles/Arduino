@@ -1,5 +1,5 @@
 /*
-Arduino Uno + Bluetooth(or ESP8266)
+Arduino Uno + Bluetooth(or ESP8266)...with Uart
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-07 13:00 
 https://www.facebook.com/francefu
