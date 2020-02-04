@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Tracking.js Detect Color
+ESP32-CAM Tracking.js Color Detection
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-3 23:00
 https://www.facebook.com/francefu
 
@@ -85,8 +85,10 @@ void ExecuteCommand()
 {
   //Serial.println("");
   //Serial.println("Command: "+Command);
-  //Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
-  //Serial.println("");
+  if (cmd!="getstill") {
+    Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
+    Serial.println("");
+  }
   
   if (cmd=="your cmd") {
     // You can do anything.
@@ -511,16 +513,23 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     </td>
   </tr>
   <tr>
-  <td>MirrorImage</td> 
-    <td colspan="2">  
-      <select id="mirrorimage">
-        <option value="1">yes</option>
-        <option value="0">no</option>
-      </select>
-    </td>
-  </tr>     
+    <td>Flash</td>
+    <td colspan="2"><input type="range" id="flash" min="0" max="255" value="0"></td>
+  </tr>
   <tr>
-  <td>Resolution</td> 
+    <td>Quality</td>
+    <td colspan="2"><input type="range" id="quality" min="10" max="63" value="10"></td>
+  </tr>
+  <tr>
+    <td>Brightness</td>
+    <td colspan="2"><input type="range" id="brightness" min="-2" max="2" value="0"></td>
+  </tr>
+  <tr>
+    <td>Contrast</td>
+    <td colspan="2"><input type="range" id="contrast" min="-2" max="2" value="0"></td>
+  </tr>
+  <tr>
+    <td>Resolution</td> 
     <td colspan="2">
     <select id="framesize">
         <option value="UXGA">UXGA(1600x1200)</option>
@@ -534,28 +543,18 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <option value="QQVGA">QQVGA(160x120)</option>
     </select> 
     </td>
+  </tr>  
   <tr>
-  <td>Flash</td>
-  <td colspan="2"><input type="range" id="flash" min="0" max="255" value="0"></td>
-  </tr>
-  <tr>    
-  </tr>
+    <td>MirrorImage</td> 
+    <td colspan="2">  
+      <select id="mirrorimage">
+        <option value="1">yes</option>
+        <option value="0">no</option>
+      </select>
+    </td>
+  </tr>     
   <tr>
-    <td>Quality</td>
-    <td colspan="2"><input type="range" id="quality" min="10" max="63" value="10"></td>
-    </tr>
-  <tr>
-  <tr>
-    <td>Brightness</td>
-    <td colspan="2"><input type="range" id="brightness" min="-2" max="2" value="0"></td>
-    </tr>
-  <tr>
-  <tr>
-    <td>Contrast</td>
-    <td colspan="2"><input type="range" id="contrast" min="-2" max="2" value="0"></td>
-    </tr>
-  <tr>
-  <tr><td>Rotate</td>
+    <td>Rotate</td>
     <td align="left" colspan="2">
         <select onchange="document.getElementById('canvas').style.transform='rotate('+this.value+')';">
           <option value="0deg">0deg</option>
@@ -582,7 +581,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var result = document.getElementById('result');
     var flash = document.getElementById('flash'); 
     var ifr = document.getElementById('ifr');
-    var lastValue="";
+    var lastValue = "";
     var myTimer; 
     var myColor_r_min,myColor_r_max,myColor_g_min,myColor_g_max,myColor_b_min,myColor_b_max;
 
@@ -620,8 +619,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     }   
 
     getStill.onclick = function (event) {  
-      myTimer = setInterval(function(){getStill.click();},5000);
-      ShowImage.src=location.origin+'/?getstill='+Math.random();
+      clearInterval(myTimer);  
+      myTimer = setInterval(function(){error_handle();},5000);
+      ShowImage.src=location.origin+'/?getstill='+Math.random();      
 
       myColor_r_min = document.getElementById('myColor_r_min').value;
       myColor_r_max = document.getElementById('myColor_r_max').value;
@@ -637,6 +637,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         return false;
       }); 
     }
+
+    function error_handle() {
+      clearInterval(myTimer);
+      myTimer = setInterval(function(){getStill.click();},10000);
+      ifr.src = document.location.origin+'?restart';
+    }    
 
     ShowImage.onload = function (event) {
       clearInterval(myTimer);
@@ -669,6 +675,42 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           //context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
 
           result.innerHTML+= rect.color+","+rect.x+","+rect.y+","+rect.width+","+rect.height+"<br>";
+          if (rect.color==tracker.customColor&&lastValue!=tracker.customColor) {  //當偵測到自訂顏色時執行指令
+            lastValue = tracker.customColor;
+            /*
+            var gpio = 4;
+            var val = 10;
+            var cmd = "analogwrite";  //digitalwrite
+            ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
+            */
+          }
+          else if (rect.color=="magenta"&&lastValue!="magenta") {  //當偵測到自訂顏色時執行指令
+            lastValue = "magenta";
+            /*
+            var gpio = 4;
+            var val = 10;
+            var cmd = "analogwrite";  //digitalwrite
+            ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
+            */
+          }
+          else if (rect.color=="cyan"&&lastValue!="cyan") {  //當偵測到自訂顏色時執行指令
+            lastValue = "cyan";
+            /*
+            var gpio = 4;
+            var val = 10;
+            var cmd = "analogwrite";  //digitalwrite
+            ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
+            */
+          } 
+          else if (rect.color=="yellow"&&lastValue!="yellow") {  //當偵測到自訂顏色時執行指令
+            lastValue = "yellow";
+            /*
+            var gpio = 4;
+            var val = 0;
+            var cmd = "analogwrite";  //digitalwrite
+            ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
+            */
+          }           
         });
       });
 
