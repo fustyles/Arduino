@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (SD Card Manager)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-18 17:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-4 18:00
 https://www.facebook.com/francefu
 
 首頁
@@ -15,6 +15,8 @@ http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://192.168.xxx.xxx?ip
 http://192.168.xxx.xxx?mac
 http://192.168.xxx.xxx?restart
+http://192.168.xxx.xxx?digitalwrite=pin;value
+http://192.168.xxx.xxx?analogwrite=pin;value
 http://192.168.xxx.xxx?flash=value        //value= 0~255 閃光燈
 http://192.168.xxx.xxx?getstill                 //取得視訊影像
 http://192.168.xxx.xxx?saveimage=/filename      //儲存影像至SD卡，filename不含附檔名
@@ -77,10 +79,12 @@ WiFiServer server(80);
 
 void ExecuteCommand()
 {
-  Serial.println("");
+  //Serial.println("");
   //Serial.println("Command: "+Command);
-  Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
-  Serial.println("");
+  if (cmd!="getstill") {
+    Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
+    Serial.println("");
+  }
   
   if (cmd=="your cmd") {
     // You can do anything.
@@ -111,6 +115,23 @@ void ExecuteCommand()
   else if (cmd=="restart") {
     ESP.restart();
   }    
+  else if (cmd=="digitalwrite") {
+    ledcDetachPin(P1.toInt());
+    pinMode(P1.toInt(), OUTPUT);
+    digitalWrite(P1.toInt(), P2.toInt());
+  }   
+  else if (cmd=="analogwrite") {
+    if (P1="4") {
+      ledcAttachPin(4, 4);  
+      ledcSetup(4, 5000, 8);   
+      ledcWrite(4,P2.toInt());  
+    }
+    else {
+      ledcAttachPin(P1.toInt(), 5);
+      ledcSetup(5, 5000, 8);
+      ledcWrite(5,P2.toInt());
+    }
+  }  
   else if (cmd=="flash") {
     ledcAttachPin(4, 4);  
     ledcSetup(4, 5000, 8);   
@@ -169,45 +190,57 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
   </head><body>
   <script>var myVar;</script>
+  <img id="stream" src="">
+  <div id="list">
+  <img id="showimage" src=""> 
+  <br>  
   <table>
   <tr>
-  <td><input type="button" id="getStill" value="Get Still"></td>
-  <td><input type="button" id="getStream" value="Start Stream"></td>   
-  <td><input type="button" id="stopStream" value="Stop Stream"></td> 
+    <td><input type="button" id="getStill" value="Get Still"></td>
+    <td><input type="button" id="stopStream" value="Stop Stream"></td>   
+    <td><input type="button" id="getStream" value="Start Stream"></td> 
   </tr>  
   <tr>
-  <td><input type="button" id="restart" value="Restart"></td>
-  <td><input type="button" id="imageList" value="Image List"></td>              
-  <td><input type="button" id="saveImage" value="Save Image"></td>  
- </tr>
-  <tr>
-  <td>Flash</td>
-  <td colspan="2"><input type="range" id="flash" min="0" max="255" value="0"></td>
+    <td><input type="button" id="restart" value="Restart"></td>
+    <td><input type="button" id="imageList" value="Image List"></td>              
+    <td><input type="button" id="saveImage" value="Save Image"></td>  
   </tr>
   <tr>
-  <td>Line Token</td>
-  <td colspan="2"><input type="text" id="token"><button id="line">Send</button></td>
+    <td>Flash</td>
+    <td colspan="2"><input type="range" id="flash" min="0" max="255" value="0"></td>
   </tr>
   <tr>
-  <td>Resolution</td> 
-  <td colspan="2">
-  <select id="framesize">
-      <option value="UXGA">UXGA(1600x1200)</option>
-      <option value="SXGA">SXGA(1280x1024)</option>
-      <option value="XGA">XGA(1024x768)</option>
-      <option value="SVGA">SVGA(800x600)</option>
-      <option value="VGA">VGA(640x480)</option>
-      <option value="CIF">CIF(400x296)</option>
-      <option value="QVGA" selected="selected">QVGA(320x240)</option>
-      <option value="HQVGA">HQVGA(240x176)</option>
-      <option value="QQVGA">QQVGA(160x120)</option>
-  </select> 
-  </td>
+    <td>Resolution</td> 
+    <td colspan="2">
+    <select id="framesize">
+    <option value="UXGA">UXGA(1600x1200)</option>
+    <option value="SXGA">SXGA(1280x1024)</option>
+    <option value="XGA">XGA(1024x768)</option>
+    <option value="SVGA">SVGA(800x600)</option>
+    <option value="VGA">VGA(640x480)</option>
+    <option value="CIF">CIF(400x296)</option>
+    <option value="QVGA" selected="selected">QVGA(320x240)</option>
+    <option value="HQVGA">HQVGA(240x176)</option>
+    <option value="QQVGA">QQVGA(160x120)</option>
+    </select> 
+    </td>
+  </tr>
+  <tr><td>Rotate</td>
+    <td align="left" colspan="2">
+      <select onchange="document.getElementById('stream').style.transform='rotate('+this.value+')';document.getElementById('showimage').style.transform='rotate('+this.value+')';">
+        <option value="0deg">0deg</option>
+        <option value="90deg">90deg</option>
+        <option value="180deg">180deg</option>
+        <option value="270deg">270deg</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>Line Token</td>
+    <td colspan="2"><input type="text" id="token"><button id="line">Send</button></td>
   </tr>
   </table>  
-  <br><img id="stream" src="">
-  <div id="list">
-  <img id="showimage" src="">   
+  <iframe id="ifr" style="display:none"></iframe>
   <br><span id="show" style="color:red"></span>
   </div>
   </body>
@@ -225,7 +258,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var framesize = document.getElementById('framesize');
     var flash = document.getElementById('flash');
     var show = document.getElementById('show');
+    var ifr = document.getElementById('ifr');    
     var myTimer;
+    var restartCount=0;    
     var streamState = false;
 
     getStill.onclick = function (event) {
@@ -234,25 +269,45 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     }
     
     getStream.onclick = function (event) {
-      showimage.src="";
-      streamState=true;
-      stream.onload = function (event) {
-        clearInterval(myTimer);
-        if (streamState==true) {
-          setTimeout(function(){getStream.click();},100);
-          myTimer = setInterval(function(){getStream.click();},10000);
-        }
-        else
-          stream.src="";
-      }       
-      stream.src=location.origin+'/?getstill='+Math.random();
-    }
-    
-    stopStream.onclick = function (event) {
       clearInterval(myTimer);
       showimage.src="";
-      streamState=false;
-      stream.onload = function (event) {}
+      streamState=true;
+      myTimer = setInterval(function(){error_handle();},5000); 
+      stream.src=location.origin+'/?getstill='+Math.random();
+    }
+
+    function error_handle() {
+      restartCount++;
+      clearInterval(myTimer);
+      if (restartCount<=2) {
+        show.innerHTML = "Get still error. <br>Restart ESP32-CAM "+restartCount+" times.";
+        myTimer = setInterval(function(){getStream.click();},10000);
+        ifr.src = document.location.origin+'?restart';
+      }
+      else
+        show.innerHTML = "Get still error. <br>Please close the page and check ESP32-CAM.";
+    }
+
+    stream.onload = function (event) {
+      clearInterval(myTimer);
+      restartCount=0;      
+      if (streamState==true) {
+        try { 
+          document.createEvent("TouchEvent");
+          setTimeout(function(){getStream.click();},250);
+        }
+        catch(e) { 
+          setTimeout(function(){getStream.click();},150);
+        }  
+      }
+      else
+        stream.src="";
+    }        
+    
+    stopStream.onclick = function (event) {
+      streamState=false;      
+      clearInterval(myTimer);
+      showimage.src="";
       stream.src="";
     }
     
