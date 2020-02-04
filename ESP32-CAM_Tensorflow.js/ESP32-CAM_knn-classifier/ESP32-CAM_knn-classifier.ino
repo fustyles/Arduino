@@ -1,7 +1,7 @@
 /*
 ESP32-CAM knn-classifier
 Open the page in Chrome.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-24 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-3 23:00
 https://www.facebook.com/francefu
 
 自訂指令格式 :  
@@ -13,6 +13,8 @@ http://192.168.xxx.xxx/control?ip
 http://192.168.xxx.xxx/control?mac
 http://192.168.xxx.xxx/control?restart
 http://192.168.xxx.xxx/control?flash=value        //value= 0~255
+http://192.168.xxx.xxx/control?digitalwrite=pin;value
+http://192.168.xxx.xxx/control?analogwrite=pin;value
 
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
@@ -539,7 +541,24 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       }  
       else if (cmd=="restart") {  //重設WIFI連線
         ESP.restart();
-      }           
+      } 
+      else if (cmd=="digitalwrite") {
+        ledcDetachPin(P1.toInt());
+        pinMode(P1.toInt(), OUTPUT);
+        digitalWrite(P1.toInt(), P2.toInt());
+      }   
+      else if (cmd=="analogwrite") {
+        if (P1="4") {
+          ledcAttachPin(4, 4);  
+          ledcSetup(4, 5000, 8);   
+          ledcWrite(4,P2.toInt());  
+        }
+        else {
+          ledcAttachPin(P1.toInt(), 5);
+          ledcSetup(5, 5000, 8);
+          ledcWrite(5,P2.toInt());
+        }
+      }
       else if (cmd=="flash") {  //控制內建閃光燈
         ledcAttachPin(4, 4);  
         ledcSetup(4, 5000, 8);   
@@ -687,10 +706,10 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 <table>
                 <tr><td></td><td><button id="get-still" style="display:none">get-still</button><button id="toggle-stream" style="display:none"></button></td><td><button id="face_enroll" style="display:none" class="disabled" disabled="disabled"></button></td></tr>
                 <!-- 可在Select自訂option value為英數組成字串如apple -->
-                <tr><td><button id="addExample">Train</button></td><td><select id="Class"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select></td><td><span id="count" style="color:red">0</span></td></tr>
+                <tr><td><button id="addExample">Train</button></td><td><select id="Class"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select></td><td><span id="count" style="color:red">0</span></td></tr>
                 <tr><td><button id="clearAllClasses">Clear Classes</button></td><td><button onclick="saveModel();">Save Model</button></td><td><input type="file" id="getModel" style="width:100px"></input></td></tr>
                 <tr><td>Flash</td><td colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?flash='+this.value);}catch(e){}"></td></tr>
-                <tr><td><span id="message" style="display:none"></span></td><td></td><td></td></tr> 
+                <tr><td><span id="lastValue" style="display:none"></span></td><td></td><td></td></tr> 
                 <tr style="display:none"><td colspan="3"><iframe id="ifr"></iframe></td></tr> 
                 </table>
             </section>         
@@ -1050,7 +1069,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         <script>
           function stopDetection() {
             document.getElementById('startdetection').checked = false;
-            document.getElementById('message').innerHTML = "";
+            document.getElementById('lastValue').innerHTML = "";
           }
         </script>
         
@@ -1062,7 +1081,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           var stream = document.getElementById('stream');
           var example = document.getElementById('example');
           var Class = document.getElementById('Class');
+          var probabilityLimit = document.getElementById('probabilityLimit');
           var result = document.getElementById('result');
+          var lastValue = document.getElementById('lastValue');
           var count = document.getElementById('count');
           var getStill = document.getElementById('get-still');
           var getModel = document.getElementById('getModel');
@@ -1118,35 +1139,113 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           
           async function predictClass(img) {
             try {
-              // Make a prediction.
               const Image = tf.browser.fromPixels(img);
               const xlogits = mobilenetModule.infer(Image, 'conv_preds');
               const predict = await classifier.predictClass(xlogits);
               //console.log(predict);
               if (predict.label) {
-                var msg = "<font color='red'>Result : class " + predict.label + "</font><br><br>";
+                var msg = "";
                 var MaxProbability = 0;
                 for (i=0;i<Class.length;i++) {
-                  if (predict.confidences[i.toString()]>=0) msg += "[train "+i+"] " + predict.confidences[i.toString()] + "<br>";
-                  if (i==predict.label) MaxProbability = Number(predict.confidences[i.toString()]);
+                  if (predict.confidences[i.toString()]>=0) msg += "[class "+i+"] " + predict.confidences[i.toString()] + "<br>";
+                  if (i==predict.label) MaxProbability = Number(predict.confidences[i.toString()]);    //取得可能性最大的Class
                 }
+                if (MaxProbability>=probabilityLimit.value) {   //若辨識結果可能性大於等於設定的底限則畫面顯示結果
+                  msg = "<font color='red'>Result : class " + predict.label + "</font><br><br>"+msg;              
+                }
+                else
+                  msg = "<br><br>"+msg; 
                 result.innerHTML = msg; 
-                var message = document.getElementById('message');                
-                if (message.innerHTML==predict.label) return;
-                var probabilityLimit = Number(document.getElementById('probabilityLimit').value);
-                if (MaxProbability>=probabilityLimit) {
-                  message.innerHTML= predict.label;
-                  /*
-                    //可在此依辨識結果predict.label執行對應網址指令回傳ESP32-CAM
-                    if (predict.label=="1") {
-                      ifr.src = document.location.origin+'/control?var=xxx&val='+predict.label;
-                    }
-                    else {
-                      ifr.src = document.location.origin+'/control?var=xxx&val='+predict.label;
-                    }                    
-                  */
-                  console.log("Result : class " + predict.label);
+                              
+                
+                if (MaxProbability>=probabilityLimit.value) {   //若辨識結果可能性大於等於設定的底限則執行外部指令
+                  if (lastValue.innerHTML==predict.label) return;  //若辨識結果維持不變，則不重複執行外部控制指令，避免快速重複執行相同指令造成耗用資源或晶片當機
+                  lastValue.innerHTML= predict.label;    //更新紀錄目前偵測結果
+                
+                  //依辨識結果predict.label執行ESP32-CAM自訂網址參數指令
+                  if (predict.label=="0") {
+                    /*
+                    var gpio = 4;
+                    var val = 0;
+                    var cmd = "analogwrite";  //digitalwrite
+                    ifr.src = document.location.origin+'/control?'+cmd+'='+gpio+';'+val;
+                    */           
+                  }
+                  else if (predict.label=="1") {
+                    /*
+                    var gpio = 4;
+                    var val = 10;
+                    var cmd = "analogwrite";  //digitalwrite
+                    ifr.src = document.location.origin+'/control?'+cmd+'='+gpio+';'+val;
+                    */           
+                  }
+                  else if (predict.label=="2") {
+                    /*
+                    var gpio = 4;
+                    var val = 0;
+                    var cmd = "analogwrite";  //digitalwrite
+                    ifr.src = document.location.origin+'/control?'+cmd+'='+gpio+';'+val;
+                    */
+                  }
+                  else if (predict.label=="3") {
+                    /*
+                    var gpio = 4;
+                    var val = 0;
+                    var cmd = "analogwrite";  //digitalwrite
+                    ifr.src = document.location.origin+'/control?'+cmd+'='+gpio+';'+val;
+                    */
+                  }
+                  else if (predict.label=="4") {
+                    /*
+                    var gpio = 4;
+                    var val = 0;
+                    var cmd = "analogwrite";  //digitalwrite
+                    ifr.src = document.location.origin+'/control?'+cmd+'='+gpio+';'+val;
+                    */
+                  }
+                  else if (predict.label=="5") {
+                    /*
+                    var gpio = 4;
+                    var val = 0;
+                    var cmd = "analogwrite";  //digitalwrite
+                    ifr.src = document.location.origin+'/control?'+cmd+'='+gpio+';'+val;
+                    */
+                  }
+                  else if (predict.label=="6") {
+                    /*
+                    var gpio = 4;
+                    var val = 0;
+                    var cmd = "analogwrite";  //digitalwrite
+                    ifr.src = document.location.origin+'/control?'+cmd+'='+gpio+';'+val;
+                    */
+                  }
+                  else if (predict.label=="7") {
+                    /*
+                    var gpio = 4;
+                    var val = 0;
+                    var cmd = "analogwrite";  //digitalwrite
+                    ifr.src = document.location.origin+'/control?'+cmd+'='+gpio+';'+val;
+                    */
+                  }
+                  else if (predict.label=="8") {
+                    /*
+                    var gpio = 4;
+                    var val = 0;
+                    var cmd = "analogwrite";  //digitalwrite
+                    ifr.src = document.location.origin+'/control?'+cmd+'='+gpio+';'+val;
+                    */
+                  }
+                  else if (predict.label=="9") {
+                    /*
+                    var gpio = 4;
+                    var val = 0;
+                    var cmd = "analogwrite";  //digitalwrite
+                    ifr.src = document.location.origin+'/control?'+cmd+'='+gpio+';'+val;
+                    */
+                  } 
                 }
+                else
+                  lastValue.innerHTML = "";
               }
             }
             catch (e) {
