@@ -720,7 +720,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           } 
         }
         else
-          message.innerHTML = "";
+          lastValue.innerHTML = "";
       }
     }
 
