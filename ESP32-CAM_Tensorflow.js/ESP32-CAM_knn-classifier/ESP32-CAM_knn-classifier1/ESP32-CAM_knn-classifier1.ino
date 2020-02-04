@@ -4,7 +4,7 @@ Open the page in Chrome.
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-3 23:00
 https://www.facebook.com/francefu
 
-Line 429, Line 582
+Line 451, Line 611
 You can set the value of remote model url and load model automatically.
 
 首頁
