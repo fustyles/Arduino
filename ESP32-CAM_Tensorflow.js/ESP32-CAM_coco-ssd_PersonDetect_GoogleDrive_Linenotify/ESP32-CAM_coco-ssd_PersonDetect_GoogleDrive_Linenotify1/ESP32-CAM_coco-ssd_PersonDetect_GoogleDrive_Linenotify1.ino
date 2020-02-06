@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Person Detect using tfjs coco-ssd (Send captured image to GoogleDrive and Linenotify)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-1 16:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-6 21:00
 https://www.facebook.com/francefu
 
 物件類別
@@ -495,17 +495,32 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var flash = document.getElementById('flash'); 
     var ifr = document.getElementById('ifr');
     var lastValue="";
-    var myTimer;   
+    var myTimer;
+    var restartCount=0;   
     var Model;
     var objectState = false;    
 
-    getStill.onclick = function (event) {  
-      myTimer = setInterval(function(){getStill.click();},10000);
+    getStill.onclick = function (event) {
+      clearInterval(myTimer);  
+      myTimer = setInterval(function(){error_handle();},15000);
       ShowImage.src=location.origin+'/?getstill='+Math.random();
     }
 
+    function error_handle() {
+      restartCount++;
+      clearInterval(myTimer);
+      if (restartCount<=2) {
+        result.innerHTML = "Get still error. <br>Restart ESP32-CAM "+restartCount+" times.";
+        myTimer = setInterval(function(){getStill.click();},10000);
+        ifr.src = document.location.origin+'?restart';
+      }
+      else
+        result.innerHTML = "Get still error. <br>Please close the page and check ESP32-CAM.";
+    }        
+
     ShowImage.onload = function (event) {
       clearInterval(myTimer);
+      restartCount=0;
       canvas.setAttribute("width", ShowImage.width);
       canvas.setAttribute("height", ShowImage.height);
       if (mirrorimage.value==1) {
