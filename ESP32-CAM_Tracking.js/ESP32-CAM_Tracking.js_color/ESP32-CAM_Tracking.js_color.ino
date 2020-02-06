@@ -27,6 +27,8 @@ http://192.168.xxx.xxx?quality=value    // value = 10 to 63
 http://192.168.xxx.xxx?brightness=value    // value = -2 to 2
 http://192.168.xxx.xxx?contrast=value    // value = -2 to 2 
 http://192.168.xxx.xxx/?tcp=domain;port;request;wait
+--> request = /xxxxx
+--> wait = 0 ro 1
 http://192.168.xxx.xxx/?linenotify=token;request
 --> request = message=xxxxx
 --> request = message=xxxxx&stickerPackageId=xxxxx&stickerId=xxxxx
