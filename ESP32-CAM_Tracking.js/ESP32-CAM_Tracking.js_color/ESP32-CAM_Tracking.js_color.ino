@@ -18,8 +18,8 @@ http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://192.168.xxx.xxx?ip
 http://192.168.xxx.xxx?mac
 http://192.168.xxx.xxx?restart
-http://192.168.xxx.xxx?digitalwrite=pin;value
-http://192.168.xxx.xxx?analogwrite=pin;value
+http://192.168.xxx.xxx?digitalwrite=pin;value        //value= 0 or 1
+http://192.168.xxx.xxx?analogwrite=pin;value        //value= 0~255
 http://192.168.xxx.xxx?flash=value        //value= 0~255 閃光燈
 http://192.168.xxx.xxx?getstill                 //取得視訊影像
 http://192.168.xxx.xxx?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA 改變影像解析度
