@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Tracking.js Color Detection
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-4 18:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-9 20:00
 https://www.facebook.com/francefu
 
 Color List
@@ -343,11 +343,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <script src="https:\/\/fustyles.github.io/webduino/Tracking_20190917/tracking-min.js"></script>  
   </head><body>
   <img id="ShowImage" src="" style="display:none">
-  <canvas id="canvas" width="0" height="0"></canvas>  
+  <canvas id="canvas" width="0" height="0"></canvas><canvas id="canvas_custom" style="display:none"></canvas>
   <table>
   <tr>
     <td><input type="button" id="restart" value="Restart"></td> 
-    <td colspan="2"><input type="button" id="getStill" value="Start Detection"></td> 
+    <td><input type="button" id="getStill" value="Start Detection"><input type="checkbox" id="showpix" value="Show Pixel" onclick="if (this.checked) canvas_custom.style.display='block'; else canvas_custom.style.display='none';">Show Pixel</td>
   </tr>  
   <tr>
     <td>Color Name</td>
@@ -577,6 +577,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var ShowImage = document.getElementById('ShowImage');
     var canvas = document.getElementById("canvas");
     var context = canvas.getContext("2d"); 
+    var canvas_custom = document.getElementById('canvas_custom');
+    var context_custom = canvas_custom.getContext('2d');    
     var myColor = document.getElementById('myColor');
     var mirrorimage = document.getElementById("mirrorimage");   
     var result = document.getElementById('result');
@@ -625,13 +627,14 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       myTimer = setInterval(function(){error_handle();},5000);
       ShowImage.src=location.origin+'/?getstill='+Math.random();      
 
+      myColor = document.getElementById('myColor').value;
       myColor_r_min = document.getElementById('myColor_r_min').value;
       myColor_r_max = document.getElementById('myColor_r_max').value;
       myColor_g_min = document.getElementById('myColor_g_min').value;
       myColor_g_max = document.getElementById('myColor_g_max').value;
       myColor_b_min = document.getElementById('myColor_b_min').value;
       myColor_b_max = document.getElementById('myColor_b_max').value;
-  
+
       tracking.ColorTracker.registerColor('custom', function(r, g, b) {
         if ((r>=myColor_r_min&&r<=myColor_r_max)&&(g>=myColor_g_min&&g<=myColor_g_max)&&(b>=myColor_b_min&&b<=myColor_b_max)) {
           return true;
@@ -657,6 +660,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       restartCount=0;      
       canvas.setAttribute("width", ShowImage.width);
       canvas.setAttribute("height", ShowImage.height);
+      canvas_custom.setAttribute("width", ShowImage.width);
+      canvas_custom.setAttribute("height", ShowImage.height);      
       
       if (mirrorimage.value==1) {
         context.translate((canvas.width + ShowImage.width) / 2, 0);
@@ -723,7 +728,26 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         });
       });
 
-      initGUIControllers(tracker); 
+      initGUIControllers(tracker);
+
+      var imgData=context.getImageData(0,0,canvas.width,canvas.height);
+      for (var i=0;i<imgData.data.length;i+=4)
+        {
+        if ((imgData.data[i]>=myColor_r_min&&imgData.data[i]<=myColor_r_max)&&(imgData.data[i+1]>=myColor_g_min&&imgData.data[i+1]<=myColor_g_max)&&(imgData.data[i+2]>=myColor_b_min&&imgData.data[i+2]<=myColor_b_max)) {
+          imgData.data[i]=0;
+          imgData.data[i+1]=0;
+          imgData.data[i+2]=0;
+          imgData.data[i+3]=255;
+        }
+        else {
+          imgData.data[i]=255;
+          imgData.data[i+1]=255;
+          imgData.data[i+2]=255;
+          imgData.data[i+3]=255;
+        }
+        }
+      context_custom.putImageData(imgData,0,0);      
+         
 
       try { 
         document.createEvent("TouchEvent");
