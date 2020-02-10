@@ -470,6 +470,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       context_detect.drawImage(canvas,0,0,canvas.width,canvas.height);
 
       if (!labeledFaceDescriptors) {
+        message.innerHTML = "Loading face images...";      
         labeledFaceDescriptors = await loadLabeledImages();
         faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, distanceLimit)
       }
