@@ -472,15 +472,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     detect.onclick = function (event) {
       canvas_detect.setAttribute("width", canvas.width);
       canvas_detect.setAttribute("height", canvas.height); 
-            
-      if (mirrorimage.value==1) {
-        context_detect.translate((canvas_detect.width + canvas.width) / 2, 0);
-        context_detect.scale(-1, 1);
-        context_detect.drawImage(canvas, 0, 0, canvas.width, canvas.height);
-        context_detect.setTransform(1, 0, 0, 1, 0, 0);
-      }
-      else
-        context_detect.drawImage(canvas,0,0,canvas.width,canvas.height);
+      context_detect.drawImage(canvas,0,0,canvas.width,canvas.height);
         
       message.innerHTML = "";
       DetectImage();
