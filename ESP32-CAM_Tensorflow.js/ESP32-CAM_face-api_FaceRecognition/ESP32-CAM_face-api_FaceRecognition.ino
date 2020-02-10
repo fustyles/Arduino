@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Face Recognition (face-api.js)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-10 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-10 23:00
 https://www.facebook.com/francefu
 
 首頁
@@ -306,8 +306,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <table>
   <tr>
     <td><input type="button" id="restart" value="Restart"></td> 
-    <td><input type="button" id="getStill" value="Get Still" style="display:none"></td> 
-    <td><button id="detect" disabled>Detect</button></td> 
+    <td colspan="2"><input type="button" id="getStill" value="Get Still" style="display:none"></td> 
   </tr>
   <tr>
     <td>MirrorImage</td> 
@@ -378,6 +377,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     const modelPath = 'https://fustyles.github.io/webduino/TensorFlow/Face-api/';
     //Model: https://github.com/fustyles/webduino/tree/master/TensorFlow/Face-api
     let displaySize = { width:320, height: 240 }
+
+    let labeledFaceDescriptors;
+    let faceMatcher;    
     
     var getStill = document.getElementById('getStill');
     var ShowImage = document.getElementById('ShowImage');
@@ -397,10 +399,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       faceapi.nets.faceLandmark68Net.load(modelPath),
       faceapi.nets.faceRecognitionNet.load(modelPath),
       faceapi.nets.ssdMobilenetv1.load(modelPath)
-    ]) 
-
-    detect.disabled=false;
-
+    ]).then(function(){
+      message.innerHTML = "";
+      getStill.style.display = "block";
+    })
+    
     getStill.onclick = function (event) {
       clearInterval(myTimer);  
       myTimer = setInterval(function(){error_handle();},5000);
@@ -419,8 +422,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         message.innerHTML = "Get still error. <br>Please close the page and check ESP32-CAM.";
     }    
 
-    getStill.style.display = "block";
-
     ShowImage.onload = function (event) {
       clearInterval(myTimer);
       restartCount=0;      
@@ -436,13 +437,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       else
         context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height);
       
-      try { 
-        document.createEvent("TouchEvent");
-        setTimeout(function(){getStill.click();},250);
-      }
-      catch(e) { 
-        setTimeout(function(){getStill.click();},150);
-      }        
+      DetectImage();       
     }     
     
     restart.onclick = function (event) {
@@ -469,20 +464,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       fetch(document.location.origin+'/?contrast='+this.value+';stop');
     }    
 
-    detect.onclick = function (event) {
+    async function DetectImage() {
       canvas_detect.setAttribute("width", canvas.width);
       canvas_detect.setAttribute("height", canvas.height); 
       context_detect.drawImage(canvas,0,0,canvas.width,canvas.height);
-        
-      message.innerHTML = "";
-      DetectImage();
-    }                             
-    
-    async function DetectImage() {
-      detect.disabled=true; 
-            
-      const labeledFaceDescriptors = await loadLabeledImages();
-      const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, distanceLimit)
+
+      if (!labeledFaceDescriptors) {
+        labeledFaceDescriptors = await loadLabeledImages();
+        faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, distanceLimit)
+      }
       const detections = await faceapi.detectAllFaces(canvas_detect).withFaceLandmarks().withFaceDescriptors();
       const resizedDetections = faceapi.resizeResults(detections, displaySize);
 
@@ -492,14 +482,20 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       results.forEach((result, i) => {
         const box = resizedDetections[i].detection.box
         var drawBox;
-        if (result.distance<=distanceLimit)
+        //if (result.distance<=distanceLimit)
           drawBox = new faceapi.draw.DrawBox(box, { label: result.toString()})
-        else
-          drawBox = new faceapi.draw.DrawBox(box, { label: (Math.round(result.distance*100)/100).toString()})
+        //else
+        //  drawBox = new faceapi.draw.DrawBox(box, { label: (Math.round(result.distance*100)/100).toString()})
         drawBox.draw(canvas_detect);
-      })
+      }) 
 
-      detect.disabled=false;      
+      try { 
+        document.createEvent("TouchEvent");
+        setTimeout(function(){getStill.click();},250);
+      }
+      catch(e) { 
+        setTimeout(function(){getStill.click();},150);
+      }         
     }   
 
     function loadLabeledImages() {
