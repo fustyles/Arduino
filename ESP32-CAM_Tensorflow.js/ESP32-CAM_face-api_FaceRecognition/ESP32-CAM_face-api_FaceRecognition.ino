@@ -481,7 +481,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       }
       else
         context_detect.drawImage(canvas,0,0,canvas.width,canvas.height);
-      
+        
+      message.innerHTML = "";
       DetectImage();
     }                             
     
