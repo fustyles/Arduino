@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Tracking.js Color Detection
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-9 20:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-11 21:00
 https://www.facebook.com/francefu
 
 Color List
@@ -347,12 +347,21 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <table>
   <tr>
     <td><input type="button" id="restart" value="Restart"></td> 
-    <td><input type="button" id="getStill" value="Start Detection"><input type="checkbox" id="showpix" value="Show Pixel" onclick="if (this.checked) canvas_custom.style.display='block'; else canvas_custom.style.display='none';">Show Pixel</td>
-  </tr>  
+    <td colspan="2"><input type="button" id="getStill" value="Start Detection"><input type="checkbox" id="showpix" value="Show Pixel" onclick="if (this.checked) canvas_custom.style.display='block'; else canvas_custom.style.display='none';">Show Pixel</td>
+  </tr>
   <tr>
-    <td>Color Name</td>
-    <td>
-      <select id="myColor" onchange="changeColor(this.options[this.selectedIndex].text);">
+    <td style="border:2px red solid;"><a style="color:red;" onclick="changeTab('red');">Tab(Red)</a>
+    <td style="border:2px green solid;"><a style="color:green" onclick="changeTab('green');">Tab(Green)</a></td>
+    <td style="border:2px blue solid;"><a style="color:blue" onclick="changeTab('blue');">Tab(Blue)</a></td>
+  </td>
+  </tr>
+  <tr>
+    <td colspan="3">
+    <div id="divColor1">
+      <table style="border:2px red solid;"><tr>
+        <td colspan="2">
+        <select id="myColor1" onchange="changeColor(this.options[this.selectedIndex].text,1);">
+        <option value="Black">Black_0,0,0</option>
         <option value="AliceBlue">AliceBlue_240,248,255</option>
         <option value="AntiqueWhite">AntiqueWhite_250,235,215</option>
         <option value="Aqua">Aqua_0,255,255</option>
@@ -360,7 +369,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <option value="Azure">Azure_240,255,255</option>
         <option value="Beige">Beige_245,245,220</option>
         <option value="Bisque">Bisque_255,228,196</option>
-        <option value="Black">Black_0,0,0</option>
         <option value="BlanchedAlmond">BlanchedAlmond_255,235,205</option>
         <option value="Blue">Blue_0,0,255</option>
         <option value="BlueViolet">BlueViolet_138,43,226</option>
@@ -493,25 +501,363 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <option value="WhiteSmoke">WhiteSmoke_245,245,245</option>
         <option value="Yellow">Yellow_255,255,0</option>
         <option value="YellowGreen">YellowGreen_154,205,50</option>
-      </select>
-    </td>
-  </tr>
-  <tr>
-    <td>Range R</td>
-    <td>min<input type="range" id="myColor_r_min" min="0" max="255" step="1" onchange="myColor_r_min_v.innerHTML=this.value;"><span id="myColor_r_min_v">0</span><br>
-      max<input type="range" id="myColor_r_max" min="0" max="255" step="1" onchange="myColor_r_max_v.innerHTML=this.value;"><span id="myColor_r_max_v">0</span>
-    </td>
-  </tr>
-  <tr>
-    <td>Range G</td>
-    <td>min<input type="range" id="myColor_g_min" min="0" max="255" step="1" onchange="myColor_g_min_v.innerHTML=this.value;"><span id="myColor_g_min_v">0</span><br>
-      max<input type="range" id="myColor_g_max" min="0" max="255" step="1" onchange="myColor_g_max_v.innerHTML=this.value;"><span id="myColor_g_max_v">0</span>
-    </td>
-  </tr>
-  <tr>
-    <td>Range B</td>
-    <td>min<input type="range" id="myColor_b_min" min="0" max="255" step="1" onchange="myColor_b_min_v.innerHTML=this.value;"><span id="myColor_b_min_v">0</span><br>
-      max<input type="range" id="myColor_b_max" min="0" max="255" step="1" onchange="myColor_b_max_v.innerHTML=this.value;"><span id="myColor_b_max_v">0</span>
+        </select>
+        </td>
+      </tr>
+      <tr>
+        <td align="right">R</td>
+        <td colspan="2">min<input type="range" id="myColor_r_min1" min="0" max="255" value="0" step="1" onchange="myColor_r_min_v1.innerHTML=this.value;"><span id="myColor_r_min_v1">0</span><br>
+          max<input type="range" id="myColor_r_max1" min="0" max="255" value="0" step="1" onchange="myColor_r_max_v1.innerHTML=this.value;"><span id="myColor_r_max_v1">0</span>
+        </td>
+      </tr>
+      <tr>
+        <td align="right">G</td>
+        <td colspan="2">min<input type="range" id="myColor_g_min1" min="0" max="255" value="0" step="1" onchange="myColor_g_min_v1.innerHTML=this.value;"><span id="myColor_g_min_v1">0</span><br>
+          max<input type="range" id="myColor_g_max1" min="0" max="255" value="0" step="1" onchange="myColor_g_max_v1.innerHTML=this.value;"><span id="myColor_g_max_v1">0</span>
+        </td>
+      </tr>
+      <tr>
+        <td align="right">B</td>
+        <td colspan="2">min<input type="range" id="myColor_b_min1" min="0" max="255" value="0" step="1" onchange="myColor_b_min_v1.innerHTML=this.value;"><span id="myColor_b_min_v1">0</span><br>
+          max<input type="range" id="myColor_b_max1" min="0" max="255" value="0" step="1" onchange="myColor_b_max_v1.innerHTML=this.value;"><span id="myColor_b_max_v1">0</span>
+        </td>
+      </tr>
+      </table>
+    </div>
+    <div id="divColor2" style="display:none">
+      <table style="border:2px green solid;"><tr>
+        <td colspan="3">
+        <select id="myColor2" onchange="changeColor(this.options[this.selectedIndex].text,2);">
+        <option value="Black">Black_0,0,0</option>
+        <option value="AliceBlue">AliceBlue_240,248,255</option>
+        <option value="AntiqueWhite">AntiqueWhite_250,235,215</option>
+        <option value="Aqua">Aqua_0,255,255</option>
+        <option value="Aquamarine">Aquamarine_127,255,212</option>
+        <option value="Azure">Azure_240,255,255</option>
+        <option value="Beige">Beige_245,245,220</option>
+        <option value="Bisque">Bisque_255,228,196</option>
+        <option value="BlanchedAlmond">BlanchedAlmond_255,235,205</option>
+        <option value="Blue">Blue_0,0,255</option>
+        <option value="BlueViolet">BlueViolet_138,43,226</option>
+        <option value="Brown">Brown_165,42,42</option>
+        <option value="Burlywood">Burlywood_222,184,135</option>
+        <option value="CadetBlue">CadetBlue_95,158,160</option>
+        <option value="Chartreuse">Chartreuse_127,255,0</option>
+        <option value="Chocolate">Chocolate_210,105,30</option>
+        <option value="Coral">Coral_255,127,80</option>
+        <option value="CornflowerBlue">CornflowerBlue_100,149,237</option>
+        <option value="Cornsilk">Cornsilk_255,248,220</option>
+        <option value="Crimson">Crimson_220,20,60</option>
+        <option value="Cyan">Cyan_0,255,255</option>
+        <option value="DarkBlue">DarkBlue_0,0,139</option>
+        <option value="DarkCyan">DarkCyan_0,139,139</option>
+        <option value="DarkGoldenrod">DarkGoldenrod_184,134,11</option>
+        <option value="DarkGray">DarkGray_169,169,169</option>
+        <option value="DarkGreen">DarkGreen_0,100,0</option>
+        <option value="DarkKhaki">DarkKhaki_189,183,107</option>
+        <option value="DarkMagenta">DarkMagenta_139,0,139</option>
+        <option value="DarkOliveGreen">DarkOliveGreen_85,107,47</option>
+        <option value="DarkOrange">DarkOrange_255,140,0</option>
+        <option value="DarkOrchid">DarkOrchid_153,50,204</option>
+        <option value="DarkRed">DarkRed_139,0,0</option>
+        <option value="DarkSalmon">DarkSalmon_233,150,122</option>
+        <option value="DarkSeaGreen">DarkSeaGreen_143,188,143</option>
+        <option value="DarkSlateBlue">DarkSlateBlue_72,61,139</option>
+        <option value="DarkSlateGray">DarkSlateGray_47,79,79</option>
+        <option value="DarkTurquoise">DarkTurquoise_0,206,209</option>
+        <option value="DarkViolet">DarkViolet_148,0,211</option>
+        <option value="DeepPink">DeepPink_255,20,147</option>
+        <option value="DeepSkyBlue">DeepSkyBlue_0,191,255</option>
+        <option value="DimGray">DimGray_105,105,105</option>
+        <option value="DodgerBlue">DodgerBlue_30,144,255</option>
+        <option value="Firebrick">Firebrick_178,34,34</option>
+        <option value="FloralWhite">FloralWhite_255,250,240</option>
+        <option value="ForestGreen">ForestGreen_34,139,34</option>
+        <option value="Fuchsia">Fuchsia_255,0,255</option>
+        <option value="Gainsboro">Gainsboro_220,220,220</option>
+        <option value="GhostWhite">GhostWhite_248,248,255</option>
+        <option value="Gold">Gold_255,215,0</option>
+        <option value="Goldenrod">Goldenrod_218,165,32</option>
+        <option value="Gray">Gray_128,128,128</option>
+        <option value="Green">Green_0,128,0</option>
+        <option value="GreenYellow">GreenYellow_173,255,47</option>
+        <option value="Honeydew">Honeydew_240,255,240</option>
+        <option value="HotPink">HotPink_255,105,180</option>
+        <option value="IndianRed">IndianRed_205,92,92</option>
+        <option value="Indigo">Indigo_75,0,130</option>
+        <option value="Ivory">Ivory_255,255,240</option>
+        <option value="Khaki">Khaki_240,230,140</option>
+        <option value="Lavender">Lavender_230,230,250</option>
+        <option value="LavenderBlush">LavenderBlush_255,240,245</option>
+        <option value="LawnGreen">LawnGreen_124,252,0</option>
+        <option value="LemonChiffon">LemonChiffon_255,250,205</option>
+        <option value="LightBlue">LightBlue_173,216,230</option>
+        <option value="LightCoral">LightCoral_240,128,128</option>
+        <option value="LightCyan">LightCyan_224,255,255</option>
+        <option value="LightGoldenrodYellow">LightGoldenrodYellow_250,250,210</option>
+        <option value="LightGray">LightGray_211,211,211</option>
+        <option value="LightGreen">LightGreen_144,238,144</option>
+        <option value="LightPink">LightPink_255,182,193</option>
+        <option value="LightSalmon">LightSalmon_255,160,122</option>
+        <option value="LightSeaGreen">LightSeaGreen_32,178,170</option>
+        <option value="LightSkyBlue">LightSkyBlue_135,206,250</option>
+        <option value="LightSlateGray">LightSlateGray_119,136,153</option>
+        <option value="LightSteelBlue">LightSteelBlue_176,196,222</option>
+        <option value="LightYellow">LightYellow_255,255,224</option>
+        <option value="Lime">Lime_0,255,0</option>
+        <option value="LimeGreen">LimeGreen_50,205,50</option>
+        <option value="Linen">Linen_250,240,230</option>
+        <option value="Magenta">Magenta_255,0,255</option>
+        <option value="Maroon">Maroon_128,0,0</option>
+        <option value="MediumAquamarine">MediumAquamarine_102,205,170</option>
+        <option value="MediumBlue">MediumBlue_0,0,205</option>
+        <option value="MediumOrchid">MediumOrchid_186,85,211</option>
+        <option value="MediumPurple">MediumPurple_147,112,219</option>
+        <option value="MediumSeaGreen">MediumSeaGreen_60,179,113</option>
+        <option value="MediumSlateBlue">MediumSlateBlue_123,104,238</option>
+        <option value="MediumSpringGreen">MediumSpringGreen_0,250,154</option>
+        <option value="MediumTurquoise">MediumTurquoise_72,209,204</option>
+        <option value="MediumVioletRed">MediumVioletRed_199,21,133</option>
+        <option value="MidnightBlue">MidnightBlue_25,25,112</option>
+        <option value="MintCream">MintCream_245,255,250</option>
+        <option value="MistyRose">MistyRose_255,228,225</option>
+        <option value="Moccasin">Moccasin_255,228,181</option>
+        <option value="NavajoWhite">NavajoWhite_255,222,173</option>
+        <option value="Navy">Navy_0,0,128</option>
+        <option value="OldLace">OldLace_253,245,230</option>
+        <option value="Olive">Olive_128,128,0</option>
+        <option value="OliveDrab">OliveDrab_107,142,35</option>
+        <option value="Orange">Orange_255,165,0</option>
+        <option value="OrangeRed">OrangeRed_255,69,0</option>
+        <option value="Orchid">Orchid_218,112,214</option>
+        <option value="PaleGoldenrod">PaleGoldenrod_238,232,170</option>
+        <option value="PaleGreen">PaleGreen_152,251,152</option>
+        <option value="PaleTurquoise">PaleTurquoise_175,238,238</option>
+        <option value="PaleVioletRed">PaleVioletRed_219,112,147</option>
+        <option value="PapayaWhip">PapayaWhip_255,239,213</option>
+        <option value="PeachPuff">PeachPuff_255,218,185</option>
+        <option value="Peru">Peru_205,133,63</option>
+        <option value="Pink">Pink_255,192,203</option>
+        <option value="Plum">Plum_221,160,221</option>
+        <option value="PowderBlue">PowderBlue_176,224,230</option>
+        <option value="Purple">Purple_128,0,128</option>
+        <option value="Red">Red_255,0,0</option>
+        <option value="RosyBrown">RosyBrown_188,143,143</option>
+        <option value="RoyalBlue">RoyalBlue_65,105,225</option>
+        <option value="SaddleBrown">SaddleBrown_139,69,19</option>
+        <option value="Salmon">Salmon_250,128,114</option>
+        <option value="SandyBrown">SandyBrown_244,164,96</option>
+        <option value="SeaGreen">SeaGreen_46,139,87</option>
+        <option value="Seashell">Seashell_255,245,238</option>
+        <option value="Sienna">Sienna_160,82,45</option>
+        <option value="Silver">Silver_192,192,192</option>
+        <option value="SkyBlue">SkyBlue_135,206,235</option>
+        <option value="SlateBlue">SlateBlue_106,90,205</option>
+        <option value="SlateGray">SlateGray_112,128,144</option>
+        <option value="Snow">Snow_255,250,250</option>
+        <option value="SpringGreen">SpringGreen_0,255,127</option>
+        <option value="SteelBlue">SteelBlue_70,130,180</option>
+        <option value="Tan">Tan_210,180,140</option>
+        <option value="Teal">Teal_0,128,128</option>
+        <option value="Thistle">Thistle_216,191,216</option>
+        <option value="Tomato">Tomato_255,99,71</option>
+        <option value="Turquoise">Turquoise_64,224,208</option>
+        <option value="Violet">Violet_238,130,238</option>
+        <option value="Wheat">Wheat_245,222,179</option>
+        <option value="White">White_255,255,255</option>
+        <option value="WhiteSmoke">WhiteSmoke_245,245,245</option>
+        <option value="Yellow">Yellow_255,255,0</option>
+        <option value="YellowGreen">YellowGreen_154,205,50</option>
+        </select>
+        </td>
+      </tr>
+      <tr>
+        <td align="right">R</td>
+        <td colspan="2">min<input type="range" id="myColor_r_min2" min="0" max="255" value="0" step="1" onchange="myColor_r_min_v2.innerHTML=this.value;"><span id="myColor_r_min_v2">0</span><br>
+          max<input type="range" id="myColor_r_max2" min="0" max="255" value="0" step="1" onchange="myColor_r_max_v2.innerHTML=this.value;"><span id="myColor_r_max_v2">0</span>
+        </td>
+      </tr>
+      <tr>
+        <td align="right">G</td>
+        <td colspan="2">min<input type="range" id="myColor_g_min2" min="0" max="255" value="0" step="1" onchange="myColor_g_min_v2.innerHTML=this.value;"><span id="myColor_g_min_v2">0</span><br>
+          max<input type="range" id="myColor_g_max2" min="0" max="255" value="0" step="1" onchange="myColor_g_max_v2.innerHTML=this.value;"><span id="myColor_g_max_v2">0</span>
+        </td>
+      </tr>
+      <tr>
+        <td align="right">B</td>
+        <td colspan="2">min<input type="range" id="myColor_b_min2" min="0" max="255" value="0" step="1" onchange="myColor_b_min_v2.innerHTML=this.value;"><span id="myColor_b_min_v2">0</span><br>
+          max<input type="range" id="myColor_b_max2" min="0" max="255" value="0" step="1" onchange="myColor_b_max_v2.innerHTML=this.value;"><span id="myColor_b_max_v2">0</span>
+        </td>
+      </tr>
+      </table>
+    </div>
+    <div id="divColor3" style="display:none">
+      <table style="border:2px blue solid;"><tr>
+        <td colspan="3">
+        <select id="myColor3" onchange="changeColor(this.options[this.selectedIndex].text,3);">
+        <option value="Black">Black_0,0,0</option>
+        <option value="AliceBlue">AliceBlue_240,248,255</option>
+        <option value="AntiqueWhite">AntiqueWhite_250,235,215</option>
+        <option value="Aqua">Aqua_0,255,255</option>
+        <option value="Aquamarine">Aquamarine_127,255,212</option>
+        <option value="Azure">Azure_240,255,255</option>
+        <option value="Beige">Beige_245,245,220</option>
+        <option value="Bisque">Bisque_255,228,196</option>
+        <option value="BlanchedAlmond">BlanchedAlmond_255,235,205</option>
+        <option value="Blue">Blue_0,0,255</option>
+        <option value="BlueViolet">BlueViolet_138,43,226</option>
+        <option value="Brown">Brown_165,42,42</option>
+        <option value="Burlywood">Burlywood_222,184,135</option>
+        <option value="CadetBlue">CadetBlue_95,158,160</option>
+        <option value="Chartreuse">Chartreuse_127,255,0</option>
+        <option value="Chocolate">Chocolate_210,105,30</option>
+        <option value="Coral">Coral_255,127,80</option>
+        <option value="CornflowerBlue">CornflowerBlue_100,149,237</option>
+        <option value="Cornsilk">Cornsilk_255,248,220</option>
+        <option value="Crimson">Crimson_220,20,60</option>
+        <option value="Cyan">Cyan_0,255,255</option>
+        <option value="DarkBlue">DarkBlue_0,0,139</option>
+        <option value="DarkCyan">DarkCyan_0,139,139</option>
+        <option value="DarkGoldenrod">DarkGoldenrod_184,134,11</option>
+        <option value="DarkGray">DarkGray_169,169,169</option>
+        <option value="DarkGreen">DarkGreen_0,100,0</option>
+        <option value="DarkKhaki">DarkKhaki_189,183,107</option>
+        <option value="DarkMagenta">DarkMagenta_139,0,139</option>
+        <option value="DarkOliveGreen">DarkOliveGreen_85,107,47</option>
+        <option value="DarkOrange">DarkOrange_255,140,0</option>
+        <option value="DarkOrchid">DarkOrchid_153,50,204</option>
+        <option value="DarkRed">DarkRed_139,0,0</option>
+        <option value="DarkSalmon">DarkSalmon_233,150,122</option>
+        <option value="DarkSeaGreen">DarkSeaGreen_143,188,143</option>
+        <option value="DarkSlateBlue">DarkSlateBlue_72,61,139</option>
+        <option value="DarkSlateGray">DarkSlateGray_47,79,79</option>
+        <option value="DarkTurquoise">DarkTurquoise_0,206,209</option>
+        <option value="DarkViolet">DarkViolet_148,0,211</option>
+        <option value="DeepPink">DeepPink_255,20,147</option>
+        <option value="DeepSkyBlue">DeepSkyBlue_0,191,255</option>
+        <option value="DimGray">DimGray_105,105,105</option>
+        <option value="DodgerBlue">DodgerBlue_30,144,255</option>
+        <option value="Firebrick">Firebrick_178,34,34</option>
+        <option value="FloralWhite">FloralWhite_255,250,240</option>
+        <option value="ForestGreen">ForestGreen_34,139,34</option>
+        <option value="Fuchsia">Fuchsia_255,0,255</option>
+        <option value="Gainsboro">Gainsboro_220,220,220</option>
+        <option value="GhostWhite">GhostWhite_248,248,255</option>
+        <option value="Gold">Gold_255,215,0</option>
+        <option value="Goldenrod">Goldenrod_218,165,32</option>
+        <option value="Gray">Gray_128,128,128</option>
+        <option value="Green">Green_0,128,0</option>
+        <option value="GreenYellow">GreenYellow_173,255,47</option>
+        <option value="Honeydew">Honeydew_240,255,240</option>
+        <option value="HotPink">HotPink_255,105,180</option>
+        <option value="IndianRed">IndianRed_205,92,92</option>
+        <option value="Indigo">Indigo_75,0,130</option>
+        <option value="Ivory">Ivory_255,255,240</option>
+        <option value="Khaki">Khaki_240,230,140</option>
+        <option value="Lavender">Lavender_230,230,250</option>
+        <option value="LavenderBlush">LavenderBlush_255,240,245</option>
+        <option value="LawnGreen">LawnGreen_124,252,0</option>
+        <option value="LemonChiffon">LemonChiffon_255,250,205</option>
+        <option value="LightBlue">LightBlue_173,216,230</option>
+        <option value="LightCoral">LightCoral_240,128,128</option>
+        <option value="LightCyan">LightCyan_224,255,255</option>
+        <option value="LightGoldenrodYellow">LightGoldenrodYellow_250,250,210</option>
+        <option value="LightGray">LightGray_211,211,211</option>
+        <option value="LightGreen">LightGreen_144,238,144</option>
+        <option value="LightPink">LightPink_255,182,193</option>
+        <option value="LightSalmon">LightSalmon_255,160,122</option>
+        <option value="LightSeaGreen">LightSeaGreen_32,178,170</option>
+        <option value="LightSkyBlue">LightSkyBlue_135,206,250</option>
+        <option value="LightSlateGray">LightSlateGray_119,136,153</option>
+        <option value="LightSteelBlue">LightSteelBlue_176,196,222</option>
+        <option value="LightYellow">LightYellow_255,255,224</option>
+        <option value="Lime">Lime_0,255,0</option>
+        <option value="LimeGreen">LimeGreen_50,205,50</option>
+        <option value="Linen">Linen_250,240,230</option>
+        <option value="Magenta">Magenta_255,0,255</option>
+        <option value="Maroon">Maroon_128,0,0</option>
+        <option value="MediumAquamarine">MediumAquamarine_102,205,170</option>
+        <option value="MediumBlue">MediumBlue_0,0,205</option>
+        <option value="MediumOrchid">MediumOrchid_186,85,211</option>
+        <option value="MediumPurple">MediumPurple_147,112,219</option>
+        <option value="MediumSeaGreen">MediumSeaGreen_60,179,113</option>
+        <option value="MediumSlateBlue">MediumSlateBlue_123,104,238</option>
+        <option value="MediumSpringGreen">MediumSpringGreen_0,250,154</option>
+        <option value="MediumTurquoise">MediumTurquoise_72,209,204</option>
+        <option value="MediumVioletRed">MediumVioletRed_199,21,133</option>
+        <option value="MidnightBlue">MidnightBlue_25,25,112</option>
+        <option value="MintCream">MintCream_245,255,250</option>
+        <option value="MistyRose">MistyRose_255,228,225</option>
+        <option value="Moccasin">Moccasin_255,228,181</option>
+        <option value="NavajoWhite">NavajoWhite_255,222,173</option>
+        <option value="Navy">Navy_0,0,128</option>
+        <option value="OldLace">OldLace_253,245,230</option>
+        <option value="Olive">Olive_128,128,0</option>
+        <option value="OliveDrab">OliveDrab_107,142,35</option>
+        <option value="Orange">Orange_255,165,0</option>
+        <option value="OrangeRed">OrangeRed_255,69,0</option>
+        <option value="Orchid">Orchid_218,112,214</option>
+        <option value="PaleGoldenrod">PaleGoldenrod_238,232,170</option>
+        <option value="PaleGreen">PaleGreen_152,251,152</option>
+        <option value="PaleTurquoise">PaleTurquoise_175,238,238</option>
+        <option value="PaleVioletRed">PaleVioletRed_219,112,147</option>
+        <option value="PapayaWhip">PapayaWhip_255,239,213</option>
+        <option value="PeachPuff">PeachPuff_255,218,185</option>
+        <option value="Peru">Peru_205,133,63</option>
+        <option value="Pink">Pink_255,192,203</option>
+        <option value="Plum">Plum_221,160,221</option>
+        <option value="PowderBlue">PowderBlue_176,224,230</option>
+        <option value="Purple">Purple_128,0,128</option>
+        <option value="Red">Red_255,0,0</option>
+        <option value="RosyBrown">RosyBrown_188,143,143</option>
+        <option value="RoyalBlue">RoyalBlue_65,105,225</option>
+        <option value="SaddleBrown">SaddleBrown_139,69,19</option>
+        <option value="Salmon">Salmon_250,128,114</option>
+        <option value="SandyBrown">SandyBrown_244,164,96</option>
+        <option value="SeaGreen">SeaGreen_46,139,87</option>
+        <option value="Seashell">Seashell_255,245,238</option>
+        <option value="Sienna">Sienna_160,82,45</option>
+        <option value="Silver">Silver_192,192,192</option>
+        <option value="SkyBlue">SkyBlue_135,206,235</option>
+        <option value="SlateBlue">SlateBlue_106,90,205</option>
+        <option value="SlateGray">SlateGray_112,128,144</option>
+        <option value="Snow">Snow_255,250,250</option>
+        <option value="SpringGreen">SpringGreen_0,255,127</option>
+        <option value="SteelBlue">SteelBlue_70,130,180</option>
+        <option value="Tan">Tan_210,180,140</option>
+        <option value="Teal">Teal_0,128,128</option>
+        <option value="Thistle">Thistle_216,191,216</option>
+        <option value="Tomato">Tomato_255,99,71</option>
+        <option value="Turquoise">Turquoise_64,224,208</option>
+        <option value="Violet">Violet_238,130,238</option>
+        <option value="Wheat">Wheat_245,222,179</option>
+        <option value="White">White_255,255,255</option>
+        <option value="WhiteSmoke">WhiteSmoke_245,245,245</option>
+        <option value="Yellow">Yellow_255,255,0</option>
+        <option value="YellowGreen">YellowGreen_154,205,50</option>
+        </select>
+        </td>
+      </tr>
+      <tr>
+        <td align="right">R</td>
+        <td colspan="2">min<input type="range" id="myColor_r_min3" min="0" max="255" value="0" step="1" onchange="myColor_r_min_v3.innerHTML=this.value;"><span id="myColor_r_min_v3">0</span><br>
+          max<input type="range" id="myColor_r_max3" min="0" max="255" value="0" step="1" onchange="myColor_r_max_v3.innerHTML=this.value;"><span id="myColor_r_max_v3">0</span>
+        </td>
+      </tr>
+      <tr>
+        <td align="right">G</td>
+        <td colspan="2">min<input type="range" id="myColor_g_min3" min="0" max="255" value="0" step="1" onchange="myColor_g_min_v3.innerHTML=this.value;"><span id="myColor_g_min_v3">0</span><br>
+          max<input type="range" id="myColor_g_max3" min="0" max="255" value="0" step="1" onchange="myColor_g_max_v3.innerHTML=this.value;"><span id="myColor_g_max_v3">0</span>
+        </td>
+      </tr>
+      <tr>
+        <td align="right">B</td>
+        <td colspan="2">min<input type="range" id="myColor_b_min3" min="0" max="255" value="0" step="1" onchange="myColor_b_min_v3.innerHTML=this.value;"><span id="myColor_b_min_v3">0</span><br>
+          max<input type="range" id="myColor_b_max3" min="0" max="255" value="0" step="1" onchange="myColor_b_max_v3.innerHTML=this.value;"><span id="myColor_b_max_v3">0</span>
+        </td>
+      </tr>
+      </table>
+    </div>
     </td>
   </tr>
   <tr>
@@ -533,7 +879,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <tr>
     <td>Resolution</td> 
     <td colspan="2">
-    <select id="framesize">
+      <select id="framesize">
         <option value="UXGA">UXGA(1600x1200)</option>
         <option value="SXGA">SXGA(1280x1024)</option>
         <option value="XGA">XGA(1024x768)</option>
@@ -543,7 +889,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <option value="QVGA" selected="selected">QVGA(320x240)</option>
         <option value="HQVGA">HQVGA(240x176)</option>
         <option value="QQVGA">QQVGA(160x120)</option>
-    </select> 
+      </select> 
     </td>
   </tr>  
   <tr>
@@ -565,7 +911,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           <option value="270deg">270deg</option>
         </select>
     </td>
-  </tr>  
+  </tr> 
   </table>
   <iframe id="ifr" style="display:none"></iframe>
   <div id="result" style="color:red"><div>
@@ -587,60 +933,75 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var lastValue = "";
     var myTimer;
     var restartCount=0;  
-    var myColor_r_min,myColor_r_max,myColor_g_min,myColor_g_max,myColor_b_min,myColor_b_max;
+    var myColor_r_min1,myColor_r_max1,myColor_g_min1,myColor_g_max1,myColor_b_min1,myColor_b_max1;
+    var myColor_r_min2,myColor_r_max2,myColor_g_min2,myColor_g_max2,myColor_b_min2,myColor_b_max2;
+    var myColor_r_min3,myColor_r_max3,myColor_g_min3,myColor_g_max3,myColor_b_min3,myColor_b_max3;
 
-    var tracker = new tracking.ColorTracker();         
-
-    //初始化偵測顏色
-    document.getElementById('myColor').value = "Black";
-    document.getElementById('myColor_r_min').value = 0;
-    document.getElementById('myColor_r_min_v').innerHTML = 0;
-    document.getElementById('myColor_r_max').value = 50;
-    document.getElementById('myColor_r_max_v').innerHTML = 50;
-    document.getElementById('myColor_g_min').value = 0;
-    document.getElementById('myColor_g_min_v').innerHTML = 0;
-    document.getElementById('myColor_g_max').value = 50;
-    document.getElementById('myColor_g_max_v').innerHTML = 50;
-    document.getElementById('myColor_b_min').value = 0;
-    document.getElementById('myColor_b_min_v').innerHTML = 0;
-    document.getElementById('myColor_b_max').value = 50;
-    document.getElementById('myColor_b_max_v').innerHTML = 50;
+    var tracker = new tracking.ColorTracker();
   
-    function changeColor(detectColor) {
+    tracking.ColorTracker.registerColor('red', function(r, g, b) {
+      if ((r>=myColor_r_min1&&r<=myColor_r_max1)&&(g>=myColor_g_min1&&g<=myColor_g_max1)&&(b>=myColor_b_min1&&b<=myColor_b_max1)) {
+        return true;
+      }
+      return false;
+    });
+  
+    tracking.ColorTracker.registerColor('green', function(r, g, b) {
+      if ((r>=myColor_r_min2&&r<=myColor_r_max2)&&(g>=myColor_g_min2&&g<=myColor_g_max2)&&(b>=myColor_b_min2&&b<=myColor_b_max2)) {
+        return true;
+      }
+      return false;
+    });
+  
+    tracking.ColorTracker.registerColor('blue', function(r, g, b) {
+      if ((r>=myColor_r_min3&&r<=myColor_r_max3)&&(g>=myColor_g_min3&&g<=myColor_g_max3)&&(b>=myColor_b_min3&&b<=myColor_b_max3)) {
+        return true;
+      }
+      return false;
+    });
+  
+    var trackedColors = {
+      custom: true
+    };
+  
+    Object.keys(tracking.ColorTracker.knownColors_).forEach(function(color) {
+      trackedColors[color] = true;
+    });
+  
+    var colors = [];
+    for (var color in trackedColors) {
+      if (trackedColors[color]) {
+      colors.push(color);
+      }
+    }
+    tracker.setColors(colors);
+  
+    function changeTab(tab) {
+      if (tab=='red') divColor1.style.display="block"; else divColor1.style.display="none";
+      if (tab=='green') divColor2.style.display="block"; else divColor2.style.display="none";
+      if (tab=='blue') divColor3.style.display="block"; else divColor3.style.display="none";
+    } 
+  
+    function changeColor(detectColor, n) {
       var val = detectColor.split("_");
-      document.getElementById('myColor_r_min').value = val[1].split(",")[0];
-      document.getElementById('myColor_r_min_v').innerHTML = val[1].split(",")[0];
-      document.getElementById('myColor_r_max').value = val[1].split(",")[0];
-      document.getElementById('myColor_r_max_v').innerHTML = val[1].split(",")[0];
-      document.getElementById('myColor_g_min').value = val[1].split(",")[1];
-      document.getElementById('myColor_g_min_v').innerHTML = val[1].split(",")[1];
-      document.getElementById('myColor_g_max').value = val[1].split(",")[1];
-      document.getElementById('myColor_g_max_v').innerHTML = val[1].split(",")[1];
-      document.getElementById('myColor_b_min').value = val[1].split(",")[2];
-      document.getElementById('myColor_b_min_v').innerHTML = val[1].split(",")[2];
-      document.getElementById('myColor_b_max').value = val[1].split(",")[2];
-      document.getElementById('myColor_b_max_v').innerHTML = val[1].split(",")[2];
+      document.getElementById('myColor_r_min'+n).value = val[1].split(",")[0];
+      document.getElementById('myColor_r_min_v'+n).innerHTML = val[1].split(",")[0];
+      document.getElementById('myColor_r_max'+n).value = val[1].split(",")[0];
+      document.getElementById('myColor_r_max_v'+n).innerHTML = val[1].split(",")[0];
+      document.getElementById('myColor_g_min'+n).value = val[1].split(",")[1];
+      document.getElementById('myColor_g_min_v'+n).innerHTML = val[1].split(",")[1];
+      document.getElementById('myColor_g_max'+n).value = val[1].split(",")[1];
+      document.getElementById('myColor_g_max_v'+n).innerHTML = val[1].split(",")[1];
+      document.getElementById('myColor_b_min'+n).value = val[1].split(",")[2];
+      document.getElementById('myColor_b_min_v'+n).innerHTML = val[1].split(",")[2];
+      document.getElementById('myColor_b_max'+n).value = val[1].split(",")[2];
+      document.getElementById('myColor_b_max_v'+n).innerHTML = val[1].split(",")[2];
     }   
 
     getStill.onclick = function (event) {  
       clearInterval(myTimer);  
       myTimer = setInterval(function(){error_handle();},5000);
       ShowImage.src=location.origin+'/?getstill='+Math.random();      
-
-      myColor = document.getElementById('myColor').value;
-      myColor_r_min = document.getElementById('myColor_r_min').value;
-      myColor_r_max = document.getElementById('myColor_r_max').value;
-      myColor_g_min = document.getElementById('myColor_g_min').value;
-      myColor_g_max = document.getElementById('myColor_g_max').value;
-      myColor_b_min = document.getElementById('myColor_b_min').value;
-      myColor_b_max = document.getElementById('myColor_b_max').value;
-
-      tracking.ColorTracker.registerColor('custom', function(r, g, b) {
-        if ((r>=myColor_r_min&&r<=myColor_r_max)&&(g>=myColor_g_min&&g<=myColor_g_max)&&(b>=myColor_b_min&&b<=myColor_b_max)) {
-          return true;
-        }
-        return false;
-      }); 
     }
 
     function error_handle() {
@@ -671,84 +1032,52 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       }
       else
         context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height);
-   
+
+      myColor_r_min1 = document.getElementById('myColor_r_min1').value;
+      myColor_r_max1 = document.getElementById('myColor_r_max1').value;
+      myColor_g_min1 = document.getElementById('myColor_g_min1').value;
+      myColor_g_max1 = document.getElementById('myColor_g_max1').value;
+      myColor_b_min1 = document.getElementById('myColor_b_min1').value;
+      myColor_b_max1 = document.getElementById('myColor_b_max1').value;
+
+      myColor_r_min2 = document.getElementById('myColor_r_min2').value;
+      myColor_r_max2 = document.getElementById('myColor_r_max2').value;
+      myColor_g_min2 = document.getElementById('myColor_g_min2').value;
+      myColor_g_max2 = document.getElementById('myColor_g_max2').value;
+      myColor_b_min2 = document.getElementById('myColor_b_min2').value;
+      myColor_b_max2 = document.getElementById('myColor_b_max2').value;
+
+      myColor_r_min3 = document.getElementById('myColor_r_min3').value;
+      myColor_r_max3 = document.getElementById('myColor_r_max3').value;
+      myColor_g_min3 = document.getElementById('myColor_g_min3').value;
+      myColor_g_max3 = document.getElementById('myColor_g_max3').value;
+      myColor_b_min3 = document.getElementById('myColor_b_min3').value;
+      myColor_b_max3 = document.getElementById('myColor_b_max3').value; 
+             
+      var imgData=context.getImageData(0,0,canvas.width,canvas.height);
+      for (var i=0;i<imgData.data.length;i+=4) {
+        var r=0;
+        var g=0;
+        var b=0;
+        if ((imgData.data[i]>=myColor_r_min1&&imgData.data[i]<=myColor_r_max1)&&(imgData.data[i+1]>=myColor_g_min1&&imgData.data[i+1]<=myColor_g_max1)&&(imgData.data[i+2]>=myColor_b_min1&&imgData.data[i+2]<=myColor_b_max1)) {
+          r=255;
+        }
+        if ((imgData.data[i]>=myColor_r_min2&&imgData.data[i]<=myColor_r_max2)&&(imgData.data[i+1]>=myColor_g_min2&&imgData.data[i+1]<=myColor_g_max2)&&(imgData.data[i+2]>=myColor_b_min2&&imgData.data[i+2]<=myColor_b_max2)) {
+          g=255;
+        }
+        if ((imgData.data[i]>=myColor_r_min3&&imgData.data[i]<=myColor_r_max3)&&(imgData.data[i+1]>=myColor_g_min3&&imgData.data[i+1]<=myColor_g_max3)&&(imgData.data[i+2]>=myColor_b_min3&&imgData.data[i+2]<=myColor_b_max3)) {
+          b=255;
+        }
+  
+        imgData.data[i]=r;
+        imgData.data[i+1]=g;
+        imgData.data[i+2]=b;
+        imgData.data[i+3]=255;
+      }
+      context_custom.putImageData(imgData,0,0);
+  
       tracking.track('#canvas', tracker);
       
-      tracker.on('track', function(event) {
-        result.innerHTML = "";
-        event.data.forEach(function(rect) {
-          if (rect.color === 'custom') {
-            rect.color = tracker.customColor;
-          }
-
-          context.strokeStyle = rect.color;
-          context.strokeRect(rect.x, rect.y, rect.width, rect.height);
-          //context.font = '11px Helvetica';
-          //context.fillStyle = "#fff";
-          //context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
-          //context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
-
-          result.innerHTML+= rect.color+","+rect.x+","+rect.y+","+rect.width+","+rect.height+"<br>";
-          if (rect.color==tracker.customColor&&lastValue!=tracker.customColor) {  //當偵測到自訂顏色時執行指令
-            lastValue = tracker.customColor;
-            /*
-            var gpio = 4;
-            var val = 10;
-            var cmd = "analogwrite";  //digitalwrite
-            ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
-            */
-          }
-          else if (rect.color=="magenta"&&lastValue!="magenta") {
-            lastValue = "magenta";
-            /*
-            var gpio = 4;
-            var val = 10;
-            var cmd = "analogwrite";  //digitalwrite
-            ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
-            */
-          }
-          else if (rect.color=="cyan"&&lastValue!="cyan") {
-            lastValue = "cyan";
-            /*
-            var gpio = 4;
-            var val = 10;
-            var cmd = "analogwrite";  //digitalwrite
-            ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
-            */
-          } 
-          else if (rect.color=="yellow"&&lastValue!="yellow") {
-            lastValue = "yellow";
-            /*
-            var gpio = 4;
-            var val = 0;
-            var cmd = "analogwrite";  //digitalwrite
-            ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
-            */
-          }           
-        });
-      });
-
-      initGUIControllers(tracker);
-
-      var imgData=context.getImageData(0,0,canvas.width,canvas.height);
-      for (var i=0;i<imgData.data.length;i+=4)
-        {
-        if ((imgData.data[i]>=myColor_r_min&&imgData.data[i]<=myColor_r_max)&&(imgData.data[i+1]>=myColor_g_min&&imgData.data[i+1]<=myColor_g_max)&&(imgData.data[i+2]>=myColor_b_min&&imgData.data[i+2]<=myColor_b_max)) {
-          imgData.data[i]=0;
-          imgData.data[i+1]=0;
-          imgData.data[i+2]=0;
-          imgData.data[i+3]=255;
-        }
-        else {
-          imgData.data[i]=255;
-          imgData.data[i+1]=255;
-          imgData.data[i+2]=255;
-          imgData.data[i+3]=255;
-        }
-        }
-      context_custom.putImageData(imgData,0,0);      
-         
-
       try { 
         document.createEvent("TouchEvent");
         setTimeout(function(){getStill.click();},250);
@@ -756,7 +1085,58 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       catch(e) { 
         setTimeout(function(){getStill.click();},150);
       }             
-    }     
+    } 
+
+    tracker.on('track', function(event) {
+      result.innerHTML = "";
+      
+      event.data.forEach(function(rect) {
+        context.strokeStyle = rect.color;
+        context.strokeRect(rect.x, rect.y, rect.width, rect.height);
+        //context.font = '11px Helvetica';
+        //context.fillStyle = "#fff";
+        //context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
+        //context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
+
+        result.innerHTML+= rect.color+","+rect.x+","+rect.y+","+rect.width+","+rect.height+"<br>";
+        if (rect.color==tracker.customColor&&lastValue!=tracker.customColor) {  //當偵測到自訂顏色時執行指令
+          lastValue = tracker.customColor;
+          /*
+          var gpio = 4;
+          var val = 10;
+          var cmd = "analogwrite";  //digitalwrite
+          ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
+          */
+        }
+        else if (rect.color=="magenta"&&lastValue!="magenta") {
+          lastValue = "magenta";
+          /*
+          var gpio = 4;
+          var val = 10;
+          var cmd = "analogwrite";  //digitalwrite
+          ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
+          */
+        }
+        else if (rect.color=="cyan"&&lastValue!="cyan") {
+          lastValue = "cyan";
+          /*
+          var gpio = 4;
+          var val = 10;
+          var cmd = "analogwrite";  //digitalwrite
+          ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
+          */
+        } 
+        else if (rect.color=="yellow"&&lastValue!="yellow") {
+          lastValue = "yellow";
+          /*
+          var gpio = 4;
+          var val = 0;
+          var cmd = "analogwrite";  //digitalwrite
+          ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
+          */
+        }           
+      });
+    });           
     
     restart.onclick = function (event) {
       fetch(location.origin+'?restart=stop');
@@ -797,85 +1177,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         }
       });
     }      
-
-    function initGUIControllers(tracker) {
-  
-      var trackedColors = {
-        custom: true
-      };
-  
-      Object.keys(tracking.ColorTracker.knownColors_).forEach(function(color) {
-        trackedColors[color] = true;
-      });
-  
-      tracker.customColor = myColor.value;
-  
-      function createCustomColor(value) {
-        var components = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(value);
-        var customColorR = parseInt(components[1], 16);
-        var customColorG = parseInt(components[2], 16);
-        var customColorB = parseInt(components[3], 16);
-    
-        var colorTotal = customColorR + customColorG + customColorB;
-    
-        if (colorTotal === 0) {
-          tracking.ColorTracker.registerColor('custom', function(r, g, b) {
-          return r + g + b < 10;
-          });
-        } else {
-          var rRatio = customColorR / colorTotal;
-          var gRatio = customColorG / colorTotal;
-  
-        tracking.ColorTracker.registerColor('custom', function(r, g, b) {
-        var colorTotal2 = r + g + b;
-  
-        if (colorTotal2 === 0) {
-          if (colorTotal < 10) {
-          return true;
-          }
-          return false;
-        }
-  
-        var rRatio2 = r / colorTotal2,
-          gRatio2 = g / colorTotal2,
-          deltaColorTotal = colorTotal / colorTotal2,
-          deltaR = rRatio / rRatio2,
-          deltaG = gRatio / gRatio2;
-  
-        return deltaColorTotal > 0.9 && deltaColorTotal < 1.1 &&
-          deltaR > 0.9 && deltaR < 1.1 &&
-          deltaG > 0.9 && deltaG < 1.1;
-        });
-      }
-  
-      updateColors();
-      }
-  
-      function updateColors() {
-      var colors = [];
-  
-      for (var color in trackedColors) {
-        if (trackedColors[color]) {
-        colors.push(color);
-        }
-      }
-  
-      tracker.setColors(colors);
-      }
-  
-      updateColors();
-    }
-  
-    var objectEmit_ = tracking.ObjectTracker.prototype.emit;
-    var colorEmit_ = tracking.ColorTracker.prototype.emit;
-  
-    tracking.ObjectTracker.prototype.emit = function() {
-      objectEmit_.apply(this, arguments);
-    };
-  
-    tracking.ColorTracker.prototype.emit = function() {
-      colorEmit_.apply(this, arguments);
-    };  
   </script>   
 )rawliteral";
 
