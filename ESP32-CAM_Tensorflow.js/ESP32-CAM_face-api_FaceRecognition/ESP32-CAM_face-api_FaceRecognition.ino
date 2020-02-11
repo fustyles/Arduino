@@ -405,6 +405,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     ]).then(function(){
       message.innerHTML = "";
       getStill.style.display = "block";
+      getStill.click();
     })
     
     getStill.onclick = function (event) {
