@@ -32,8 +32,6 @@ Buzzer : Arduino NANNO pin 10
 #define PIN_RX 7 //connect ESP32-CAM TX pin here - pin 7
 SoftwareSerial ESP32Serial ( PIN_TX , PIN_RX );
 
-//Buzzer : pin 10
-
 #include <Servo.h> 
 #include <Oscillator.h>
 #include <US.h>
