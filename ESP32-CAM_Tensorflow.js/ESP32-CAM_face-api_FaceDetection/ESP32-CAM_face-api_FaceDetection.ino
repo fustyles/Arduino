@@ -296,7 +296,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <script src="https:\/\/code.jquery.com/jquery-3.3.1.min.js"></script>
   <script src='https:\/\/fustyles.github.io/webduino/TensorFlow/Face-api/face-api.min.js'></script>
   </head><body>
   <div id="container"></div>
