@@ -1,5 +1,5 @@
 /*
-ESP32-CAM OTTO ROBOT (basic function)
+ESP32-CAM OTTO ROBOT (UART)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-16 19:00
 https://www.facebook.com/francefu
 
