@@ -1,6 +1,6 @@
 /*
-ESP32-CAM OTTO ROBOT (20161204)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-16 14:00
+ESP32-CAM OTTO ROBOT (basic function)
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-16 16:30
 https://www.facebook.com/francefu
 
 ESP32-CAM RX -> Arduino NANO pin 7
@@ -176,8 +176,12 @@ void ExecuteCommand()
     ledcWrite(4,val);
   }  
   else if (cmd=="otto") {
+    Serial.begin(9600);
+    delay(10);
     P1 = urldecode(P1);   
-    if (P1!="") Serial.println(P1);  
+    if (P1!="") Serial.println(P1); 
+    delay(10);
+    Serial.begin(115200); 
   }     
   else if (cmd=="framesize") { 
     sensor_t * s = esp_camera_sensor_get();  
@@ -222,14 +226,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
   </head><body>
   <script>var myVar;</script>
   <img id="stream" src=""> 
   <table>
     <tr>
       <td><input type="button" id="restart" value="Restart"></td>
-      <td><input type="button" id="getStream" value="Start Stream"></td>   
+      <td><input type="button" id="getStream" value="Get Stream"></td>   
       <td><input type="button" id="stopStream" value="Stop Stream"></td>
     </tr> 
     <tr>
@@ -285,12 +288,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       <button onclick="try{fetch(location.origin+'/?otto=a');}catch(e){}">a</button>
       <button onclick="try{fetch(location.origin+'/?otto=b');}catch(e){}">b</button>
       <button onclick="try{fetch(location.origin+'/?otto=c');}catch(e){}">c</button>
-      <button onclick="try{fetch(location.origin+'/?otto=d');}catch(e){}">d</button>
-      <button onclick="try{fetch(location.origin+'/?otto=e');}catch(e){}">e</button>
       </td>
     </tr>
     <tr>
       <td colspan="3">
+      <button onclick="try{fetch(location.origin+'/?otto=d');}catch(e){}">d</button>
+      <button onclick="try{fetch(location.origin+'/?otto=e');}catch(e){}">e</button>      
       <button onclick="try{fetch(location.origin+'/?otto=f');}catch(e){}">f</button>
       <button onclick="try{fetch(location.origin+'/?otto=g');}catch(e){}">g</button>
       <button onclick="try{fetch(location.origin+'/?otto=h');}catch(e){}">h</button>
@@ -298,27 +301,31 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       <button onclick="try{fetch(location.origin+'/?otto=j');}catch(e){}">j</button>
       <button onclick="try{fetch(location.origin+'/?otto=k');}catch(e){}">k</button>
       <button onclick="try{fetch(location.origin+'/?otto=l');}catch(e){}">l</button>
-      <button onclick="try{fetch(location.origin+'/?otto=m');}catch(e){}">m</button>
-      <button onclick="try{fetch(location.origin+'/?otto=n');}catch(e){}">n</button>
-      <button onclick="try{fetch(location.origin+'/?otto=o');}catch(e){}">o</button>
-      <button onclick="try{fetch(location.origin+'/?otto=p');}catch(e){}">p</button>
-      <button onclick="try{fetch(location.origin+'/?otto=q');}catch(e){}">q</button>
+      <button onclick="try{fetch(location.origin+'/?otto=m');}catch(e){}">m</button>      
       </td>
     </tr>
     <tr>
       <td colspan="3">
+      <button onclick="try{fetch(location.origin+'/?otto=n');}catch(e){}">n</button>
+      <button onclick="try{fetch(location.origin+'/?otto=o');}catch(e){}">o</button>
+      <button onclick="try{fetch(location.origin+'/?otto=p');}catch(e){}">p</button>
+      <button onclick="try{fetch(location.origin+'/?otto=q');}catch(e){}">q</button>      
       <button onclick="try{fetch(location.origin+'/?otto=r');}catch(e){}">r</button>
       <button onclick="try{fetch(location.origin+'/?otto=s');}catch(e){}">s</button>
       <button onclick="try{fetch(location.origin+'/?otto=t');}catch(e){}">t</button>
       <button onclick="try{fetch(location.origin+'/?otto=u');}catch(e){}">u</button>
       <button onclick="try{fetch(location.origin+'/?otto=v');}catch(e){}">v</button>
       <button onclick="try{fetch(location.origin+'/?otto=w');}catch(e){}">w</button>
-      <button onclick="try{fetch(location.origin+'/?otto=x');}catch(e){}">x</button>
       </td>
     </tr>
+    <tr>
+      <td colspan="3">
+      <button onclick="try{fetch(location.origin+'/?otto=x');}catch(e){}">x</button>
+      </td>
+    </tr>    
   </table>  
-
-  <br><span id="show" style="color:red"></span>
+  <iframe id="ifr" style="display:none"></iframe>
+  <div id="message" style="color:red"><div>
   </div>
   </body>
   </html> 
@@ -329,41 +336,65 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var stream = document.getElementById('stream');
     var framesize = document.getElementById('framesize');
     var flash = document.getElementById('flash');
-    var show = document.getElementById('show');
+    var message = document.getElementById('message');
     var myTimer;
     var streamState = false;
+    var restartCount=0;
   
     getStream.onclick = function (event) {
-      streamState=true;
-      stream.onload = function (event) {
-        clearInterval(myTimer);
-        if (streamState==true) {
-          setTimeout(function(){getStream.click();},100);
-          myTimer = setInterval(function(){getStream.click();},10000);
-        }
-        else
-          stream.src="";
-      }       
-      stream.src=location.origin+'/?getstill='+Math.random();
+      clearInterval(myTimer);
+      if (streamState == false) {
+        myTimer = setInterval(function(){error_handle();},5000);         
+        stream.src=location.origin+'/?getstill='+Math.random();
+      }
+      else
+        streamState = false;
     }
+
+    function error_handle() {
+      restartCount++;
+      clearInterval(myTimer);
+      if (restartCount<=2) {
+        message.innerHTML = "Get still error. <br>Restart ESP32-CAM "+restartCount+" times.";
+        myTimer = setInterval(function(){getStream.click();},10000);
+        ifr.src = document.location.origin+'?restart';
+      }
+      else
+        message.innerHTML = "Get still error. Please check ESP32-CAM.";
+    }      
+    
     stopStream.onclick = function (event) {
       clearInterval(myTimer);
-      streamState=false;
-      stream.onload = function (event) {}
-      stream.src="";
+      streamState=true;
+      stream.src="";      
     }
+
+    stream.onload = function (event) {
+      clearInterval(myTimer);
+      restartCount=0;      
+      try { 
+        document.createEvent("TouchEvent");
+        setTimeout(function(){getStream.click();},250);
+      }
+      catch(e) { 
+        setTimeout(function(){getStream.click();},150);
+      }    
+    }       
+    
     restart.onclick = function (event) {
       try{      
         fetch(location.origin+'/?restart');
       }
       catch(e){}      
-    }     
+    }    
+     
     framesize.onclick = function (event) {
       try{      
         fetch(location.origin+'/?framesize='+this.value);
       }
       catch(e){}      
     }  
+    
     flash.onchange = function (event) {
       try{      
         fetch(location.origin+'/?flash='+this.value);
@@ -394,8 +425,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
   
-  Serial.begin(9600);
-  Serial.setDebugOutput(true);  //開啟診斷輸出
+  Serial.begin(115200);
+  //Serial.setDebugOutput(true);  //開啟診斷輸出
 
   //視訊組態設定
   camera_config_t config;  
