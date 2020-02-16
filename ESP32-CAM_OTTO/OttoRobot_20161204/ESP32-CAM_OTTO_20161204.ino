@@ -176,12 +176,9 @@ void ExecuteCommand()
     ledcWrite(4,val);
   }  
   else if (cmd=="otto") {
-    Serial.begin(9600);
-    delay(10);
     P1 = urldecode(P1);   
     if (P1!="") Serial.println(P1); 
     delay(10);
-    Serial.begin(115200); 
   }     
   else if (cmd=="framesize") { 
     sensor_t * s = esp_camera_sensor_get();  
@@ -425,7 +422,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
   
-  Serial.begin(115200);
+  Serial.begin(9600);
   //Serial.setDebugOutput(true);  //開啟診斷輸出
 
   //視訊組態設定
