@@ -126,55 +126,23 @@ void ExecuteCommand()
     Feedback=String(digitalRead(P1.toInt()));
   }
   else if (cmd=="analogwrite") {
-    if (P1=="2") {
-      ledcAttachPin(2, 3);  
-      ledcSetup(3, 5000, 8);
-      ledcWrite(3,P2.toInt());     
-    }    
-    else if (P1=="4") {
+    if (P1="4") {
       ledcAttachPin(4, 4);  
-      ledcSetup(4, 5000, 8);
-      ledcWrite(4,P2.toInt());     
-    }
-    else if (P1=="12") {
-      ledcAttachPin(12, 5);  
-      ledcSetup(5, 5000, 8);
-      ledcWrite(5,P2.toInt());     
-    }
-    else if (P1=="13") {
-      ledcAttachPin(13, 6);  
-      ledcSetup(6, 5000, 8);
-      ledcWrite(6,P2.toInt());     
-    }
-    else if (P1=="14") {
-      ledcAttachPin(14, 8);  
-      ledcSetup(8, 5000, 8);
-      ledcWrite(8,P2.toInt());     
-    }
-    else if (P1=="15") {
-      ledcAttachPin(15, 7);  
-      ledcSetup(7, 5000, 8);
-      ledcWrite(7,P2.toInt());     
+      ledcSetup(4, 5000, 8);   
+      ledcWrite(4,P2.toInt());  
     }
     else {
-      ledcAttachPin(P1.toInt(), 9);
-      ledcSetup(9, 5000, 8);
-      ledcWrite(9,P2.toInt());
-    } 
+      ledcAttachPin(P1.toInt(), 5);
+      ledcSetup(5, 5000, 8);
+      ledcWrite(5,P2.toInt());
+    }
   }       
   else if (cmd=="analogread") {
     Feedback=String(analogRead(P1.toInt()));
   }
   else if (cmd=="touchread") {
     Feedback=String(touchRead(P1.toInt()));
-  }  
-  else if (cmd=="flash") {
-    ledcAttachPin(4, 4);  
-    ledcSetup(4, 5000, 8);   
-     
-    int val = P1.toInt();
-    ledcWrite(4,val);
-  }  
+  }   
   else if (cmd=="otto") {
     P1 = urldecode(P1);   
     if (P1!="") Serial.println(P1); 
