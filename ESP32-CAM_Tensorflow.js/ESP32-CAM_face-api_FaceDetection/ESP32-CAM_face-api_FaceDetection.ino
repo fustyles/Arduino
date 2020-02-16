@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Face Detection (face-api.js)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-4 18:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-16 20:00
 https://www.facebook.com/francefu
 
 首頁
@@ -111,7 +111,7 @@ void ExecuteCommand()
   else if (cmd=="restart") {
     ESP.restart();
   }  
-      else if (cmd=="digitalwrite") {
+  else if (cmd=="digitalwrite") {
     ledcDetachPin(P1.toInt());
     pinMode(P1.toInt(), OUTPUT);
     digitalWrite(P1.toInt(), P2.toInt());
@@ -304,7 +304,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <table>
   <tr>
     <td><input type="button" id="restart" value="Restart"></td> 
-    <td colspan="2"><input type="button" id="getStill" value="Start Detect" style="display:none"></td> 
+    <td colspan="2"><input type="button" id="getStill" value="Get Still" style="display:none"></td> 
   </tr>
   <tr>
     <td>MirrorImage</td> 
@@ -360,7 +360,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   </tr>  
   </table>
   <iframe id="ifr" style="display:none"></iframe>
-  <div id="message" style="color:red"><div>
+  <div id="message" style="color:red">Please wait for loading model.<div>
 
   </body>
   </html> 
@@ -388,9 +388,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       faceapi.nets.faceLandmark68TinyNet.load(modelPath),
       faceapi.nets.faceRecognitionNet.load(modelPath),
       faceapi.nets.faceExpressionNet.load(modelPath),
-      faceapi.nets.ageGenderNet.load(modelPath)
-    ])           
-
+      faceapi.nets.ageGenderNet.load(modelPath)          
+    ]).then(function(){
+      message.innerHTML = "";
+      getStill.style.display = "block";
+      getStill.click();
+    })
+    
     getStill.onclick = function (event) {
       clearInterval(myTimer);  
       myTimer = setInterval(function(){error_handle();},5000);
@@ -408,8 +412,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       else
         message.innerHTML = "Get still error. <br>Please close the page and check ESP32-CAM.";
     }    
-
-    getStill.style.display = "block";
 
     ShowImage.onload = function (event) {
       clearInterval(myTimer);
