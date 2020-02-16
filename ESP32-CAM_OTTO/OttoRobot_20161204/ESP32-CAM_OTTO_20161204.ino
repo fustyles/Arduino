@@ -1,6 +1,6 @@
 /*
 ESP32-CAM OTTO ROBOT (basic function)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-16 16:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-16 19:00
 https://www.facebook.com/francefu
 
 ESP32-CAM RX -> Arduino NANO pin 7
@@ -362,6 +362,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     
     stopStream.onclick = function (event) {
       clearInterval(myTimer);
+      message.innerHTML = "";
       streamState=true;
       stream.src="";      
     }
