@@ -1,0 +1,51 @@
+Sat Aug  8 12:03:24 CDT 2015
+Version 0.8.1. I forgot to include some fixes for an issue on the website; https://github.com/GreyGnome/EnableInterrupt/issues/13 (having to do with the 1284 chip). These are now included.
+
+Fri Aug  7 06:44:55 CDT 2015
+Version 0.8.0. This release includes the function to set a variable that can be queried by the programmer's
+ISR, to determine which pin was interrupted. Define EI_ARDUINO_INTERRUPTED_PIN in the main sketch.
+
+Also:
+My Mega2560 failed right in the middle of testing this release. So that platform is not fully tested.
+The InterruptedPin2560.ino sketch was giving me some inconsistent results: I saw  pin 71 interrupted twice,
+and pin 70 not at all. I think there is a bug in utility/ei_PinChange2560.h, but I will release before I resolve
+this. If there is anyone who could test on the 2560 platform- run the InterruptedPin2560.ino sketch and send me
+the output- I would appreciate it.
+
+Mon Jul  6 17:41:05 CDT 2015
+This release includes compiler directives that allow you to eliminate unneeded ports and memory allocations, to more efficiently utilize code and static RAM. See https://github.com/GreyGnome/EnableInterrupt/wiki/SaveMemory for the new features.
+
+Tue Jun 23 06:47:10 CDT 2015
+Version 0.6.3 of the library has been released. This release includes an Object Oriented example, OOSimple, in the examples/ directory. There are no other changes since version 0.6.2.
+
+Fri Jun 19 09:38:43 CDT 2015
+Version 0.6.2. Forgot to update README.md. 
+
+Fri Jun 12 06:33:20 CDT 2015
+Version 0.6.1 of the library has been released. This version is designed to meet the requirements of the 1.5.x Arduino library spec. No code logic was modified; only files were moved and library.properties and keywords.txt files added.
+
+Version 0.6.0 did not include an update to these release notes.
+
+Fri Jun 12 06:33:20 CDT 2015
+Version 0.5 (Alpha) of the library has been released. This release includes support for the ATmega1284p line of processors (includes ATmega644). The Mighty 1284 is used as the basis.  As I don't have a 1284-based processor, this code compiles but has not been tested (see examples/Might1284p). Bug reports encouraged and welcomed! It would be great if a 644/1284 owner could upload the Might1284p.ino sketch and interrupt every pin and let me know the results.
+
+Code was refactored so that a lot of utility routines were moved into individual .h files. Now there's a lot of files, which appears ugly, but the old way was a lot uglier to my mind and looked like a big bowl of spaghetti with so many #ifdefs strewn about to handle the different chips. It was getting hard to wade through the code.
+
+Fri May  8 07:33:26 CDT 2015
+Version 0.4 - New high speed ("HiSpeed") mode. In this mode, the interrupt routine is predefined:
+it ONLY updates a variable. This knocks a couple of microseconds off of the interrupt
+routine times; it greatly reduces the number of registers needed to be pushed/popped, and
+of course does not require a function call. See the wiki for details, including speed measurements.
+
+Mon Apr 13 07:49:05 CDT 2015
+Version 0.3 - Arjun reported a bug on the Uno platform:
+
+In file included from Interrupt.ino:1:
+/Users/arjunmehta94/Documents/Arduino/libraries/EnableInterrupt-master/EnableInterrupt.h: In function 'void __vector_3()':
+/Users/arjunmehta94/Documents/Arduino/libraries/EnableInterrupt-master/EnableInterrupt.h:976: error: 'struct functionPointersPortB' has no member named 'pinSix'
+/Users/arjunmehta94/Documents/Arduino/libraries/EnableInterrupt-master/EnableInterrupt.h:977: error: 'struct functionPointersPortB' has no member named 'pinSeven'
+
+I have a Duemilanove; I don't know why I never saw that error. Regardless, I have included some
+#ifndef lines in to protect that code from getting compiled.
+
+Also added RELEASE_NOTES to the zip file, and to Git.

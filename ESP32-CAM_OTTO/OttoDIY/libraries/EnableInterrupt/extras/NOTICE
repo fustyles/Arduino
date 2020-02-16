@@ -1,0 +1,19 @@
+	NOTICE
+   EnableInterrupt Arduino Library
+   Copyright 2014-2015 Michael Schwager (aka Mike Schwager aka "GreyGnome")
+
+   This product includes software developed by Mike Schwager.
+
+   This library was inspired and replaces the PinChangeInt library.
+
+   GreyGnome is the current maintainer, and would like to thank all those
+   Open Source coders, the Arduino makers and community, and especially Chris
+   and Lex for lighting the flame and showing the way! And a big thank you to
+   the users who have contributed comments and bug fixes along the way.
+   Without you this project would not have overcome some significant hurdles.
+
+   A HUGE thanks to Jan Baeyens ("jantje"), who has graciously DONATED an
+   Arduino Mega ADK board to the PinChangeInt project!!! Wow, thanks Jan!
+   This makes the 2560-based Arduino Mega a first class supported platform-
+   I am able to test it and verify that it works.
+
