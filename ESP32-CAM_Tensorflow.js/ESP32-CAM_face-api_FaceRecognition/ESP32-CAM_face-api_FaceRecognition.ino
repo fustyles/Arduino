@@ -364,7 +364,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   </tr>  
   </table>
   <iframe id="ifr" style="display:none"></iframe>
-  <div id="message" style="color:red"><div>
+  <div id="message" style="color:red">Please wait for loading model.<div>
 
   </body>
   </html> 
