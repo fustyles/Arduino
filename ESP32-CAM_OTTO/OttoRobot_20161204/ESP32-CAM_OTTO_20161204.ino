@@ -1,6 +1,6 @@
 /*
 ESP32-CAM OTTO ROBOT (UART)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-16 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-17 00:00
 https://www.facebook.com/francefu
 
 ESP32-CAM RX -> Arduino NANO pin 7
@@ -142,11 +142,7 @@ void ExecuteCommand()
   }
   else if (cmd=="touchread") {
     Feedback=String(touchRead(P1.toInt()));
-  }   
-  else if (cmd=="otto") {
-    P1 = urldecode(P1);   
-    if (P1!="") Serial.println(P1); 
-  }     
+  }       
   else if (cmd=="framesize") { 
     sensor_t * s = esp_camera_sensor_get();  
     if (P1=="QQVGA")
@@ -176,6 +172,10 @@ void ExecuteCommand()
      
     int val = P1.toInt();
     ledcWrite(4,val);  
+  }   
+  else if (cmd=="otto") {
+    P1 = urldecode(P1);   
+    if (P1!="") Serial.println(P1); 
   }   
   else {
     Feedback="Command is not defined";
