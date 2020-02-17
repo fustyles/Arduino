@@ -1,6 +1,6 @@
 /*
 ESP32-CAM OTTO ROBOT (Face Recognition)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-17 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-18 00:00
 https://www.facebook.com/francefu
 
 ESP32-CAM RX -> Arduino NANO TX
@@ -194,13 +194,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   </head><body>
   <div id="container"></div>
   <img id="ShowImage" src="" style="display:none">
-  <canvas id="canvas" style="display:none"></canvas>
-  <canvas id="canvas_detect"></canvas>
+  <canvas id="canvas"></canvas>
+  <canvas id="canvas_detect" style="display:none"></canvas>
   <table>
     <tr>
       <td><input type="button" id="restart" value="Restart"></td>
-      <td><input type="button" id="getStill" value="Get Stream"></td>   
-      <td></td>
+      <td><input type="button" id="getStill" value="Get Still"></td>
+    <td><input type="checkbox" id="detect">detect</td>
     </tr> 
     <tr>
       <td>Flash</td>
@@ -334,7 +334,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var canvas = document.getElementById("canvas");
     var context = canvas.getContext("2d");
     var canvas_detect = document.getElementById("canvas_detect");
-    var context_detect = canvas_detect.getContext("2d"); 
+    var context_detect = canvas_detect.getContext("2d");
+    var detect = document.getElementById('detect');  
     var mirrorimage = document.getElementById("mirrorimage");
     var ifr = document.getElementById('ifr');
           
@@ -353,9 +354,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       faceapi.nets.ssdMobilenetv1.load(modelPath)
     ]).then(function(){
       message.innerHTML = "";
-      getStill.style.display = "block";
       getStill.click();
-    })    
+    })   
   
     getStill.onclick = function (event) {
       clearInterval(myTimer);
@@ -394,37 +394,47 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     }  
 
     async function DetectImage() {
-      canvas_detect.setAttribute("width", canvas.width);
-      canvas_detect.setAttribute("height", canvas.height); 
-      context_detect.drawImage(canvas,0,0,canvas.width,canvas.height);
-      let displaySize = { width:canvas.width, height: canvas.height }
-      
-      if (!labeledFaceDescriptors) {
-        message.innerHTML = "Loading face images...";      
-        labeledFaceDescriptors = await loadLabeledImages();
-        faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, distanceLimit)
-      }
-      const detections = await faceapi.detectAllFaces(canvas_detect).withFaceLandmarks().withFaceDescriptors();
-      const resizedDetections = faceapi.resizeResults(detections, displaySize);
-      const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
-      message.innerHTML = JSON.stringify(results);
-    
-      results.forEach((result, i) => {
-        const box = resizedDetections[i].detection.box
-        var drawBox;
-        //if (result.distance<=distanceLimit)
-          drawBox = new faceapi.draw.DrawBox(box, { label: result.toString()})
-        //else
-        //  drawBox = new faceapi.draw.DrawBox(box, { label: (Math.round(result.distance*100)/100).toString()})
-        drawBox.draw(canvas_detect);
+      if (detect.checked) {
+        canvas.style.display="none";
+        canvas_detect.style.display="block";
+        canvas_detect.setAttribute("width", canvas.width);
+        canvas_detect.setAttribute("height", canvas.height); 
+        context_detect.drawImage(canvas,0,0,canvas.width,canvas.height);
+        let displaySize = { width:canvas.width, height: canvas.height }
         
-        //When the robot detects a person his name is "France", it will dance.
-        if ((result.toString().indexOf("France")!=-1)&&(executeState==false)) {
-          executeState = true;
-          ifr.src = document.location.origin+'?otto=myface';
-          setTimeout(function(){executeState=false;},10000);
+        if (!labeledFaceDescriptors) {
+          message.innerHTML = "Loading face images...";      
+          labeledFaceDescriptors = await loadLabeledImages();
+          faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, distanceLimit)
         }
-      }) 
+        const detections = await faceapi.detectAllFaces(canvas_detect).withFaceLandmarks().withFaceDescriptors();
+        const resizedDetections = faceapi.resizeResults(detections, displaySize);
+        const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
+        message.innerHTML = JSON.stringify(results);
+      
+        results.forEach((result, i) => {
+          const box = resizedDetections[i].detection.box
+          var drawBox;
+          //if (result.distance<=distanceLimit)
+            drawBox = new faceapi.draw.DrawBox(box, { label: result.toString()})
+          //else
+          //  drawBox = new faceapi.draw.DrawBox(box, { label: (Math.round(result.distance*100)/100).toString()})
+          drawBox.draw(canvas_detect);
+          
+          //When the robot detects a person his name is "France", it will dance.
+          if ((result.toString().indexOf("France")!=-1)&&(executeState==false)) {
+            executeState = true;
+            ifr.src = document.location.origin+'?otto=myface';
+            setTimeout(function(){executeState=false;},10000);
+          }
+        }) 
+        
+      }
+      else {
+        canvas.style.display="block";
+        canvas_detect.style.display="none";
+      }
+      
       try { 
         document.createEvent("TouchEvent");
         setTimeout(function(){getStill.click();},250);
