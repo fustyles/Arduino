@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Face Recognition (face-api.js)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-16 20:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-17 23:00
 https://www.facebook.com/francefu
 
 Easy Face Recognition Tutorial With JavaScript
