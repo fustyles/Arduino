@@ -3,8 +3,8 @@ ESP32-CAM OTTO ROBOT (Face Recognition)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-18 20:00
 https://www.facebook.com/francefu
 
-ESP32-CAM RX -> Arduino NANO pin 7
-ESP32-CAM TX -> Arduino NANO pin 6
+ESP32-CAM RX -> Arduino NANO TX
+ESP32-CAM TX -> Arduino NANO RX
 
 http://APIP
 http://STAIP
