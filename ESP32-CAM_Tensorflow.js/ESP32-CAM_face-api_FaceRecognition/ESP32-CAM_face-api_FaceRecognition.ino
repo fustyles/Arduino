@@ -304,7 +304,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <div id="container"></div>
   <img id="ShowImage" src="" style="display:none">
   <canvas id="canvas"></canvas>
-  <canvas id="canvas_detect"></canvas>
+  <canvas id="canvas_detect" style="display:none"></canvas>
   <table>
   <tr>
     <td><input type="button" id="restart" value="Restart"></td> 
@@ -366,7 +366,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   </table>
   <iframe id="ifr" style="display:none"></iframe>
   <div id="message" style="color:red">Please wait for loading model.<div>
-
   </body>
   </html> 
   
@@ -380,7 +379,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     const modelPath = 'https://fustyles.github.io/webduino/TensorFlow/Face-api/';
     //Model: https://github.com/fustyles/webduino/tree/master/TensorFlow/Face-api
     let displaySize = { width:320, height: 240 }
-
     let labeledFaceDescriptors;
     let faceMatcher;    
     
@@ -397,7 +395,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var ifr = document.getElementById('ifr');
     var myTimer;
     var restartCount=0;
-
     Promise.all([
       faceapi.nets.faceLandmark68Net.load(modelPath),
       faceapi.nets.faceRecognitionNet.load(modelPath),
@@ -412,7 +409,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       myTimer = setInterval(function(){error_handle();},5000);
       ShowImage.src=location.origin+'/?getstill='+Math.random();
     }
-
     function error_handle() {
       restartCount++;
       clearInterval(myTimer);
@@ -424,7 +420,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       else
         message.innerHTML = "Get still error. <br>Please close the page and check ESP32-CAM.";
     }    
-
     ShowImage.onload = function (event) {
       clearInterval(myTimer);
       restartCount=0;      
@@ -446,30 +441,25 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     restart.onclick = function (event) {
       fetch(location.origin+'/?restart=stop');
     }    
-
     framesize.onclick = function (event) {
       fetch(document.location.origin+'/?framesize='+this.value+';stop');
     }  
-
     flash.onchange = function (event) {
       fetch(location.origin+'/?flash='+this.value+';stop');
     } 
-
     quality.onclick = function (event) {
       fetch(document.location.origin+'/?quality='+this.value+';stop');
     } 
-
     brightness.onclick = function (event) {
       fetch(document.location.origin+'/?brightness='+this.value+';stop');
     } 
-
     contrast.onclick = function (event) {
       fetch(document.location.origin+'/?contrast='+this.value+';stop');
     }    
-
     async function DetectImage() {
       if (detect.checked) {
-        
+        canvas.style.display="none";
+        canvas_detect.style.display="block";
         canvas_detect.setAttribute("width", canvas.width);
         canvas_detect.setAttribute("height", canvas.height); 
         context_detect.drawImage(canvas,0,0,canvas.width,canvas.height);
@@ -495,9 +485,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           //  drawBox = new faceapi.draw.DrawBox(box, { label: (Math.round(result.distance*100)/100).toString()})
           drawBox.draw(canvas_detect);
         }) 
-        
       }
-
+      else {
+        canvas.style.display="block";
+        canvas_detect.style.display="none";
+      }
+            
       try { 
         document.createEvent("TouchEvent");
         setTimeout(function(){getStill.click();},250);
@@ -506,7 +499,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         setTimeout(function(){getStill.click();},150);
       }         
     }   
-
     function loadLabeledImages() {
       return Promise.all(
         faceLabels.map(async label => {
