@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Face Recognition (face-api.js)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-17 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-18 00:30
 https://www.facebook.com/francefu
 
 Easy Face Recognition Tutorial With JavaScript
@@ -308,7 +308,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <table>
   <tr>
     <td><input type="button" id="restart" value="Restart"></td> 
-    <td colspan="2"><input type="button" id="getStill" value="Get Still" style="display:none"></td> 
+    <td><input type="button" id="getStill" value="Get Still"></td>
+    <td><input type="checkbox" id="detect">detect</td> 
   </tr>
   <tr>
     <td>MirrorImage</td> 
@@ -403,7 +404,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       faceapi.nets.ssdMobilenetv1.load(modelPath)
     ]).then(function(){
       message.innerHTML = "";
-      getStill.style.display = "block";
       getStill.click();
     })
     
@@ -468,31 +468,35 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     }    
 
     async function DetectImage() {
-      canvas_detect.setAttribute("width", canvas.width);
-      canvas_detect.setAttribute("height", canvas.height); 
-      context_detect.drawImage(canvas,0,0,canvas.width,canvas.height);
-      let displaySize = { width:canvas.width, height: canvas.height }
-
-      if (!labeledFaceDescriptors) {
-        message.innerHTML = "Loading face images...";      
-        labeledFaceDescriptors = await loadLabeledImages();
-        faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, distanceLimit)
+      if (detect.checked) {
+        
+        canvas_detect.setAttribute("width", canvas.width);
+        canvas_detect.setAttribute("height", canvas.height); 
+        context_detect.drawImage(canvas,0,0,canvas.width,canvas.height);
+        let displaySize = { width:canvas.width, height: canvas.height }
+  
+        if (!labeledFaceDescriptors) {
+          message.innerHTML = "Loading face images...";      
+          labeledFaceDescriptors = await loadLabeledImages();
+          faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, distanceLimit)
+        }
+        const detections = await faceapi.detectAllFaces(canvas_detect).withFaceLandmarks().withFaceDescriptors();
+        const resizedDetections = faceapi.resizeResults(detections, displaySize);
+  
+        const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
+        message.innerHTML = JSON.stringify(results);
+      
+        results.forEach((result, i) => {
+          const box = resizedDetections[i].detection.box
+          var drawBox;
+          //if (result.distance<=distanceLimit)
+            drawBox = new faceapi.draw.DrawBox(box, { label: result.toString()})
+          //else
+          //  drawBox = new faceapi.draw.DrawBox(box, { label: (Math.round(result.distance*100)/100).toString()})
+          drawBox.draw(canvas_detect);
+        }) 
+        
       }
-      const detections = await faceapi.detectAllFaces(canvas_detect).withFaceLandmarks().withFaceDescriptors();
-      const resizedDetections = faceapi.resizeResults(detections, displaySize);
-
-      const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
-      message.innerHTML = JSON.stringify(results);
-    
-      results.forEach((result, i) => {
-        const box = resizedDetections[i].detection.box
-        var drawBox;
-        //if (result.distance<=distanceLimit)
-          drawBox = new faceapi.draw.DrawBox(box, { label: result.toString()})
-        //else
-        //  drawBox = new faceapi.draw.DrawBox(box, { label: (Math.round(result.distance*100)/100).toString()})
-        drawBox.draw(canvas_detect);
-      }) 
 
       try { 
         document.createEvent("TouchEvent");
