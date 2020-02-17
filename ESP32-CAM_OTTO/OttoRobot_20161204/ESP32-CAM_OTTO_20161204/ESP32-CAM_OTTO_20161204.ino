@@ -1,10 +1,10 @@
 /*
-ESP32-CAM OTTO ROBOT (UART)
+ESP32-CAM OTTO ROBOT
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-17 00:00
 https://www.facebook.com/francefu
 
-ESP32-CAM RX -> Arduino NANO pin 7
-ESP32-CAM TX -> Arduino NANO pin 6
+ESP32-CAM RX -> Arduino NANO TX
+ESP32-CAM TX -> Arduino NANO RX
 
 http://APIP
 http://STAIP
