@@ -1,17 +1,22 @@
 /* 
-NodeMCU (ESP12E) + DFPlayer Mini MP3
-
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-08-05 22:00
+NodeMCU ESP12E + DFPlayer Mini MP3
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-17 00:00
 https://www.facebook.com/francefu
 
+DFPlayer RX -> ESP12E gpio16 
+DFPlayer TX -> ESP12E gpio17
+
+Sample Code
+https://wiki.dfrobot.com/DFPlayer_Mini_SKU_DFR0299
+
 Command Format :  
-http://APIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
-http://STAIP/?cmd=str1;str2;str3;str4;str5;str6;str7;str8;str9
+http://APIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+http://STAIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 
 Default APIP： 192.168.4.1
 
 STAIP：
-Query：http://192.168.4.1/?ip
+Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
 
 If you don't need to get response from ESP8266 and want to execute commands quickly, 
@@ -21,60 +26,55 @@ http://192.168.4.1/?digitalwrite=gpio;value;stop
 http://192.168.4.1/?restart=stop
 */
 
+
 #include <ESP8266WiFi.h>
 
 // Enter your WiFi ssid and password
 const char* ssid     = "";   //your network SSID
 const char* password = "";   //your network password
 
-const char* apssid = "MyFirmata ESP12E";
+const char* apssid = "ESP12E_DFPlayer";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 WiFiServer server(80);
 
 #include "Arduino.h"
-#include "SoftwareSerial.h"
 #include "DFRobotDFPlayerMini.h"
+#include <HardwareSerial.h>
+HardwareSerial mySerial(1);  // RX:gpio16 TX:gpio17
 
-SoftwareSerial mySoftwareSerial(13, 15); // RX(D7), TX(D8)
 DFRobotDFPlayerMini myDFPlayer;
 void printDetail(uint8_t type, int value);
 
-String Feedback="", Command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
+String Feedback="", Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
 void ExecuteCommand()
 {
   Serial.println("");
   //Serial.println("Command: "+Command);
-  Serial.println("cmd= "+cmd+" ,str1= "+str1+" ,str2= "+str2+" ,str3= "+str3+" ,str4= "+str4+" ,str5= "+str5+" ,str6= "+str6+" ,str7= "+str7+" ,str8= "+str8+" ,str9= "+str9);
+  Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
   Serial.println("");
   
-  if (cmd=="your cmd")
-  {
+  if (cmd=="your cmd") {
     // You can do anything
     // Feedback="<font color=\"red\">Hello World</font>";
   }
-  else if (cmd=="ip")
-  {
+  else if (cmd=="ip") {
     Feedback="AP IP: "+WiFi.softAPIP().toString();    
     Feedback+=", ";
     Feedback+="STA IP: "+WiFi.localIP().toString();
   }  
-  else if (cmd=="mac")
-  {
+  else if (cmd=="mac") {
     Feedback="STA MAC: "+WiFi.macAddress();
   }  
-  else if (cmd=="restart")
-  {
+  else if (cmd=="restart") {
     setup();
-    Feedback=Command;
   }    
-  else if (cmd=="resetwifi")
-  {
-    WiFi.begin(str1.c_str(), str2.c_str());
+  else if (cmd=="resetwifi") {
+    WiFi.begin(P1.c_str(), P2.c_str());
     Serial.print("Connecting to ");
-    Serial.println(str1);
+    Serial.println(P1);
     long int StartTime=millis();
     while (WiFi.status() != WL_CONNECTED) 
     {
@@ -83,207 +83,141 @@ void ExecuteCommand()
     } 
     Serial.println("");
     Serial.println("STAIP: "+WiFi.localIP().toString());
-    /*
-    if (WiFi.localIP().toString()!="0.0.0.0") 
-    {
-      cmd="ifttt";
-      str1="eventname";
-      str2="key";
-      str3=WiFi.localIP().toString();
-      ExecuteCommand();
-    }
-    */
     Feedback="STAIP: "+WiFi.localIP().toString();
   }   
-  else if (cmd=="volume")
-  {
+  else if (cmd=="volume") {   // value = 0 to 30
     myDFPlayer.pause();
     delay(300);
-    if (str1.toInt()>30)
-      str1="30";
-    else if (str1.toInt()<0)
-      str1="0";
-    myDFPlayer.volume(str1.toInt());
+    if (P1.toInt()>30)
+      P1="30";
+    else if (P1.toInt()<0)
+      P1="0";
+    myDFPlayer.volume(P1.toInt());
     delay(300);
     myDFPlayer.start();
-    
-    Feedback=Command;
   }     
-  else if (cmd=="volumeUp")
-  {
+  else if (cmd=="volumeUp") {
     myDFPlayer.pause();
     delay(300);
     myDFPlayer.volumeUp();
     delay(300);
     myDFPlayer.start();
-    
-    Feedback=Command;
   }   
-  else if (cmd=="volumeDown")
-  {
+  else if (cmd=="volumeDown") {
     myDFPlayer.pause();
     delay(300);
     myDFPlayer.volumeDown();
     delay(300);
     myDFPlayer.start();
-    
-    Feedback=Command;
   }    
-  else if (cmd=="EQ")
-  {
-    if (str1=="NORMAL")
+  else if (cmd=="EQ") {  //P1 -> NORMAL|POP|ROCK|JAZZ|CLASSIC|BASS
+    if (P1=="NORMAL")
       myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
-    else if  (str1=="POP")
+    else if  (P1=="POP")
       myDFPlayer.EQ(DFPLAYER_EQ_POP);
-    else if  (str1=="ROCK")
+    else if  (P1=="ROCK")
       myDFPlayer.EQ(DFPLAYER_EQ_ROCK);
-    else if  (str1=="JAZZ")
+    else if  (P1=="JAZZ")
       myDFPlayer.EQ(DFPLAYER_EQ_JAZZ);
-    else if  (str1=="CLASSIC")
+    else if  (P1=="CLASSIC")
       myDFPlayer.EQ(DFPLAYER_EQ_CLASSIC);
-    else if  (str1=="BASS")
+    else if  (P1=="BASS")
       myDFPlayer.EQ(DFPLAYER_EQ_BASS);
-    
-    Feedback=Command;
   }      
-  else if (cmd=="DEVICE")
-  {
-    if (str1=="U_DISK")
+  else if (cmd=="DEVICE") {  //P1 -> U_DISK|SD|AUX|SLEEP|FLASH
+    if (P1=="U_DISK")
       myDFPlayer.outputDevice(DFPLAYER_DEVICE_U_DISK);
-    else if  (str1=="SD")
+    else if  (P1=="SD")
       myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
-    else if  (str1=="AUX")
+    else if  (P1=="AUX")
       myDFPlayer.outputDevice(DFPLAYER_DEVICE_AUX);
-    else if  (str1=="SLEEP")
+    else if  (P1=="SLEEP")
       myDFPlayer.outputDevice(DFPLAYER_DEVICE_SLEEP);
-    else if  (str1=="FLASH")
+    else if  (P1=="FLASH")
       myDFPlayer.outputDevice(DFPLAYER_DEVICE_FLASH);
-
-    Feedback=Command;    
   }   
-  else if (cmd=="sleep")
-  {
+  else if (cmd=="sleep") {
     myDFPlayer.sleep();
-    Feedback=Command;
   }  
-  else if (cmd=="reset")
-  {
+  else if (cmd=="reset") {
     myDFPlayer.reset();
-    Feedback=Command;
   }
-    else if (cmd=="enableDAC")
-  {
+  else if (cmd=="enableDAC") {
     myDFPlayer.enableDAC();
-    Feedback=Command;
   }  
-  else if (cmd=="disableDAC")
-  {
+  else if (cmd=="disableDAC") {
     myDFPlayer.disableDAC();
-    Feedback=Command;
   }
-  else if (cmd=="outputSetting")
-  {
-    myDFPlayer.outputSetting(str1.toInt(), str2.toInt());
-    Feedback=Command;
+  else if (cmd=="outputSetting") {
+    myDFPlayer.outputSetting(P1.toInt(), P2.toInt());
   }
-  else if (cmd=="next")
-  {
+  else if (cmd=="next") {
     myDFPlayer.next();
-    Feedback=Command;
   }
-  else if (cmd=="previous")
-  {
+  else if (cmd=="previous") {
     myDFPlayer.previous();
-    Feedback=Command;
   }
-  else if (cmd=="play")
-  {
-    myDFPlayer.play(str1.toInt());
-    Feedback=Command;
+  else if (cmd=="play") {
+    myDFPlayer.play(P1.toInt());
   }
-  else if (cmd=="loop")
-  {
-    myDFPlayer.loop(str1.toInt());
-    Feedback=Command;
+  else if (cmd=="loop") {
+    myDFPlayer.loop(P1.toInt());
   }
-  else if (cmd=="pause")
-  {
+  else if (cmd=="pause") {
     myDFPlayer.pause();
-    Feedback=Command;
   }  
-  else if (cmd=="start")
-  {
+  else if (cmd=="start") {
     myDFPlayer.start();
-    Feedback=Command;
   }  
-  else if (cmd=="playFolder")
-  {
-    myDFPlayer.playFolder(str1.toInt(), str2.toInt());
-    Feedback=Command;
+  else if (cmd=="playFolder") {
+    myDFPlayer.playFolder(P1.toInt(), P2.toInt());
   }   
-  else if (cmd=="enableLoopAll")
-  {
+  else if (cmd=="enableLoopAll") {
     myDFPlayer.enableLoopAll();
-    Feedback=Command;
   }    
-  else if (cmd=="disableLoopAll")
-  {
+  else if (cmd=="disableLoopAll") {
     myDFPlayer.disableLoopAll();
-    Feedback=Command;
   }   
-  else if (cmd=="playMp3Folder")
-  {
-    myDFPlayer.playMp3Folder(str1.toInt());
-    Feedback=Command;
+  else if (cmd=="playMp3Folder") {
+    myDFPlayer.playMp3Folder(P1.toInt());
   }     
-  else if (cmd=="advertise")
-  {
-    myDFPlayer.advertise(str1.toInt());
-    Feedback=Command;
+  else if (cmd=="advertise") {
+    myDFPlayer.advertise(P1.toInt());
   }   
-  else if (cmd=="stopAdvertise")
-  {
+  else if (cmd=="stopAdvertise") {
     myDFPlayer.stopAdvertise();
-    Feedback=Command;
   }  
-  else if (cmd=="playLargeFolder")
-  {
-    myDFPlayer.playLargeFolder(str1.toInt(), str2.toInt());
-    Feedback=Command;
+  else if (cmd=="playLargeFolder") {
+    myDFPlayer.playLargeFolder(P1.toInt(), P2.toInt());
   }  
-  else if (cmd=="loopFolder")
-  {
-    myDFPlayer.loopFolder(str1.toInt());
-    Feedback=Command;
+  else if (cmd=="loopFolder") {
+    myDFPlayer.loopFolder(P1.toInt());
   }  
-  else if (cmd=="randomAll")
-  {
+  else if (cmd=="randomAll") {
     myDFPlayer.randomAll();
-    Feedback=Command;
   }  
-  else if (cmd=="enableLoop")
-  {
+  else if (cmd=="enableLoop") {
     myDFPlayer.enableLoop();
-    Feedback=Command;
   }  
-  else if (cmd=="disableLoop")
-  {
+  else if (cmd=="disableLoop") {
     myDFPlayer.disableLoop();
-    Feedback=Command;
   }   
-  else 
-  {
+  else {
     Feedback="Command is not defined";
   }
+  
+  if (Feedback=="") Feedback=Command;
 }
 
 void setup()
 {
+    mySerial.begin(9600, SERIAL_8N1, 16, 17);
+      
     Serial.begin(115200);
     delay(10);
     
     WiFi.mode(WIFI_AP_STA);
-    
+  
     //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
 
     WiFi.begin(ssid, password);
@@ -296,7 +230,7 @@ void setup()
     while (WiFi.status() != WL_CONNECTED) 
     {
         delay(500);
-        if ((StartTime+5000) < millis()) break;
+        if ((StartTime+10000) < millis()) break;
     } 
 
     Serial.println("");
@@ -308,9 +242,9 @@ void setup()
       WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
       /*
       cmd="ifttt";
-      str1="eventname";
-      str2="key";
-      str3=WiFi.localIP().toString();
+      P1="eventname";
+      P2="key";
+      P3=WiFi.localIP().toString();
       ExecuteCommand();
       */
     }
@@ -322,14 +256,12 @@ void setup()
     Serial.println("APIP address: ");
     Serial.println(WiFi.softAPIP());    
     server.begin(); 
-
-    mySoftwareSerial.begin(9600);
     
     Serial.println();
     Serial.println(F("DFRobotDemo"));
     Serial.println(F("Initializing DFPlayer ... (May take 3~5 seconds)"));
     
-    if (!myDFPlayer.begin(mySoftwareSerial)) {  //Use softwareSerial to communicate with mp3.
+    if (!myDFPlayer.begin(mySerial)) {  //Use softwareSerial to communicate with mp3.
       Serial.println(F("Unable to begin:"));
       Serial.println(F("1.Please recheck the connection!"));
       Serial.println(F("2.Please insert the SD card!"));
@@ -351,7 +283,7 @@ void setup()
 
 void loop()
 {
-  Command="";cmd="";str1="";str2="";str3="";str4="";str5="";str6="";str7="";str8="";str9="";
+  Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
   ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
   WiFiClient client = server.available();
@@ -377,31 +309,31 @@ void loop()
             Feedback+="cmd:";
             Feedback+="<select name=\"cmd\" id=\"cmd\">";
             Feedback+="<option value=\"\"></option>";          
-            Feedback+="<option value=\"play\">play(str1)</option>";
+            Feedback+="<option value=\"play\">play(P1)</option>";
             Feedback+="<option value=\"next\">next</option>";
             Feedback+="<option value=\"previous\">previous</option>";  
             Feedback+="<option value=\"pause\">pause</option>";
             Feedback+="<option value=\"start\">start</option>";  
-            Feedback+="<option value=\"loop\">loop(str1)</option>";  
-            Feedback+="<option value=\"volume\">volume(str1)</option>";
+            Feedback+="<option value=\"loop\">loop(P1)</option>";  
+            Feedback+="<option value=\"volume\">volume(P1)</option>";
             Feedback+="<option value=\"volumeUp\">volumeUp</option>";
             Feedback+="<option value=\"volumeDown\">volumeDown</option>";
-            Feedback+="<option value=\"EQ\">EQ(str1=NORMAL,POP,ROCK,JAZZ,CLASSIC,BASS)</option>";
-            Feedback+="<option value=\"DEVICE\">DEVICE(str1=U_DISK,SD,AUX,SLEEP,FLASH)</option>";
+            Feedback+="<option value=\"EQ\">EQ(P1=NORMAL,POP,ROCK,JAZZ,CLASSIC,BASS)</option>";
+            Feedback+="<option value=\"DEVICE\">DEVICE(P1=U_DISK,SD,AUX,SLEEP,FLASH)</option>";
             Feedback+="<option value=\"sleep\">sleep</option>";
             Feedback+="<option value=\"reset\">reset</option>";
             Feedback+="<option value=\"enableDAC\">enableDAC</option>";
             Feedback+="<option value=\"disableDAC\">disableDAC</option>";
-            Feedback+="<option value=\"outputSetting\">outputSetting(str1;str2)</option>";
+            Feedback+="<option value=\"outputSetting\">outputSetting(P1;P2)</option>";
             Feedback+="<option value=\"randomAll\">randomAll</option>";
-            Feedback+="<option value=\"playFolder\">playFolder(str1;str2)</option>";
+            Feedback+="<option value=\"playFolder\">playFolder(P1;P2)</option>";
             Feedback+="<option value=\"enableLoopAll\">enableLoopAll</option>";
             Feedback+="<option value=\"disableLoopAll\">disableLoopAll</option>";
-            Feedback+="<option value=\"playMp3Folder\">playMp3Folder(str1)</option>";
-            Feedback+="<option value=\"advertise\">advertise(str1)</option>";
+            Feedback+="<option value=\"playMp3Folder\">playMp3Folder(P1)</option>";
+            Feedback+="<option value=\"advertise\">advertise(P1)</option>";
             Feedback+="<option value=\"stopAdvertise\">stopAdvertise</option>";
-            Feedback+="<option value=\"playLargeFolder\">playLargeFolder(str1;str2)</option>";
-            Feedback+="<option value=\"loopFolder\">loopFolder(str1)</option>";
+            Feedback+="<option value=\"playLargeFolder\">playLargeFolder(P1;P2)</option>";
+            Feedback+="<option value=\"loopFolder\">loopFolder(P1)</option>";
             Feedback+="<option value=\"enableLoop\">enableLoop</option>";
             Feedback+="<option value=\"disableLoop\">disableLoop</option>";
             Feedback+="<option value=\"ip\">IP</option>";
@@ -409,12 +341,12 @@ void loop()
             Feedback+="<option value=\"restart\">Restart</option>";
             Feedback+="<option value=\"resetwifi\">ResetWifi</option>";              
             Feedback+="</select>";
-            Feedback+="<br><br>str1:"; 
-            Feedback+="<input type=\"text\" name=\"str1\" id=\"str1\" size=\"20\">";      
-            Feedback+="<br><br>str2:";
-            Feedback+="<input type=\"text\" name=\"str2\" id=\"str2\" size=\"20\">";   
+            Feedback+="<br><br>P1:"; 
+            Feedback+="<input type=\"text\" name=\"P1\" id=\"P1\" size=\"20\">";      
+            Feedback+="<br><br>P2:";
+            Feedback+="<input type=\"text\" name=\"P2\" id=\"P2\" size=\"20\">";   
             Feedback+="<br><br>";           
-            Feedback+="<input type=\"button\" value=\"Send\" onclick=\"location.href='?'+cmd.value+'='+str1.value+';'+str2.value\">"; 
+            Feedback+="<input type=\"button\" value=\"Send\" onclick=\"location.href='?'+cmd.value+'='+P1.value+';'+P2.value\">"; 
             Feedback+="</form>";
 
             client.println("HTTP/1.1 200 OK");
@@ -476,15 +408,15 @@ void getCommand(char c)
     if (c==';') strState++;
   
     if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
-    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) str1=str1+String(c);
-    if ((cmdState==0)&&(strState==2)&&(c!=';')) str2=str2+String(c);
-    if ((cmdState==0)&&(strState==3)&&(c!=';')) str3=str3+String(c);
-    if ((cmdState==0)&&(strState==4)&&(c!=';')) str4=str4+String(c);
-    if ((cmdState==0)&&(strState==5)&&(c!=';')) str5=str5+String(c);
-    if ((cmdState==0)&&(strState==6)&&(c!=';')) str6=str6+String(c);
-    if ((cmdState==0)&&(strState==7)&&(c!=';')) str7=str7+String(c);
-    if ((cmdState==0)&&(strState==8)&&(c!=';')) str8=str8+String(c);
-    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) str9=str9+String(c);
+    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) P1=P1+String(c);
+    if ((cmdState==0)&&(strState==2)&&(c!=';')) P2=P2+String(c);
+    if ((cmdState==0)&&(strState==3)&&(c!=';')) P3=P3+String(c);
+    if ((cmdState==0)&&(strState==4)&&(c!=';')) P4=P4+String(c);
+    if ((cmdState==0)&&(strState==5)&&(c!=';')) P5=P5+String(c);
+    if ((cmdState==0)&&(strState==6)&&(c!=';')) P6=P6+String(c);
+    if ((cmdState==0)&&(strState==7)&&(c!=';')) P7=P7+String(c);
+    if ((cmdState==0)&&(strState==8)&&(c!=';')) P8=P8+String(c);
+    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) P9=P9+String(c);
     
     if (c=='?') questionstate=1;
     if (c=='=') equalstate=1;
