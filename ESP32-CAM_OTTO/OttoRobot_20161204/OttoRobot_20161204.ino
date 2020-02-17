@@ -3,8 +3,6 @@ OTTO ROBOT 20161204 (SoftwareSerial)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-16 14:00
 https://www.facebook.com/francefu
 
-Libraries: https://github.com/fustyles/Arduino/tree/master/ESP32-CAM_OTTO/OttoDIY/libraries
-
 ESP32-CAM RX - Arduino NANNO pin 6
 ESP32-CAM TX - Arduino NANNO pin 7
 
@@ -13,6 +11,9 @@ servo 3 : Arduino NANNO pin 3
 servo 4 : Arduino NANNO pin 4
 servo 5 : Arduino NANNO pin 5
 Buzzer : Arduino NANNO pin 10
+
+Libraries
+https://github.com/fustyles/Arduino/tree/master/ESP32-CAM_OTTO/OttoDIY/libraries
 */
 
 
