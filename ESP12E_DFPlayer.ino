@@ -26,7 +26,6 @@ http://192.168.4.1/?digitalwrite=gpio;value;stop
 http://192.168.4.1/?restart=stop
 */
 
-
 #include <ESP8266WiFi.h>
 
 // Enter your WiFi ssid and password
