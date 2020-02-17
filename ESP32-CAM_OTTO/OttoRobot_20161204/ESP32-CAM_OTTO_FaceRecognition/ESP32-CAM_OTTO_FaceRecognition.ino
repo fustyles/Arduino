@@ -194,7 +194,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   </head><body>
   <div id="container"></div>
   <img id="ShowImage" src="" style="display:none">
-  <canvas id="canvas"></canvas>
+  <canvas id="canvas" style="display:none"></canvas>
   <canvas id="canvas_detect"></canvas>
   <table>
     <tr>
