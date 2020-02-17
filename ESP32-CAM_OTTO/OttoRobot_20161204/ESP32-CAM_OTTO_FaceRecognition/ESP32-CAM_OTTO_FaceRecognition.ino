@@ -1,6 +1,6 @@
 /*
 ESP32-CAM OTTO ROBOT (Face Recognition)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-18 20:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-17 23:00
 https://www.facebook.com/francefu
 
 ESP32-CAM RX -> Arduino NANO TX
