@@ -1,21 +1,19 @@
 /*
-OTTO ROBOT 20161204 (SoftwareSerial)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-16 14:00
+OTTO ROBOT 但2016120
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-17 19:00
 https://www.facebook.com/francefu
 
-ESP32-CAM RX - Arduino NANNO pin 6
-ESP32-CAM TX - Arduino NANNO pin 7
+Libraries: https://github.com/fustyles/Arduino/tree/master/ESP32-CAM_OTTO/OttoDIY/libraries
+
+ESP32-CAM RX - Arduino NANNO TX
+ESP32-CAM TX - Arduino NANNO RX
 
 servo 2 : Arduino NANNO pin 2
 servo 3 : Arduino NANNO pin 3
 servo 4 : Arduino NANNO pin 4
 servo 5 : Arduino NANNO pin 5
 Buzzer : Arduino NANNO pin 10
-
-Libraries
-https://github.com/fustyles/Arduino/tree/master/ESP32-CAM_OTTO/OttoDIY/libraries
 */
-
 
 //----------------------------------------------------------------
 //-- Easy Otto´s sketch controlled by BlueControl Android app. Each button has different functionallity
@@ -27,12 +25,6 @@ https://github.com/fustyles/Arduino/tree/master/ESP32-CAM_OTTO/OttoDIY/libraries
 //-- Adapted Pablo García pabloeweb@gmail.com 01 March 2017
 //-----------------------------------------------------------------
 
-#include <SoftwareSerial.h>
-// SoftwareSerial (RX, TX)
-#define PIN_TX 6//connect ESP32-CAM RX pin here - pin 6
-#define PIN_RX 7 //connect ESP32-CAM TX pin here - pin 7
-SoftwareSerial ESP32Serial ( PIN_TX , PIN_RX );
-
 #include <Servo.h> 
 #include <Oscillator.h>
 #include <US.h>
@@ -40,6 +32,7 @@ SoftwareSerial ESP32Serial ( PIN_TX , PIN_RX );
 Otto Otto;  //This is Otto!
 byte dato;  //To store the char sent by the app
 int speedx;
+
 //---------------------------------------------------------
 //-- First step: Make sure the pins for servos are in the right position
 /*
@@ -52,10 +45,12 @@ YR 3==> |               | <== YL 2
 RR 5==>   -----   ------  <== RL 4
          |-----   ------|
 */
-  #define PIN_YL 2 //servo[2]
-  #define PIN_YR 3 //servo[3]
-  #define PIN_RL 4 //servo[4]
-  #define PIN_RR 5 //servo[5]
+
+#define PIN_YL 2 //servo[2]
+#define PIN_YR 3 //servo[3]
+#define PIN_RL 4 //servo[4]
+#define PIN_RR 5 //servo[5]
+  
 /*SOUNDS******************
  * S_connection  S_disconnection  S_buttonPushed S_mode1 S_mode2 S_mode3 S_surprise S_OhOoh  S_OhOoh2  S_cuddly 
  * S_sleeping  S_happy S_superHappy S_happy_short S_sad S_confused S_fart1 S_fart2  S_fart3 
@@ -80,17 +75,13 @@ RR 5==>   -----   ------  <== RL 4
      flapping(steps, T, HEIGHT,dir);
 /*GESTURES LIST***************
 OttoHappy OttoSuperHappy  OttoSad   OttoSleeping  OttoFart  OttoConfused OttoLove  OttoAngry   
-OttoFretful OttoMagic  OttoWave  OttoVictory  OttoFail*/
-///////////////////////////////////////////////////////////////////
-//-- Global Variables -------------------------------------------//
-///////////////////////////////////////////////////////////////////
+OttoFretful OttoMagic  OttoWave  OttoVictory  OttoFail
+*/
+
 bool obstacleDetected = false;
 int T=1000;
-///////////////////////////////////////////////////////////////////
-//-- Setup ------------------------------------------------------//
-///////////////////////////////////////////////////////////////////
+
 void setup(){
-  ESP32Serial.begin(9600); //setup your ESP32-CAM to match this baudrate (https://github.com/OttoDIY/OttoDIY)
   Serial.begin(9600);
   //Set the servo pins
   Otto.init(PIN_YL,PIN_YR,PIN_RL,PIN_RR,true);
@@ -99,211 +90,168 @@ void setup(){
   delay(50);
   Otto.sing(S_happy); // a happy Otto :)
 }
-///////////////////////////////////////////////////////////////////
-//-- Principal Loop ---------------------------------------------//
-///////////////////////////////////////////////////////////////////
-void loop() {
-  if (ESP32Serial.available()) //If something received over bluetooth, store the char
 
-   dato= ESP32Serial.read();
-   
-   //check the char received
-   switch(dato) {//if we receive a...
-    case 66: // "B" Received
-    {
+void loop() {
+  String cmd="";
+  
+  if (Serial.available()) {
+    cmd="";
+    while (Serial.available()) {
+      char c = Serial.read();
+      if (c!='\r'&&c!='\n') cmd=cmd+String(c);
+      delay(1);
+    }
+  }
+
+  if (cmd!="") {
+    Serial.println(cmd);
+    if (cmd=="B") {
       Otto.home();
       digitalWrite(12, !digitalRead(12));
-      break;          
     }
-    case 65: // "A" Received----OBSTACLE MODE ON!!!! (until a button is pressed in the app)------
-    {
+    else if (cmd=="A") {
       obstacleMode();
-      break;          
     }        
-    case 85: //"U": Up arrow received
-    {
+    else if (cmd=="U") {
       Otto.walk(2,T,1); //2 steps FORWARD
-      break;
     }
-    case 68: //"D": Down arrow received
-    {
+    else if (cmd=="D") {
       Otto.walk(2,T,-1); //2 steps FORWARD
-      break;
     }
-    case 67: //"C": Center button received
-    {
+    else if (cmd=="C") {
       Otto.playGesture(OttoFretful);
       Otto.home();
       Otto.sing(S_sleeping);
       delay(1000);
       T=1000;
-      break;
     }
-    case 76: //"L": Left arrow received
-    {
+    else if (cmd=="L") {
       Otto.turn(2,T,1);//2 steps turning RIGHT                
       delay(50);
-      break;
     }
-    case 82: //"R": Right arrow received
-    {
+    else if (cmd=="R") {
       Otto.turn(2,T,-1);//2 steps turning RIGHT                
       delay(50);
-      break;
     }
-    case 97: // "a" Received  shake
-    {
+    else if (cmd=="a") {
       Otto.shakeLeg(1,T,1);
       Otto.home();
-      break;
     }
-    case 98: // "b" Received
-    {
+    else if (cmd=="b") {
       Otto.shakeLeg(1,T,-1);
       Otto.home();
-      break;           
     }
-    case 99: // "c" Received
-    {
+    else if (cmd=="c") {
       Otto.flapping(1,T,30,1);
       Otto.home();
-      break;       
     }
-    case 100: // "d" Received
-    {
+    else if (cmd=="d") {
       Otto.flapping(1,T,30,-1);
       Otto.home();
-      break;          
     }
-    case 101: // "e" Received-
-    {
+    else if (cmd=="e") {
       Otto.bend(1,T,1);
       Otto.home();
-      break;     
     }
-    case 102: // "f" Received-
-    {
+    else if (cmd=="f") {
       Otto.bend(1,T,-1);
       Otto.home();
-      break;     
     }
-    case 103: // "g" Received-
-    {
+    else if (cmd=="g") {
       Otto.moonwalker(1,T,30,1);
       Otto.home();
-      break;     
     }
-    case 104: // "h" Received-
-    {
+    else if (cmd=="h") {
       Otto.moonwalker(1,T,30,-1);
       Otto.home();
-      break;     
     }
-    case 105: // "i" Received-
-    {
+    else if (cmd=="i") {
       Otto.tiptoeSwing(1,T,30);
       Otto.home();
-      break;     
     }
-    case 106: // "j" Received-
-    {
+    else if (cmd=="j") {
       Otto.jitter(1,T,30); 
       Otto.home();
-      break;     
     }
-    case 107: // "k" Received-
-    {
+    else if (cmd=="k") {
       Otto.swing(1,T,30);
       Otto.home();
-      break;     
     }
-    case 108: // "l" Received-
-    {
+    else if (cmd=="l") {
       Otto.updown(1,T,30);
       Otto.home();
-      break;     
     }
-    case 109: // "m" Received-
-    {
+    else if (cmd=="m") {
       Otto.sing(S_surprise); 
       Otto.home();
-      break;     
     }
-    case 110: // "n" Received-
-    {
+    else if (cmd=="n") {
       Otto.sing(S_sleeping);
       Otto.home();
-      break;     
     }
-    case 111: // "o" Received-
-    {
+    else if (cmd=="o") {
       Otto.sing(S_happy); 
       Otto.home();
-      break;     
-     }
-    case 112: // "p" Received-
-    {
+    }
+    else if (cmd=="p") {
       Otto.sing(S_cuddly); 
       Otto.home();
-      break;     
     }
-    case 113: // "q" Received-
-    {
+    else if (cmd=="q") {
       Otto.sing(S_sad); 
       Otto.home();
-      break;     
     }
-    case 114: // "r" Received-
-    {
+    else if (cmd=="r") {
       Otto.sing(S_confused); 
       Otto.home();
-      break;     
     }
-    case 115: // "s" Received- Dance1
-    {
+    else if (cmd=="s") {
       Dance1();
       Otto.home();
-      break;     
     }
-    case 116: // "t" Received-
-    {
+    else if (cmd=="t") {
       Dance2();
       Otto.home();
-      break;     
     }
-    case 117: // "u" Received-
-    {
+    else if (cmd=="u") {
       Dance3();
       Otto.home();
-      break;     
-    }        
-    case 118: // "v" Received-
-    {
+    }
+    else if (cmd=="v") {
       Dance4();
       Otto.home();
-      break;     
     }
-    case 119: // "w" Received-
-    {
+    else if (cmd=="w") {
       T=T-100;
       if(T<100){T=1000;}
       Otto.home();
-      break;     
-    } 
-    case 120: // "x" Received-
-    {
+    }
+    else if (cmd=="x") {
       T=T+100;
       if(T>3000){T=1000;}
       Otto.home();
-      break;  
-    } 
+    }
+    else if (cmd=="myface") {
+      Otto._tone(note_C6,50,200);
+      Otto._tone(note_B5,50,200);
+      Otto._tone(note_A5,50,200);
+      Otto._tone(note_G5,50,200);
+      Otto.updown(1,T,30);
+      Otto.home();
+      Otto._tone(note_E5,50,200);
+      Otto._tone(note_G5,50,200);
+      Otto._tone(note_E5,50,200);
+      Otto._tone(note_G5,50,200);
+      Otto._tone(note_A5,50,200); 
+      Otto.jitter(1,T,30);
+      Otto.home();
+    }    
   }
-  dato=0; //clears the incoming data until it receives the next button from app
 }
 
 void Dance1(){
   int x=1;
-  while(!ESP32Serial.available()) {
+  while(!Serial.available()) {
     obstacleDetector(); //check for obstacle
     if(obstacleDetected) { 
        Otto.sing(S_cuddly); 
@@ -326,7 +274,7 @@ void Dance1(){
 
 void Dance2(){
   int x=1;
-  while(!ESP32Serial.available()) {
+  while(!Serial.available()) {
    obstacleDetector(); //check for obstacle
     if(obstacleDetected) { 
      Otto.sing(S_sad); 
@@ -343,7 +291,7 @@ void Dance2(){
 
 void Dance3(){
   int x=1;
-  while(!ESP32Serial.available()) {
+  while(!Serial.available()) {
     obstacleDetector(); //check for obstacle
     if(obstacleDetected) { 
        Otto.sing(S_fart1); 
@@ -364,7 +312,7 @@ void Dance3(){
 
 void Dance4(){
   int x=1;
-  while(!ESP32Serial.available()) {
+  while(!Serial.available()) {
    obstacleDetector(); //check for obstacle
     if(obstacleDetected) { 
        Otto.sing(S_surprise); 
@@ -382,7 +330,7 @@ void Dance4(){
 //-- Function to avoid obstacles until another key is pressed in the app
 void obstacleMode(){
   Otto.sing(S_OhOoh);  
-  while(!ESP32Serial.available()) {
+  while(!Serial.available()) {
     obstacleDetector(); //check for obstacle
     if(obstacleDetected){ 
       Otto.sing(S_surprise); 
