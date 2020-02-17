@@ -149,7 +149,7 @@ void ExecuteCommand()
   else if (cmd=="disableDAC") {
     myDFPlayer.disableDAC();
   }
-  else if (cmd=="outputSetting") {
+  else if (cmd=="outputSetting") {  //myDFPlayer.outputSetting(true, 15); //enable the output and set the gain to 15
     myDFPlayer.outputSetting(P1.toInt(), P2.toInt());
   }
   else if (cmd=="next") {
@@ -170,7 +170,7 @@ void ExecuteCommand()
   else if (cmd=="start") {
     myDFPlayer.start();
   }  
-  else if (cmd=="playFolder") {
+  else if (cmd=="playFolder") {  //myDFPlayer.playFolder(15, 4);  //play specific mp3 in SD:/15/004.mp3; Folder Name(1~99); File Name(1~255)
     myDFPlayer.playFolder(P1.toInt(), P2.toInt());
   }   
   else if (cmd=="enableLoopAll") {
@@ -179,19 +179,19 @@ void ExecuteCommand()
   else if (cmd=="disableLoopAll") {
     myDFPlayer.disableLoopAll();
   }   
-  else if (cmd=="playMp3Folder") {
+  else if (cmd=="playMp3Folder") {  //myDFPlayer.playMp3Folder(4); //play specific mp3 in SD:/MP3/0004.mp3; File Name(0~65535)
     myDFPlayer.playMp3Folder(P1.toInt());
   }     
-  else if (cmd=="advertise") {
+  else if (cmd=="advertise") {  //myDFPlayer.advertise(3); //advertise specific mp3 in SD:/ADVERT/0003.mp3; File Name(0~65535)
     myDFPlayer.advertise(P1.toInt());
   }   
   else if (cmd=="stopAdvertise") {
     myDFPlayer.stopAdvertise();
   }  
-  else if (cmd=="playLargeFolder") {
+  else if (cmd=="playLargeFolder") {  //myDFPlayer.playLargeFolder(2, 999); //play specific mp3 in SD:/02/004.mp3; Folder Name(1~10); File Name(1~1000)
     myDFPlayer.playLargeFolder(P1.toInt(), P2.toInt());
   }  
-  else if (cmd=="loopFolder") {
+  else if (cmd=="loopFolder") {  //myDFPlayer.loopFolder(5); //loop all mp3 files in folder SD:/05.
     myDFPlayer.loopFolder(P1.toInt());
   }  
   else if (cmd=="randomAll") {
