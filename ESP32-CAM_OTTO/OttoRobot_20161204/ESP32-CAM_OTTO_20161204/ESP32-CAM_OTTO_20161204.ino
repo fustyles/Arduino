@@ -1,6 +1,6 @@
 /*
 ESP32-CAM OTTO ROBOT
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-17 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-17 19:00
 https://www.facebook.com/francefu
 
 ESP32-CAM RX -> Arduino NANO TX
