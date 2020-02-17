@@ -397,6 +397,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       canvas_detect.setAttribute("width", canvas.width);
       canvas_detect.setAttribute("height", canvas.height); 
       context_detect.drawImage(canvas,0,0,canvas.width,canvas.height);
+      let displaySize = { width:canvas.width, height: canvas.height }
+      
       if (!labeledFaceDescriptors) {
         message.innerHTML = "Loading face images...";      
         labeledFaceDescriptors = await loadLabeledImages();
