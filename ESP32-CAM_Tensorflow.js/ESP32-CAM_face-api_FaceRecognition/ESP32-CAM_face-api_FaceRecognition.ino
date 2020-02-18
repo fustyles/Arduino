@@ -3,6 +3,8 @@ ESP32-CAM Face Recognition (face-api.js)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-18 00:30
 https://www.facebook.com/francefu
 
+The canvas in Chrome will cause memory leak.
+
 Easy Face Recognition Tutorial With JavaScript
 https://www.youtube.com/watch?v=AZ4PdALMqx0
 
