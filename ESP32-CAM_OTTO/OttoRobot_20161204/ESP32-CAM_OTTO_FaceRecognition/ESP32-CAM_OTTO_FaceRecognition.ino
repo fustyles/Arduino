@@ -3,6 +3,8 @@ ESP32-CAM OTTO ROBOT (Face Recognition)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-18 00:00
 https://www.facebook.com/francefu
 
+The canvas in Chrome will cause memory leak.
+
 ESP32-CAM RX -> Arduino NANO TX
 ESP32-CAM TX -> Arduino NANO RX
 
