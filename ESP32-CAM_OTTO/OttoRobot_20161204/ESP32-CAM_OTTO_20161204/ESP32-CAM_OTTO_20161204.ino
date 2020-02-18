@@ -374,12 +374,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       url: target,
       success: function(response)
         {
-          show.innerHTML = response;
+          message.innerHTML = response;
           if (streamState==true) getStream.onclick;
         },
         error: function(exception)
         {
-          show.innerHTML = 'fail';
+          message.innerHTML = 'fail';
           if (streamState==true) getStream.onclick;
         }
       });
