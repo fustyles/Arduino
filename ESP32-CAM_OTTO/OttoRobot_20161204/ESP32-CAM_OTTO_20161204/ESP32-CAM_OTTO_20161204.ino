@@ -365,25 +365,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         fetch(location.origin+'/?flash='+this.value);
       }
       catch(e){}      
-    }                 
+    }     
     
-    function getFeedback(target) {
-      var data = $.ajax({
-      type: "get",
-      dataType: "text",
-      url: target,
-      success: function(response)
-        {
-          message.innerHTML = response;
-          if (streamState==true) getStream.onclick;
-        },
-        error: function(exception)
-        {
-          message.innerHTML = 'fail';
-          if (streamState==true) getStream.onclick;
-        }
-      });
-    }    
     </script>  
 )rawliteral";
 
