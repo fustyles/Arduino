@@ -1,6 +1,6 @@
 /*
 ESP32-CAM COCO-SSD Person Detect (Send captured image to GoogleDrive and Linenotify)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-23 14:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-23 20:00
 https://www.facebook.com/francefu
 
 If the code can't run well because Chrome blocks the funtion, you can use the other code below.
@@ -23,8 +23,8 @@ https://drive.google.com/drive/my-drive
 Open the page in Chrome.
 */
 
-const char* ssid = "xxxxx";
-const char* password = "xxxxx";
+const char* ssid = "*****";
+const char* password = "*****";
 
 #include "esp_camera.h"
 #include <WiFi.h>
