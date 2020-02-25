@@ -95,7 +95,6 @@ void loop() {
   String cmd="";
   
   if (Serial.available()) {
-    cmd="";
     while (Serial.available()) {
       char c = Serial.read();
       if (c!='\r'&&c!='\n') cmd=cmd+String(c);
