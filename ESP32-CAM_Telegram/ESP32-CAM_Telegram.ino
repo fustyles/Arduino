@@ -142,6 +142,18 @@ void loop()
 {
   sendCapturedImage2Telegram(token, chat_id);
   delay(72000);
+  
+  /*
+  int gpioPIR = 13;   //PIR Motion Sensor
+  pinMode(gpioPIR, INPUT_PULLUP);
+  int v = digitalRead(gpioPIR);
+  Serial.println(v);
+  if (v==1) {
+    sendCapturedImage2Telegram(token, chat_id);
+    delay(10000); 
+  }
+  delay(1000);  
+  */
 }
 
 String sendCapturedImage2Telegram(String token, String chat_id) {
