@@ -180,6 +180,11 @@ void ExecuteCommand()
   else if (cmd=="SendCapturedImage") {
     SendCapturedImage();
   }
+  else if (cmd=="digitalwrite") {
+    ledcDetachPin(P1.toInt());
+    pinMode(P1.toInt(), OUTPUT);
+    digitalWrite(P1.toInt(), P2.toInt());
+  }    
   else {
     Feedback="Command is not defined.";
   }
