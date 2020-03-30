@@ -22,12 +22,12 @@ void setup(){
 }
 
 void loop(){
-  float temperature = getTemperature(0, 0.00);  //scale: 0(Celcius), 1(Fahrenheit), 2(Kelvin)
+  float temperature = getMLX90614(0, 0.00);  //scale: 0(Celcius), 1(Fahrenheit), 2(Kelvin)
   Serial.println(temperature);
   delay(1000); // wait a second before printing again
 }
 
-float getTemperature(int scale, float compensation) {
+float getMLX90614(int scale, float compensation) {
   int dev = 0x5A<<1;
   int data_low = 0;
   int data_high = 0;
