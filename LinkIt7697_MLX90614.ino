@@ -9,6 +9,7 @@ MLX90614
 SDA: pin 9
 SCL: pin 8
 
+MLX90614 Datasheet
 https://www.melexis.com/-/media/files/documents/datasheets/mlx90614-datasheet-melexis.pdf
 */
 
