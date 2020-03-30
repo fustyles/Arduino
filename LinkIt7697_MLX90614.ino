@@ -6,8 +6,8 @@ https://www.facebook.com/francefu
 Library: https://github.com/felias-fogg/SlowSoftI2CMaster
 
 MLX90614
-SDA: LinkIt7697 pin 9
-SCL: LinkIt7697 pin 8
+SDA: pin 9
+SCL: pin 8
 */
 
 #include <SlowSoftI2CMaster.h>
