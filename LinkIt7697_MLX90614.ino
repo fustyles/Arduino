@@ -1,6 +1,6 @@
 /* 
 LinkIt7697 reads out the MLX90614 infrared thermometer
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-3-30 21:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-3-30 22:00
 https://www.facebook.com/francefu
 
 Library: https://github.com/felias-fogg/SlowSoftI2CMaster
@@ -39,12 +39,12 @@ float getTemperature(int scale, float compensation) {
   si.i2c_stop();
   
   //This converts high and low bytes together and processes temperature, MSB is a error bit and is ignored for temps
-  double factor = 0.02; // 0.02 degrees per LSB (measurement resolution of the MLX90614)
+  double myfactor = 0.02; // 0.02 degrees per LSB (measurement resolution of the MLX90614)
   double kelvin = 0x0000; // zero out the data
   
   // This masks off the error bit of the high byte, then moves it left 8 bits and adds the low byte.
   kelvin = (double)(((data_high & 0x007F) << 8) + data_low);
-  kelvin = (kelvin * factor)-0.01;
+  kelvin = (kelvin * myfactor)-0.01;
   
   float celcius = kelvin - 273.15;
   float fahrenheit = (celcius*1.8) + 32;
