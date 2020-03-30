@@ -1,6 +1,6 @@
 /* 
 LinkIt7697 reads out the MLX90614 infrared thermometer
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-3-30 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-3-30 21:30
 https://www.facebook.com/francefu
 
 Library: https://github.com/felias-fogg/SlowSoftI2CMaster
@@ -12,10 +12,6 @@ SCL: pin 8
 
 #include <SlowSoftI2CMaster.h>
 SlowSoftI2CMaster si = SlowSoftI2CMaster(9, 8, true);
-
-#define I2C_7BITADDR 0x68 // DS1307
-#define MEMLOC 0x0A
-#define ADDRLEN 1
 
 void setup(){
   Serial.begin(9600);
