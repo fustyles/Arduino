@@ -3,10 +3,11 @@ LinkIt7697 reads out the MLX90614 infrared thermometer
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-3-30 21:00
 https://www.facebook.com/francefu
 
+Library: https://github.com/felias-fogg/SlowSoftI2CMaster
+
+MLX90614
 SDA: pin 9
 SCL: pin 8
-
-Library: https://github.com/felias-fogg/SlowSoftI2CMaster
 */
 
 #include <SlowSoftI2CMaster.h>
