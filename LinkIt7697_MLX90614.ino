@@ -39,11 +39,12 @@ float getTemperature(int scale, float compensation) {
   si.i2c_stop();
   
   //This converts high and low bytes together and processes temperature, MSB is a error bit and is ignored for temps
-  double myfactor = 0.02; // 0.02 degrees per LSB (measurement resolution of the MLX90614)
+
   double kelvin = 0x0000; // zero out the data
-  
   // This masks off the error bit of the high byte, then moves it left 8 bits and adds the low byte.
   kelvin = (double)(((data_high & 0x007F) << 8) + data_low);
+  
+  double myfactor = 0.02; // 0.02 degrees per LSB (measurement resolution of the MLX90614)
   kelvin = (kelvin * myfactor)-0.01;
   
   float celcius = kelvin - 273.15;
