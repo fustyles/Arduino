@@ -34,7 +34,7 @@ float getMLX90614(int scale, float compensation) {
   int pec = 0;
   
   si.i2c_start(dev+I2C_WRITE);
-  si.i2c_write(0x07);
+  si.i2c_write(0x07);    //object --> si.i2c_write(0x07);    ambient --> si.i2c_write(0x06);
   // read
   si.i2c_rep_start(dev+I2C_READ);
   data_low = si.i2c_read(false); //Read 1 byte and then send ack
