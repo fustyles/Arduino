@@ -14,7 +14,7 @@ https://www.melexis.com/-/media/files/documents/datasheets/mlx90614-datasheet-me
 */
 
 #include <SlowSoftI2CMaster.h>
-SlowSoftI2CMaster si = SlowSoftI2CMaster(9, 8, true);
+SlowSoftI2CMaster si = SlowSoftI2CMaster(9, 8, true);  //You can change pin settings.
 
 void setup(){
   Serial.begin(9600);
