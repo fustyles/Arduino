@@ -1,13 +1,16 @@
 /* 
-LinkIt7697 (or ESP32) reads out the MLX90614 infrared thermometer
+LinkIt7697 (or ESP32) reads out the MLX90615 infrared thermometer
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-3-30 23:30
 https://www.facebook.com/francefu
 
 Library: https://github.com/felias-fogg/SlowSoftI2CMaster
 
-MLX90614
+MLX90615
 SDA: pin 9
 SCL: pin 8
+
+mlx90615-datasheet
+https://www.melexis.com/-/media/files/documents/datasheets/mlx90615-datasheet-melexis.pdf
 */
 
 #include <SlowSoftI2CMaster.h>
