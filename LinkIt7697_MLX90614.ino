@@ -1,5 +1,5 @@
 /* 
-LinkIt7697 reads out the MLX90614 infrared thermometer
+LinkIt7697 (or ESP32) reads out the MLX90614 infrared thermometer
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-3-30 23:30
 https://www.facebook.com/francefu
 
