@@ -5,6 +5,9 @@ https://www.facebook.com/francefu
 
 Library: https://github.com/felias-fogg/SlowSoftI2CMaster
 
+Refer to the code.
+https://github.com/felias-fogg/SoftI2CMaster/blob/master/examples/MLX90614Soft/MLX90614Soft.ino
+
 MLX90615 Datasheet
 https://www.melexis.com/-/media/files/documents/datasheets/mlx90615-datasheet-melexis.pdf
 
