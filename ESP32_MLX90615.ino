@@ -17,7 +17,10 @@ https://github.com/felias-fogg/SoftI2CMaster/blob/master/examples/MLX90614Soft/M
 
 #include <SlowSoftI2CMaster.h>
 // SlowSoftI2CMaster(uint8_t sda, uint8_t scl, bool pullup)
-SlowSoftI2CMaster si = SlowSoftI2CMaster(32, 33, true);  //You can change pin settings.
+
+SlowSoftI2CMaster si = SlowSoftI2CMaster(32, 33, true);  //ESP32 (SDA:gpio32, SCL:gpio33)
+//SlowSoftI2CMaster si = SlowSoftI2CMaster(4, 5, true);  //ESP12E (SDA:gpio4, SCL:gpio5)
+//SlowSoftI2CMaster si = SlowSoftI2CMaster(2, 3, true);  //LinkIt7697 (SDA:P2, SCL:P3)
 
 void setup(){
   Serial.begin(9600);
