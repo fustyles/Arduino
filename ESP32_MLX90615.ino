@@ -17,7 +17,7 @@ https://github.com/felias-fogg/SoftI2CMaster/blob/master/examples/MLX90614Soft/M
 
 #include <SlowSoftI2CMaster.h>
 // SlowSoftI2CMaster(uint8_t sda, uint8_t scl, bool pullup)
-SlowSoftI2CMaster si = SlowSoftI2CMaster(16, 17, true);  //You can change pin settings.
+SlowSoftI2CMaster si = SlowSoftI2CMaster(32, 33, true);  //You can change pin settings.
 
 void setup(){
   Serial.begin(9600);
