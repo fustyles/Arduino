@@ -19,7 +19,7 @@ https://github.com/felias-fogg/SoftI2CMaster/blob/master/examples/MLX90614Soft/M
 // SlowSoftI2CMaster(uint8_t sda, uint8_t scl, bool pullup)
 
 SlowSoftI2CMaster si = SlowSoftI2CMaster(32, 33, true);  //ESP32 (SDA:P32, SCL:P33)
-//SlowSoftI2CMaster si = SlowSoftI2CMaster(4, 5, true);  //ESP12E (SDA:gpio4(D2), SCL:gpio5(D1))
+//SlowSoftI2CMaster si = SlowSoftI2CMaster(14, 12, true);  //ESP12E (SDA:gpio14(D5), SCL:gpio12(D6))
 //SlowSoftI2CMaster si = SlowSoftI2CMaster(2, 3, true);  //LinkIt7697 (SDA:P2, SCL:P3)
 
 void setup(){
