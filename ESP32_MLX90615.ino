@@ -1,6 +1,6 @@
 /* 
 ESP32 (or LinkIt7697) reads out the MLX90615 or MLX90614 infrared thermometer
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-4-7 09:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-4-7 01:00
 https://www.facebook.com/francefu
 
 Library: https://github.com/felias-fogg/SlowSoftI2CMaster
