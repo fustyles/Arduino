@@ -25,8 +25,6 @@ void setup(){
 }
 
 void loop(){
-  //scale: 0(Celcius), 1(Fahrenheit), 2(Kelvin)
-
   //MLX90615
   float temperature = getMLX9061X(0, 0.00, 0x5B ,0x27);  //MLX90615 object
   //float temperature = getMLX9061X(0, 0.00, 0x5B ,0x26);  //MLX90615 ambient
@@ -40,6 +38,7 @@ void loop(){
   delay(1000);
 }
 
+//scale: 0(Celcius), 1(Fahrenheit), 2(Kelvin)
 float getMLX9061X(byte scale, float compensation, uint8_t addr ,uint8_t obj) {
   int dev = addr<<1;
   int data_low = 0;
