@@ -34,7 +34,7 @@ void loop(){
   //float temperature = getMLX9061X(0, 0.00, 0x5A ,0x06);  //MLX90614 ambient   
      
   Serial.println(temperature);
-  delay(1000); // wait a second before printing again
+  delay(1000);
 }
 
 float getMLX9061X(byte scale, float compensation, uint8_t addr ,uint8_t obj) {
