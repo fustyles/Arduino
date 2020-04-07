@@ -31,8 +31,8 @@ void loop(){
   
   //MLX90614
   //float temperature = getMLX9061X(0, 0.00, 0x5A ,0x07);  //MLX90614 object1
+  //float temperature = getMLX9061X(0, 0.00, 0x5A ,0x06);  //MLX90614 ambient 
   //float temperature = getMLX9061X(0, 0.00, 0x5A ,0x08);  //MLX90614 object2
-  //float temperature = getMLX9061X(0, 0.00, 0x5A ,0x06);  //MLX90614 ambient   
      
   Serial.println(temperature);
   delay(1000);
