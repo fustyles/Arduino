@@ -1099,8 +1099,26 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         //context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
 
         result.innerHTML+= rect.color+","+rect.x+","+rect.y+","+rect.width+","+rect.height+"<br>";
-        if (rect.color==tracker.customColor&&lastValue!=tracker.customColor) {  //當偵測到自訂顏色時執行指令
-          lastValue = tracker.customColor;
+        if (rect.color=="red"&&lastValue!="red") {
+          lastValue = "red";
+          /*
+          var gpio = 4;
+          var val = 10;
+          var cmd = "analogwrite";  //digitalwrite
+          ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
+          */
+        }
+        else if (rect.color=="green"&&lastValue!="green") {
+          lastValue = "green";
+          /*
+          var gpio = 4;
+          var val = 10;
+          var cmd = "analogwrite";  //digitalwrite
+          ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
+          */
+        }
+        else if (rect.color=="blue"&&lastValue!="blue") {
+          lastValue = "blue";
           /*
           var gpio = 4;
           var val = 10;
