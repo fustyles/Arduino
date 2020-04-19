@@ -282,7 +282,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       if (restartCount<=2) {
         show.innerHTML = "Get still error. <br>Restart ESP32-CAM "+restartCount+" times.";
         myTimer = setInterval(function(){getStream.click();},10000);
-        ifr.src = document.location.origin+'?restart';
+        //ifr.src = document.location.origin+'?restart';
       }
       else
         show.innerHTML = "Get still error. <br>Please close the page and check ESP32-CAM.";
