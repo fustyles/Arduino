@@ -139,13 +139,13 @@ void setup()
   sensor_t * s = esp_camera_sensor_get();
   s->set_framesize(s, FRAMESIZE_QQVGA);  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
   
-  predictionCapturedPhoto();
+  predictionCapturedPhoto();  //Classification
 }
 
 void loop()
 {
   delay(10000);
-  //predictionCapturedPhoto();
+  //predictionCapturedPhoto();  //Classification
 }
 
 void predictionCapturedPhoto() {
