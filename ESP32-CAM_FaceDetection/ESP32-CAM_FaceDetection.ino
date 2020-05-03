@@ -125,11 +125,11 @@ void loop() {
           mtmn_config.o_threshold.nms = 0.7;
           mtmn_config.o_threshold.candidate_number = 1;
           
-          fmt2rgb888(fb->buf, fb->len, fb->format, image_matrix->item);
-          box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);
+          fmt2rgb888(fb->buf, fb->len, fb->format, image_matrix->item);  //JPEG格式轉換RGB格式
+          box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);  //偵測人臉
           if (net_boxes){
-            Serial.println("persons = " + String(net_boxes->len));
-            for (int i = 0; i < net_boxes->len; i++){
+            Serial.println("persons = " + String(net_boxes->len));  //偵測到的人臉數
+            for (int i = 0; i < net_boxes->len; i++){  //列舉人臉位置
                 Serial.println("index = " + String(i));
                 int x = (int)net_boxes->box[i].box_p[0];
                 Serial.println("x = " + String(x));
