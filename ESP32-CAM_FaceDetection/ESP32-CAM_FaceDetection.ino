@@ -123,7 +123,7 @@ void loop() {
           fmt2rgb888(fb->buf, fb->len, fb->format, image_matrix->item);  //JPEG格式轉換RGB格式
           box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);  //偵測人臉
           if (net_boxes){
-            Serial.println("persons = " + String(net_boxes->len));  //偵測到的人臉數
+            Serial.println("faces = " + String(net_boxes->len));  //偵測到的人臉數
             for (int i = 0; i < net_boxes->len; i++){  //列舉人臉位置與大小
                 Serial.println("index = " + String(i));
                 int x = (int)net_boxes->box[i].box_p[0];
@@ -142,7 +142,7 @@ void loop() {
             free(net_boxes);
           }
           else {
-            Serial.println("Nobody");
+            Serial.println("No Face");
             Serial.println();
           }
           dl_matrix3du_free(image_matrix);
