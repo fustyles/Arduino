@@ -124,6 +124,7 @@ void loop() {
           box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);  //偵測人臉
           if (net_boxes){
             Serial.println("faces = " + String(net_boxes->len));  //偵測到的人臉數
+            Serial.println();
             for (int i = 0; i < net_boxes->len; i++){  //列舉人臉位置與大小
                 Serial.println("index = " + String(i));
                 int x = (int)net_boxes->box[i].box_p[0];
