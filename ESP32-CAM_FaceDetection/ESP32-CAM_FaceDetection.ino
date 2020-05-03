@@ -130,7 +130,7 @@ void loop() {
           if (net_boxes){
             Serial.println("persons = " + String(net_boxes->len));
             for (int i = 0; i < net_boxes->len; i++){
-                Serial.println("person" + String(i));
+                Serial.println("index = " + String(i));
                 int x = (int)net_boxes->box[i].box_p[0];
                 Serial.println("x = " + String(x));
                 int y = (int)net_boxes->box[i].box_p[1];
