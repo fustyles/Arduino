@@ -107,7 +107,7 @@ void loop() {
   if (!fb) {
       Serial.println("Camera capture failed");
   } else {
-      image_matrix = dl_matrix3du_alloc(1, fb->width, fb->height, 3);
+      image_matrix = dl_matrix3du_alloc(1, fb->width, fb->height, 3);  //分配內部記憶體
       if (!image_matrix) {
           Serial.println("dl_matrix3du_alloc failed");
       } else {
@@ -129,7 +129,7 @@ void loop() {
           box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);  //偵測人臉
           if (net_boxes){
             Serial.println("persons = " + String(net_boxes->len));  //偵測到的人臉數
-            for (int i = 0; i < net_boxes->len; i++){  //列舉人臉位置
+            for (int i = 0; i < net_boxes->len; i++){  //列舉人臉位置與大小
                 Serial.println("index = " + String(i));
                 int x = (int)net_boxes->box[i].box_p[0];
                 Serial.println("x = " + String(x));
