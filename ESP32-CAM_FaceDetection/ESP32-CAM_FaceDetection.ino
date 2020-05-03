@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Face detection data 
+ESP32-CAM Face detection
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-4 00:00
 https://www.facebook.com/francefu
 */
