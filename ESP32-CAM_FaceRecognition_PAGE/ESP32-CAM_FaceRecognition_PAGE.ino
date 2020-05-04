@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Face Recognition
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-26 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-5 01:00
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
@@ -622,6 +622,17 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         }
         Feedback+="</table>";
       }  
+      else if (cmd=="deleteface") {  //刪除註冊人臉
+        delete_face(&id_list);
+        face_id_init(&id_list, FACE_ID_SAVE_NUMBER, ENROLL_CONFIRM_TIMES);
+        
+        int name_length = sizeof(recognize_face_matched_name) / sizeof(recognize_face_matched_name[0]);
+        Feedback="<table style=\"color:white\"><tr><td>matched_id</td><td>name</td></tr>";
+        for (int i=0;i<name_length;i++) {
+          Feedback+="<tr><td>"+String(i)+"</td><td>"+recognize_face_matched_name[i]+"</td></tr>";
+        }
+        Feedback+="</table>";
+      }      
       else {
         Feedback="Command is not defined";
       }
@@ -1137,7 +1148,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                             </select>
                             <input type="text" id="facename" size="6" style="height:16px">
                             <button onclick="var ifr = document.getElementById('ifr');var ifrlab = document.getElementById('ifrlab');ifr.style.display='block';ifrlab.style.display='block';ifr.src=document.location.origin+'/control?facename='+document.getElementById('faceid').value+';'+document.getElementById('facename').value;">Set</button>
-                        </div>                        
+                        </div>    
+                        <div class="input-group" id="facename-group">
+                            <label for="facename"></label>
+                            <button onclick="var ifr = document.getElementById('ifr');ifr.src=document.location.origin+'/control?deleteface'">Clear Face</button>
+                        </div> 
                         <div class="input-group" id="contrast-group">
                             <label id="ifrlab" style="display:none;" for="ifr">Name List</label>
                             <iframe id="ifr" style="display:none;width:170px"></iframe>
