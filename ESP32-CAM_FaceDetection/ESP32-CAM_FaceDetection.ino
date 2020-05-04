@@ -144,7 +144,7 @@ void loop() {
             free(net_boxes);
           }
           else {
-            Serial.println("No Face");
+            Serial.println("No Face");    //未偵測到的人臉
             Serial.println();
           }
           dl_matrix3du_free(image_matrix);
