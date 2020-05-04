@@ -9,7 +9,7 @@ https://www.facebook.com/francefu
 #include "soc/soc.h"             //用於電源不穩不重開機 
 #include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機 
 #include "esp_camera.h"          //視訊函式
-#include "fd_forward.h"
+#include "fd_forward.h"          //人臉偵測函式庫
 
 //
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
