@@ -122,7 +122,7 @@ void loop() {
           mtmn_config.o_threshold.candidate_number = 1;
           
           fmt2rgb888(fb->buf, fb->len, fb->format, image_matrix->item);  //影像格式轉換RGB格式
-          box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);  //偵測人臉
+          box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);  //偵測人臉取得臉框數據
           if (net_boxes){
             Serial.println("faces = " + String(net_boxes->len));  //偵測到的人臉數
             Serial.println();
