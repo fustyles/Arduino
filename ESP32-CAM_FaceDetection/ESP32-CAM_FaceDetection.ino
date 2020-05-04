@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Face detection
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-4 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-5 01:00
 https://www.facebook.com/francefu
 */
 
@@ -34,8 +34,6 @@ https://www.facebook.com/francefu
 #define VSYNC_GPIO_NUM    25
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
-
-static mtmn_config_t mtmn_config = {0};
 
 void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
@@ -107,6 +105,7 @@ void loop() {
           Serial.println("dl_matrix3du_alloc failed");
       } else {
           //臉部偵測參數設定
+          static mtmn_config_t mtmn_config = {0};
           mtmn_config.type = FAST;
           mtmn_config.min_face = 80;
           mtmn_config.pyramid = 0.707;
