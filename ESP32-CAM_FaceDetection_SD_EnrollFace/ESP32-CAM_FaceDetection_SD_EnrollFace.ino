@@ -177,21 +177,24 @@ void setup() {
                 //註冊人臉
                 if (i==0) {
                   aligned_face = dl_matrix3du_alloc(1, FACE_WIDTH, FACE_HEIGHT, 3);
-                  if(!aligned_face){
-                      Serial.println("Could not allocate face recognition buffer");
-                  } 
-                  else {
-                    left_sample_face = enroll_face(&id_list, aligned_face);
-        
-                    if(left_sample_face == (ENROLL_CONFIRM_TIMES - 1)){
-                        Serial.printf("Enrolling Face ID: %d\n", id_list.tail);
+                  if (align_face(net_boxes, image_matrix, aligned_face) == ESP_OK){
+                    if(!aligned_face){
+                        Serial.println("Could not allocate face recognition buffer");
+                    } 
+                    else {
+                      left_sample_face = enroll_face(&id_list, aligned_face);
+          
+                      if(left_sample_face == (ENROLL_CONFIRM_TIMES - 1)){
+                          Serial.printf("Enrolling Face ID: %d\n", id_list.tail);
+                      }
+                      Serial.printf("Enrolling Face ID: %d sample %d\n", id_list.tail, ENROLL_CONFIRM_TIMES - left_sample_face);
+                      if (left_sample_face == 0){
+                          Serial.printf("Enrolled Face ID: %d\n", id_list.tail);
+                      }
+                      Serial.println();
                     }
-                    Serial.printf("Enrolling Face ID: %d sample %d\n", id_list.tail, ENROLL_CONFIRM_TIMES - left_sample_face);
-                    if (left_sample_face == 0){
-                        Serial.printf("Enrolled Face ID: %d\n", id_list.tail);
-                    }
+                    dl_matrix3du_free(aligned_face);
                   }
-                  dl_matrix3du_free(aligned_face);
                 }
             } 
             free(net_boxes->score);
