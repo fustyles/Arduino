@@ -98,10 +98,11 @@ void setup() {
   }  
   
   fs::FS &fs = SD_MMC;
-  String filename[2] = {"/1.jpg", "/2.jpg"};   //FRAMESIZE = CIF (width:400, height:296)
+  
+  //Save the captured Images with your face to SD card:  http://192.168.xxx.xxx/capture  (FRAMESIZE_CIF)
+  String filename[2] = {"/1.jpg", "/2.jpg"};   //FRAMESIZE_CIF (width:400, height:296)
   int image_width = 400;
   int image_height = 296;
-  //Save the captured Images with your face to SD card:  http://192.168.xxx.xxx/capture  (FRAMESIZE_CIF)
   
   for (int j=0;j<sizeof(filename)/sizeof(*filename);j++) {
     //讀取照片
