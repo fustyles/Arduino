@@ -176,7 +176,7 @@ void setup() {
 
                 //註冊人臉
                 if (i==0) {
-                  aligned_face = dl_matrix3du_alloc(1, w, h, 3);
+                  aligned_face = dl_matrix3du_alloc(1, FACE_WIDTH, FACE_HEIGHT, 3);
                   if(!aligned_face){
                       Serial.println("Could not allocate face recognition buffer");
                   } 
