@@ -36,7 +36,6 @@ int image_height = 296;
 
 //人臉辨識最大註冊人數
 #define FACE_ID_SAVE_NUMBER 7
-
 //設定人臉辨識顯示的人名
 String recognize_face_matched_name[7] = {"Name0","Name1","Name2","Name3","Name4","Name5","Name6"};
 
