@@ -99,6 +99,8 @@ void setup() {
   
   fs::FS &fs = SD_MMC;
   String filename[2] = {"/1.jpg", "/2.jpg"};   //FRAMESIZE = CIF (width:400, height:296)
+  int image_width = 400;
+  int image_height = 296;
   //Save the captured Images with your face to SD card:  http://192.168.xxx.xxx/capture  (FRAMESIZE_CIF)
   
   for (int j=0;j<sizeof(filename)/sizeof(*filename);j++) {
@@ -120,7 +122,7 @@ void setup() {
   
       //偵測是否有人臉
       dl_matrix3du_t *image_matrix = NULL;
-      image_matrix = dl_matrix3du_alloc(1, 400, 296, 3);  //分配內部記憶體
+      image_matrix = dl_matrix3du_alloc(1, image_width, image_height, 3);  //分配內部記憶體
       if (!image_matrix) {
           Serial.println("dl_matrix3du_alloc failed");
       } else {
