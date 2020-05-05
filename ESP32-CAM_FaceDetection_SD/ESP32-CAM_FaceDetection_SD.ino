@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Face detection (SD Card)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-5 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-5 22:00
 https://www.facebook.com/francefu
 */
 
@@ -171,6 +171,7 @@ void setup() {
           }
           dl_matrix3du_free(image_matrix);
       }
+      free(buf);
     }
     file.close();
   } 
