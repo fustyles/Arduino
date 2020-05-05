@@ -29,7 +29,7 @@ const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 
 //人臉辨識註冊人臉畫面捕捉張數
 #define ENROLL_CONFIRM_TIMES 5
-//Save the captured Images with your face to SD card:  http://192.168.xxx.xxx/capture  (FRAMESIZE_CIF)
+//Save the captured Images(FRAMESIZE_CIF) with your face to SD card
 String filename[5] = {"/1.jpg", "/2.jpg", "/3.jpg", "/4.jpg", "/5.jpg"};   //FRAMESIZE_CIF (width:400, height:296)
 int image_width = 400;
 int image_height = 296;
