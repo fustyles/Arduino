@@ -1,6 +1,6 @@
 /*
-ESP32-CAM Face Recognition and enroll faces from SD card
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-5 23:30
+ESP32-CAM Load images from SD card to enroll face and recognize face
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-6 22:00
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
@@ -118,8 +118,8 @@ httpd_handle_t stream_httpd = NULL;
 httpd_handle_t camera_httpd = NULL;
 
 static mtmn_config_t mtmn_config = {0};
-static int8_t detection_enabled = 0;
-static int8_t recognition_enabled = 0;
+static int8_t detection_enabled = 1;
+static int8_t recognition_enabled = 1;
 static int8_t is_enrolling = 0;
 static face_id_list id_list = {0};
 static int8_t flash_value = 0;
@@ -260,20 +260,13 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
                   rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] No Name", matched_id);
                 /*
                   //You can control a relay module to open the door.
-                  if (matched_id==0) {	
-
-                  } else if (matched_id==1) {	
-
-                  } else if (matched_id==2) {	
-
-                  } else if (matched_id==3) {	
-
-                  } else if (matched_id==4) {	
-
-                  } else if (matched_id==5) {	
-
+                  if (matched_id==0) {  
+                  } else if (matched_id==1) { 
+                  } else if (matched_id==2) { 
+                  } else if (matched_id==3) { 
+                  } else if (matched_id==4) { 
+                  } else if (matched_id==5) { 
                   } else if (matched_id==6) {
-
                   }
                 */
             } else {
@@ -655,7 +648,8 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       return httpd_resp_send(req, response, strlen(response));
     } 
     else {
-      int val = atoi(value); 
+      int val = atoi(value);
+      Serial.println(String(val)); 
       sensor_t * s = esp_camera_sensor_get();
       int res = 0;
   
@@ -722,7 +716,7 @@ static esp_err_t status_handler(httpd_req_t *req){
     p+=sprintf(p, "\"contrast\":%d,", s->status.contrast);
     p+=sprintf(p, "\"face_detect\":%u,", detection_enabled);
     p+=sprintf(p, "\"face_enroll\":%u,", is_enrolling);
-    p+=sprintf(p, "\"face_recognize\":%u", recognition_enabled);
+    p+=sprintf(p, "\"face_recognize\":%u,", recognition_enabled);
     p+=sprintf(p, "\"falsh\":%u", flash_value);
     *p++ = '}';
     *p++ = 0;
@@ -745,19 +739,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 color: #EFEFEF;
                 font-size: 16px
             }
-
             h2 {
                 font-size: 18px
             }
-
             section.main {
                 display: flex
             }
-
             #menu,section.main {
                 flex-direction: column
             }
-
             #menu {
                 display: none;
                 flex-wrap: nowrap;
@@ -768,13 +758,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 margin-top: -10px;
                 margin-right: 10px;
             }
-
             #content {
                 display: flex;
                 flex-wrap: wrap;
                 align-items: stretch
             }
-
             figure {
                 padding: 0px;
                 margin: 0;
@@ -787,7 +775,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 -webkit-margin-end: 0;
                 margin-inline-end: 0
             }
-
             figure img {
                 display: block;
                 width: 100%;
@@ -795,14 +782,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 border-radius: 4px;
                 margin-top: 8px;
             }
-
             @media (min-width: 800px) and (orientation:landscape) {
                 #content {
                     display:flex;
                     flex-wrap: nowrap;
                     align-items: stretch
                 }
-
                 figure img {
                     display: block;
                     max-width: 100%;
@@ -810,7 +795,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                     width: auto;
                     height: auto
                 }
-
                 figure {
                     padding: 0 0 0 0px;
                     margin: 0;
@@ -824,51 +808,42 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                     margin-inline-end: 0
                 }
             }
-
             section#buttons {
                 display: flex;
                 flex-wrap: nowrap;
                 justify-content: space-between
             }
-
             #nav-toggle {
                 cursor: pointer;
                 display: block
             }
-
             #nav-toggle-cb {
                 outline: 0;
                 opacity: 0;
                 width: 0;
                 height: 0
             }
-
             #nav-toggle-cb:checked+#menu {
                 display: block
             }
-
             .input-group {
                 display: flex;
                 flex-wrap: nowrap;
                 line-height: 22px;
                 margin: 5px 0
             }
-
             .input-group>label {
                 display: inline-block;
                 padding-right: 10px;
                 min-width: 47%
             }
-
             .input-group input,.input-group select {
                 flex-grow: 1
             }
-
             .range-max,.range-min {
                 display: inline-block;
                 padding: 0 5px
             }
-
             button {
                 display: block;
                 margin: 5px;
@@ -882,20 +857,16 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 font-size: 16px;
                 outline: 0
             }
-
             button:hover {
                 background: #ff494d
             }
-
             button:active {
                 background: #f21c21
             }
-
             button.disabled {
                 cursor: default;
                 background: #a0a0a0
             }
-
             input[type=range] {
                 -webkit-appearance: none;
                 width: 100%;
@@ -904,11 +875,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 cursor: pointer;
                 margin: 0
             }
-
             input[type=range]:focus {
                 outline: 0
             }
-
             input[type=range]::-webkit-slider-runnable-track {
                 width: 100%;
                 height: 2px;
@@ -917,7 +886,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 border-radius: 0;
                 border: 0 solid #EFEFEF
             }
-
             input[type=range]::-webkit-slider-thumb {
                 border: 1px solid rgba(0,0,30,0);
                 height: 22px;
@@ -928,11 +896,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 -webkit-appearance: none;
                 margin-top: -11.5px
             }
-
             input[type=range]:focus::-webkit-slider-runnable-track {
                 background: #EFEFEF
             }
-
             input[type=range]::-moz-range-track {
                 width: 100%;
                 height: 2px;
@@ -941,7 +907,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 border-radius: 0;
                 border: 0 solid #EFEFEF
             }
-
             input[type=range]::-moz-range-thumb {
                 border: 1px solid rgba(0,0,30,0);
                 height: 22px;
@@ -950,7 +915,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 background: #ff3034;
                 cursor: pointer
             }
-
             input[type=range]::-ms-track {
                 width: 100%;
                 height: 2px;
@@ -959,19 +923,16 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 border-color: transparent;
                 color: transparent
             }
-
             input[type=range]::-ms-fill-lower {
                 background: #EFEFEF;
                 border: 0 solid #EFEFEF;
                 border-radius: 0
             }
-
             input[type=range]::-ms-fill-upper {
                 background: #EFEFEF;
                 border: 0 solid #EFEFEF;
                 border-radius: 0
             }
-
             input[type=range]::-ms-thumb {
                 border: 1px solid rgba(0,0,30,0);
                 height: 22px;
@@ -981,15 +942,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 cursor: pointer;
                 height: 2px
             }
-
             input[type=range]:focus::-ms-fill-lower {
                 background: #EFEFEF
             }
-
             input[type=range]:focus::-ms-fill-upper {
                 background: #363636
             }
-
             .switch {
                 display: block;
                 position: relative;
@@ -997,14 +955,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 font-size: 16px;
                 height: 22px
             }
-
             .switch input {
                 outline: 0;
                 opacity: 0;
                 width: 0;
                 height: 0
             }
-
             .slider {
                 width: 50px;
                 height: 22px;
@@ -1012,12 +968,10 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 cursor: pointer;
                 background-color: grey
             }
-
             .slider,.slider:before {
                 display: inline-block;
                 transition: .4s
             }
-
             .slider:before {
                 position: relative;
                 content: "";
@@ -1028,16 +982,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 top: 3px;
                 background-color: #fff
             }
-
             input:checked+.slider {
                 background-color: #ff3034
             }
-
             input:checked+.slider:before {
                 -webkit-transform: translateX(26px);
                 transform: translateX(26px)
             }
-
             select {
                 border: 1px solid #363636;
                 font-size: 14px;
@@ -1045,12 +996,10 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 outline: 0;
                 border-radius: 5px
             }
-
             .image-container {
                 position: relative;
                 min-width: 160px
             }
-
             .close {
                 position: absolute;
                 right: 5px;
@@ -1064,7 +1013,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 line-height: 18px;
                 cursor: pointer
             }
-
             .hidden {
                 display: none
             }
@@ -1364,7 +1312,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
               }
             }
           })
-
         </script>
     </body>
 </html>)rawliteral";
