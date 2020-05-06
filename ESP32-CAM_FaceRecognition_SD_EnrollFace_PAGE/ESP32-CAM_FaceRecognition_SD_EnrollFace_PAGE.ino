@@ -1660,7 +1660,7 @@ void setup() {
             free(net_boxes);
           }
           else {
-            Serial.println("No Face");    //未偵測到的人臉
+            Serial.println("No Face");    //未偵測到人臉
             Serial.println();
           }
       }
