@@ -10,7 +10,7 @@ http://192.168.xxx.xxx/status      //取得視訊參數值
 
 //自訂指令格式  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://192.168.xxx.xxx/control?facename=matched_id;name  //設定姓名
-http://192.168.xxx.xxx/control?deleteface  //清除人臉註冊
+http://192.168.xxx.xxx/control?clearface  //清除人臉註冊
 
 //官方指令格式  http://192.168.xxx.xxx/control?var=xxx&val=xxx
 http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
@@ -45,10 +45,10 @@ String recognize_face_matched_name[7] = {"Name0","Name1","Name2","Name3","Name4"
 #include "soc/soc.h"             //用於電源不穩不重開機 
 #include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機 
 #include "esp_camera.h"          //視訊函式
-#include "img_converters.h"
-#include "fb_gfx.h"
+#include "img_converters.h"      //影像格式轉換函式
+#include "fb_gfx.h"              //影像繪圖函式
 #include "fd_forward.h"          //人臉偵測函式
-#include "fr_forward.h"
+#include "fr_forward.h"          //人臉辨識函式
 #include "FS.h"                  //檔案系統函式
 #include "SD_MMC.h"              //SD卡存取函式
 #include "esp_http_server.h"
@@ -629,7 +629,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         }
         Feedback+="</table>";
       }  
-      else if (cmd=="deleteface") {  //刪除註冊人臉
+      else if (cmd=="clearface") {  //刪除註冊人臉
         delete_face(&id_list);
         face_id_init(&id_list, FACE_ID_SAVE_NUMBER, ENROLL_CONFIRM_TIMES);
         
@@ -1158,7 +1158,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                         </div>    
                         <div class="input-group" id="facename-group">
                             <label for="facename"></label>
-                            <button onclick="var ifr = document.getElementById('ifr');ifr.src=document.location.origin+'/control?deleteface'">Clear Face</button>
+                            <button onclick="var ifr = document.getElementById('ifr');ifr.src=document.location.origin+'/control?clearface'">Clear Face</button>
                         </div> 
                         <div class="input-group" id="contrast-group">
                             <label id="ifrlab" style="display:none;" for="ifr">Name List</label>
