@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Face Recognition and enroll faces from SD card
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-6 23:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-7 00:00
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
@@ -1453,6 +1453,21 @@ void setup() {
   sensor_t * s = esp_camera_sensor_get();
   s->set_framesize(s, FRAMESIZE_CIF);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
+  //臉部偵測參數設定  https://github.com/espressif/esp-face/blob/master/face_detection/README.md
+  mtmn_config.type = FAST;
+  mtmn_config.min_face = 80;
+  mtmn_config.pyramid = 0.707;
+  mtmn_config.pyramid_times = 4;
+  mtmn_config.p_threshold.score = 0.6;
+  mtmn_config.p_threshold.nms = 0.7;
+  mtmn_config.p_threshold.candidate_number = 20;
+  mtmn_config.r_threshold.score = 0.7;
+  mtmn_config.r_threshold.nms = 0.7;
+  mtmn_config.r_threshold.candidate_number = 10;
+  mtmn_config.o_threshold.score = 0.7;
+  mtmn_config.o_threshold.nms = 0.7;
+  mtmn_config.o_threshold.candidate_number = 1;
+          
   //閃光燈(GPIO4)
   ledcAttachPin(4, 4);  
   ledcSetup(4, 5000, 8);
@@ -1545,21 +1560,6 @@ void setup() {
       if (!image_matrix) {
           Serial.println("dl_matrix3du_alloc failed");
       } else {
-          //臉部偵測參數設定  https://github.com/espressif/esp-face/blob/master/face_detection/README.md
-          mtmn_config.type = FAST;
-          mtmn_config.min_face = 80;
-          mtmn_config.pyramid = 0.707;
-          mtmn_config.pyramid_times = 4;
-          mtmn_config.p_threshold.score = 0.6;
-          mtmn_config.p_threshold.nms = 0.7;
-          mtmn_config.p_threshold.candidate_number = 20;
-          mtmn_config.r_threshold.score = 0.7;
-          mtmn_config.r_threshold.nms = 0.7;
-          mtmn_config.r_threshold.candidate_number = 10;
-          mtmn_config.o_threshold.score = 0.7;
-          mtmn_config.o_threshold.nms = 0.7;
-          mtmn_config.o_threshold.candidate_number = 1;
-          
           fmt2rgb888((uint8_t*)buf, file.size(), PIXFORMAT_JPEG, image_matrix->item);  //影像格式轉換RGB格式
           box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);  //偵測人臉取得臉框數據
           if (net_boxes){
@@ -1657,9 +1657,6 @@ void loop() {
     box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);
     if (net_boxes){
         face_id = run_face_recognition(image_matrix, net_boxes);
-        if (face_id>=0) {  //如果有偵測到人臉
-          FaceMatched(face_id);  //偵測到註冊人臉執行指令控制
-        }
         free(net_boxes->score);
         free(net_boxes->box);
         free(net_boxes->landmark);
@@ -1672,6 +1669,7 @@ void loop() {
 }
 
 void FaceMatched(int faceid) {  //偵測到註冊人臉執行指令控制
+  Serial.println("execute->"+String(faceid));
   if (faceid==0) {  
   } 
   else if (faceid==1) { 
