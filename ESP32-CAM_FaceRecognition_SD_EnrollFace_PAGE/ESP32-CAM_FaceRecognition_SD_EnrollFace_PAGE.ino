@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Face Recognition and enroll faces from SD card
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-7 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-7 00:30
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
@@ -1636,7 +1636,6 @@ void loop() {
     size_t out_len, out_width, out_height;
     uint8_t * out_buf;
     bool s;
-    int face_id = 0; 
     dl_matrix3du_t *image_matrix = dl_matrix3du_alloc(1, fb->width, fb->height, 3);
     if (!image_matrix) {
         esp_camera_fb_return(fb);
@@ -1656,7 +1655,7 @@ void loop() {
     }
     box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);
     if (net_boxes){
-        face_id = run_face_recognition(image_matrix, net_boxes);
+        run_face_recognition(image_matrix, net_boxes);
         free(net_boxes->score);
         free(net_boxes->box);
         free(net_boxes->landmark);
