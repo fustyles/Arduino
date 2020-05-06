@@ -32,8 +32,9 @@ boolean streamState = false;
 
 //人臉辨識註冊人臉畫面捕捉張數
 #define ENROLL_CONFIRM_TIMES 5
-//Save the captured Images(FRAMESIZE_CIF) with your face to SD card
-String filename[5] = {"/1.jpg", "/2.jpg", "/3.jpg", "/4.jpg", "/5.jpg"};   //FRAMESIZE_CIF (width:400, height:296)
+//Save the captured images(FRAMESIZE_CIF) with your face to the SD card
+//Image Size = FRAMESIZE_CIF (width:400, height:296)
+String filename[5] = {"/1.jpg", "/2.jpg", "/3.jpg", "/4.jpg", "/5.jpg"};
 int image_width = 400;  
 int image_height = 296;
 //UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768) , SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120)
