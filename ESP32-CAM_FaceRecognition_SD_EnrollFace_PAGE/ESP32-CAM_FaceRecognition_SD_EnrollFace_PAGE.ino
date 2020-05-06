@@ -252,25 +252,18 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
             if (matched_id >= 0) {
                 //如果偵測到有註冊的人臉可在此區塊自訂顯示人名與開門控制。
                 Serial.printf("Match Face ID: %u\n", matched_id);
+                Serial.println(recognize_face_matched_name[matched_id]);
+                Serial.println();
                 int name_length = sizeof(recognize_face_matched_name) / sizeof(recognize_face_matched_name[0]);
                 //Serial.println(name_length);
                 if (matched_id<name_length) {
                   //視訊畫面中顯示辨識到的人名
                   rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] %s", matched_id, recognize_face_matched_name[matched_id]);
                 }
-                else
+                else {
                   rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] No Name", matched_id);
-                /*
-                  //You can control a relay module to open the door.
-                  if (matched_id==0) {  
-                  } else if (matched_id==1) { 
-                  } else if (matched_id==2) { 
-                  } else if (matched_id==3) { 
-                  } else if (matched_id==4) { 
-                  } else if (matched_id==5) { 
-                  } else if (matched_id==6) {
-                  }
-                */
+                  FaceMatched(matched_id);  //偵測到註冊人臉執行指令控制
+                }
             } else {
                 Serial.println("No Match Found");
                 rgb_print(image_matrix, FACE_COLOR_RED, "Intruder Alert!");
@@ -383,7 +376,7 @@ static esp_err_t capture_handler(httpd_req_t *req){
     }
 
     int64_t fr_end = esp_timer_get_time();
-    Serial.printf("FACE: %uB %ums %s%d\n", (uint32_t)(jchunk.len), (uint32_t)((fr_end - fr_start)/1000), detected?"DETECTED ":"", face_id);
+    //Serial.printf("FACE: %uB %ums %s%d\n", (uint32_t)(jchunk.len), (uint32_t)((fr_end - fr_start)/1000), detected?"DETECTED ":"", face_id);
     return res;
 }
 
@@ -526,6 +519,7 @@ static esp_err_t stream_handler(httpd_req_t *req){
         last_frame = fr_end;
         frame_time /= 1000;
         uint32_t avg_frame_time = ra_filter_run(&ra_filter, frame_time);
+        /*
         Serial.printf("MJPG: %uB %ums (%.1ffps), AVG: %ums (%.1ffps), %u+%u+%u+%u=%u %s%d\n",
             (uint32_t)(_jpg_buf_len),
             (uint32_t)frame_time, 1000.0 / (uint32_t)frame_time,
@@ -533,6 +527,7 @@ static esp_err_t stream_handler(httpd_req_t *req){
             (uint32_t)ready_time, (uint32_t)face_time, (uint32_t)recognize_time, (uint32_t)encode_time, (uint32_t)process_time,
             (detected)?"DETECTED ":"", face_id
         );
+        */
     }
 
     last_frame = 0;
@@ -656,7 +651,6 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     } 
     else {
       int val = atoi(value);
-      Serial.println(String(val)); 
       sensor_t * s = esp_camera_sensor_get();
       int res = 0;
   
@@ -1630,7 +1624,7 @@ void setup() {
 }
 
 void loop() {
-  if (streamState==false&&recognition_enabled==1) {
+  if (streamState == false&&recognition_enabled==1) {
     
     camera_fb_t * fb = NULL;
     fb = esp_camera_fb_get();
@@ -1663,9 +1657,8 @@ void loop() {
     if (net_boxes){
         face_id = run_face_recognition(image_matrix, net_boxes);
         if (face_id>=0) {  //如果有偵測到人臉
-          Serial.println("Matched Name = " + recognize_face_matched_name[face_id]);
+          FaceMatched(face_id);  //偵測到註冊人臉執行指令控制
         }
-        Serial.println();
         free(net_boxes->score);
         free(net_boxes->box);
         free(net_boxes->landmark);
@@ -1674,5 +1667,22 @@ void loop() {
     dl_matrix3du_free(image_matrix);
   }
 
-  delay(1000);
+  delay(100);
+}
+
+void FaceMatched(int faceid) {  //偵測到註冊人臉執行指令控制
+  if (faceid==0) {  
+  } 
+  else if (faceid==1) { 
+  } 
+  else if (faceid==2) { 
+  } 
+  else if (faceid==3) { 
+  } 
+  else if (faceid==4) { 
+  } 
+  else if (faceid==5) { 
+  } 
+  else if (faceid==6) {
+  } 
 }
