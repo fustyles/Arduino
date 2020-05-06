@@ -274,7 +274,8 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
         }
     } else {
         Serial.println("Face Not Aligned");
-        //rgb_print(image_matrix, FACE_COLOR_YELLOW, "Human Detected");
+        Serial.println();
+        rgb_print(image_matrix, FACE_COLOR_YELLOW, "Human Detected");
     }
 
     dl_matrix3du_free(aligned_face);
