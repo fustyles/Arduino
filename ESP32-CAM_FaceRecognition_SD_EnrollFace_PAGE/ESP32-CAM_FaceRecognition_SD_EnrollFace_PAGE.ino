@@ -1,11 +1,11 @@
 /*
-ESP32-CAM Load images from SD card to enroll face and recognize face
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-6 22:00
+ESP32-CAM Face Recognition and enroll faces from SD card
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-6 22:30
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
 http://192.168.xxx.xxx:81/stream   //取得串流影像     <img src="http://192.168.xxx.xxx:81/stream">
-http://192.168.xxx.xxx/capture     //取得影像         <img src="http://192.168.xxx.xxx/capture">
+http://192.168.xxx.xxx/capture     //取得影像     <img src="http://192.168.xxx.xxx/capture">
 http://192.168.xxx.xxx/status      //取得視訊參數值
 
 //自訂指令格式  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
@@ -27,6 +27,8 @@ const char* password = "xxxxx";
 //輸入AP端連線帳號密碼
 const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP密碼至少要8個字元以上
+
+boolean streamState = false;
 
 //人臉辨識註冊人臉畫面捕捉張數
 #define ENROLL_CONFIRM_TIMES 5
@@ -387,6 +389,8 @@ static esp_err_t capture_handler(httpd_req_t *req){
 
 //影像串流
 static esp_err_t stream_handler(httpd_req_t *req){
+    streamState = true;
+  
     camera_fb_t * fb = NULL;
     esp_err_t res = ESP_OK;
     size_t _jpg_buf_len = 0;
@@ -408,6 +412,7 @@ static esp_err_t stream_handler(httpd_req_t *req){
 
     res = httpd_resp_set_type(req, _STREAM_CONTENT_TYPE);
     if(res != ESP_OK){
+        streamState = false;
         return res;
     }
 
@@ -506,6 +511,7 @@ static esp_err_t stream_handler(httpd_req_t *req){
             _jpg_buf = NULL;
         }
         if(res != ESP_OK){
+            streamState = false;
             break;
         }
         int64_t fr_end = esp_timer_get_time();
@@ -530,6 +536,7 @@ static esp_err_t stream_handler(httpd_req_t *req){
     }
 
     last_frame = 0;
+    streamState = false;
     return res;
 }
 
@@ -1366,7 +1373,6 @@ void startCameraServer(){
         .user_ctx  = NULL
     };
 
-
     ra_filter_init(&ra_filter, 20);
     
     mtmn_config.type = FAST;
@@ -1382,8 +1388,6 @@ void startCameraServer(){
     mtmn_config.o_threshold.score = 0.7;
     mtmn_config.o_threshold.nms = 0.7;
     mtmn_config.o_threshold.candidate_number = 1;
-    
-    //face_id_init(&id_list, FACE_ID_SAVE_NUMBER, ENROLL_CONFIRM_TIMES);
     
     Serial.printf("Starting web server on port: '%d'\n", config.server_port);  //TCP Port
     if (httpd_start(&camera_httpd, &config) == ESP_OK) {
@@ -1626,6 +1630,49 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  delay(10000);
+  if (streamState == false) {
+    
+    camera_fb_t * fb = NULL;
+    fb = esp_camera_fb_get();
+    if (!fb) {
+        Serial.println("Camera capture failed");
+        return;
+    }
+    size_t out_len, out_width, out_height;
+    uint8_t * out_buf;
+    bool s;
+    int face_id = 0; 
+    dl_matrix3du_t *image_matrix = dl_matrix3du_alloc(1, fb->width, fb->height, 3);
+    if (!image_matrix) {
+        esp_camera_fb_return(fb);
+        Serial.println("dl_matrix3du_alloc failed");
+        return;
+    }
+    out_buf = image_matrix->item;
+    out_len = fb->width * fb->height * 3;
+    out_width = fb->width;
+    out_height = fb->height;
+    s = fmt2rgb888(fb->buf, fb->len, fb->format, out_buf);
+    esp_camera_fb_return(fb);
+    if(!s){
+        dl_matrix3du_free(image_matrix);
+        Serial.println("to rgb888 failed");
+        return;
+    }
+    box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);
+    if (net_boxes){
+        face_id = run_face_recognition(image_matrix, net_boxes);
+        if (face_id>=0) {  //如果有偵測到人臉
+          Serial.println("Matched Name = " + recognize_face_matched_name[face_id]);
+        }
+        Serial.println();
+        free(net_boxes->score);
+        free(net_boxes->box);
+        free(net_boxes->landmark);
+        free(net_boxes);
+    }
+    dl_matrix3du_free(image_matrix);
+  }
+
+  delay(1000);
 }
