@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Face Recognition and enroll faces from SD card
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-7 00:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-7 07:00
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
@@ -253,7 +253,7 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
             if (matched_id >= 0) {
                 //如果偵測到有註冊的人臉可在此區塊自訂顯示人名與開門控制。
                 Serial.printf("Match Face ID: %u\n", matched_id);
-                Serial.println(recognize_face_matched_name[matched_id]);
+                Serial.printf("Match Face Name: %s\n", recognize_face_matched_name[matched_id]);
                 Serial.println();
                 int name_length = sizeof(recognize_face_matched_name) / sizeof(recognize_face_matched_name[0]);
                 //Serial.println(name_length);
