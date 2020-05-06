@@ -6,7 +6,7 @@ https://www.facebook.com/francefu
 
 //人臉辨識註冊人臉畫面捕捉張數
 #define ENROLL_CONFIRM_TIMES 5
-//Save the captured images with your face to the SD card
+//Save the captured images(FRAMESIZE_CIF) with your face to the SD card
 //Image Size = FRAMESIZE_CIF (width:400, height:296)
 String filename[5] = {"/1.jpg", "/2.jpg", "/3.jpg", "/4.jpg", "/5.jpg"};
 int image_width = 400;  
