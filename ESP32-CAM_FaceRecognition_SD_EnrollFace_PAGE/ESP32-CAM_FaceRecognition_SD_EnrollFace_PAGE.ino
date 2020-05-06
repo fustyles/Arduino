@@ -262,8 +262,8 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
                 }
                 else {
                   rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] No Name", matched_id);
-                  FaceMatched(matched_id);  //偵測到註冊人臉執行指令控制
                 }
+                FaceMatched(matched_id);  //偵測到註冊人臉執行指令控制
             } else {
                 Serial.println("No Match Found");
                 Serial.println();
