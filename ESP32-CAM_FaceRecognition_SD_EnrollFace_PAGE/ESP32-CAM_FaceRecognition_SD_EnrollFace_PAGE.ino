@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Face Recognition and enroll faces from SD card
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-6 23:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-6 22:30
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
