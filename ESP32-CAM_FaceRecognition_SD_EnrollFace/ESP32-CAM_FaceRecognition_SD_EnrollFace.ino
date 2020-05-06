@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Face Recognition and enroll faces from SD card
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-7 00:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-7 07:00
 https://www.facebook.com/francefu
 */
 
@@ -53,11 +53,7 @@ String recognize_face_matched_name[7] = {"Name0","Name1","Name2","Name3","Name4"
 #define PCLK_GPIO_NUM     22
 
 static mtmn_config_t mtmn_config = {0};
-static int8_t detection_enabled = 1;
-static int8_t recognition_enabled = 1;
-static int8_t is_enrolling = 0;
 static face_id_list id_list = {0};
-static int8_t flash_value = 0;
 
 static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_boxes){
     dl_matrix3du_t *aligned_face = NULL;
@@ -71,16 +67,14 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
     if (align_face(net_boxes, image_matrix, aligned_face) == ESP_OK){
         matched_id = recognize_face(&id_list, aligned_face);
         if (matched_id >= 0) {
-            //如果偵測到有註冊的人臉可在此區塊自訂顯示人名與開門控制。
             Serial.printf("Match Face ID: %u\n", matched_id);
-            Serial.println(recognize_face_matched_name[matched_id]);
+            Serial.printf("Match Face Name: %s\n", recognize_face_matched_name[matched_id]);
             Serial.println();
             FaceMatched(matched_id);  //偵測到註冊人臉執行指令控制
         } else {
-            Serial.println("No Match Found");
+            Serial.println("No Match Found");  //偵測到陌生人臉
             Serial.println();
             matched_id = -1;
-            //可增加指令發出陌生人警示訊息
         }
     } else {
         Serial.println("Face Not Aligned");
@@ -260,7 +254,6 @@ void setup() {
 }
 
 void loop() {
-  //執行人臉辨識
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();
   if (!fb) {
@@ -287,9 +280,9 @@ void loop() {
       Serial.println("to rgb888 failed");
       return;
   }
-  box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);
+  box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);  //執行人臉偵測
   if (net_boxes){
-      run_face_recognition(image_matrix, net_boxes);
+      run_face_recognition(image_matrix, net_boxes);  //執行人臉辨識
       free(net_boxes->score);
       free(net_boxes->box);
       free(net_boxes->landmark);
