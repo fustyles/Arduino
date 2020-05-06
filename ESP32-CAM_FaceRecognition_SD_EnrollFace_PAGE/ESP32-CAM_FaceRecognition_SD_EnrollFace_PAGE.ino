@@ -1630,7 +1630,7 @@ void setup() {
 }
 
 void loop() {
-  if (streamState == false) {
+  if (streamState==false&&recognition_enabled==1) {
     
     camera_fb_t * fb = NULL;
     fb = esp_camera_fb_get();
