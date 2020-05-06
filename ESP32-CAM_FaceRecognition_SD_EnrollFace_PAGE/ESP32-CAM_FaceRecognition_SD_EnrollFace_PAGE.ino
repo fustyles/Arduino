@@ -1546,7 +1546,6 @@ void setup() {
           Serial.println("dl_matrix3du_alloc failed");
       } else {
           //臉部偵測參數設定  https://github.com/espressif/esp-face/blob/master/face_detection/README.md
-          static mtmn_config_t mtmn_config = {0};
           mtmn_config.type = FAST;
           mtmn_config.min_face = 80;
           mtmn_config.pyramid = 0.707;
