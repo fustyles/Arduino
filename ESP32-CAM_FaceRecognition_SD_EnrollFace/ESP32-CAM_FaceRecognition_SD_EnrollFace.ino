@@ -260,6 +260,7 @@ void setup() {
 }
 
 void loop() {
+  //執行人臉辨識
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();
   if (!fb) {
