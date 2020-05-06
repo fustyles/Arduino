@@ -74,7 +74,6 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
             Serial.printf("Match Face ID: %u\n", matched_id);
             Serial.println(recognize_face_matched_name[matched_id]);
             Serial.println();
-            int name_length = sizeof(recognize_face_matched_name) / sizeof(recognize_face_matched_name[0]);
             FaceMatched(matched_id);  //偵測到註冊人臉執行指令控制
         } else {
             Serial.println("No Match Found");
