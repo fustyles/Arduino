@@ -13,7 +13,7 @@ http://192.168.xxx.xxx/control?facename=matched_id;name  //設定姓名
 http://192.168.xxx.xxx/control?clearface  //清除人臉註冊
 
 //官方指令格式  http://192.168.xxx.xxx/control?var=xxx&val=xxx
-http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
+http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) , 7->SVGA(800x600), 6->VGA(640x480), 5->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
 http://192.168.xxx.xxx/control?var=quality&val=value    // value = 10 to 63
 http://192.168.xxx.xxx/control?var=brightness&val=value    // value = -2 to 2
 http://192.168.xxx.xxx/control?var=contrast&val=value    // value = -2 to 2 
@@ -32,14 +32,14 @@ const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 #define ENROLL_CONFIRM_TIMES 5
 //Save the captured Images(FRAMESIZE_CIF) with your face to SD card
 String filename[5] = {"/1.jpg", "/2.jpg", "/3.jpg", "/4.jpg", "/5.jpg"};   //FRAMESIZE_CIF (width:400, height:296)
-int image_width = 400;
+int image_width = 400;  
 int image_height = 296;
+//UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768) , SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120)
 
 //人臉辨識最大註冊人數
 #define FACE_ID_SAVE_NUMBER 7
 //設定人臉辨識顯示的人名
 String recognize_face_matched_name[7] = {"Name0","Name1","Name2","Name3","Name4","Name5","Name6"};
-
   
 #include <WiFi.h>
 #include "soc/soc.h"             //用於電源不穩不重開機 
