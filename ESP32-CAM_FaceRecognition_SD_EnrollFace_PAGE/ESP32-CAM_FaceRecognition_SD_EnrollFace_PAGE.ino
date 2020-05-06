@@ -266,6 +266,7 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
                 }
             } else {
                 Serial.println("No Match Found");
+                Serial.println();
                 rgb_print(image_matrix, FACE_COLOR_RED, "Intruder Alert!");
                 matched_id = -1;
                 //可增加指令發出陌生人警示訊息
