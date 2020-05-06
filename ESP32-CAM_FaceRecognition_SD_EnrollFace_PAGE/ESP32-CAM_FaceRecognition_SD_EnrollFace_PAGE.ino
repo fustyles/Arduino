@@ -1669,7 +1669,6 @@ void loop() {
 }
 
 void FaceMatched(int faceid) {  //偵測到註冊人臉執行指令控制
-  Serial.println("execute->"+String(faceid));
   if (faceid==0) {  
   } 
   else if (faceid==1) { 
