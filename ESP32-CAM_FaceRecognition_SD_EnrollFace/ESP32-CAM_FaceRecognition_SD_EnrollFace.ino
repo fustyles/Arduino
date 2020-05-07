@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Load images from SD card to enroll face and recognize face automatically.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-7 07:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-8 00:00
 https://www.facebook.com/francefu
 */
 
@@ -69,7 +69,14 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
         matched_id = recognize_face(&id_list, aligned_face);  //人臉辨識
         if (matched_id >= 0) {
             Serial.printf("Match Face ID: %u\n", matched_id);
-            Serial.printf("Match Face Name: %s\n", recognize_face_matched_name[matched_id]);
+            int name_length = sizeof(recognize_face_matched_name) / sizeof(recognize_face_matched_name[0]);
+            if (matched_id<name_length) {
+              //視訊畫面中顯示辨識到的人名
+              Serial.printf("Match Face Name: %s\n", recognize_face_matched_name[matched_id]);
+            }
+            else {
+              Serial.printf("Match Face Name: No name");
+            }  
             Serial.println();
             FaceMatched(matched_id);  //辨識到註冊人臉執行指令控制
         } else {
