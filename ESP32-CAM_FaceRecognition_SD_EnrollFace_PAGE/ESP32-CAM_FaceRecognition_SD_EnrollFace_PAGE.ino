@@ -1527,7 +1527,7 @@ void setup() {
   pinMode(4, OUTPUT);
   digitalWrite(4, LOW);
 
-  //讀取SD卡辨識人臉
+  //讀取SD中的影像，若偵測得到人臉則註冊人臉
   if(!SD_MMC.begin()){
     Serial.println("Card Mount Failed");
   }  
@@ -1539,7 +1539,7 @@ void setup() {
   int8_t left_sample_face = NULL;
   dl_matrix3du_t *image_matrix = NULL;
   
-  for (int j=0;j<sizeof(filename)/sizeof(*filename);j++) {  //讀取SD中的影像，若偵測得到人臉則註冊人臉
+  for (int j=0;j<sizeof(filename)/sizeof(*filename);j++) {
     File file = fs.open(filename[j]);
     Serial.println("detect file: "+filename[j]);
     if(!file){
