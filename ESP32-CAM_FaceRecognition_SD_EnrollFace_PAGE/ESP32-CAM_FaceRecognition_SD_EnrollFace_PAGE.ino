@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Load images from SD card to enroll face and recognize face automatically without opening the page.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-7 07:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-8 00:00
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
