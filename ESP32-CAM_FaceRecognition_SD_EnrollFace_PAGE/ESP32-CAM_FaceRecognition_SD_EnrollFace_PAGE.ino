@@ -270,7 +270,7 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
                 Serial.println();
                 rgb_print(image_matrix, FACE_COLOR_RED, "Intruder Alert!");
                 matched_id = -1;
-                //可增加指令發出陌生人警示訊息
+                FaceNoMatched();  //偵測到陌生人臉執行指令控制
             }
         }
     } else {
@@ -1683,4 +1683,8 @@ void FaceMatched(int faceid) {  //偵測到註冊人臉執行指令控制
   } 
   else if (faceid==6) {
   } 
+}
+
+void FaceNoMatched() {  //偵測到陌生人臉執行指令控制
+  
 }
