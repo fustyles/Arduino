@@ -165,14 +165,12 @@ void setup() {
   
   fs::FS &fs = SD_MMC;
   
-  //偵測是否有人臉，並註冊人臉
   face_id_init(&id_list, FACE_ID_SAVE_NUMBER, ENROLL_CONFIRM_TIMES);
   dl_matrix3du_t *aligned_face = NULL;
   int8_t left_sample_face = NULL;
   dl_matrix3du_t *image_matrix = NULL;
   
-  for (int j=0;j<sizeof(filename)/sizeof(*filename);j++) {
-    //讀取照片
+  for (int j=0;j<sizeof(filename)/sizeof(*filename);j++) {  //讀取SD中的影像，若偵測得到人臉則註冊人臉
     File file = fs.open(filename[j]);
     Serial.println("detect file: "+filename[j]);
     if(!file){
