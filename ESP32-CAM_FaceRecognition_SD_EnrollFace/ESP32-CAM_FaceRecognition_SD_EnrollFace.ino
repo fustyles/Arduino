@@ -55,7 +55,8 @@ String recognize_face_matched_name[7] = {"Name0","Name1","Name2","Name3","Name4"
 static mtmn_config_t mtmn_config = {0};
 static face_id_list id_list = {0};
 
-static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_boxes){
+//人臉辨識函式
+static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_boxes){  
     dl_matrix3du_t *aligned_face = NULL;
     int matched_id = 0;
 
@@ -65,17 +66,17 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
         return matched_id;
     }
     if (align_face(net_boxes, image_matrix, aligned_face) == ESP_OK){
-        matched_id = recognize_face(&id_list, aligned_face);
+        matched_id = recognize_face(&id_list, aligned_face);  //人臉辨識
         if (matched_id >= 0) {
             Serial.printf("Match Face ID: %u\n", matched_id);
             Serial.printf("Match Face Name: %s\n", recognize_face_matched_name[matched_id]);
             Serial.println();
-            FaceMatched(matched_id);  //偵測到註冊人臉執行指令控制
+            FaceMatched(matched_id);  //辨識到註冊人臉執行指令控制
         } else {
-            Serial.println("No Match Found");  //偵測到陌生人臉
+            Serial.println("No Match Found");  //辨識為陌生人臉
             Serial.println();
             matched_id = -1;
-            FaceNoMatched();  //偵測到陌生人臉執行指令控制
+            FaceNoMatched();  //辨識為陌生人臉執行指令控制
         }
     } else {
         Serial.println("Face Not Aligned");
@@ -133,7 +134,7 @@ void setup() {
     return;
   }
 
-  //可動態改變視訊框架大小(解析度大小)
+  //可改變視訊框架大小(解析度大小)
   sensor_t * s = esp_camera_sensor_get();
   s->set_framesize(s, FRAMESIZE_CIF);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
@@ -158,7 +159,7 @@ void setup() {
   pinMode(4, OUTPUT);
   digitalWrite(4, LOW);
 
-  //讀取SD中的影像，若偵測得到人臉則註冊人臉
+  //讀取SD中的影像，若偵測有人臉則註冊人臉
   if(!SD_MMC.begin()){
     Serial.println("Card Mount Failed");
   }  
@@ -254,7 +255,7 @@ void setup() {
 
 void loop() {
   camera_fb_t * fb = NULL;
-  fb = esp_camera_fb_get();
+  fb = esp_camera_fb_get();  //取得鏡頭畫面
   if (!fb) {
       Serial.println("Camera capture failed");
       return;
@@ -292,7 +293,7 @@ void loop() {
   delay(100);
 }
 
-void FaceMatched(int faceid) {  //偵測到註冊人臉執行指令控制
+void FaceMatched(int faceid) {  //辨識到註冊人臉執行指令控制
   if (faceid==0) {  
   } 
   else if (faceid==1) { 
@@ -309,6 +310,6 @@ void FaceMatched(int faceid) {  //偵測到註冊人臉執行指令控制
   } 
 }
 
-void FaceNoMatched() {  //偵測到陌生人臉執行指令控制
+void FaceNoMatched() {  //辨識為陌生人臉執行指令控制
   
 }
