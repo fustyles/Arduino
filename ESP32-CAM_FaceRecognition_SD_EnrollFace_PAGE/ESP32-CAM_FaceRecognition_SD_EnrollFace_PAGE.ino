@@ -58,10 +58,8 @@ String recognize_face_matched_name[7] = {"Name0","Name1","Name2","Name3","Name4"
 #include "esp_timer.h"
 
 String Feedback="";   //回傳客戶端訊息
-
 //指令參數值
 String Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";
-
 //指令拆解狀態值
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
