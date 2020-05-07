@@ -75,6 +75,7 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
             Serial.println("No Match Found");  //偵測到陌生人臉
             Serial.println();
             matched_id = -1;
+            FaceNoMatched();  //偵測到陌生人臉執行指令控制
         }
     } else {
         Serial.println("Face Not Aligned");
@@ -308,4 +309,8 @@ void FaceMatched(int faceid) {  //偵測到註冊人臉執行指令控制
   } 
   else if (faceid==6) {
   } 
+}
+
+void FaceNoMatched() {  //偵測到陌生人臉執行指令控制
+  
 }
