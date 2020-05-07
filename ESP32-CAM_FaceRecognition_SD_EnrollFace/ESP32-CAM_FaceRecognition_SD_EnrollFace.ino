@@ -315,6 +315,8 @@ void FaceMatched(int faceid) {  //辨識到註冊人臉執行指令控制
   } 
   else if (faceid==6) {
   } 
+  else {
+  }   
 }
 
 void FaceNoMatched() {  //辨識為陌生人臉執行指令控制
