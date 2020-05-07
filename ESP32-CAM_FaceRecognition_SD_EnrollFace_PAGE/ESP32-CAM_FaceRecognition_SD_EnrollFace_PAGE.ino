@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Face Recognition and enroll faces from SD card
+ESP32-CAM Load images from SD card to enroll face and recognize face
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-7 07:00
 https://www.facebook.com/francefu
 
@@ -30,7 +30,7 @@ const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 
 boolean streamState = false;
 
-//人臉辨識註冊人臉畫面捕捉張數
+//人臉辨識同一人人臉註冊影像數
 #define ENROLL_CONFIRM_TIMES 5
 //Save the captured images(FRAMESIZE_CIF) with your face to the SD card
 //Image Size = FRAMESIZE_CIF (width:400, height:296)
@@ -39,7 +39,7 @@ int image_width = 400;
 int image_height = 296;
 //UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768) , SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120)
 
-//人臉辨識最大註冊人數
+//人臉辨識註冊人ㄌ臉數
 #define FACE_ID_SAVE_NUMBER 7
 //設定人臉辨識顯示的人名
 String recognize_face_matched_name[7] = {"Name0","Name1","Name2","Name3","Name4","Name5","Name6"};
@@ -190,6 +190,7 @@ static int rgb_printf(dl_matrix3du_t *image_matrix, uint32_t color, const char *
     return len;
 }
 
+//繪製臉部框架
 static void draw_face_boxes(dl_matrix3du_t *image_matrix, box_array_t *boxes, int face_id){
     int x, y, w, h, i;
     uint32_t color = FACE_COLOR_YELLOW;
@@ -226,6 +227,7 @@ static void draw_face_boxes(dl_matrix3du_t *image_matrix, box_array_t *boxes, in
     }
 }
 
+//臉部辨識函式
 static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_boxes){
     dl_matrix3du_t *aligned_face = NULL;
     int matched_id = 0;
@@ -264,13 +266,13 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
                 else {
                   rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] No Name", matched_id);
                 }
-                FaceMatched(matched_id);  //偵測到註冊人臉執行指令控制
+                FaceMatched(matched_id);  //辨識到註冊人臉執行指令控制
             } else {
                 Serial.println("No Match Found");
                 Serial.println();
                 rgb_print(image_matrix, FACE_COLOR_RED, "Intruder Alert!");
                 matched_id = -1;
-                FaceNoMatched();  //偵測到陌生人臉執行指令控制
+                FaceNoMatched();  //辨識為陌生人臉執行指令控制
             }
         }
     } else {
@@ -1627,7 +1629,7 @@ void loop() {
   if (streamState == false&&recognition_enabled==1) {
     
     camera_fb_t * fb = NULL;
-    fb = esp_camera_fb_get();
+    fb = esp_camera_fb_get();  //取得鏡頭畫面
     if (!fb) {
         Serial.println("Camera capture failed");
         return;
@@ -1652,9 +1654,9 @@ void loop() {
         Serial.println("to rgb888 failed");
         return;
     }
-    box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);
+    box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);  //執行人臉偵測
     if (net_boxes){
-        run_face_recognition(image_matrix, net_boxes);
+        run_face_recognition(image_matrix, net_boxes);  //執行人臉辨識
         free(net_boxes->score);
         free(net_boxes->box);
         free(net_boxes->landmark);
@@ -1666,7 +1668,7 @@ void loop() {
   delay(100);
 }
 
-void FaceMatched(int faceid) {  //偵測到註冊人臉執行指令控制
+void FaceMatched(int faceid) {  //辨識到註冊人臉執行指令控制
   if (faceid==0) {  
   } 
   else if (faceid==1) { 
@@ -1683,6 +1685,6 @@ void FaceMatched(int faceid) {  //偵測到註冊人臉執行指令控制
   } 
 }
 
-void FaceNoMatched() {  //偵測到陌生人臉執行指令控制
+void FaceNoMatched() {  //辨識為陌生人臉執行指令控制
   
 }
