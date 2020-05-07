@@ -34,7 +34,7 @@ boolean streamState = false;
 #define ENROLL_CONFIRM_TIMES 5
 //Save the captured images(FRAMESIZE_CIF) with your face to the SD card. 
 //Filename: 1.jpg,  2.jpg, 3.jpg, 4.jpg, 5.jpg
-String filename[5] = {"/1.jpg", "/2.jpg", "/3.jpg", "/4.jpg", "/5.jpg"};
+String filename[5] = {"/1.jpg", "/2.jpg", "/3.jpg", "/4.jpg", "/5.jpg"};  //1.jpg, 2.jpg, ....35.jpg
 int image_width = 400;  
 int image_height = 296;
 //UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768) , SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120)
