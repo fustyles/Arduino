@@ -13,7 +13,7 @@ int image_width = 400;
 int image_height = 296;
 //UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768) , SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120)
 
-//人臉辨識註冊人臉數
+//人臉辨識註冊人數
 #define FACE_ID_SAVE_NUMBER 7
 //設定人臉辨識顯示的人名
 String recognize_face_matched_name[7] = {"Name0","Name1","Name2","Name3","Name4","Name5","Name6"};
