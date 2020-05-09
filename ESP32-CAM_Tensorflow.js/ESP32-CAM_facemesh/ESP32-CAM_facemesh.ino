@@ -1,7 +1,7 @@
 /*
 ESP32-CAM FACE MESH
 Open the page in Chrome.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-24 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-9 23:00
 https://www.facebook.com/francefu
 
 自訂指令格式 :  
