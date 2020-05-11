@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (Save a captured photo to Google Spreadsheet)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-11 22:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-11 23:00
 https://www.facebook.com/francefu
 
 Google Apps Script
@@ -155,83 +155,75 @@ void setup()
 
 void loop()
 {
-  SendCapturedImage();
-  delay(5000);
-}
-
-String SendCapturedImage() {
-  const char* myDomain = "script.google.com";
-  String getAll="", getBody = "";
-  
-  camera_fb_t * fb = NULL;
-  fb = esp_camera_fb_get();  
-  if(!fb) {
-    Serial.println("Camera capture failed");
-    delay(1000);
-    ESP.restart();
-    return "Camera capture failed";
-  }  
-  
+  const char* myDomain = "script.google.com";  
+  Serial.println();
   Serial.println("Connect to " + String(myDomain));
   WiFiClientSecure client_tcp;
   
   if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
-    
-    char *input = (char *)fb->buf;
-    char output[base64_enc_len(3)];
-    String imageFile = "data:image/jpeg;base64,";
-    for (int i=0;i<fb->len;i++) {
-      base64_encode(output, (input++), 3);
-      if (i%3==0) imageFile += urlencode(String(output));
-    }
-    String Data = myFilename+mySpreadsheet+myImage;
-    
-    client_tcp.println("POST " + myScript + " HTTP/1.1");
-    client_tcp.println("Host: " + String(myDomain));
-    client_tcp.println("Content-Length: " + String(Data.length()+imageFile.length()));
-    client_tcp.println("Content-Type: application/x-www-form-urlencoded");
-    client_tcp.println();
-    
-    client_tcp.print(Data);
-    int Index;
-    for (Index = 0; Index < imageFile.length(); Index = Index+1000) {
-      client_tcp.print(imageFile.substring(Index, Index+1000));
-    }
-    esp_camera_fb_return(fb);
-    
-    int waitTime = 5000;   // timeout 10 seconds
-    long startTime = millis();
-    boolean state = false;
-    
-    while ((startTime + waitTime) > millis())
-    {
-      Serial.print(".");
-      delay(100);      
-      while (client_tcp.available()) 
+    while (true) {
+      String getAll="", getBody = "";
+      
+      camera_fb_t * fb = NULL;
+      fb = esp_camera_fb_get();  
+      if(!fb) {
+        Serial.println("Camera capture failed");
+        delay(1000);
+        ESP.restart();
+      }    
+      char *input = (char *)fb->buf;
+      char output[base64_enc_len(3)];
+      String imageFile = "data:image/jpeg;base64,";
+      for (int i=0;i<fb->len;i++) {
+        base64_encode(output, (input++), 3);
+        if (i%3==0) imageFile += urlencode(String(output));
+      }
+      String Data = myFilename+mySpreadsheet+myImage;
+      
+      client_tcp.println("POST " + myScript + " HTTP/1.1");
+      client_tcp.println("Host: " + String(myDomain));
+      client_tcp.println("Connection: keep-alive");
+      client_tcp.println("Content-Length: " + String(Data.length()+imageFile.length()));
+      client_tcp.println("Content-Type: application/x-www-form-urlencoded");
+      client_tcp.println();
+      
+      client_tcp.print(Data);
+      int Index;
+      for (Index = 0; Index < imageFile.length(); Index = Index+1000) {
+        client_tcp.print(imageFile.substring(Index, Index+1000));
+      }
+      esp_camera_fb_return(fb);
+      
+      int waitTime = 5000;   // timeout 10 seconds
+      long startTime = millis();
+      boolean state = false;
+      
+      while ((startTime + waitTime) > millis())
       {
-          char c = client_tcp.read();
-          if (c == '\n') 
-          {
-            if (getAll.length()==0) state=true; 
-            getAll = "";
-          } 
-          else if (c != '\r')
-            getAll += String(c);
-          if (state==true) getBody += String(c);
-          startTime = millis();
-       }
-       if (getBody.length()>0) break;
+        delay(100);      
+        while (client_tcp.available()) 
+        {
+            char c = client_tcp.read();
+            if (c == '\n') 
+            {
+              if (getAll.length()==0) state=true; 
+              getAll = "";
+            } 
+            else if (c != '\r')
+              getAll += String(c);
+            if (state==true) getBody += String(c);
+            startTime = millis();
+         }
+         if (getBody.length()>0) break;
+      }
+      //Serial.println(getBody);
+      if (getBody.length()==0) break;
     }
-    client_tcp.stop();
-    //Serial.println(getBody);
   }
   else {
-    getBody="Connected to " + String(myDomain) + " failed.";
-    //Serial.println("Connected to " + String(myDomain) + " failed.");
+    Serial.println("Connected to " + String(myDomain) + " failed.");
   }
-  
-  return getBody;
 }
 
 //https://github.com/zenmanenergy/ESP8266-Arduino-Examples/
