@@ -6,6 +6,7 @@ https://www.facebook.com/francefu
 Google Apps Script
 https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doPost.gs
 You must allow anyone and anonymous to execute the google script.
+You must allow anyone and anonymous to edit the google spreadsheet.
 
 How to add a new script
 https://www.youtube.com/watch?v=f46VBqWwUuI
