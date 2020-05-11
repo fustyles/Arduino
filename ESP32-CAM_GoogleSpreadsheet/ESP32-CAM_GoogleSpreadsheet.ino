@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (Save a captured photo to Google Spreadsheet)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-14 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-11 21:00
 https://www.facebook.com/francefu
 
 Google Apps Script
@@ -170,6 +170,7 @@ String SendCapturedImage() {
     return "Camera capture failed";
   }  
   
+  Serial.println();
   Serial.println("Connect to " + String(myDomain));
   WiFiClientSecure client_tcp;
   
