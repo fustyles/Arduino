@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (Save a captured photo to Google Spreadsheet)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-11 21:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-11 22:30
 https://www.facebook.com/francefu
 
 Google Apps Script
