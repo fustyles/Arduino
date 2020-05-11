@@ -6,7 +6,6 @@ https://www.facebook.com/francefu
 Google Apps Script
 https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doPost.gs
 You must allow anyone and anonymous to execute the google script.
-You must allow anyone and anonymous to edit the google spreadsheet.
 
 How to add a new script
 https://www.youtube.com/watch?v=f46VBqWwUuI
@@ -23,6 +22,7 @@ const char* password = "*****";   //your network password
 String myScript = "/macros/s/********************/exec";    //Create your Google Apps Script and replace the "myScript" path.
 String myFilename = "&myFilename=ESP32-CAM.jpg";
 String myImage = "&myFile=";
+//You must allow anyone and anonymous to edit the google spreadsheet.
 String mySpreadsheet = "&mySpreadsheet=/spreadsheets/d/********************/edit?usp=sharing";
 
 #include <WiFi.h>
