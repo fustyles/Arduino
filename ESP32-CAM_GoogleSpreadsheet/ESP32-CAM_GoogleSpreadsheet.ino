@@ -156,7 +156,7 @@ void setup()
 void loop()
 {
   SendCapturedImage();
-  delay(5000);
+  delay(3000);
 }
 
 String SendCapturedImage() {
