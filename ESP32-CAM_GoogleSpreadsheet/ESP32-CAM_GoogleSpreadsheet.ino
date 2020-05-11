@@ -19,7 +19,7 @@ https://drive.google.com/drive/my-drive
 const char* ssid     = "xxxxx";   //your network SSID
 const char* password = "xxxxx";   //your network password
 
-String myScript = "/macros/s/AKfycbwn3Gr_lkh3jTLaXbDeNTIZEi469Xg1hFx0ppnSNOYCE5paILY/exec";    //Create your Google Apps Script and replace the "myScript" path.
+String myScript = "/macros/s/********************************/exec";    //Create your Google Apps Script and replace the "myScript" path.
 String myFilename = "&myFilename=ESP32-CAM.jpg";
 String myImage = "&myFile=";
 
