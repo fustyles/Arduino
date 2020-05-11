@@ -221,6 +221,7 @@ void loop()
       //Serial.println(getBody);
       if (getBody.length()==0) {
         Serial.println("Send failed.");
+        client_tcp.stop();
         break;
       }
     }
