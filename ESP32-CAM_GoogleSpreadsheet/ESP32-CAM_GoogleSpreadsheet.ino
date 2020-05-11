@@ -224,6 +224,7 @@ void loop()
         client_tcp.stop();
         break;
       }
+      delay(1000);
     }
   }
   else {
