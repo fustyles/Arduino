@@ -4,7 +4,7 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-14 21:00
 https://www.facebook.com/francefu
 
 Google Apps Script
-https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doPost.gs
+https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleSpreadsheet_doPost.gs
 You must allow anyone and anonymous to execute the google script.
 
 How to add a new script
