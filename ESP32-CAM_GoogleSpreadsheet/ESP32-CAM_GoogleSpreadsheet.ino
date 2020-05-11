@@ -1,10 +1,10 @@
 /*
 ESP32-CAM (Save a captured photo to Google Spreadsheet)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-11 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-11 21:30
 https://www.facebook.com/francefu
 
 Google Apps Script
-https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleSpreadsheet_doPost.gs
+https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doPost.gs
 You must allow anyone and anonymous to execute the google script.
 
 How to add a new script
@@ -16,12 +16,13 @@ https://drive.google.com/drive/my-drive
 */
 
 // Enter your WiFi ssid and password
-const char* ssid     = "xxxxx";   //your network SSID
-const char* password = "xxxxx";   //your network password
+const char* ssid     = "*****";   //your network SSID
+const char* password = "*****";   //your network password
 
-String myScript = "/macros/s/********************************/exec";    //Create your Google Apps Script and replace the "myScript" path.
+String myScript = "/macros/s/********************/exec";    //Create your Google Apps Script and replace the "myScript" path.
 String myFilename = "&myFilename=ESP32-CAM.jpg";
 String myImage = "&myFile=";
+String mySpreadsheet = "&mySpreadsheet=/spreadsheets/d/********************/edit?usp=sharing";
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -170,7 +171,6 @@ String SendCapturedImage() {
     return "Camera capture failed";
   }  
   
-  Serial.println();
   Serial.println("Connect to " + String(myDomain));
   WiFiClientSecure client_tcp;
   
@@ -184,7 +184,7 @@ String SendCapturedImage() {
       base64_encode(output, (input++), 3);
       if (i%3==0) imageFile += urlencode(String(output));
     }
-    String Data = myFilename+myImage;
+    String Data = myFilename+mySpreadsheet+myImage;
     
     client_tcp.println("POST " + myScript + " HTTP/1.1");
     client_tcp.println("Host: " + String(myDomain));
