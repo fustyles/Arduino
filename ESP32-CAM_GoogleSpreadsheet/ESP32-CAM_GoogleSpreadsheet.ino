@@ -162,6 +162,7 @@ void loop()
   
   if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
+    Serial.println("Start sending...");
     while (true) {
       String getAll="", getBody = "";
       
@@ -218,7 +219,10 @@ void loop()
          if (getBody.length()>0) break;
       }
       //Serial.println(getBody);
-      if (getBody.length()==0) break;
+      if (getBody.length()==0) {
+        Serial.println("Send failed.");
+        break;
+      }
     }
   }
   else {
