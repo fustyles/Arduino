@@ -23,7 +23,7 @@ String myScript = "/macros/s/********************/exec";    //Create your Google
 String myFilename = "&myFilename=ESP32-CAM.jpg";
 String myImage = "&myFile=";
 //You must allow anyone and anonymous to edit the google spreadsheet.
-String mySpreadsheet = "&mySpreadsheet=/spreadsheets/d/********************/edit?usp=sharing";
+String mySpreadsheet = "&mySpreadsheet=/spreadsheets/d/********************/edit?usp=sharing";  //Create your Google Spreadsheet and replace the "mySpreadsheet" path.
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
