@@ -1136,11 +1136,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
       if (Model) {
         try { 
           document.createEvent("TouchEvent");
-          imageScaleFactor = 0.5;
           setTimeout(function(){DetectImage();},250);
         }
         catch(e) { 
-          imageScaleFactor = 0.75;
           DetectImage();
         } 
       }
