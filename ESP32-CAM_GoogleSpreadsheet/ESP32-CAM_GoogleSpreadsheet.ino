@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (Save a captured photo to Google Spreadsheet)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-11 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-17 11:00
 https://www.facebook.com/francefu
 
 Google Apps Script
@@ -24,6 +24,8 @@ String myFilename = "&myFilename=ESP32-CAM.jpg";
 String myImage = "&myFile=";
 //You must allow anyone and anonymous to edit the google spreadsheet.
 String mySpreadsheet = "&mySpreadsheet=/spreadsheets/d/********************/edit?usp=sharing";  //Create your Google Spreadsheet and replace the "mySpreadsheet" path.
+String myCellRow = "&myCellRow=1";
+String myCellCol = "&myCellCol=1";
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -155,6 +157,11 @@ void setup()
 
 void loop()
 {
+  SendCapturedImage2Spreadsheet();
+  delay(10000);
+}
+
+String SendCapturedImage2Spreadsheet() {
   const char* myDomain = "script.google.com";  
   Serial.println();
   Serial.println("Connect to " + String(myDomain));
@@ -163,7 +170,7 @@ void loop()
   if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
     Serial.println("Start sending...");
-    while (true) {
+    
       String getAll="", getBody = "";
       
       camera_fb_t * fb = NULL;
@@ -180,7 +187,7 @@ void loop()
         base64_encode(output, (input++), 3);
         if (i%3==0) imageFile += urlencode(String(output));
       }
-      String Data = myFilename+mySpreadsheet+myImage;
+      String Data = myFilename+mySpreadsheet+myCellRow+myCellCol+myImage;
       
       client_tcp.println("POST " + myScript + " HTTP/1.1");
       client_tcp.println("Host: " + String(myDomain));
@@ -218,17 +225,11 @@ void loop()
          }
          if (getBody.length()>0) break;
       }
-      //Serial.println(getBody);
-      if (getBody.length()==0) {
-        Serial.println("Send failed.");
-        client_tcp.stop();
-        break;
-      }
-      delay(3000);
-    }
+      return getBody;
   }
   else {
     Serial.println("Connected to " + String(myDomain) + " failed.");
+    return "Connected to " + String(myDomain) + " failed.";
   }
 }
 
