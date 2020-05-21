@@ -171,6 +171,7 @@ String SendCapturedImage2Spreadsheet() {
     Serial.println("Camera capture failed");
     delay(1000);
     ESP.restart();
+    return "Camera capture failed";
   }
         
   Serial.println("Connect to " + String(myDomain));
