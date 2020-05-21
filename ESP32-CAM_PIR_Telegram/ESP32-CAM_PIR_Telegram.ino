@@ -1,65 +1,28 @@
 /*
-ESP32-CAM PIR人體移動感測器啟動影像上傳Gmail發信
+ESP32-CAM 人體移動感測器啟動上傳影像到Telegram
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-21 13:00
 https://www.facebook.com/francefu
 
-PIR人體移動感測器 -> GND, gpio13, 3.3V
-
-如何新增Google Script
-https://www.youtube.com/watch?v=f46VBqWwUuI
-
-Google Script管理介面
-https://script.google.com/home
-https://script.google.com/home/executions
-
-Gmail
-https://mail.google.com/
-
-Google Script程式碼
-
-function doPost(e) {
-  var myRecipient = decodeURIComponent(e.parameter.myRecipient);  //取得收件者
-  var mySubject = decodeURIComponent(e.parameter.mySubject);  //取得信件標題
-  var myBody = new Date().toString();  //取得信件內容
-  var myFile = e.parameter.myFile;  //取得影像
-
-  var contentType = myFile.substring(myFile.indexOf(":")+1, myFile.indexOf(";"));
-  var data = myFile.substring(myFile.indexOf(",")+1);
-  data = Utilities.base64Decode(data);
-  var blob = Utilities.newBlob(data, contentType, "esp32-cam.jpg");
-
-  // Send a photo as an attachment by using Gmail
-  var response = GmailApp.sendEmail(myRecipient, mySubject, myBody,{
-      attachments: [blob],
-      name: 'Automatic Emailer Script'
-    }
-  );
-  
-  return  ContentService.createTextOutput(response);
-}
-
+人體移動感測器 -> GND, gpio13, 3.3V
 */
 
 //輸入Wi-Fi帳密
 const char* ssid     = "*****";   //Wi-Fi帳號
 const char* password = "*****";   //Wi-Fi密碼
 
-int pinPIR = 13;   //人體移動感測器腳位
-
-String myScript = "/macros/s/********************/exec";    //Create your Google Apps Script and replace the "myScript" path.
-String myRecipient = "*****@gmail.com";  //不一定要Gmail收件人
-String mySubject = "Welcom to Taiwan";
+String token = "*****:**********";   // 搜尋fatherbot對話建立bot與取得token -> https://telegram.me/fatherbot
+String chat_id = "*****";   //搜尋chatid_echo_bot對話取得chat_id -> https://telegram.me/chatid_echo_bot
+int pinPIR = 13;      //人體移動感測器腳位
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
-#include "Base64.h"  //不可使用Arduino IDE內建的函式庫，請從github下載Base64.cpp, Base64.h置於同一資料夾
 #include "esp_camera.h"
 
 //Arduino IDE開發版選擇 ESP32 Wrover Module
 
-//安可信ESP32-CAM模組腳位設定
+//CAMERA_MODEL_AI_THINKER
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -117,12 +80,12 @@ void setup()
     ledcDetachPin(3);
         
     delay(1000);
-    ESP.restart();   //若未連上Wi-Fi閃燈兩次後重啟
+    ESP.restart();  //若未連上Wi-Fi閃燈兩次後重啟
   }
   else {
     ledcAttachPin(4, 3);
     ledcSetup(3, 5000, 8);
-    for (int i=0;i<5;i++) {   //若連上Wi-Fi閃燈五次
+    for (int i=0;i<5;i++) {  //若連上Wi-Fi閃燈五次
       ledcWrite(3,10);
       delay(200);
       ledcWrite(3,0);
@@ -174,12 +137,12 @@ void setup()
   //drop down frame size for higher initial frame rate
   sensor_t * s = esp_camera_sensor_get();
   //可自訂解析度
-  s->set_framesize(s, FRAMESIZE_VGA);  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+  s->set_framesize(s, FRAMESIZE_CIF);  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
-  //測試傳送影像至Gmail發信
-  SendCapturedImage2Gmail(myRecipient, mySubject);
+  //測試傳送影像至Telegram
+  sendCapturedImage2Telegram(token, chat_id);
   Serial.println();
-  
+
   pinMode(pinPIR, INPUT_PULLUP);  //設定上拉電阻
 }
 
@@ -188,17 +151,17 @@ void loop()
   int v = digitalRead(pinPIR);
   Serial.println(v);
   if (v==1) {
-    SendCapturedImage2Gmail(myRecipient, mySubject);  //不顯示傳送結果
-    //Serial.println(SendCapturedImage2Gmail(myRecipient, mySubject));  //顯示傳送結果    
-    delay(10000);
+    sendCapturedImage2Telegram(token, chat_id);  //不顯示傳送結果
+    //Serial.println(sendCapturedImage2Telegram(token, chat_id));  //顯示傳送結果
+    delay(10000); 
   }
-  delay(1000);
+  delay(1000);  
 }
 
-String SendCapturedImage2Gmail(String myRecipient, String mySubject) {
-  const char* myDomain = "script.google.com";
+String sendCapturedImage2Telegram(String token, String chat_id) {
+  const char* myDomain = "api.telegram.org";
   String getAll="", getBody = "";
-  
+
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();  
   if(!fb) {
@@ -206,7 +169,7 @@ String SendCapturedImage2Gmail(String myRecipient, String mySubject) {
     delay(1000);
     ESP.restart();
     return "Camera capture failed";
-  }
+  }  
   
   Serial.println("Connect to " + String(myDomain));
   WiFiClientSecure client_tcp;
@@ -214,27 +177,35 @@ String SendCapturedImage2Gmail(String myRecipient, String mySubject) {
   if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
     
-    char *input = (char *)fb->buf;
-    char output[base64_enc_len(3)];
-    String imageFile = "data:image/jpeg;base64,";
-    for (int i=0;i<fb->len;i++) {
-      base64_encode(output, (input++), 3);
-      if (i%3==0) imageFile += urlencode(String(output));
-    }
+    String head = "--Taiwan\r\nContent-Disposition: form-data; name=\"chat_id\"; \r\n\r\n" + chat_id + "\r\n--Taiwan\r\nContent-Disposition: form-data; name=\"photo\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
+    String tail = "\r\n--Taiwan--\r\n";
 
-    String Data = "myRecipient=" + myRecipient + "&mySubject=" + urlencode(mySubject) + "&myFile=";
-    
-    client_tcp.println("POST " + myScript + " HTTP/1.1");
+    uint16_t imageLen = fb->len;
+    uint16_t extraLen = head.length() + tail.length();
+    uint16_t totalLen = imageLen + extraLen;
+  
+    client_tcp.println("POST /bot"+token+"/sendPhoto HTTP/1.1");
     client_tcp.println("Host: " + String(myDomain));
-    client_tcp.println("Content-Length: " + String(Data.length()+imageFile.length()));
-    client_tcp.println("Content-Type: application/x-www-form-urlencoded");
+    client_tcp.println("Content-Length: " + String(totalLen));
+    client_tcp.println("Content-Type: multipart/form-data; boundary=Taiwan");
     client_tcp.println();
-
-    client_tcp.print(Data);
-    int Index;
-    for (Index = 0; Index < imageFile.length(); Index = Index+1000) {
-      client_tcp.print(imageFile.substring(Index, Index+1000));
-    }
+    client_tcp.print(head);
+  
+    uint8_t *fbBuf = fb->buf;
+    size_t fbLen = fb->len;
+    for (size_t n=0;n<fbLen;n=n+1024) {
+      if (n+1024<fbLen) {
+        client_tcp.write(fbBuf, 1024);
+        fbBuf += 1024;
+      }
+      else if (fbLen%1024>0) {
+        size_t remainder = fbLen%1024;
+        client_tcp.write(fbBuf, remainder);
+      }
+    }  
+    
+    client_tcp.print(tail);
+    
     esp_camera_fb_return(fb);
     
     int waitTime = 10000;   // timeout 10 seconds
@@ -263,43 +234,8 @@ String SendCapturedImage2Gmail(String myRecipient, String mySubject) {
     client_tcp.stop();
   }
   else {
-    getBody="Connected to " + String(myDomain) + " failed.";
-    Serial.println("Connected to " + String(myDomain) + " failed.");
+    getBody="Connected to api.telegram.org failed.";
+    Serial.println("Connected to api.telegram.org failed.");
   }
   return getBody;
-}
-
-//https://github.com/zenmanenergy/ESP8266-Arduino-Examples/
-String urlencode(String str)
-{
-    String encodedString="";
-    char c;
-    char code0;
-    char code1;
-    char code2;
-    for (int i =0; i < str.length(); i++){
-      c=str.charAt(i);
-      if (c == ' '){
-        encodedString+= '+';
-      } else if (isalnum(c)){
-        encodedString+=c;
-      } else{
-        code1=(c & 0xf)+'0';
-        if ((c & 0xf) >9){
-            code1=(c & 0xf) - 10 + 'A';
-        }
-        c=(c>>4)&0xf;
-        code0=c+'0';
-        if (c > 9){
-            code0=c - 10 + 'A';
-        }
-        code2='\0';
-        encodedString+='%';
-        encodedString+=code0;
-        encodedString+=code1;
-        //encodedString+=code2;
-      }
-      yield();
-    }
-    return encodedString;
 }

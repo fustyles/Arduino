@@ -1,30 +1,27 @@
 /*
-ESP32-CAM PIR Motion Sensor (Save a captured photo to Line Notify)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-18 18:00
+ESP32-CAM 人體移動感測器啟動上傳影像到Line Notify
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-21 13:00
 https://www.facebook.com/francefu
 
-PIR Motion Sensor -> GND, gpio13, 3.3V
+人體移動感測器 -> GND, gpio13, 3.3V
 
-You could only send up to 50 images to Line Notify in one hour.
-The maximum size of post-upload image is XGA(1024*768).
+一小時最多能上傳50張影像，最高解析度為XGA(1024*768).
 */
 
-// Enter your WiFi ssid and password
-const char* ssid     = "webduino.io";   //your network SSID
-const char* password = "webduino";   //your network password
+//輸入Wi-Fi帳密
+const char* ssid     = "*****";   //Wi-Fi帳號
+const char* password = "*****";   //Wi-Fi密碼
 
-String myLineNotifyToken = "lHaUbj8vv1ZCvoxzwhpoarxNYR4PKYIHtVOS72qS6Lt";    //Line Notify Token
-int gpioPIR = 13;   //PIR Motion Sensor
+String myToken = "********************";    //Line Notify Token
+int pinPIR = 13;      //人體移動感測器腳位
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
-
 #include "esp_camera.h"
 
-// WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
-//            or another board which has PSRAM enabled
+//Arduino IDE開發版選擇 ESP32 Wrover Module
 
 //CAMERA_MODEL_AI_THINKER
 #define PWDN_GPIO_NUM     32
@@ -47,7 +44,7 @@ int gpioPIR = 13;   //PIR Motion Sensor
 
 void setup()
 {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電壓不穩時重啟電源設定
   
   Serial.begin(115200);
   delay(10);
@@ -84,12 +81,12 @@ void setup()
     ledcDetachPin(3);
         
     delay(1000);
-    ESP.restart();
+    ESP.restart();  //若未連上Wi-Fi閃燈兩次後重啟
   }
   else {
     ledcAttachPin(4, 3);
     ledcSetup(3, 5000, 8);
-    for (int i=0;i<5;i++) {
+    for (int i=0;i<5;i++) {  //若連上Wi-Fi閃燈五次
       ledcWrite(3,10);
       delay(200);
       ledcWrite(3,0);
@@ -140,22 +137,29 @@ void setup()
 
   //drop down frame size for higher initial frame rate
   sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_XGA);  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+  //可自訂解析度
+  s->set_framesize(s, FRAMESIZE_VGA);  // XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+
+  //測試傳送影像至Line Notify，一小時最多上傳50張照片。
+  sendCapturedImage2LineNotify(myToken);
+  Serial.println();
+
+  pinMode(pinPIR, INPUT_PULLUP);  //設定上拉電阻
 }
 
 void loop()
 {
-  pinMode(gpioPIR, INPUT_PULLUP);
-  int v = digitalRead(gpioPIR);
+  int v = digitalRead(pinPIR);
   Serial.println(v);
   if (v==1) {
-    sendCapturedImage2LineNotify();
-    delay(72000);  //You could only send up to 50 images to Line Notify in one hour.
+    sendCapturedImage2LineNotify(myToken);  //不顯示傳送結果
+    //Serial.println(sendCapturedImage2LineNotify(myToken));  //顯示傳送結果
+    delay(10000);
   }
   delay(1000);  
 }
 
-String sendCapturedImage2LineNotify()
+String sendCapturedImage2LineNotify(String Token)
 {
   String getAll="", getBody = "";
   
@@ -187,7 +191,7 @@ String sendCapturedImage2LineNotify()
     client_tcp.println("POST /api/notify HTTP/1.1");
     client_tcp.println("Connection: close"); 
     client_tcp.println("Host: notify-api.line.me");
-    client_tcp.println("Authorization: Bearer " + myLineNotifyToken);
+    client_tcp.println("Authorization: Bearer " + Token);
     client_tcp.println("Content-Length: " + String(totalLen));
     client_tcp.println("Content-Type: multipart/form-data; boundary=Taiwan");
     client_tcp.println();
@@ -239,6 +243,5 @@ String sendCapturedImage2LineNotify()
     getBody="Connected to notify-api.line.me failed.";
     Serial.println("Connected to notify-api.line.me failed.");
   }
-  
   return getBody;
 }

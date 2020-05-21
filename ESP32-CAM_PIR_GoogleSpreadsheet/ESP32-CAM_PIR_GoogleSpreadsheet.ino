@@ -1,5 +1,5 @@
 /*
-ESP32-CAM PIR人體移動感測器啟動影像上傳Gmail發信
+ESP32-CAM PIR人體移動感測器啟動影像上傳Google試算表
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-21 13:00
 https://www.facebook.com/francefu
 
@@ -12,30 +12,31 @@ Google Script管理介面
 https://script.google.com/home
 https://script.google.com/home/executions
 
-Gmail
-https://mail.google.com/
-
 Google Script程式碼
 
 function doPost(e) {
-  var myRecipient = decodeURIComponent(e.parameter.myRecipient);  //取得收件者
-  var mySubject = decodeURIComponent(e.parameter.mySubject);  //取得信件標題
-  var myBody = new Date().toString();  //取得信件內容
-  var myFile = e.parameter.myFile;  //取得影像
-
+  var myFile = e.parameter.myFile;  //取得影像檔
+  var myFilename = Utilities.formatDate(new Date(), "GMT", "yyyyMMddHHmmss")+"_"+e.parameter.myFilename;  //取得影像檔名
+  var mySpreadsheet = e.parameter.mySpreadsheet;  //取得試算表路徑
+  var myCellRow = e.parameter.myCellRow;   //取得插入影像儲存格Row
+  var myCellCol = e.parameter.myCellCol;   //取得插入影像儲存格Col 
+  
   var contentType = myFile.substring(myFile.indexOf(":")+1, myFile.indexOf(";"));
   var data = myFile.substring(myFile.indexOf(",")+1);
   data = Utilities.base64Decode(data);
-  var blob = Utilities.newBlob(data, contentType, "esp32-cam.jpg");
-
-  // Send a photo as an attachment by using Gmail
-  var response = GmailApp.sendEmail(myRecipient, mySubject, myBody,{
-      attachments: [blob],
-      name: 'Automatic Emailer Script'
-    }
-  );
+  var blob = Utilities.newBlob(data, contentType, myFilename);
   
-  return  ContentService.createTextOutput(response);
+  var ss = SpreadsheetApp.openByUrl('https://docs.google.com'+mySpreadsheet)
+  ss.getActiveSheet().setHiddenGridlines(true);
+  var sheet = ss.getSheets()[0];
+  sheet.insertImage(blob, myCellRow, myCellCol);
+
+  var images = sheet.getImages();
+  while (images.length>2) {   //影像數超過兩張即刪除最早影像，僅保留最新兩張影像
+    images[0].remove();
+  }
+     
+  return  ContentService.createTextOutput("ok");
 }
 
 */
@@ -43,12 +44,15 @@ function doPost(e) {
 //輸入Wi-Fi帳密
 const char* ssid     = "*****";   //Wi-Fi帳號
 const char* password = "*****";   //Wi-Fi密碼
-
 int pinPIR = 13;   //人體移動感測器腳位
 
 String myScript = "/macros/s/********************/exec";    //Create your Google Apps Script and replace the "myScript" path.
-String myRecipient = "*****@gmail.com";  //不一定要Gmail收件人
-String mySubject = "Welcom to Taiwan";
+String myFilename = "&myFilename=ESP32-CAM.jpg";
+String myImage = "&myFile=";
+//You must allow anyone and anonymous to edit the google spreadsheet.
+String mySpreadsheet = "&mySpreadsheet=/spreadsheets/d/********************/edit?usp=sharing";  //Create your Google Spreadsheet and replace the "mySpreadsheet" path.
+String myCellRow = "&myCellRow=1";
+String myCellCol = "&myCellCol=1";
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -59,7 +63,7 @@ String mySubject = "Welcom to Taiwan";
 
 //Arduino IDE開發版選擇 ESP32 Wrover Module
 
-//安可信ESP32-CAM模組腳位設定
+//CAMERA_MODEL_AI_THINKER
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -174,10 +178,10 @@ void setup()
   //drop down frame size for higher initial frame rate
   sensor_t * s = esp_camera_sensor_get();
   //可自訂解析度
-  s->set_framesize(s, FRAMESIZE_VGA);  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+  s->set_framesize(s, FRAMESIZE_QVGA);  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
-  //測試傳送影像至Gmail發信
-  SendCapturedImage2Gmail(myRecipient, mySubject);
+  //測試傳送影像至Google試算表
+  SendCapturedImage2Spreadsheet();
   Serial.println();
   
   pinMode(pinPIR, INPUT_PULLUP);  //設定上拉電阻
@@ -188,17 +192,18 @@ void loop()
   int v = digitalRead(pinPIR);
   Serial.println(v);
   if (v==1) {
-    SendCapturedImage2Gmail(myRecipient, mySubject);  //不顯示傳送結果
-    //Serial.println(SendCapturedImage2Gmail(myRecipient, mySubject));  //顯示傳送結果    
+    SendCapturedImage2Spreadsheet();  //不顯示傳送結果
+    //Serial.println(SendCapturedImage2Spreadsheet());  //顯示傳送結果
     delay(10000);
   }
-  delay(1000);
+  else
+    delay(1000);
 }
 
-String SendCapturedImage2Gmail(String myRecipient, String mySubject) {
-  const char* myDomain = "script.google.com";
+String SendCapturedImage2Spreadsheet() {
+  const char* myDomain = "script.google.com";  
   String getAll="", getBody = "";
-  
+
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();  
   if(!fb) {
@@ -207,65 +212,65 @@ String SendCapturedImage2Gmail(String myRecipient, String mySubject) {
     ESP.restart();
     return "Camera capture failed";
   }
-  
+        
   Serial.println("Connect to " + String(myDomain));
   WiFiClientSecure client_tcp;
   
   if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
-    
-    char *input = (char *)fb->buf;
-    char output[base64_enc_len(3)];
-    String imageFile = "data:image/jpeg;base64,";
-    for (int i=0;i<fb->len;i++) {
-      base64_encode(output, (input++), 3);
-      if (i%3==0) imageFile += urlencode(String(output));
-    }
-
-    String Data = "myRecipient=" + myRecipient + "&mySubject=" + urlencode(mySubject) + "&myFile=";
-    
-    client_tcp.println("POST " + myScript + " HTTP/1.1");
-    client_tcp.println("Host: " + String(myDomain));
-    client_tcp.println("Content-Length: " + String(Data.length()+imageFile.length()));
-    client_tcp.println("Content-Type: application/x-www-form-urlencoded");
-    client_tcp.println();
-
-    client_tcp.print(Data);
-    int Index;
-    for (Index = 0; Index < imageFile.length(); Index = Index+1000) {
-      client_tcp.print(imageFile.substring(Index, Index+1000));
-    }
-    esp_camera_fb_return(fb);
-    
-    int waitTime = 10000;   // timeout 10 seconds
-    long startTime = millis();
-    boolean state = false;
-    
-    while ((startTime + waitTime) > millis())
-    {
-      Serial.print(".");
-      delay(100);      
-      while (client_tcp.available()) 
+        
+      char *input = (char *)fb->buf;
+      char output[base64_enc_len(3)];
+      String imageFile = "data:image/jpeg;base64,";
+      for (int i=0;i<fb->len;i++) {
+        base64_encode(output, (input++), 3);
+        if (i%3==0) imageFile += urlencode(String(output));
+      }
+      String Data = myFilename+mySpreadsheet+myCellRow+myCellCol+myImage;
+      
+      client_tcp.println("POST " + myScript + " HTTP/1.1");
+      client_tcp.println("Host: " + String(myDomain));
+      client_tcp.println("Connection: keep-alive");
+      client_tcp.println("Content-Length: " + String(Data.length()+imageFile.length()));
+      client_tcp.println("Content-Type: application/x-www-form-urlencoded");
+      client_tcp.println();
+      
+      client_tcp.print(Data);
+      int Index;
+      for (Index = 0; Index < imageFile.length(); Index = Index+1000) {
+        client_tcp.print(imageFile.substring(Index, Index+1000));
+      }
+      esp_camera_fb_return(fb);
+      
+      int waitTime = 5000;   // timeout 10 seconds
+      long startTime = millis();
+      boolean state = false;
+      
+      while ((startTime + waitTime) > millis())
       {
-          char c = client_tcp.read();
-          if (c == '\n') 
-          {
-            if (getAll.length()==0) state=true; 
-            getAll = "";
-          } 
-          else if (c != '\r')
-            getAll += String(c);
-          if (state==true) getBody += String(c);
-          startTime = millis();
-       }
-       if (getBody.length()>0) break;
-    }
-    client_tcp.stop();
+        delay(100);      
+        while (client_tcp.available()) 
+        {
+            char c = client_tcp.read();
+            if (c == '\n') 
+            {
+              if (getAll.length()==0) state=true; 
+              getAll = "";
+            } 
+            else if (c != '\r')
+              getAll += String(c);
+            if (state==true) getBody += String(c);
+            startTime = millis();
+         }
+         if (getBody.length()>0) break;
+      }
+      client_tcp.stop();
   }
   else {
-    getBody="Connected to " + String(myDomain) + " failed.";
     Serial.println("Connected to " + String(myDomain) + " failed.");
+    return "Connected to " + String(myDomain) + " failed.";
   }
+
   return getBody;
 }
 

@@ -1,5 +1,5 @@
 /*
-ESP32-CAM PIR人體移動感測器啟動影像上傳Gmail發信
+ESP32-CAM PIR人體移動感測器啟動影像上傳Google雲端硬碟
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-21 13:00
 https://www.facebook.com/francefu
 
@@ -12,30 +12,34 @@ Google Script管理介面
 https://script.google.com/home
 https://script.google.com/home/executions
 
-Gmail
-https://mail.google.com/
+Google雲端硬碟
+https://drive.google.com/drive/my-drive
 
 Google Script程式碼
 
 function doPost(e) {
-  var myRecipient = decodeURIComponent(e.parameter.myRecipient);  //取得收件者
-  var mySubject = decodeURIComponent(e.parameter.mySubject);  //取得信件標題
-  var myBody = new Date().toString();  //取得信件內容
+  var myFoldername = e.parameter.myFoldername;  //取得資料夾名
   var myFile = e.parameter.myFile;  //取得影像
-
+  var myFilename = Utilities.formatDate(new Date(), "GMT+8", "yyyyMMddHHmmss")+"_"+e.parameter.myFilename;  ////取得影像檔名
+  
   var contentType = myFile.substring(myFile.indexOf(":")+1, myFile.indexOf(";"));
   var data = myFile.substring(myFile.indexOf(",")+1);
   data = Utilities.base64Decode(data);
-  var blob = Utilities.newBlob(data, contentType, "esp32-cam.jpg");
-
-  // Send a photo as an attachment by using Gmail
-  var response = GmailApp.sendEmail(myRecipient, mySubject, myBody,{
-      attachments: [blob],
-      name: 'Automatic Emailer Script'
-    }
-  );
+  var blob = Utilities.newBlob(data, contentType, myFilename);
   
-  return  ContentService.createTextOutput(response);
+  var folder, folders = DriveApp.getFoldersByName(myFoldername);
+  if (folders.hasNext()) {
+    folder = folders.next();
+  } else {
+    folder = DriveApp.createFolder(myFoldername);
+  }
+  var file = folder.createFile(blob);    
+  file.setDescription("Uploaded by " + myFilename);
+  
+  var imageID = file.getUrl().substring(file.getUrl().indexOf("/d/")+3,file.getUrl().indexOf("view")-1);
+  var imageUrl = "https://drive.google.com/uc?authuser=0&id="+imageID; 
+    
+  return  ContentService.createTextOutput(myFoldername+"/"+myFilename+"\n"+imageUrl);
 }
 
 */
@@ -43,12 +47,13 @@ function doPost(e) {
 //輸入Wi-Fi帳密
 const char* ssid     = "*****";   //Wi-Fi帳號
 const char* password = "*****";   //Wi-Fi密碼
-
 int pinPIR = 13;   //人體移動感測器腳位
 
-String myScript = "/macros/s/********************/exec";    //Create your Google Apps Script and replace the "myScript" path.
-String myRecipient = "*****@gmail.com";  //不一定要Gmail收件人
-String mySubject = "Welcom to Taiwan";
+const char* myDomain = "script.google.com";
+String myScript = "/macros/s/********************/exec";    //設定Google Script路徑
+String myFoldername = "&myFoldername=ESP32-CAM";    //設定Google drive存放影像資料夾名
+String myFilename = "&myFilename=ESP32-CAM.jpg";    //設定Google drive存放影像檔名
+String myImage = "&myFile=";
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -59,13 +64,12 @@ String mySubject = "Welcom to Taiwan";
 
 //Arduino IDE開發版選擇 ESP32 Wrover Module
 
-//安可信ESP32-CAM模組腳位設定
+//CAMERA_MODEL_AI_THINKER
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
 #define SIOD_GPIO_NUM     26
 #define SIOC_GPIO_NUM     27
-
 #define Y9_GPIO_NUM       35
 #define Y8_GPIO_NUM       34
 #define Y7_GPIO_NUM       39
@@ -176,8 +180,8 @@ void setup()
   //可自訂解析度
   s->set_framesize(s, FRAMESIZE_VGA);  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
-  //測試傳送影像至Gmail發信
-  SendCapturedImage2Gmail(myRecipient, mySubject);
+  //測試傳送影像至Google雲端硬碟
+  SendCapturedImage2GoogleDrive();
   Serial.println();
   
   pinMode(pinPIR, INPUT_PULLUP);  //設定上拉電阻
@@ -188,14 +192,15 @@ void loop()
   int v = digitalRead(pinPIR);
   Serial.println(v);
   if (v==1) {
-    SendCapturedImage2Gmail(myRecipient, mySubject);  //不顯示傳送結果
-    //Serial.println(SendCapturedImage2Gmail(myRecipient, mySubject));  //顯示傳送結果    
+    SendCapturedImage2GoogleDrive();  //不顯示傳送結果
+    //Serial.println(SendCapturedImage2GoogleDrive());  //顯示傳送結果
     delay(10000);
   }
-  delay(1000);
+  else
+    delay(1000);
 }
 
-String SendCapturedImage2Gmail(String myRecipient, String mySubject) {
+String SendCapturedImage2GoogleDrive() {
   const char* myDomain = "script.google.com";
   String getAll="", getBody = "";
   
@@ -206,7 +211,7 @@ String SendCapturedImage2Gmail(String myRecipient, String mySubject) {
     delay(1000);
     ESP.restart();
     return "Camera capture failed";
-  }
+  }  
   
   Serial.println("Connect to " + String(myDomain));
   WiFiClientSecure client_tcp;
@@ -221,15 +226,14 @@ String SendCapturedImage2Gmail(String myRecipient, String mySubject) {
       base64_encode(output, (input++), 3);
       if (i%3==0) imageFile += urlencode(String(output));
     }
-
-    String Data = "myRecipient=" + myRecipient + "&mySubject=" + urlencode(mySubject) + "&myFile=";
+    String Data = myFoldername+myFilename+myImage;
     
     client_tcp.println("POST " + myScript + " HTTP/1.1");
     client_tcp.println("Host: " + String(myDomain));
     client_tcp.println("Content-Length: " + String(Data.length()+imageFile.length()));
     client_tcp.println("Content-Type: application/x-www-form-urlencoded");
     client_tcp.println();
-
+    
     client_tcp.print(Data);
     int Index;
     for (Index = 0; Index < imageFile.length(); Index = Index+1000) {
@@ -266,6 +270,7 @@ String SendCapturedImage2Gmail(String myRecipient, String mySubject) {
     getBody="Connected to " + String(myDomain) + " failed.";
     Serial.println("Connected to " + String(myDomain) + " failed.");
   }
+  
   return getBody;
 }
 
