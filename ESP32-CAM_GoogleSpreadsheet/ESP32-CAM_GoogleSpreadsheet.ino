@@ -163,23 +163,22 @@ void loop()
 
 String SendCapturedImage2Spreadsheet() {
   const char* myDomain = "script.google.com";  
-  Serial.println();
+  String getAll="", getBody = "";
+
+  camera_fb_t * fb = NULL;
+  fb = esp_camera_fb_get();  
+  if(!fb) {
+    Serial.println("Camera capture failed");
+    delay(1000);
+    ESP.restart();
+  }
+        
   Serial.println("Connect to " + String(myDomain));
   WiFiClientSecure client_tcp;
   
   if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
-    Serial.println("Start sending...");
-    
-      String getAll="", getBody = "";
-      
-      camera_fb_t * fb = NULL;
-      fb = esp_camera_fb_get();  
-      if(!fb) {
-        Serial.println("Camera capture failed");
-        delay(1000);
-        ESP.restart();
-      }    
+        
       char *input = (char *)fb->buf;
       char output[base64_enc_len(3)];
       String imageFile = "data:image/jpeg;base64,";
@@ -231,7 +230,7 @@ String SendCapturedImage2Spreadsheet() {
     Serial.println("Connected to " + String(myDomain) + " failed.");
     return "Connected to " + String(myDomain) + " failed.";
   }
-  
+
   return getBody;
 }
 
