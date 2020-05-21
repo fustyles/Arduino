@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (Save a captured photo to Google Spreadsheet)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-17 11:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-20 22:00
 https://www.facebook.com/francefu
 
 Google Apps Script
@@ -225,12 +225,14 @@ String SendCapturedImage2Spreadsheet() {
          }
          if (getBody.length()>0) break;
       }
-      return getBody;
+      client_tcp.stop();
   }
   else {
     Serial.println("Connected to " + String(myDomain) + " failed.");
     return "Connected to " + String(myDomain) + " failed.";
   }
+  
+  return getBody;
 }
 
 //https://github.com/zenmanenergy/ESP8266-Arduino-Examples/
