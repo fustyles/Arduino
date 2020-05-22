@@ -15,11 +15,11 @@ http://192.168.xxx.xxx/capture     //取得影像
 http://192.168.xxx.xxx/status      //取得視訊參數值
 */
 
-int trigPin = 2;   //Trig
-int echoPin = 13 ;   //Echo
-
 const char* ssid = "*****";
 const char* password = "*****";
+
+int trigPin = 2;   //Trig
+int echoPin = 13 ;   //Echo
 
 char* apssid = "ESP32-CAM";
 char* appassword = "12345678";         //AP password require at least 8 characters.
