@@ -335,7 +335,9 @@ static esp_err_t capture_handler(httpd_req_t *req){
 
     //在畫面上顯示超音波偵測的距離
     rgb_printf(image_matrix, 0x000000FF, "Distance: %s cm", String(distance_cm));
+    //rgb_printf(image_matrix, 0x000000FF, "Distance: %s inch", String(distance_inch));
     Serial.println(String(distance_cm)+" cm");
+    //Serial.println(String(distance_inch)+" inch");
     
     jpg_chunking_t jchunk = {req, 0};
     s = fmt2jpg_cb(out_buf, out_len, out_width, out_height, PIXFORMAT_RGB888, 90, jpg_encode_stream, &jchunk);
@@ -403,9 +405,13 @@ static esp_err_t stream_handler(httpd_req_t *req){
                         res = ESP_FAIL;
                     } else {                     
                         face_detect(image_matrix, &mtmn_config);
+                            
                         //在畫面上顯示超音波偵測的距離
+                        rgb_printf(image_matrix, 0x0000FF00, "%u cm", distance_cm); 
+                        //rgb_printf(image_matrix, 0x0000FF00, "%u inch", distance_inch);
                         Serial.println(String(distance_cm)+" cm");
-                        rgb_printf(image_matrix, 0x0000FF00, "%u cm", distance_cm);                        
+                        //Serial.println(String(distance_inch)+" inch");
+                            
                         if(!fmt2jpg(image_matrix->item, fb->width*fb->height*3, fb->width, fb->height, PIXFORMAT_RGB888, 90, &_jpg_buf, &_jpg_buf_len)){
                             Serial.println("fmt2jpg failed");
                             res = ESP_FAIL;
