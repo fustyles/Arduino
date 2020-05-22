@@ -146,7 +146,7 @@ void setup() {
   s->set_framesize(s, FRAMESIZE_CIF);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
   //臉部偵測參數設定  https://github.com/espressif/esp-face/blob/master/face_detection/README.md
-  mtmn_config.type = FAST;
+  mtmn_config.type = FAST;  //FAST or NORMAL
   mtmn_config.min_face = 80;
   mtmn_config.pyramid = 0.707;
   mtmn_config.pyramid_times = 4;
