@@ -1,12 +1,11 @@
 /*
-ESP32-CAM Ping Ultrasonic Sensor (Control Flash)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-15 17:00
+ESP32-CAM Ping Ultrasonic Sensor
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-22 23:00
 https://www.facebook.com/francefu
 
 //Ping Ultrasonic Sensor (If you use Ping Ultrasonic Sensor, you can't use SD card library at the same time.)
 trigPin -> gpio2
 echoPin -> gpio13
-
 
 AP IP: 192.168.4.1
 
@@ -16,24 +15,18 @@ http://192.168.xxx.xxx/capture     //取得影像
 http://192.168.xxx.xxx/status      //取得視訊參數值
 */
 
-const char* ssid = "*****";
-const char* password = "*****";
-
 int trigPin = 2;   //Trig
 int echoPin = 13 ;   //Echo
-int distanceLimit = 20;  //cm
-unsigned long distance_cm = 0;  
-unsigned long distance_inch = 0; 
 
-//Flash
-boolean flashState = false;
+const char* ssid = "*****";
+const char* password = "*****";
 
 char* apssid = "ESP32-CAM";
 char* appassword = "12345678";         //AP password require at least 8 characters.
 
-String Feedback="";   //回傳客戶端訊息
-String Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";   //指令參數值
-byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;  //指令拆解狀態值
+unsigned long distance_cm = 0;  
+unsigned long distance_inch = 0; 
+static int8_t flash_value = 0;
 
 #include <WiFi.h>
 #include "soc/soc.h"
@@ -46,7 +39,6 @@ byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolon
 
 #include "fb_gfx.h"
 #include "fd_forward.h"
-#include "fr_forward.h"
 
 typedef struct {
         size_t size; //number of values used for filtering
@@ -71,10 +63,6 @@ httpd_handle_t stream_httpd = NULL;
 httpd_handle_t camera_httpd = NULL;
 
 static mtmn_config_t mtmn_config = {0};
-static int8_t detection_enabled = 0;
-static int8_t recognition_enabled = 0;
-static int8_t is_enrolling = 0;
-static face_id_list id_list = {0};
 
 static ra_filter_t * ra_filter_init(ra_filter_t * filter, size_t sample_size){
     memset(filter, 0, sizeof(ra_filter_t));
@@ -234,38 +222,10 @@ void loop() {
   digitalWrite(trigPin, LOW);
   distance_cm = pulseIn(echoPin, HIGH)/58;  
   distance_inch = distance_cm*2.54;  
-  Serial.println(String(distance_cm)+" cm, " + String(distance_inch)+" inch");
+  //Serial.println(String(distance_cm)+" cm, " + String(distance_inch)+" inch");
   
-  if (distance_cm>0&&distance_cm<=distanceLimit) {
-    if (flashState==false) {
-      flashState = true;
-      ledcWrite(4,20); //Turn on the flash.
-    }
-    
-  }
-  else {
-    if (flashState==true) {
-      flashState = false;
-      ledcWrite(4,0); //Turn off the flash.
-    }
-  }  
-
-  delay(10);
+  delay(100);
 }
-
-// Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 
 static void rgb_print(dl_matrix3du_t *image_matrix, uint32_t color, const char * str){
     fb_data_t fb;
@@ -375,7 +335,8 @@ static esp_err_t capture_handler(httpd_req_t *req){
 
     //在畫面上顯示超音波偵測的距離
     rgb_printf(image_matrix, 0x000000FF, "Distance: %s cm", String(distance_cm));
-
+    Serial.println(String(distance_cm)+" cm");
+    
     jpg_chunking_t jchunk = {req, 0};
     s = fmt2jpg_cb(out_buf, out_len, out_width, out_height, PIXFORMAT_RGB888, 90, jpg_encode_stream, &jchunk);
     dl_matrix3du_free(image_matrix);
@@ -419,7 +380,6 @@ static esp_err_t stream_handler(httpd_req_t *req){
             fr_ready = fr_start;
             if(fb->width > 400){
                 if(fb->format != PIXFORMAT_JPEG){
-                  
                     bool jpeg_converted = frame2jpg(fb, 80, &_jpg_buf, &_jpg_buf_len);
                     esp_camera_fb_return(fb);
                     fb = NULL;
@@ -432,35 +392,32 @@ static esp_err_t stream_handler(httpd_req_t *req){
                     _jpg_buf = fb->buf;
                 }
             } else {
-
                 image_matrix = dl_matrix3du_alloc(1, fb->width, fb->height, 3);
 
                 if (!image_matrix) {
                     Serial.println("dl_matrix3du_alloc failed");
                     res = ESP_FAIL;
-                } else {   
+                } else {                      
                     if(!fmt2rgb888(fb->buf, fb->len, fb->format, image_matrix->item)){
                         Serial.println("fmt2rgb888 failed");
                         res = ESP_FAIL;
-                    } else {
-                        fr_ready = esp_timer_get_time();
-                            
-                        if (fb->format != PIXFORMAT_JPEG){ 
-                            if(!fmt2jpg(image_matrix->item, fb->width*fb->height*3, fb->width, fb->height, PIXFORMAT_RGB888, 90, &_jpg_buf, &_jpg_buf_len)){
-                                Serial.println("fmt2jpg failed");
-                                res = ESP_FAIL;
-                            }
-                            esp_camera_fb_return(fb);
-                            fb = NULL;
-                        } else {
-                            _jpg_buf = fb->buf;
-                            _jpg_buf_len = fb->len;
+                    } else {                     
+                        face_detect(image_matrix, &mtmn_config);
+                        //在畫面上顯示超音波偵測的距離
+                        Serial.println(String(distance_cm)+" cm");
+                        rgb_printf(image_matrix, 0x0000FF00, "%u cm", distance_cm);                        
+                        if(!fmt2jpg(image_matrix->item, fb->width*fb->height*3, fb->width, fb->height, PIXFORMAT_RGB888, 90, &_jpg_buf, &_jpg_buf_len)){
+                            Serial.println("fmt2jpg failed");
+                            res = ESP_FAIL;
                         }
+                        esp_camera_fb_return(fb);
+                        fb = NULL;
                     }
-                    dl_matrix3du_free(image_matrix);
                 }
+                dl_matrix3du_free(image_matrix);                   
             }
         }
+                
         if(res == ESP_OK){
             size_t hlen = snprintf((char *)part_buf, 64, _STREAM_PART, _jpg_buf_len);
             res = httpd_resp_send_chunk(req, (const char *)part_buf, hlen);
@@ -490,11 +447,13 @@ static esp_err_t stream_handler(httpd_req_t *req){
         last_frame = fr_end;
         frame_time /= 1000;
         uint32_t avg_frame_time = ra_filter_run(&ra_filter, frame_time);
-        Serial.printf("MJPG: %uB %ums (%.1ffps), AVG: %ums (%.1ffps), %u+%u+%u+%u=%u %s%d\n",
+        /*
+         Serial.printf("MJPG: %uB %ums (%.1ffps), AVG: %ums (%.1ffps), %u+%u+%u+%u=%u %s%d\n",
             (uint32_t)(_jpg_buf_len),
             (uint32_t)frame_time, 1000.0 / (uint32_t)frame_time,
             avg_frame_time, 1000.0 / avg_frame_time
-        );
+        );  
+        */           
     }
 
     last_frame = 0;
@@ -538,60 +497,50 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     int res = 0;
 
     //官方指令區塊，也可在此自訂指令  http://192.168.xxx.xxx/control?var=xxx&val=xxx
-    if(!strcmp(variable, "framesize")) {
-      if(s->pixformat == PIXFORMAT_JPEG) 
-        res = s->set_framesize(s, (framesize_t)val);
-    }
-    else if(!strcmp(variable, "quality")) res = s->set_quality(s, val);
-    else if(!strcmp(variable, "contrast")) res = s->set_contrast(s, val);
-    else if(!strcmp(variable, "brightness")) res = s->set_brightness(s, val);
-    else if(!strcmp(variable, "hmirror")) res = s->set_hmirror(s, val);
-    else if(!strcmp(variable, "vflip")) res = s->set_vflip(s, val);        
-    else {
-        res = -1;
-    }
+      if(!strcmp(variable, "framesize")) {
+          if(s->pixformat == PIXFORMAT_JPEG) res = s->set_framesize(s, (framesize_t)val);
+      }
+      else if(!strcmp(variable, "quality")) res = s->set_quality(s, val);
+      else if(!strcmp(variable, "contrast")) res = s->set_contrast(s, val);
+      else if(!strcmp(variable, "brightness")) res = s->set_brightness(s, val);
+      else if(!strcmp(variable, "flash")) {  //Control flash
+        ledcWrite(4,val);
+        flash_value = val;
+      }    
+      else {
+          res = -1;
+      }
 
     if(res){
         return httpd_resp_send_500(req);
     }
 
-    if (buf) {
-      Feedback = String(buf);
-      static char response[128];
-      char * p = response;
-      p+=sprintf(p, "%s", Feedback.c_str());   
-      *p++ = 0;
-      httpd_resp_set_type(req, "text/html");
-      httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-      return httpd_resp_send(req, response, strlen(response));  //回傳參數字串
-    }
-    else {
-      httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-      return httpd_resp_send(req, NULL, 0);
-    }
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    return httpd_resp_send(req, NULL, 0);
 }
 
-//顯示視訊參數狀態
+//顯示視訊參數狀態(須回傳json格式)
 static esp_err_t status_handler(httpd_req_t *req){
-    static char response[1024];
+    static char json_response[1024];
 
     sensor_t * s = esp_camera_sensor_get();
-    char * p = response;
-    p+=sprintf(p, "framesize:%u<br>", s->status.framesize);
-    p+=sprintf(p, "quality:%u<br>", s->status.quality);
-    p+=sprintf(p, "brightness:%d<br>", s->status.brightness);
-    p+=sprintf(p, "contrast:%d<br>", s->status.contrast);
-    p+=sprintf(p, "vflip:%u<br>", s->status.vflip);
-    p+=sprintf(p, "hmirror:%u<br>", s->status.hmirror);
+    char * p = json_response;
+    *p++ = '{';
+
+    p+=sprintf(p, "\"framesize\":%u,", s->status.framesize);
+    p+=sprintf(p, "\"quality\":%u,", s->status.quality);
+    p+=sprintf(p, "\"brightness\":%d,", s->status.brightness);
+    p+=sprintf(p, "\"contrast\":%d,", s->status.contrast);
+    p+=sprintf(p, "\"flash\":%u", flash_value);
+    *p++ = '}';
     *p++ = 0;
-    httpd_resp_set_type(req, "text/html");
+    httpd_resp_set_type(req, "application/json");
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-    return httpd_resp_send(req, response, strlen(response));
+    return httpd_resp_send(req, json_response, strlen(json_response));
 }
 
-
-static const char PROGMEM INDEX_HTML[] = R"rawliteral(
-<!doctype html>
+//自訂網頁首頁
+static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
 <html>
     <head>
         <meta charset="utf-8">
@@ -884,34 +833,30 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         </style>
     </head>
     <body>
-    <figure>
-      <div id="stream-container" class="image-container hidden">
-        <div class="close" id="close-stream">×</div>
-        <img id="stream" src="">
-      </div>
-    </figure>
+        <figure>
+            <div id="stream-container" class="image-container hidden">
+                <div class="close" id="close-stream">×</div>
+                <img id="stream" src="">
+            </div>
+        </figure>    
         <section class="main">
-            <section id="buttons">
-                <table>
-                <tr style="display:none"><td align="center"></td><td align="center"><button id="toggle-stream">Start Stream</button></td><td align="center"><button id="face_enroll" class="disabled" disabled="disabled">Enroll Face</button></td></tr>
-                <tr><td>Rotate</td><td align="center">
-                    <select onchange="document.getElementById('stream').style.transform='rotate('+this.value+')';">
-                      <option value="0deg">0deg</option>
-                      <option value="90deg">90deg</option>
-                      <option value="180deg">180deg</option>
-                      <option value="270deg">270deg</option>
-                    </select>
-                </td><td align="center"><button id="get-still">Start</button></td>
-                </tr>                
-                </table>
-            </section>         
             <div id="logo">
-                <label for="nav-toggle-cb" id="nav-toggle">&#9776;&nbsp;&nbsp;Toggle settings</label>
+                <label for="nav-toggle-cb" id="nav-toggle">&#9776;&nbsp;&nbsp;Toggle OV2640 settings</label>
             </div>
             <div id="content">
                 <div id="sidebar">
-                    <input type="checkbox" id="nav-toggle-cb">
-                    <nav id="menu">  
+                    <input type="checkbox" id="nav-toggle-cb" checked="checked">
+                    <nav id="menu">
+                        <section id="buttons">
+                            <button id="get-still">Get Still</button>
+                            <button id="toggle-stream">Start Stream</button>
+                        </section>                        
+                        <div class="input-group" id="flash-group">
+                            <label for="flash">Flash</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}" class="default-action">
+                            <div class="range-max">255</div>
+                        </div>                        
                         <div class="input-group" id="framesize-group">
                             <label for="framesize">Resolution</label>
                             <select id="framesize" class="default-action">
@@ -922,6 +867,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                                 <option value="6">VGA(640x480)</option>
                                 <option value="5" selected="selected">CIF(400x296)</option>
                                 <option value="4">QVGA(320x240)</option>
+                                <option value="3">HQVGA(240x176)</option>
+                                <option value="0">QQVGA(160x120)</option>
                             </select>
                         </div>
                         <div class="input-group" id="quality-group">
@@ -941,25 +888,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                             <div class="range-min">-2</div>
                             <input type="range" id="contrast" min="-2" max="2" value="0" class="default-action">
                             <div class="range-max">2</div>
-                        </div>
-                        <div class="input-group" id="hmirror-group">
-                            <label for="hmirror">H-Mirror</label>
-                            <div class="switch">
-                                <input id="hmirror" type="checkbox" class="default-action" checked="checked">
-                                <label class="slider" for="hmirror"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="vflip-group">
-                            <label for="vflip">V-Flip</label>
-                            <div class="switch">
-                                <input id="vflip" type="checkbox" class="default-action" checked="checked">
-                                <label class="slider" for="vflip"></label>
-                            </div>
-                        </div>
+                        </div>                        
                     </nav>
                 </div>
             </div>
         </section>
+        
         <script>
           document.addEventListener('DOMContentLoaded', function (event) {
             var baseHost = document.location.origin
@@ -1009,8 +943,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   }
                 } else if(el.id === "awb_gain"){
                   value ? show(wb) : hide(wb)
-                } else if(el.id === "face_recognize"){
-                  value ? enable(enrollButton) : disable(enrollButton)
                 }
               }
             }
@@ -1066,9 +998,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             const viewContainer = document.getElementById('stream-container')
             const stillButton = document.getElementById('get-still')
             const streamButton = document.getElementById('toggle-stream')
-            const enrollButton = document.getElementById('face_enroll')
-            const closeButton = document.getElementById('close-stream')           
-                  
+            const closeButton = document.getElementById('close-stream')
+          
             const stopStream = () => {
               window.stop();
               streamButton.innerHTML = 'Start Stream'
@@ -1101,10 +1032,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               }
             }
           
-            enrollButton.onclick = () => {
-              updateConfig(enrollButton)
-            }
-          
             // Attach default on change action
             document
               .querySelectorAll('.default-action')
@@ -1116,31 +1043,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           
             framesize.onchange = () => {
               updateConfig(framesize)
-              if (framesize.value > 5) {
-                updateValue(detect, false)
-                updateValue(recognize, false)
-              }
             }
+          
           })
-
-          var getStream = document.getElementById('get-still');
-          var stream = document.getElementById('stream');
-          var myTimer;
-          var streamState = true;           
-
-          stream.onload = function (event) {
-            clearInterval(myTimer);
-            if (streamState==true) {
-              setTimeout(function(){getStream.click();},100);
-              myTimer = setInterval(function(){getStream.click();},10000);
-            }
-            else
-              stream.src="";
-          }           
         </script>
     </body>
-</html>
-)rawliteral";
+</html>)rawliteral";
 
 static esp_err_t index_handler(httpd_req_t *req){
     httpd_resp_set_type(req, "text/html");
