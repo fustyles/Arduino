@@ -13,6 +13,13 @@ http://192.168.xxx.xxx             //網頁首頁管理介面
 http://192.168.xxx.xxx:81/stream   //取得串流影像
 http://192.168.xxx.xxx/capture     //取得影像
 http://192.168.xxx.xxx/status      //取得視訊參數值
+
+//官方指令格式  http://192.168.xxx.xxx/control?var=xxx&val=xxx
+http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 5->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
+http://192.168.xxx.xxx/control?var=quality&val=value    // value = 10 to 63
+http://192.168.xxx.xxx/control?var=brightness&val=value    // value = -2 to 2
+http://192.168.xxx.xxx/control?var=contrast&val=value    // value = -2 to 2 
+http://192.168.xxx.xxx/control?var=flash&val=value    // value = 0 to 255
 */
 
 const char* ssid = "*****";
