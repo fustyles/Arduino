@@ -4,8 +4,8 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-22 23:00
 https://www.facebook.com/francefu
 
 //Ping Ultrasonic Sensor (If you use Ping Ultrasonic Sensor, you can't use SD card library at the same time.)
-trigPin -> gpio2
-echoPin -> gpio13
+Trig -> IO2
+Echo -> IO13
 
 AP IP: 192.168.4.1
 
