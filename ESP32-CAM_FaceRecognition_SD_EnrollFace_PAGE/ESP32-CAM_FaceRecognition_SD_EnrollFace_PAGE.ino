@@ -1609,9 +1609,9 @@ void setup() {
             Serial.println("No Face");    //未偵測到人臉
             Serial.println();
           }
+          dl_matrix3du_free(image_matrix);
       }
       free(buf);
-      dl_matrix3du_free(image_matrix);
     }
     file.close();
   } 
