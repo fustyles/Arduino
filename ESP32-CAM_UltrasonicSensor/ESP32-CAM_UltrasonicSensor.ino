@@ -163,7 +163,7 @@ void setup() {
 
   //drop down frame size for higher initial frame rate
   sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_QVGA);  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+  s->set_framesize(s, FRAMESIZE_QVGA);  // CIF|QVGA|HQVGA|QQVGA
   
   //Flash
   ledcAttachPin(4, 4);  
@@ -860,11 +860,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                         <div class="input-group" id="framesize-group">
                             <label for="framesize">Resolution</label>
                             <select id="framesize" class="default-action">
-                                <option value="10">UXGA(1600x1200)</option>
-                                <option value="9">SXGA(1280x1024)</option>
-                                <option value="8">XGA(1024x768)</option>
-                                <option value="7">SVGA(800x600)</option>
-                                <option value="6">VGA(640x480)</option>
                                 <option value="5" selected="selected">CIF(400x296)</option>
                                 <option value="4">QVGA(320x240)</option>
                                 <option value="3">HQVGA(240x176)</option>
