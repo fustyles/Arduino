@@ -1372,6 +1372,7 @@ void startCameraServer(){
 
     ra_filter_init(&ra_filter, 20);
     
+    //臉部偵測參數設定  https://github.com/espressif/esp-face/blob/master/face_detection/README.md
     mtmn_config.type = FAST;
     mtmn_config.min_face = 80;
     mtmn_config.pyramid = 0.707;
