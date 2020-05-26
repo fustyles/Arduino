@@ -8,6 +8,9 @@ PIR人體移動感測器 -> GND, gpio13, 3.3V
 如何新增Google Script
 https://www.youtube.com/watch?v=f46VBqWwUuI
 
+如何新增Google Spreadsheet
+https://www.youtube.com/watch?v=zitrku_KHMg
+
 Google Script管理介面
 https://script.google.com/home
 https://script.google.com/home/executions
