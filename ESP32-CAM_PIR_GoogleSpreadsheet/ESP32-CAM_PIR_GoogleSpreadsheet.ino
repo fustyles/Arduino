@@ -50,8 +50,9 @@ String myScript = "/macros/s/********************/exec";    //Create your Google
 String myFilename = "&myFilename=ESP32-CAM.jpg";
 String myImage = "&myFile=";
 
-//How to get Spreadsheet Id from spreadsheet url?  https://docs.google.com/spreadsheets/d/************yourId************/edit#gid=0
-String mySpreadsheetId = "&mySpreadsheetId=**********yourId**********";  //Google Spreadsheet Id
+//How to get Spreadsheet Id from spreadsheet url?  
+//https://docs.google.com/spreadsheets/d/*****SpreadsheetId*****/edit#gid=0
+String mySpreadsheetId = "&mySpreadsheetId=********************";  //Google Spreadsheet Id
 
 String myCellRow = "&myCellRow=1";
 String myCellCol = "&myCellCol=1";
