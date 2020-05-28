@@ -1,32 +1,56 @@
 /*
-ESP32-CAM (Save a captured photo to Google Spreadsheet)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-20 22:00
+ESP32-CAM 影像上傳Google試算表
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-28 23:00
 https://www.facebook.com/francefu
 
-Google Apps Script
-https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleSpreadsheet_doPost.gs
-You must allow anyone and anonymous to execute the google script.
-
-How to add a new script
+如何新增Google Script
 https://www.youtube.com/watch?v=f46VBqWwUuI
 
-How to add a new spreadsheet
-https://www.youtube.com/watch?v=zitrku_KHMg
-
+Google Script管理介面
 https://script.google.com/home
 https://script.google.com/home/executions
-https://drive.google.com/drive/my-drive
+
+Google Script程式碼
+
+function doPost(e) {
+  var myFile = e.parameter.myFile;  //取得影像檔
+  var myFilename = Utilities.formatDate(new Date(), "GMT", "yyyyMMddHHmmss")+"_"+e.parameter.myFilename;  //取得影像檔名
+  var mySpreadsheetId = e.parameter.mySpreadsheetId;  //試算表Id
+  var myCellRow = e.parameter.myCellRow;   //取得插入影像儲存格Row
+  var myCellCol = e.parameter.myCellCol;   //取得插入影像儲存格Col 
+  
+  var contentType = myFile.substring(myFile.indexOf(":")+1, myFile.indexOf(";"));
+  var data = myFile.substring(myFile.indexOf(",")+1);
+  data = Utilities.base64Decode(data);
+  var blob = Utilities.newBlob(data, contentType, myFilename);
+
+  var ss = SpreadsheetApp.openById(mySpreadsheetId);
+  ss.getActiveSheet().setHiddenGridlines(true);
+  var sheet = ss.getSheets()[0];
+  sheet.insertImage(blob, myCellRow, myCellCol);
+
+  var images = sheet.getImages();
+  while (images.length>2) {   //影像數超過兩張即刪除最早影像，僅保留最新兩張影像
+    images[0].remove();
+  }
+     
+  return  ContentService.createTextOutput("ok");
+}
+
 */
 
-// Enter your WiFi ssid and password
-const char* ssid     = "*****";   //your network SSID
-const char* password = "*****";   //your network password
+//輸入Wi-Fi帳密
+const char* ssid     = "*****";   //Wi-Fi帳號
+const char* password = "*****";   //Wi-Fi密碼
 
 String myScript = "/macros/s/********************/exec";    //Create your Google Apps Script and replace the "myScript" path.
 String myFilename = "&myFilename=ESP32-CAM.jpg";
 String myImage = "&myFile=";
-//You must allow anyone and anonymous to edit the google spreadsheet.
-String mySpreadsheet = "&mySpreadsheet=/spreadsheets/d/********************/edit?usp=sharing";  //Create your Google Spreadsheet and replace the "mySpreadsheet" path.
+
+//How to get Spreadsheet Id from spreadsheet url?  
+//https://docs.google.com/spreadsheets/d/*****SpreadsheetId*****/edit#gid=0
+String mySpreadsheetId = "&mySpreadsheetId=********************";  //Google Spreadsheet Id
+
 String myCellRow = "&myCellRow=1";
 String myCellCol = "&myCellCol=1";
 
@@ -34,12 +58,10 @@ String myCellCol = "&myCellCol=1";
 #include <WiFiClientSecure.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
-#include "Base64.h"
-
+#include "Base64.h"  //不可使用Arduino IDE內建的函式庫，請從github下載Base64.cpp, Base64.h置於同一資料夾
 #include "esp_camera.h"
 
-// WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
-//            or another board which has PSRAM enabled
+//Arduino IDE開發版選擇 ESP32 Wrover Module
 
 //CAMERA_MODEL_AI_THINKER
 #define PWDN_GPIO_NUM     32
@@ -62,7 +84,7 @@ String myCellCol = "&myCellCol=1";
 
 void setup()
 {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電壓不穩時重啟電源設定
   
   Serial.begin(115200);
   delay(10);
@@ -99,12 +121,12 @@ void setup()
     ledcDetachPin(3);
         
     delay(1000);
-    ESP.restart();
+    ESP.restart();   //若未連上Wi-Fi閃燈兩次後重啟
   }
   else {
     ledcAttachPin(4, 3);
     ledcSetup(3, 5000, 8);
-    for (int i=0;i<5;i++) {
+    for (int i=0;i<5;i++) {   //若連上Wi-Fi閃燈五次
       ledcWrite(3,10);
       delay(200);
       ledcWrite(3,0);
@@ -155,6 +177,7 @@ void setup()
 
   //drop down frame size for higher initial frame rate
   sensor_t * s = esp_camera_sensor_get();
+  //可自訂解析度
   s->set_framesize(s, FRAMESIZE_QVGA);  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 }
 
@@ -190,7 +213,7 @@ String SendCapturedImage2Spreadsheet() {
         base64_encode(output, (input++), 3);
         if (i%3==0) imageFile += urlencode(String(output));
       }
-      String Data = myFilename+mySpreadsheet+myCellRow+myCellCol+myImage;
+      String Data = myFilename+mySpreadsheetId+myCellRow+myCellCol+myImage;
       
       client_tcp.println("POST " + myScript + " HTTP/1.1");
       client_tcp.println("Host: " + String(myDomain));
