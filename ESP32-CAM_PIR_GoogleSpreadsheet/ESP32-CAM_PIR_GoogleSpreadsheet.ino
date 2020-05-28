@@ -1,15 +1,12 @@
 /*
 ESP32-CAM PIR人體移動感測器啟動影像上傳Google試算表
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-21 13:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-28 23:00
 https://www.facebook.com/francefu
 
 PIR人體移動感測器 -> GND, gpio13, 3.3V
 
 如何新增Google Script
 https://www.youtube.com/watch?v=f46VBqWwUuI
-
-如何新增Google Spreadsheet
-https://www.youtube.com/watch?v=zitrku_KHMg
 
 Google Script管理介面
 https://script.google.com/home
@@ -20,7 +17,7 @@ Google Script程式碼
 function doPost(e) {
   var myFile = e.parameter.myFile;  //取得影像檔
   var myFilename = Utilities.formatDate(new Date(), "GMT", "yyyyMMddHHmmss")+"_"+e.parameter.myFilename;  //取得影像檔名
-  var mySpreadsheet = e.parameter.mySpreadsheet;  //取得試算表路徑
+  var mySpreadsheetId = e.parameter.mySpreadsheetId;  //試算表Id
   var myCellRow = e.parameter.myCellRow;   //取得插入影像儲存格Row
   var myCellCol = e.parameter.myCellCol;   //取得插入影像儲存格Col 
   
@@ -28,8 +25,8 @@ function doPost(e) {
   var data = myFile.substring(myFile.indexOf(",")+1);
   data = Utilities.base64Decode(data);
   var blob = Utilities.newBlob(data, contentType, myFilename);
-  
-  var ss = SpreadsheetApp.openByUrl('https://docs.google.com'+mySpreadsheet)
+
+  var ss = SpreadsheetApp.openById(mySpreadsheetId);
   ss.getActiveSheet().setHiddenGridlines(true);
   var sheet = ss.getSheets()[0];
   sheet.insertImage(blob, myCellRow, myCellCol);
@@ -52,8 +49,10 @@ int pinPIR = 13;   //人體移動感測器腳位
 String myScript = "/macros/s/********************/exec";    //Create your Google Apps Script and replace the "myScript" path.
 String myFilename = "&myFilename=ESP32-CAM.jpg";
 String myImage = "&myFile=";
-//You must allow anyone and anonymous to edit the google spreadsheet.
-String mySpreadsheet = "&mySpreadsheet=/spreadsheets/d/********************/edit?usp=sharing";  //Create your Google Spreadsheet and replace the "mySpreadsheet" path.
+
+//How to get Spreadsheet Id from spreadsheet url?  https://docs.google.com/spreadsheets/d/************yourId************/edit#gid=0
+String mySpreadsheetId = "&mySpreadsheetId=**********yourId**********";  //Google Spreadsheet Id
+
 String myCellRow = "&myCellRow=1";
 String myCellCol = "&myCellCol=1";
 
@@ -184,7 +183,7 @@ void setup()
   s->set_framesize(s, FRAMESIZE_QVGA);  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
   //測試傳送影像至Google試算表
-  SendCapturedImage2Spreadsheet();
+  Serial.println(SendCapturedImage2Spreadsheet());
   Serial.println();
   
   pinMode(pinPIR, INPUT_PULLUP);  //設定上拉電阻
@@ -229,7 +228,7 @@ String SendCapturedImage2Spreadsheet() {
         base64_encode(output, (input++), 3);
         if (i%3==0) imageFile += urlencode(String(output));
       }
-      String Data = myFilename+mySpreadsheet+myCellRow+myCellCol+myImage;
+      String Data = myFilename+mySpreadsheetId+myCellRow+myCellCol+myImage;
       
       client_tcp.println("POST " + myScript + " HTTP/1.1");
       client_tcp.println("Host: " + String(myDomain));
