@@ -1,6 +1,6 @@
 /*
 ESP32-CAM People Tracking (tfjs coco-ssd)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-5 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-30 22:30
 https://www.facebook.com/francefu
 
 Servo1(水平旋轉) -> gpio2 (伺服馬達與ESP32-CAM共地外接電源)
@@ -336,7 +336,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     <td>Object</td> 
     <td colspan="2">
         <select id="object" onchange="count.innerHTML='';">
-          <option value="person">person</option>
+          <option value="person" selected="selected">person</option>
           <option value="bicycle">bicycle</option>
           <option value="car">car</option>
           <option value="motorcycle">motorcycle</option>
@@ -403,7 +403,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           <option value="mouse">mouse</option>
           <option value="remote">remote</option>
           <option value="keyboard">keyboard</option>
-          <option value="cell phone" selected="selected">cell phone</option>
+          <option value="cell phone">cell phone</option>
           <option value="microwave">microwave</option>
           <option value="oven">oven</option>
           <option value="toaster">toaster</option>
@@ -491,7 +491,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     </td>
   </tr>  
   </table>
-  <iframe id="ifr" style="display:none"></iframe>
   <div id="result" style="color:red"><div>
 
   </body>
@@ -508,7 +507,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var count = document.getElementById('count');     
     var result = document.getElementById('result');
     var flash = document.getElementById('flash'); 
-    var ifr = document.getElementById('ifr');
     var lastValue="";
     var myTimer;  
     var restartCount=0;     
@@ -528,7 +526,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       if (restartCount<=2) {
         result.innerHTML = "Get still error. <br>Restart ESP32-CAM "+restartCount+" times.";
         myTimer = setInterval(function(){getStill.click();},10000);
-        //ifr.src = document.location.origin+'?restart';
       }
       else
         result.innerHTML = "Get still error. <br>Please close the page and check ESP32-CAM.";
@@ -625,7 +622,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 }
                 if (angle1Value1 > 7650) angle1Value1 = 7650;
                 if (angle1Value1 < 2050) angle1Value1 = 2050;
-                ifr.src = document.location.origin+'?servo1='+angle1Value1; 
+                $.ajax({url: document.location.origin+'?servo1='+angle1Value1, async: false}); 
               }
               else if (midX<(320/2)-40) {  //畫面中心自訂水平小區域中即使偏左不轉動
                 if (midX<60) {  //區分距離畫面中點偏左程度
@@ -634,8 +631,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   if (mirrorimage.value==1) {angle1Value1+=175;}else{angle1Value1-=175;}
                 }
                 if (angle1Value1 > 7650) angle1Value1 = 7650;
-                if (angle1Value1 < 2050) angle1Value1 = 2050;                  
-                ifr.src = document.location.origin+'?servo1='+angle1Value1;  
+                if (angle1Value1 < 2050) angle1Value1 = 2050;                 
+                $.ajax({url: document.location.origin+'?servo1='+angle1Value1, async: false}); 
               }
                 
               var midY = Math.round(y)+Math.round(height)/2;  //取偵測到第一人的區域垂直中點Y值
@@ -647,7 +644,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 }
                 if (angle1Value2 > 7650) angle1Value2 = 7650;
                 if (angle1Value2 < 2050) angle1Value2 = 2050;                  
-                ifr.src = document.location.origin+'?servo2='+angle1Value2;  
+                $.ajax({url: document.location.origin+'?servo2='+angle1Value2, async: false}); 
               }
               else if (midY<(240/2)-30) {  //畫面中心自訂小區域中即使偏上不轉動
                 if (midY<45) {  //區分距離畫面中點偏上程度
@@ -657,7 +654,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 }
                 if (angle1Value2 > 7650) angle1Value2 = 7650;
                 if (angle1Value2 < 2050) angle1Value2 = 2050;                  
-                ifr.src = document.location.origin+'?servo2='+angle1Value2;   
+                $.ajax({url: document.location.origin+'?servo2='+angle1Value2, async: false});  
               }    
             }
                       
