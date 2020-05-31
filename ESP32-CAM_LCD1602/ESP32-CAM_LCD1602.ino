@@ -17,18 +17,18 @@ uint16_t addr = 0x27;  //0x27 or ox3F
 TwoWire Wire0 = TwoWire(0);
 
 void setup() {
-LiquidCrystal_I2C lcd(addr, 16, 2);
-Wire.begin(pinSDA, pinSCL);
-Wire.setClock(10000);
-
-Serial.begin(115200);
-while (!Serial);
-
-lcd.init();
-lcd.backlight();
-//lcd.clear();
-lcd.setCursor(0, 0);
-lcd.print("Hello, World!");
+  LiquidCrystal_I2C lcd(addr, 16, 2);
+  Wire.begin(pinSDA, pinSCL);
+  Wire.setClock(10000);
+  
+  Serial.begin(115200);
+  while (!Serial);
+  
+  lcd.init();
+  lcd.backlight();
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Hello, World!");
 }
 
 void loop() {
