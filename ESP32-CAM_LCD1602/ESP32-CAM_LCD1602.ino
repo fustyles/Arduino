@@ -26,7 +26,7 @@ while (!Serial);
 
 lcd.init();
 lcd.backlight();
-lcd.clear();
+//lcd.clear();
 lcd.setCursor(0, 0);
 lcd.print("Hello, World!");
 }
