@@ -268,6 +268,7 @@ String SendCapturedImage2Spreadsheet() {
          if (getBody.length()>0) break;
       }
       client_tcp.stop();
+      Serial.println(getBody);
   }
   else {
     Serial.println("Connected to " + String(myDomain) + " failed.");
