@@ -232,6 +232,7 @@ String sendCapturedImage2Telegram(String token, String chat_id) {
        if (getBody.length()>0) break;
     }
     client_tcp.stop();
+    Serial.println(getBody);
   }
   else {
     getBody="Connected to api.telegram.org failed.";
