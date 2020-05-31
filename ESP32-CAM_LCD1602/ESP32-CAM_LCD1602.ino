@@ -10,7 +10,7 @@ You must delete other LiquidCrystal_I2C libraries.
 
 byte pinSDA = 2;
 byte pinSCL = 13;
-uint16_t addr = 0x27;  //0x27 or ox3F
+int addr = 0x27;  //0x27 or ox3F
 
 #include "LiquidCrystal_I2C.h"
 #include <Wire.h>
