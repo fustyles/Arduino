@@ -261,6 +261,7 @@ String SendCapturedImage2Gmail(String myRecipient, String mySubject) {
        if (getBody.length()>0) break;
     }
     client_tcp.stop();
+    Serial.println(getBody);
   }
   else {
     getBody="Connected to " + String(myDomain) + " failed.";
