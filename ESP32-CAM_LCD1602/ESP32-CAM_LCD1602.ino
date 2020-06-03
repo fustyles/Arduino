@@ -1,6 +1,6 @@
 /*
 ESP32-CAM LCD1602
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-31 12:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-6-3 21:00
 https://www.facebook.com/francefu
 
 Library
@@ -10,9 +10,10 @@ You must delete other LiquidCrystal_I2C libraries.
 
 byte pinSDA = 2;
 byte pinSCL = 13; 
+int addr = 0x27;  //0x27 or ox3F
 
 #include "LiquidCrystal_I2C.h"
-LiquidCrystal_I2C lcd(0x27, 16, 2);  //0x27 or ox3F
+LiquidCrystal_I2C lcd(addr, 16, 2);
 #include <Wire.h>
 TwoWire Wire0 = TwoWire(0);
 
