@@ -52,7 +52,7 @@ String myImage = "&myFile=";
 
 //How to get Spreadsheet Id from spreadsheet url?  
 //https://docs.google.com/spreadsheets/d/*****SpreadsheetId*****/edit#gid=0
-String mySpreadsheetId = "&mySpreadsheetId=********************";  //Google Spreadsheet Id
+String mySpreadsheetId = "&mySpreadsheetId=********************";  //Input your google spreadsheet id
 
 String myCellRow = "&myCellRow=1";
 String myCellCol = "&myCellCol=1";
