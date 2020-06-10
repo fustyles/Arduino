@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Face detection (SD Card)
+ESP32-CAM Face detection (Read images from SD Card)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-5 22:00
 https://www.facebook.com/francefu
 */
