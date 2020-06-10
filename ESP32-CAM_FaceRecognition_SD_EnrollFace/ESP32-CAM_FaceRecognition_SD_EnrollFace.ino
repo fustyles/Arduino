@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Load images from SD card to enroll face and recognize face automatically.
+ESP32-CAM Load images from SD card to enroll faces and recognize faces automatically.
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-22 19:00
 https://www.facebook.com/francefu
 */
