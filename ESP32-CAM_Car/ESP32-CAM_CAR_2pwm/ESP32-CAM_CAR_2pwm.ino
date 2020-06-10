@@ -3,6 +3,7 @@ ESP32-CAM Remote Control Car
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-3 00:30
 https://www.facebook.com/francefu
 
+//If you use Motor Driver IC L9110(s), it can't work well.
 Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
 
 If you output PWM to GPIO 15 using ledcWrite and the wheel loses control, you could use the codes.
