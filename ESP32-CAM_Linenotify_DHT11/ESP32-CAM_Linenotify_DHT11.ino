@@ -1,6 +1,6 @@
 /*
 ESP32-CAM DHT11 (Save a captured photo to Line Notify)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-18 18:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-6-25 01:00
 https://www.facebook.com/francefu
 
 DHT11 Library
