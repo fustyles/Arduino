@@ -16,7 +16,7 @@ const char* password = "*****";   //your network password
 String myLineNotifyToken = "**********";    //Line Notify Token
 
 #include <dht.h>   
-#define dht_dpin 2   //DHT11 pin 2
+#define dht_dpin 2   //DHT11 IO2
 dht DHT;  
 
 #include <WiFi.h>
