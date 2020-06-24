@@ -4,7 +4,7 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-6-25 01:00
 https://www.facebook.com/francefu
 
 DHT11 Library
-https://drive.google.com/file/d/0B3b3PW7n8tipNlAyazI4MnBDUzQ/view
+https://github.com/fustyles/Arduino/blob/master/ESP32-CAM_Linenotify_DHT11/DHT.zip
 
 You could only send up to 50 images to Line Notify in one hour.
 The maximum size of post-upload image is XGA(1024*768).
