@@ -3,7 +3,7 @@ ESP32-CAM DHT11 (Save a captured photo to Line Notify)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-18 18:00
 https://www.facebook.com/francefu
 
-Library
+DHTLibrary
 https://drive.google.com/file/d/0B3b3PW7n8tipNlAyazI4MnBDUzQ/view
 
 You could only send up to 50 images to Line Notify in one hour.
