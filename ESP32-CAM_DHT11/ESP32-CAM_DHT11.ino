@@ -4,7 +4,7 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-6-25 01:00
 https://www.facebook.com/francefu
 
 DHT11 Library
-https://github.com/fustyles/Arduino/blob/master/ESP32-CAM_Linenotify_DHT11/DHT.zip
+https://github.com/fustyles/Arduino/blob/master/ESP32-CAM_DHT11/DHT.zip
 */
 
 #include <dht.h>   
