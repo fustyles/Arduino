@@ -3,6 +3,8 @@ ESP32-CAM Text recognition (Tesseract.js)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-6-29 23:00
 https://www.facebook.com/francefu
 
+https://github.com/naptha/tesseract.js#tesseractjs
+
 首頁
 http://APIP
 http://STAIP
