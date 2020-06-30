@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Text recognition (Tesseract.js)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-6-29 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-6-30 15:00
 https://www.facebook.com/francefu
 
 https://github.com/naptha/tesseract.js#tesseractjs
@@ -119,6 +119,7 @@ void ExecuteCommand()
     digitalWrite(P1.toInt(), P2.toInt());
   }   
   else if (cmd=="analogwrite") {
+    Serial.println(P2);
     if (P1="4") {
       ledcAttachPin(4, 4);  
       ledcSetup(4, 5000, 8);   
@@ -299,6 +300,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <title>tracking.js - Face with camera</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
   <script src="https:\/\/unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js"></script>
   </head>
   <body>
@@ -543,8 +545,18 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         lang.value,
         { logger: m => console.log(m) }
       ).then(({ data: { text } }) => {
-        //console.log(text);
-        result.innerHTML = text;
+  
+        result.innerHTML = text.replace(/\n/g, "<br>");
+        text = result.innerHTML.replace(/<br>/g, "")
+        
+        if (text=="a"||text=="A") {
+          $.ajax({url: document.location.origin+'?analogwrite=4;10', async: false});
+          //$.ajax({url: document.location.origin+'?digitalwrite=2;1', async: false});
+        }
+        else if (text=="b"||text=="B") {
+          $.ajax({url: document.location.origin+'?analogwrite=4;0', async: false});
+          //$.ajax({url: document.location.origin+'?digitalwrite=2;0', async: false});
+        }
       })  
     }     
   </script>
