@@ -1,7 +1,7 @@
 /*
 ESP32-CAM HAND POSE
 Open the page in Chrome.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-9 22:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-1 00:00
 https://www.facebook.com/francefu
 
 自訂指令格式 :  
