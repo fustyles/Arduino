@@ -1,6 +1,6 @@
 /*
 ESP32-CAM People Tracking (tfjs coco-ssd)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-30 22:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-7 22:00
 https://www.facebook.com/francefu
 
 Servo1(水平旋轉) -> gpio2 (伺服馬達與ESP32-CAM共地外接電源)
@@ -322,8 +322,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
-  <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.1"> </script>
-  <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"> </script>   
+  <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs"> </script>
+  <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.1.0"> </script>   
   </head><body>
   <img id="ShowImage" src="" style="display:none">
   <canvas id="canvas" width="0" height="0"></canvas>  
