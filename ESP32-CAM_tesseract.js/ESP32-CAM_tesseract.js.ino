@@ -547,7 +547,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       ).then(({ data: { text } }) => {
   
         result.innerHTML = text.replace(/\n/g, "<br>");
-        text = result.innerHTML.replace(/<br>/g, "")
+        text = result.innerHTML.replace(/<br>/g, "");
         
         if (text=="a"||text=="A") {
           $.ajax({url: document.location.origin+'?analogwrite=4;10', async: false});
