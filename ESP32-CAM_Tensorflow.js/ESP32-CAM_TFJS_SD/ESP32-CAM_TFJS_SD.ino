@@ -1,5 +1,5 @@
 /*
-ESP32-CAM TFJS SD (Load pages from SD files)
+ESP32-CAM TFJS SD (Load pages from SD card)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-15 12:00
 https://www.facebook.com/francefu
 
