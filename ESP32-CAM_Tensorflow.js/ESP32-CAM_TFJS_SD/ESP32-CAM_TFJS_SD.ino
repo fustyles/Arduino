@@ -59,7 +59,6 @@ const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 
 #include <WiFi.h>
 #include <esp32-hal-ledc.h>      //用於控制伺服馬達
-#include "esp_camera.h"          //視訊
 #include "soc/soc.h"             //用於電源不穩不重開機 
 #include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機
 #include "FS.h"                 //file system wrapper
