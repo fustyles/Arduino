@@ -571,10 +571,10 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         int val = P1.toInt();
         ledcWrite(4,val);  
       }  
-      else if (cmd=="loadpage") {  //控制內建閃光燈
+      else if (cmd=="loadpage") {  //載入SD卡網頁
         Feedback=getPage(P1);
       }
-      else if (cmd=="getimage") {  //控制內建閃光燈
+      else if (cmd=="getimage") {  //載入SD卡圖檔
         //回傳SD卡影像檔案
         if(!SD_MMC.begin()){
           Serial.println("Card Mount Failed");
