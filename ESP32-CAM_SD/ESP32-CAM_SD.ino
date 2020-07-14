@@ -4,7 +4,6 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-7-24 12:00
 https://www.facebook.com/francefu
 */
 
-#include "esp_camera.h"
 #include <WiFi.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
