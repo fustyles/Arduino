@@ -644,13 +644,10 @@ static esp_err_t cmd_handler(httpd_req_t *req){
 
       if (Feedback=="") Feedback=Command;  //若沒有設定回傳資料就回傳Command值
     
-      static char response[1024];
-      char * p = response;
-      p+=sprintf(p, "%s", Feedback.c_str());   
-      *p++ = 0;
+      const char *resp = Feedback.c_str();
       httpd_resp_set_type(req, "text/html");  //設定回傳資料格式
       httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");  //允許跨網域讀取
-      return httpd_resp_send(req, response, strlen(response));
+      return httpd_resp_send(req, resp, strlen(resp));
     } 
     else {
       int val = atoi(value);
@@ -691,13 +688,10 @@ static esp_err_t cmd_handler(httpd_req_t *req){
   
       if (buf) {
         Feedback = String(buf);
-        static char response[128];
-        char * p = response;
-        p+=sprintf(p, "%s", Feedback.c_str());   
-        *p++ = 0;
+        const char *resp = Feedback.c_str();
         httpd_resp_set_type(req, "text/html");
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-        return httpd_resp_send(req, response, strlen(response));  //回傳參數字串
+        return httpd_resp_send(req, resp, strlen(resp));  //回傳參數字串
       }
       else {
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
