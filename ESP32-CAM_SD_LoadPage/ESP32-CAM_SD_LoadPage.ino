@@ -539,7 +539,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     Feedback="";Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
     ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;     
     if (myCmd.length()>0) {
-      myCmd = "?"+myCmd;  //網址後帶的參數字串轉換成自訂參數格式
+      myCmd = "?"+myCmd;  //網址後帶的參數字串轉換成自訂指令格式
       for (int i=0;i<myCmd.length();i++) {
         getCommand(char(myCmd.charAt(i)));  //拆解自訂指令參數字串
       }
