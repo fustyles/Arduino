@@ -556,12 +556,12 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         // You can do anything
         // Feedback="<font color=\"red\">Hello World</font>";   //可為一般文字或HTML語法
       }
-      else if (cmd=="ip") {  //查詢IP
+      else if (cmd=="ip") {  //查詢APIP, STAIP
         Feedback="AP IP: "+WiFi.softAPIP().toString();    
         Feedback+="<br>";
         Feedback+="STA IP: "+WiFi.localIP().toString();
       }  
-      else if (cmd=="mac") {  //查詢MAC
+      else if (cmd=="mac") {  //查詢MAC位址
         Feedback="STA MAC: "+WiFi.macAddress();
       }  
       else if (cmd=="restart") {  //重設WIFI連線
@@ -574,7 +574,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         int val = P1.toInt();
         ledcWrite(4,val);  
       }  
-      else if (cmd=="loadpage") {  //載入SD卡網頁 (.htm, .html)
+      else if (cmd=="loadpage") {  //載入SD卡網頁(.htm, .html)  http://192.168.xxx.xxx/control?loadpage=/Taiwan.html
         Feedback=getPage(P1);
       }
       else if (cmd=="getimage") {  //載入SD卡圖檔 <img src="/control?getimage=/Taiwan.jpg">
