@@ -19,8 +19,8 @@ http://192.168.xxx.xxx/control?ip                  //取得APIP, STAIP
 http://192.168.xxx.xxx/control?mac                 //取得MAC位址
 http://192.168.xxx.xxx/control?restart             //重啟ESP32-CAM
 http://192.168.xxx.xxx/control?flash=value         //value= 0~255
-http://192.168.xxx.xxx/control?loadpage=/filepath  //載入SD卡網頁(.htm, .html), 路徑開端要加"/"
-http://192.168.xxx.xxx/control?getimage=/filepath  //載入SD卡圖檔, 路徑開端要加"/"
+http://192.168.xxx.xxx/control?loadpage=filepath  //載入SD卡網頁(.htm, .html), 檔案路徑開端要加"/"
+http://192.168.xxx.xxx/control?getimage=filepath  //載入SD卡圖檔, 檔案路徑開端要加"/"
 
 官方指令格式 http://192.168.xxx.xxx/control?var=***&val=***
 http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
