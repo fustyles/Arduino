@@ -18,7 +18,7 @@ http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://192.168.xxx.xxx/control?ip                  //取得APIP, STAIP
 http://192.168.xxx.xxx/control?mac                 //取得MAC位址
 http://192.168.xxx.xxx/control?restart             //重啟ESP32-CAM
-http://192.168.xxx.xxx/control?flash=value         //value= 0~255
+http://192.168.xxx.xxx/control?flash=value         //閃光燈 value= 0~255
 http://192.168.xxx.xxx/control?loadpage=filepath   //載入SD卡網頁(.htm, .html), 檔案路徑開端要加"/"  -->  http://192.168.xxx.xxx/control?loadpage=/Taiwan.html
 http://192.168.xxx.xxx/control?getimage=filepath   //載入SD卡圖檔, 檔案路徑開端要加"/"  -->  <img src="/control?getimage=/Taiwan.jpg">
 
