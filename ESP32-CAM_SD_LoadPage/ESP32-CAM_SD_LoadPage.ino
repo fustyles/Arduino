@@ -67,14 +67,14 @@ const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 #include "SD_MMC.h"              //SD卡存取函式庫
 
 //官方函式庫
-#include "esp_camera.h"          //視訊函式
+#include "esp_camera.h"          //視訊函式庫
 #include "esp_http_server.h"     //HTTP Server函式庫
 #include "esp_timer.h"           //計時器函式庫
-#include "img_converters.h"      //影像格式轉換函式
-#include "fb_gfx.h"              //影像繪圖函式
-#include "fd_forward.h"          //人臉偵測函式
-#include "FS.h"                  //檔案系統函式
-#include "SD_MMC.h"              //SD卡存取函式
+#include "img_converters.h"      //影像格式轉換函式庫
+#include "fb_gfx.h"              //影像繪圖函式庫
+#include "fd_forward.h"          //人臉偵測函式庫
+#include "FS.h"                  //檔案系統函式庫
+#include "SD_MMC.h"              //SD卡存取函式庫
 
 String Feedback="";   //自訂指令回傳客戶端訊息
 
