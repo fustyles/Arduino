@@ -1,7 +1,12 @@
 /*
 ESP32-CAM Load pages from SD card
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-15 01:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-15 02:00
 https://www.facebook.com/francefu
+
+http://192.168.xxx.xxx             //網頁首頁管理介面
+http://192.168.xxx.xxx:81/stream   //取得串流影像
+http://192.168.xxx.xxx/capture     //取得影像
+http://192.168.xxx.xxx/status      //取得視訊參數值
 
 自訂指令格式 :  
 http://APIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
@@ -12,13 +17,8 @@ http://192.168.xxx.xxx/control?ip
 http://192.168.xxx.xxx/control?mac
 http://192.168.xxx.xxx/control?restart
 http://192.168.xxx.xxx/control?flash=value        //value= 0~255
-http://192.168.xxx.xxx/control?loadpage=/filename
-http://192.168.xxx.xxx/control?getimage=/filename
-
-http://192.168.xxx.xxx             //網頁首頁管理介面
-http://192.168.xxx.xxx:81/stream   //取得串流影像
-http://192.168.xxx.xxx/capture     //取得影像
-http://192.168.xxx.xxx/status      //取得視訊參數值
+http://192.168.xxx.xxx/control?loadpage=/filepath  //載入SD卡網頁(.htm, .html), 路徑開端要加"/"
+http://192.168.xxx.xxx/control?getimage=/filepath  //載入SD卡圖檔, 路徑開端要加"/"
 
 設定視訊參數(官方指令格式)
 http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
@@ -52,8 +52,8 @@ http://192.168.xxx.xxx/control?var=ae_level&val=value    // value = -2 ~ 2
 */
 
 //輸入WIFI連線帳號密碼
-const char* ssid     = "*****";   //your network SSID
-const char* password = "*****";   //your network password
+const char* ssid     = "fsm001";   //your network SSID
+const char* password = "12345678";   //your network password
 
 //輸入AP端連線帳號密碼
 const char* apssid = "ESP32-CAM";
@@ -68,17 +68,17 @@ const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 
 //官方函式庫
 #include "esp_camera.h"          //視訊函式
+#include "esp_http_server.h"
+#include "esp_timer.h"
 #include "img_converters.h"      //影像格式轉換函式
 #include "fb_gfx.h"              //影像繪圖函式
 #include "fd_forward.h"          //人臉偵測函式
 #include "FS.h"                  //檔案系統函式
 #include "SD_MMC.h"              //SD卡存取函式
-#include "esp_http_server.h"
-#include "esp_timer.h"
 
-String Feedback="";   //回傳客戶端訊息
+String Feedback="";   //自訂指令回傳客戶端訊息
 
-//指令參數值
+//自訂指令參數值
 String Command="";
 String cmd="";
 String P1="";
@@ -91,7 +91,7 @@ String P7="";
 String P8="";
 String P9="";
 
-//指令拆解狀態值
+//自訂指令拆解狀態值
 byte ReceiveState=0;
 byte cmdState=1;
 byte strState=1;
@@ -152,7 +152,7 @@ static int ra_filter_run(ra_filter_t * filter, int value){
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
 //            or another board which has PSRAM enabled
 
-//安可信ESP32-CAM模組腳位設定
+//ESP32-CAM模組腳位設定
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -224,7 +224,7 @@ void setup() {
   sensor_t * s = esp_camera_sensor_get();
   s->set_framesize(s, FRAMESIZE_QVGA);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
-  //SD Card
+  //SD卡
   if(!SD_MMC.begin()){
     Serial.println("Card Mount Failed");
     //ESP.restart();
@@ -238,7 +238,7 @@ void setup() {
       File file = root.openNextFile();
       while(file){
         if(!file.isDirectory()){
-          Serial.println(String(file.name()));
+          Serial.println(String(file.name()));  //輸出SD檔案清單
         }
         file = root.openNextFile();
       }
@@ -249,9 +249,9 @@ void setup() {
 
   //閃光燈(GPIO4)
   ledcAttachPin(4, 4);  
-  ledcSetup(4, 5000, 8);
+  ledcSetup(4, 5000, 8);  
   
-  WiFi.mode(WIFI_AP_STA);  //其他模式 WiFi.mode(WIFI_AP); WiFi.mode(WIFI_STA);
+  WiFi.mode(WIFI_AP_STA);  //其他模式 WIFI_AP, WIFI_STA
 
   //指定Client端靜態IP
   //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
@@ -507,10 +507,10 @@ static esp_err_t stream_handler(httpd_req_t *req){
 
 //指令參數控制
 static esp_err_t cmd_handler(httpd_req_t *req){
-    char*  buf;  //存取網址後帶的參數字串
+    char*  buf;    //存取網址後帶的參數字串
     size_t buf_len;
     char variable[128] = {0,};  //存取參數var值
-    char value[128] = {0,};  //存取參數val值
+    char value[128] = {0,};     //存取參數val值
     String myCmd = "";
 
     buf_len = httpd_req_get_url_query_len(req) + 1;
@@ -526,7 +526,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
             httpd_query_key_value(buf, "val", value, sizeof(value)) == ESP_OK) {
           } 
           else {
-            myCmd = String(buf);
+            myCmd = String(buf);   //如果非官方格式不含var, val，則為自訂指令格式
           }
         }
     } else {
@@ -539,7 +539,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     if (myCmd.length()>0) {
       myCmd = "?"+myCmd;  //網址後帶的參數字串轉換成自訂參數格式
       for (int i=0;i<myCmd.length();i++) {
-        getCommand(char(myCmd.charAt(i)));  //拆解參數字串
+        getCommand(char(myCmd.charAt(i)));  //拆解自訂指令參數字串
       }
     }
 
@@ -556,7 +556,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       }
       else if (cmd=="ip") {  //查詢IP
         Feedback="AP IP: "+WiFi.softAPIP().toString();    
-        Feedback+=", ";
+        Feedback+="<br>";
         Feedback+="STA IP: "+WiFi.localIP().toString();
       }  
       else if (cmd=="mac") {  //查詢MAC
@@ -572,11 +572,10 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         int val = P1.toInt();
         ledcWrite(4,val);  
       }  
-      else if (cmd=="loadpage") {  //載入SD卡網頁
+      else if (cmd=="loadpage") {  //載入SD卡網頁 (.htm, .html)
         Feedback=getPage(P1);
       }
-      else if (cmd=="getimage") {  //載入SD卡圖檔
-        //回傳SD卡影像檔案
+      else if (cmd=="getimage") {  //載入SD卡圖檔 <img src="/control?getimage=/Taiwan.jpg">
         if(!SD_MMC.begin()){
           Serial.println("Card Mount Failed");
         }  
@@ -623,11 +622,11 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       return httpd_resp_send(req, resp, strlen(resp));
     } 
     else {
+      //官方指令區塊，也可在此自訂指令  http://192.168.xxx.xxx/control?var=xxx&val=xxx
       int val = atoi(value);
       sensor_t * s = esp_camera_sensor_get();
       int res = 0;
 
-      //官方指令區塊，也可在此自訂指令  http://192.168.xxx.xxx/control?var=xxx&val=xxx
       if(!strcmp(variable, "framesize")) {
         if(s->pixformat == PIXFORMAT_JPEG) 
           res = s->set_framesize(s, (framesize_t)val);
@@ -677,7 +676,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     }
 }
 
-//顯示視訊參數狀態(須回傳json格式)
+//顯示視訊參數狀態(須回傳json格式載入初始設定)
 static esp_err_t status_handler(httpd_req_t *req){
     static char json_response[1024];
 
@@ -725,10 +724,10 @@ static esp_err_t index_handler(httpd_req_t *req){
     return httpd_resp_send(req, buf, strlen(buf));
 }
 
+//自訂網址路徑要執行的函式
 void startCameraServer(){
   httpd_config_t config = HTTPD_DEFAULT_CONFIG();  //可在HTTPD_DEFAULT_CONFIG()中設定Server Port 
 
-  //可自訂網址路徑
   //http://192.168.xxx.xxx/
   httpd_uri_t index_uri = {
       .uri       = "/",
@@ -788,7 +787,7 @@ void startCameraServer(){
   }
 }
 
-//拆解命令字串置入變數
+//自訂指令拆解參數字串置入變數
 void getCommand(char c)
 {
   if (c=='?') ReceiveState=1;
@@ -818,9 +817,10 @@ void getCommand(char c)
   }
 }
 
+//回傳SD卡影像檔案
 String getPage(String filename) { 
   String html = "";       
-  //回傳SD卡影像檔案
+  
   if(!SD_MMC.begin()){
     Serial.println("Card Mount Failed");
   }  
@@ -845,8 +845,8 @@ String getPage(String filename) {
   return html;
 }  
 
+//取得SD檔案清單
 String getList() { 
-  //SD Card
   if(!SD_MMC.begin()){
     Serial.println("Card Mount Failed");
     return "Card Mount Failed";
@@ -864,13 +864,13 @@ String getList() {
   while(file){
     if(!file.isDirectory()){
       String filename=String(file.name());
-      if (filename.indexOf(".htm")!=-1)
-        list = "<tr><td><a onclick=\'this.href=location.origin+\"/control?loadpage="+String(file.name())+"\";\'>"+String(file.name())+"</a></td></tr>"+list;
+      if (filename.indexOf(".htm")!=-1)  //取得.htm, .html網頁檔，可自行修改條件
+        list += "<tr><td><a onclick=\'this.href=location.origin+\"/control?loadpage="+String(file.name())+"\";\'>"+String(file.name())+"</a></td></tr>";
     }
     file = root.openNextFile();
   }
   if (list=="") list="<tr><td>null</td></tr>";
-  list="Files List<br><table border=1>"+list+"</table>";
+  list="Pages List (.htm, .html)<br><table border=1>"+list+"</table>";
 
   file.close();
   SD_MMC.end();
