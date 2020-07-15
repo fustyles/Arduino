@@ -2,14 +2,16 @@
   <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
   <script src='https://fustyles.github.io/webduino/TensorFlow/Face-api/face-api.min.js'></script>
-  </head><body>
+  </head>
+  <body>
   <div id="container"></div>
   <img id="ShowImage" src="" style="display:none">
   <canvas id="canvas" style="display:none"></canvas>  
   <table>
   <tr>
-    <td><input type="button" id="restart" value="Restart"></td> 
+    <td><button id="restart" onclick="try{fetch(document.location.origin+'/control?restart');}catch(e){}">Restart</button></td> 
     <td colspan="2"><input type="button" id="getStill" value="Get Still" style="display:none"></td> 
   </tr>
   <tr>
@@ -25,15 +27,15 @@
     <td>Resolution</td> 
     <td colspan="2">
       <select id="framesize">
-        <option value="UXGA">UXGA(1600x1200)</option>
-        <option value="SXGA">SXGA(1280x1024)</option>
-        <option value="XGA">XGA(1024x768)</option>
-        <option value="SVGA">SVGA(800x600)</option>
-        <option value="VGA">VGA(640x480)</option>
-        <option value="CIF">CIF(400x296)</option>
-        <option value="QVGA" selected="selected">QVGA(320x240)</option>
-        <option value="HQVGA">HQVGA(240x176)</option>
-        <option value="QQVGA">QQVGA(160x120)</option>
+        <option value="10">UXGA(1600x1200)</option>
+        <option value="9">SXGA(1280x1024)</option>
+        <option value="8">XGA(1024x768)</option>
+        <option value="7">SVGA(800x600)</option>
+        <option value="6">VGA(640x480)</option>
+        <option value="5">CIF(400x296)</option>
+        <option value="4" selected="selected">QVGA(320x240)</option>
+        <option value="3">HQVGA(240x176)</option>
+        <option value="0">QQVGA(160x120)</option>
       </select> 
     </td>
   </tr>    
@@ -65,12 +67,12 @@
     </td>
   </tr>  
   </table>
-  <iframe id="ifr" style="display:none"></iframe>
   <div id="message" style="color:red">Please wait for loading model.<div>
   </body>
   </html> 
   
   <script>
+    var restart = document.getElementById('restart');
     var getStill = document.getElementById('getStill');
     var ShowImage = document.getElementById('ShowImage');
     var canvas = document.getElementById("canvas");
@@ -78,7 +80,6 @@
     var mirrorimage = document.getElementById("mirrorimage");  
     var message = document.getElementById('message');
     var flash = document.getElementById('flash'); 
-    var ifr = document.getElementById('ifr');
     var myTimer;
     var restartCount=0;
     //Model: https://github.com/fustyles/webduino/tree/master/TensorFlow/Face-api
@@ -102,7 +103,7 @@
     getStill.onclick = function (event) {
       clearInterval(myTimer);  
       myTimer = setInterval(function(){error_handle();},5000);
-      ShowImage.src=location.origin+'/?getstill='+Math.random();
+      ShowImage.src=location.origin+'/capture?'+Math.random();
     }
     function error_handle() {
       restartCount++;
@@ -110,7 +111,6 @@
       if (restartCount<=2) {
         message.innerHTML = "Get still error. <br>Restart ESP32-CAM "+restartCount+" times.";
         myTimer = setInterval(function(){getStill.click();},10000);
-        //ifr.src = document.location.origin+'?restart';
       }
       else
         message.innerHTML = "Get still error. <br>Please close the page and check ESP32-CAM.";
@@ -134,22 +134,22 @@
     }     
     
     restart.onclick = function (event) {
-      fetch(location.origin+'/?restart=stop');
+      fetch(location.origin+'/control?restart');
     }    
-    framesize.onclick = function (event) {
-      fetch(document.location.origin+'/?framesize='+this.value+';stop');
-    }  
     flash.onchange = function (event) {
-      fetch(location.origin+'/?flash='+this.value+';stop');
+      fetch(location.origin+'/control?flash='+this.value);
     } 
+    framesize.onclick = function (event) {
+      fetch(document.location.origin+'/control?var=framesize&val='+this.value);
+    }  
     quality.onclick = function (event) {
-      fetch(document.location.origin+'/?quality='+this.value+';stop');
+      fetch(document.location.origin+'/control?var=quality&val='+this.value);
     } 
     brightness.onclick = function (event) {
-      fetch(document.location.origin+'/?brightness='+this.value+';stop');
+      fetch(document.location.origin+'/control?var=brightness&val='+this.value);
     } 
     contrast.onclick = function (event) {
-      fetch(document.location.origin+'/?contrast='+this.value+';stop');
+      fetch(document.location.origin+'/control?var=contrast&val='+this.value);
     }                             
     
     async function DetectImage() {
