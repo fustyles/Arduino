@@ -52,8 +52,8 @@ http://192.168.xxx.xxx/control?var=ae_level&val=value    // value = -2 ~ 2
 */
 
 //輸入WIFI連線帳號密碼
-const char* ssid     = "fsm001";   //your network SSID
-const char* password = "12345678";   //your network password
+const char* ssid     = "*****";   //your network SSID
+const char* password = "*****";   //your network password
 
 //輸入AP端連線帳號密碼
 const char* apssid = "ESP32-CAM";
