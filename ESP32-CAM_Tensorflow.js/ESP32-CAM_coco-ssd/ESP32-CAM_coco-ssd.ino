@@ -1088,7 +1088,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           //偵測到物件時在此區塊作處理
           for (var j=0;j<Predictions.length;j++) {
             //https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
-            if (Predictions[j].class=="person"&&Predictions[j].score*100>=0.5) {   
+            if (Predictions[j].class=="person"&&Predictions[j].score>=0.5) {   
               try{
                 //ifr.src = document.location.origin+'/control?flash=10';
                 break;
