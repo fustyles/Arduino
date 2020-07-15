@@ -13,10 +13,10 @@ http://APIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 
 預設AP端IP： 192.168.4.1
-http://192.168.xxx.xxx/control?ip
-http://192.168.xxx.xxx/control?mac
-http://192.168.xxx.xxx/control?restart
-http://192.168.xxx.xxx/control?flash=value        //value= 0~255
+http://192.168.xxx.xxx/control?ip                  //取得APIP, STAIP
+http://192.168.xxx.xxx/control?mac                 //取得MAC位址
+http://192.168.xxx.xxx/control?restart             //重啟ESP32-CAM
+http://192.168.xxx.xxx/control?flash=value         //value= 0~255
 http://192.168.xxx.xxx/control?loadpage=/filepath  //載入SD卡網頁(.htm, .html), 路徑開端要加"/"
 http://192.168.xxx.xxx/control?getimage=/filepath  //載入SD卡圖檔, 路徑開端要加"/"
 
@@ -63,13 +63,13 @@ const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 #include <esp32-hal-ledc.h>      //用於控制伺服馬達
 #include "soc/soc.h"             //用於電源不穩不重開機 
 #include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機
-#include "FS.h"                 //file system wrapper
-#include "SD_MMC.h"             //SD卡存取函式庫
+#include "FS.h"                  //檔案系統包裝函式庫
+#include "SD_MMC.h"              //SD卡存取函式庫
 
 //官方函式庫
 #include "esp_camera.h"          //視訊函式
-#include "esp_http_server.h"
-#include "esp_timer.h"
+#include "esp_http_server.h"     //HTTP Server函式庫
+#include "esp_timer.h"           //計時器函式庫
 #include "img_converters.h"      //影像格式轉換函式
 #include "fb_gfx.h"              //影像繪圖函式
 #include "fd_forward.h"          //人臉偵測函式
