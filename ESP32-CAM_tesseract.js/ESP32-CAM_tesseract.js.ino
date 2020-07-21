@@ -297,7 +297,7 @@ void setup() {
 static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <!DOCTYPE html>
   <head>
-  <title>Text Recognition</title>
+  <title>Text recognition (tesseract.js)</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
