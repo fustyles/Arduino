@@ -22,23 +22,7 @@
         <option value="0">no</option>
       </select>
     </td>
-  </tr>   
-  <tr>
-    <td>Resolution</td> 
-    <td colspan="2">
-      <select id="framesize">
-        <option value="10">UXGA(1600x1200)</option>
-        <option value="9">SXGA(1280x1024)</option>
-        <option value="8">XGA(1024x768)</option>
-        <option value="7">SVGA(800x600)</option>
-        <option value="6">VGA(640x480)</option>
-        <option value="5">CIF(400x296)</option>
-        <option value="4" selected="selected">QVGA(320x240)</option>
-        <option value="3">HQVGA(240x176)</option>
-        <option value="0">QQVGA(160x120)</option>
-      </select> 
-    </td>
-  </tr>    
+  </tr>       
   <tr>
     <td>Flash</td>
     <td colspan="2"><input type="range" id="flash" min="0" max="255" value="0"></td>
@@ -54,6 +38,22 @@
   <tr>
     <td>Contrast</td>
     <td colspan="2"><input type="range" id="contrast" min="-2" max="2" value="0"></td>
+  </tr>
+  <tr>
+    <td>Resolution</td> 
+    <td colspan="2">
+      <select id="framesize">
+        <option value="10">UXGA(1600x1200)</option>
+        <option value="9">SXGA(1280x1024)</option>
+        <option value="8">XGA(1024x768)</option>
+        <option value="7">SVGA(800x600)</option>
+        <option value="6">VGA(640x480)</option>
+        <option value="5">CIF(400x296)</option>
+        <option value="4" selected="selected">QVGA(320x240)</option>
+        <option value="3">HQVGA(240x176)</option>
+        <option value="0">QQVGA(160x120)</option>
+      </select> 
+    </td>
   </tr>
   <tr>
     <td>Rotate</td>
@@ -141,6 +141,7 @@
     } 
     framesize.onclick = function (event) {
       fetch(document.location.origin+'/control?var=framesize&val='+this.value);
+      setTimeout(function(){getStill.click();},1000);
     }  
     quality.onclick = function (event) {
       fetch(document.location.origin+'/control?var=quality&val='+this.value);
