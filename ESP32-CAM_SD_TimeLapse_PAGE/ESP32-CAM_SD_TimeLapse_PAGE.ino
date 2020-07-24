@@ -31,7 +31,9 @@ const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 #include <esp32-hal-ledc.h>      //用於控制伺服馬達
 #include "soc/soc.h"             //用於電源不穩不重開機 
 #include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機
-#include <EEPROM.h>
+#include "FS.h"                  //檔案系統函式庫
+#include "SD_MMC.h"              //SD卡存取函式庫
+#include <EEPROM.h>              //EEPROM
 
 //官方函式庫
 #include "esp_camera.h"          //視訊函式庫
@@ -40,8 +42,6 @@ const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 #include "img_converters.h"      //影像格式轉換函式庫
 #include "fb_gfx.h"              //影像繪圖函式庫
 #include "fd_forward.h"          //人臉偵測函式庫
-#include "FS.h"                  //檔案系統函式庫
-#include "SD_MMC.h"              //SD卡存取函式庫
 
 String Feedback="";   //自訂指令回傳客戶端訊息
 
