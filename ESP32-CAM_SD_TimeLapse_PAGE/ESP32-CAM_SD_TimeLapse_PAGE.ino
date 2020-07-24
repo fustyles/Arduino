@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Time Lapse
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-25 02:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-25 02:30
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
@@ -407,7 +407,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           opacity: 1;
         }  
         </style>      
-        <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
     </head>
     <body>
         <figure>
@@ -487,6 +486,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 </div>
             </div>
         </section>
+        <iframe id="ifr" style="display:none"></iframe>
         
         <script>
           document.addEventListener('DOMContentLoaded', function (event) {
@@ -640,6 +640,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             const interval = document.getElementById('interval')
             const interval_tip = document.getElementById('interval_tip')
             const range = document.getElementById('range')
+            const ifr = document.getElementById('ifr')
             var myTimer;
           
             framesize.onchange = () => {
@@ -654,9 +655,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
               interval_tip.innerHTML = interval.value;
               if (timelapse.checked) {
                 clearInterval(myTimer);
-                $.ajax({url: document.location.origin+'/control?saveimage', async: false});
+                ifr.src =  document.location.origin+'/control?saveimage';
                 myTimer = setInterval(function(){
-                  $.ajax({url: document.location.origin+'/control?saveimage', async: false});
+                  ifr.src =  document.location.origin+'/control?saveimage';
                 }, interval.value);
               }             
             }            
@@ -664,9 +665,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             timelapse.onchange = () => {
               clearInterval(myTimer);
               if (timelapse.checked) {
-                $.ajax({url: document.location.origin+'/control?saveimage', async: false});
+                ifr.src =  document.location.origin+'/control?saveimage';
                 myTimer = setInterval(function(){
-                  $.ajax({url: document.location.origin+'/control?saveimage', async: false});
+                  ifr.src =  document.location.origin+'/control?saveimage';
                 }, interval.value);
               } 
             }            
