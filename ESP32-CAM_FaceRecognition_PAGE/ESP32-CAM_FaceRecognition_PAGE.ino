@@ -625,7 +625,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             const framesize = document.getElementById('framesize')
             
             const controlstate = document.getElementById('controlstate')
-            const ifr = document.getElementById('controlstate')
           
             framesize.onchange = () => {
               updateConfig(framesize)
