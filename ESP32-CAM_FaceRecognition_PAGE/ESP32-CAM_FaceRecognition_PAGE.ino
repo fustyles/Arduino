@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Face Recognition
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-24 13:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-24 23:00
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
@@ -664,7 +664,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
 
             controlstate.onchange = () => {
               if (controlstate.checked) {
-                $.ajax({url: document.location.origin+'/control?controlstate=1', async: false});updateValue(controlstate, true)
+                $.ajax({url: document.location.origin+'/control?controlstate=1', async: false});
               } else {
                 $.ajax({url: document.location.origin+'/control?controlstate=0', async: false});
               }  
