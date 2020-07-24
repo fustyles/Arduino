@@ -10,7 +10,7 @@ http://192.168.xxx.xxx/status      //取得影像狀態值
 
 //自訂指令格式  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://192.168.xxx.xxx/control?facename=matched_id;name  //設定姓名
-http://192.168.xxx.xxx/control?constrolstate=value       //value=0 or 1 設定是否執行函式 void FaceMatched(), void FaceNoMatched
+http://192.168.xxx.xxx/control?constrolstate=state       //state=0 or 1 設定是否執行函式 void FaceMatched(), void FaceNoMatched
 
 //官方指令格式  http://192.168.xxx.xxx/control?var=xxx&val=xxx
 http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
