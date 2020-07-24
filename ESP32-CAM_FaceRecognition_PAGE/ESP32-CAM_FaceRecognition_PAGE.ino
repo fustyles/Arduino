@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Face Recognition
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-21 13:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-24 13:00
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
@@ -10,6 +10,7 @@ http://192.168.xxx.xxx/status      //取得影像狀態值
 
 //自訂指令格式  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://192.168.xxx.xxx/control?facename=matched_id;name  //設定姓名
+http://192.168.xxx.xxx/control?constrolstate=value       //value=0 or 1 設定是否執行函式 void FaceMatched(), void FaceNoMatched
 
 //官方指令格式  http://192.168.xxx.xxx/control?var=xxx&val=xxx
 http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
@@ -35,6 +36,8 @@ const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 
 //設定人臉辨識顯示的人名
 String recognize_face_matched_name[7] = {"Name0","Name1","Name2","Name3","Name4","Name5","Name6"};
+
+boolean controlState = false;  //是否執行函式 void FaceMatched(), void FaceNoMatched
 
 #include <WiFi.h>
 #include "soc/soc.h"             //用於電源不穩不重開機 
@@ -232,9 +235,17 @@ void loop() {
 }
 
 void FaceMatched(int faceid) {  //辨識到註冊人臉執行指令控制
-  if (faceid==0) {  
+  if (controlState == false) return;
+  Serial.println("FaceMatched = "+String(faceid));
+  
+  if (faceid==0) {
+    /*
+    byte Pin = 2;
+    pinMode (Pin, OUTPUT);
+    digitalWrite (Pin, HIGH);
+    */
   } 
-  else if (faceid==1) { 
+  else if (faceid==1) {   
   } 
   else if (faceid==2) { 
   } 
@@ -251,6 +262,8 @@ void FaceMatched(int faceid) {  //辨識到註冊人臉執行指令控制
 }
 
 void FaceNoMatched() {  //辨識為陌生人臉執行指令控制
+  if (controlState == false) return;
+  Serial.println("FaceNoMatched");
   
 }
 
@@ -344,6 +357,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         <style> 
           body { font-family: Arial,Helvetica,sans-serif; background: #181818; color: #EFEFEF; font-size: 16px } h2 { font-size: 18px } section.main { display: flex } #menu,section.main { flex-direction: column } #menu { display: none; flex-wrap: nowrap; min-width: 340px; background: #363636; padding: 8px; border-radius: 4px; margin-top: -10px; margin-right: 10px; } #content { display: flex; flex-wrap: wrap; align-items: stretch } figure { padding: 0px; margin: 0; -webkit-margin-before: 0; margin-block-start: 0; -webkit-margin-after: 0; margin-block-end: 0; -webkit-margin-start: 0; margin-inline-start: 0; -webkit-margin-end: 0; margin-inline-end: 0 } figure img { display: block; width: 100%; height: auto; border-radius: 4px; margin-top: 8px; } @media (min-width: 800px) and (orientation:landscape) { #content { display:flex; flex-wrap: nowrap; align-items: stretch } figure img { display: block; max-width: 100%; max-height: calc(100vh - 40px); width: auto; height: auto } figure { padding: 0 0 0 0px; margin: 0; -webkit-margin-before: 0; margin-block-start: 0; -webkit-margin-after: 0; margin-block-end: 0; -webkit-margin-start: 0; margin-inline-start: 0; -webkit-margin-end: 0; margin-inline-end: 0 } } section#buttons { display: flex; flex-wrap: nowrap; justify-content: space-between } #nav-toggle { cursor: pointer; display: block } #nav-toggle-cb { outline: 0; opacity: 0; width: 0; height: 0 } #nav-toggle-cb:checked+#menu { display: block } .input-group { display: flex; flex-wrap: nowrap; line-height: 22px; margin: 5px 0 } .input-group>label { display: inline-block; padding-right: 10px; min-width: 47% } .input-group input,.input-group select { flex-grow: 1 } .range-max,.range-min { display: inline-block; padding: 0 5px } button { display: block; margin: 5px; padding: 0 12px; border: 0; line-height: 28px; cursor: pointer; color: #fff; background: #ff3034; border-radius: 5px; font-size: 16px; outline: 0 } button:hover { background: #ff494d } button:active { background: #f21c21 } button.disabled { cursor: default; background: #a0a0a0 } input[type=range] { -webkit-appearance: none; width: 100%; height: 22px; background: #363636; cursor: pointer; margin: 0 } input[type=range]:focus { outline: 0 } input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 2px; cursor: pointer; background: #EFEFEF; border-radius: 0; border: 0 solid #EFEFEF } input[type=range]::-webkit-slider-thumb { border: 1px solid rgba(0,0,30,0); height: 22px; width: 22px; border-radius: 50px; background: #ff3034; cursor: pointer; -webkit-appearance: none; margin-top: -11.5px } input[type=range]:focus::-webkit-slider-runnable-track { background: #EFEFEF } input[type=range]::-moz-range-track { width: 100%; height: 2px; cursor: pointer; background: #EFEFEF; border-radius: 0; border: 0 solid #EFEFEF } input[type=range]::-moz-range-thumb { border: 1px solid rgba(0,0,30,0); height: 22px; width: 22px; border-radius: 50px; background: #ff3034; cursor: pointer } input[type=range]::-ms-track { width: 100%; height: 2px; cursor: pointer; background: 0 0; border-color: transparent; color: transparent } input[type=range]::-ms-fill-lower { background: #EFEFEF; border: 0 solid #EFEFEF; border-radius: 0 } input[type=range]::-ms-fill-upper { background: #EFEFEF; border: 0 solid #EFEFEF; border-radius: 0 } input[type=range]::-ms-thumb { border: 1px solid rgba(0,0,30,0); height: 22px; width: 22px; border-radius: 50px; background: #ff3034; cursor: pointer; height: 2px } input[type=range]:focus::-ms-fill-lower { background: #EFEFEF } input[type=range]:focus::-ms-fill-upper { background: #363636 } .switch { display: block; position: relative; line-height: 22px; font-size: 16px; height: 22px } .switch input { outline: 0; opacity: 0; width: 0; height: 0 } .slider { width: 50px; height: 22px; border-radius: 22px; cursor: pointer; background-color: grey } .slider,.slider:before { display: inline-block; transition: .4s } .slider:before { position: relative; content: ""; border-radius: 50%; height: 16px; width: 16px; left: 4px; top: 3px; background-color: #fff } input:checked+.slider { background-color: #ff3034 } input:checked+.slider:before { -webkit-transform: translateX(26px); transform: translateX(26px) } select { border: 1px solid #363636; font-size: 14px; height: 22px; outline: 0; border-radius: 5px } .image-container { position: relative; min-width: 160px } .close { position: absolute; right: 5px; top: 5px; background: #ff3034; width: 16px; height: 16px; border-radius: 100px; color: #fff; text-align: center; line-height: 18px; cursor: pointer } .hidden { display: none } 
         </style>
+        <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
     </head>
     <body>
         <figure>
@@ -438,7 +452,14 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                         <div class="input-group" id="contrast-group">
                             <label id="ifrlab" style="display:none;" for="ifr">Name List</label>
                             <iframe id="ifr" style="display:none;width:170px"></iframe>
-                        </div>                        
+                        </div>  
+                        <div class="input-group" id="controlstate-group">
+                            <label for="controlstate">Control State</label>
+                            <div class="switch">
+                                <input id="controlstate" type="checkbox" class="default-action">
+                                <label class="slider" for="controlstate"></label>
+                            </div>
+                        </div>
                     </nav>
                 </div>
             </div>
@@ -602,6 +623,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             const detect = document.getElementById('face_detect')
             const recognize = document.getElementById('face_recognize')
             const framesize = document.getElementById('framesize')
+            
+            const controlstate = document.getElementById('controlstate')
+            const ifr = document.getElementById('controlstate')
           
             framesize.onchange = () => {
               updateConfig(framesize)
@@ -638,8 +662,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 disable(enrollButton)
               }
             }
-          })
 
+            controlstate.onchange = () => {
+              if (controlstate.checked) {
+                $.ajax({url: document.location.origin+'/control?controlstate=1', async: false});updateValue(controlstate, true)
+              } else {
+                $.ajax({url: document.location.origin+'/control?controlstate=0', async: false});
+              }  
+            }            
+          })
         </script>
     </body>
 </html>)rawliteral";
@@ -743,7 +774,10 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           Feedback+="<tr><td>"+String(i)+"</td><td>"+recognize_face_matched_name[i]+"</td></tr>";
         }
         Feedback+="</table>";
-      }      
+      }  
+      else if (cmd=="controlstate") {  //設定執行函式狀態
+        controlState = (P1.toInt()==1);
+      }
       else {
         Feedback="Command is not defined";
       }
