@@ -1,15 +1,17 @@
 /*
 ESP32-CAM Time Lapse
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-25 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-25 02:00
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
-http://192.168.xxx.xxx:81/stream   //取得串流影像      嵌入網頁語法 <img src="http://192.168.xxx.xxx:81/stream">
+http://192.168.xxx.xxx:81/stream   //取得串流影像       嵌入網頁語法 <img src="http://192.168.xxx.xxx:81/stream">
 http://192.168.xxx.xxx/capture     //取得影像          嵌入網頁語法 <img src="http://192.168.xxx.xxx/capture">
 http://192.168.xxx.xxx/status      //取得影像狀態值
 
 //自訂指令格式  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://192.168.xxx.xxx/control?saveimage      //儲存影像至SD卡
+http://192.168.xxx.xxx/control?resetwifi=ssid;password   //重設Wi-Fi網路
+http://192.168.xxx.xxx/control?restart   //重啟ESP32-CAM
 
 //官方指令格式  http://192.168.xxx.xxx/control?var=xxx&val=xxx
 http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
@@ -750,6 +752,25 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         // You can do anything
         // Feedback="<font color=\"red\">Hello World</font>";   //可為一般文字或HTML語法
       }
+    else if (cmd=="restart")
+    {
+      ESP.restart();
+    }      
+    else if (cmd=="resetwifi")
+    {
+      WiFi.begin(P1.c_str(), P2.c_str());
+      Serial.print("Connecting to ");
+      Serial.println(P1);
+      long int StartTime=millis();
+      while (WiFi.status() != WL_CONNECTED) 
+      {
+          delay(500);
+          if ((StartTime+5000) < millis()) break;
+      } 
+      Serial.println("");
+      Serial.println("STAIP: "+WiFi.localIP().toString());
+      Feedback="STAIP: "+WiFi.localIP().toString();
+    }       
       else if (cmd=="saveimage") {  //儲存影像至SD卡
         EEPROM.begin(sizeof(int)*4);
         EEPROM.write(0, EEPROM.read(0)+1);
