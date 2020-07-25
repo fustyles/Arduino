@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Time Lapse
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-25 10:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-25 10:30
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
@@ -466,7 +466,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                             <div class="range-min">-2</div>
                             <input type="range" id="contrast" min="-2" max="2" value="0" class="default-action">
                             <div class="range-max">2</div>
-                        </div> 
+                        </div>
+                        <div class="input-group" id="resetfilename-group">
+                            <label for="resetfilename">Reset Filename</label>
+                            <section id="buttons">
+                            <button id="resetfilename">Start with 1</button>
+                            </section>
+                        </div>                         
                         <div class="input-group" id="timelapse-group">
                             <label for="contrast">Interval(ms)</label>
                             <div class="range-min">100</div>
@@ -594,7 +600,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             const stillButton = document.getElementById('get-still')
             const streamButton = document.getElementById('toggle-stream')
             const closeButton = document.getElementById('close-stream')
-          
+            
             const stopStream = () => {
               window.stop();
               streamButton.innerHTML = 'Start Stream'
@@ -625,7 +631,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
               } else {
                 startStream()
               }
-            }
+            }            
           
             // Attach default on change action
             document
@@ -635,7 +641,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
               })
           
             // Custom actions
-          
+            const resetfilename = document.getElementById('resetfilename')
             const framesize = document.getElementById('framesize')
             const timelapse = document.getElementById('timelapse')
             const interval = document.getElementById('interval')
@@ -643,6 +649,10 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             const range = document.getElementById('range')
             const ifr = document.getElementById('ifr')
             var myTimer;
+
+            resetfilename.onclick = () => {
+              ifr.src =  document.location.origin+'/control?resetfilename';
+            }            
           
             framesize.onchange = () => {
               updateConfig(framesize)
