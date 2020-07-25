@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Time Lapse
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-25 02:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-25 10:00
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
@@ -12,6 +12,7 @@ http://192.168.xxx.xxx/status      //取得影像狀態值
 http://192.168.xxx.xxx/control?saveimage      //儲存影像至SD卡
 http://192.168.xxx.xxx/control?resetwifi=ssid;password   //重設Wi-Fi網路
 http://192.168.xxx.xxx/control?restart   //重啟ESP32-CAM
+http://192.168.xxx.xxx/control?resetfilename   //重設檔名由1開始編號
 
 //官方指令格式  http://192.168.xxx.xxx/control?var=xxx&val=xxx
 http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
@@ -35,7 +36,7 @@ const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 #include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機
 #include "FS.h"                  //檔案系統函式庫
 #include "SD_MMC.h"              //SD卡存取函式庫
-#include <EEPROM.h>              //EEPROM
+#include <EEPROM.h>              //EEPROM存取函式庫
 
 //官方函式庫
 #include "esp_camera.h"          //視訊函式庫
@@ -725,7 +726,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
             httpd_query_key_value(buf, "val", value, sizeof(value)) == ESP_OK) {
           } 
           else {
-            myCmd = String(buf);
+            myCmd = String(buf);    //若無var, val參數則為自訂參數
           }
         }
     } else {
@@ -753,31 +754,34 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         // You can do anything
         // Feedback="<font color=\"red\">Hello World</font>";   //可為一般文字或HTML語法
       }
-    else if (cmd=="restart")
-    {
-      ESP.restart();
-    }      
-    else if (cmd=="resetwifi")
-    {
-      WiFi.begin(P1.c_str(), P2.c_str());
-      Serial.print("Connecting to ");
-      Serial.println(P1);
-      long int StartTime=millis();
-      while (WiFi.status() != WL_CONNECTED) 
-      {
-          delay(500);
-          if ((StartTime+5000) < millis()) break;
-      } 
-      Serial.println("");
-      Serial.println("STAIP: "+WiFi.localIP().toString());
-      Feedback="STAIP: "+WiFi.localIP().toString();
-    }       
+      else if (cmd=="restart") {
+        ESP.restart();
+      }      
+      else if (cmd=="resetwifi") {  //重設Wi-Fi連結
+        WiFi.begin(P1.c_str(), P2.c_str());
+        Serial.print("Connecting to ");
+        Serial.println(P1);
+        long int StartTime=millis();
+        while (WiFi.status() != WL_CONNECTED) 
+        {
+            delay(500);
+            if ((StartTime+5000) < millis()) break;
+        } 
+        Serial.println("");
+        Serial.println("STAIP: "+WiFi.localIP().toString());
+        Feedback="STAIP: "+WiFi.localIP().toString();
+      }       
       else if (cmd=="saveimage") {  //儲存影像至SD卡
         EEPROM.begin(sizeof(int)*4);
         EEPROM.write(0, EEPROM.read(0)+1);
         EEPROM.commit(); 
         saveCapturedImage(String(EEPROM.read(0))); 
       }
+      else if (cmd=="resetfilename") {  //重設檔名由1開始
+        EEPROM.begin(sizeof(int)*4);
+        EEPROM.write(0, 0);
+        EEPROM.commit();
+      }  
       else {
         Feedback="Command is not defined";
       }
