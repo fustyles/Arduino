@@ -1056,6 +1056,7 @@ void getCommand(char c)
   }
 }
 
+//儲存影像至SD卡
 void saveCapturedImage(String filename) {
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();
