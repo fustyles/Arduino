@@ -284,7 +284,7 @@ void setup() {
   pinMode(4, OUTPUT);
   digitalWrite(4, LOW); 
 
-  //檔名初始化
+  //檔名初始化由1開始命名
   /*
   EEPROM.begin(sizeof(int)*4);
   EEPROM.write(0, 0);
