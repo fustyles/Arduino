@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Time Lapse
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-25 10:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-25 18:00
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
@@ -493,7 +493,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 </div>
             </div>
         </section>
-        <iframe id="ifr" style="display:none"></iframe>
+        <iframe id="ifr" style="width:350px;height:40px;background: #FFFFFF;"></iframe>
         
         <script>
           document.addEventListener('DOMContentLoaded', function (event) {
@@ -786,11 +786,13 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         EEPROM.write(0, EEPROM.read(0)+1);
         EEPROM.commit(); 
         saveCapturedImage(String(EEPROM.read(0))); 
+        Feedback=String(EEPROM.read(0)) + ".jpg finished.";
       }
       else if (cmd=="resetfilename") {  //重設檔名由1開始
         EEPROM.begin(sizeof(int)*4);
         EEPROM.write(0, 0);
         EEPROM.commit();
+        Feedback="Start with '1.jpg'";
       }  
       else {
         Feedback="Command is not defined";
