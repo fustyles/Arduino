@@ -685,7 +685,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 <table>
                 <tr><td></td><td style="display:none"><button id="toggle-stream"></button></td><td></td></tr>
                 <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?flash='+this.value);}catch(e){}"></td></tr>
-                <tr><td>Mode Path</td><td align="center" colspan="2"><input type="text" id="modelPath" value=""></td></tr>
+                <tr><td>Model Path</td><td align="center" colspan="2"><input type="text" id="modelPath" value=""></td></tr>
                 <tr><td><button id="get-still" style="display:none">Get Still</button></td><td align="center" colspan="2"><button type="button" onclick="ObjectDetect();">Start Detection</button></td></tr>
                 <tr style="display:none"><td colspan="3"><iframe id="ifr"></iframe></td></tr>
                 </table>
