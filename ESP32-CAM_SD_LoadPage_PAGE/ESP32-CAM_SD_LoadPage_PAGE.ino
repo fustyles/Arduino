@@ -1,10 +1,10 @@
 /*
 ESP32-CAM Load pages from SD card
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-30 17:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-30 20:00
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
-http://192.168.xxx.xxx:81/stream   //取得串流影像      <img src="http://192.168.xxx.xxx:81/stream">
+http://192.168.xxx.xxx:81/stream   //取得串流影像       <img src="http://192.168.xxx.xxx:81/stream">
 http://192.168.xxx.xxx/capture     //取得影像          <img src="http://192.168.xxx.xxx/capture">
 http://192.168.xxx.xxx/status      //取得視訊參數值
 
@@ -15,43 +15,26 @@ http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 預設AP端IP： 192.168.4.1
 
 自訂指令格式 http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
-http://192.168.xxx.xxx/control?ip                  //取得APIP, STAIP
-http://192.168.xxx.xxx/control?mac                 //取得MAC位址
-http://192.168.xxx.xxx/control?restart             //重啟ESP32-CAM
+http://192.168.xxx.xxx/control?ip                      //取得APIP, STAIP
+http://192.168.xxx.xxx/control?mac                     //取得MAC位址
+http://192.168.xxx.xxx/control?restart                 //重啟ESP32-CAM
 http://192.168.xxx.xxx/control?digitalwrite=pin;value  //數位輸出
 http://192.168.xxx.xxx/control?analogwrite=pin;value   //類比輸出
 http://192.168.xxx.xxx/control?digitalread=pin         //數位讀取
 http://192.168.xxx.xxx/control?analogread=pin          //類比讀取
 http://192.168.xxx.xxx/control?touchread=pin           //觸碰讀取
-http://192.168.xxx.xxx/control?flash=value         //內建閃光燈 value= 0~255
-http://192.168.xxx.xxx/control?loadpage=filepath   //載入SD卡網頁(.htm, .html), 檔案路徑filepath開端要加/  -->  http://192.168.xxx.xxx/control?loadpage=/Taiwan.html
-http://192.168.xxx.xxx/control?getimage=filepath   //載入SD卡圖檔,圖檔要小至不會造成當機 檔案路徑filepath開端要加/  -->  <img src="/control?getimage=/Taiwan.jpg">
+http://192.168.xxx.xxx/control?flash=value             //內建閃光燈 value= 0~255
+http://192.168.xxx.xxx/control?loadpage=filepath       //載入SD卡網頁(.htm, .html), 檔案路徑filepath開端要加/  -->  http://192.168.xxx.xxx/control?loadpage=/Taiwan.html
+http://192.168.xxx.xxx/control?getimage=filepath       //載入SD卡圖檔,圖檔要小至不會造成當機 檔案路徑filepath開端要加/  -->  <img src="/control?getimage=/Taiwan.jpg">
 
 官方指令格式 http://192.168.xxx.xxx/control?var=***&val=***
 http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
-http://192.168.xxx.xxx/control?var=quality&val=value    // value = 10 ~ 63
-http://192.168.xxx.xxx/control?var=brightness&val=value    // value = -2 ~ 2
-http://192.168.xxx.xxx/control?var=contrast&val=value    // value = -2 ~ 2
-http://192.168.xxx.xxx/control?var=saturation&val=value    // value = -2 ~ 2 
-http://192.168.xxx.xxx/control?var=gainceiling&val=value    // value = 0 ~ 6
-http://192.168.xxx.xxx/control?var=colorbar&val=value    // value = 0 or 1
-http://192.168.xxx.xxx/control?var=awb&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=agc&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=aec&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=hmirror&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=vflip&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=awb_gain&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=agc_gain&val=value    // value = 0 ~ 30
-http://192.168.xxx.xxx/control?var=aec_value&val=value    // value = 0 ~ 1200
-http://192.168.xxx.xxx/control?var=aec2&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=dcw&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=bpc&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=wpc&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=raw_gma&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=lenc&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=special_effect&val=value    // value = 0 ~ 6
-http://192.168.xxx.xxx/control?var=wb_mode&val=value    // value = 0 ~ 4
-http://192.168.xxx.xxx/control?var=ae_level&val=value    // value = -2 ~ 2  
+http://192.168.xxx.xxx/control?var=quality&val=value      // value = 10 ~ 63
+http://192.168.xxx.xxx/control?var=brightness&val=value   // value = -2 ~ 2
+http://192.168.xxx.xxx/control?var=contrast&val=value     // value = -2 ~ 2
+http://192.168.xxx.xxx/control?var=hmirror&val=value      // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=vflip&val=value        // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255   
       
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
@@ -665,26 +648,13 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if(!strcmp(variable, "quality")) res = s->set_quality(s, val);
       else if(!strcmp(variable, "contrast")) res = s->set_contrast(s, val);
       else if(!strcmp(variable, "brightness")) res = s->set_brightness(s, val);
-      else if(!strcmp(variable, "saturation")) res = s->set_saturation(s, val);
-      else if(!strcmp(variable, "gainceiling")) res = s->set_gainceiling(s, (gainceiling_t)val);
-      else if(!strcmp(variable, "colorbar")) res = s->set_colorbar(s, val);
-      else if(!strcmp(variable, "awb")) res = s->set_whitebal(s, val);
-      else if(!strcmp(variable, "agc")) res = s->set_gain_ctrl(s, val);
-      else if(!strcmp(variable, "aec")) res = s->set_exposure_ctrl(s, val);
       else if(!strcmp(variable, "hmirror")) res = s->set_hmirror(s, val);
       else if(!strcmp(variable, "vflip")) res = s->set_vflip(s, val);
-      else if(!strcmp(variable, "awb_gain")) res = s->set_awb_gain(s, val);
-      else if(!strcmp(variable, "agc_gain")) res = s->set_agc_gain(s, val);
-      else if(!strcmp(variable, "aec_value")) res = s->set_aec_value(s, val);
-      else if(!strcmp(variable, "aec2")) res = s->set_aec2(s, val);
-      else if(!strcmp(variable, "dcw")) res = s->set_dcw(s, val);
-      else if(!strcmp(variable, "bpc")) res = s->set_bpc(s, val);
-      else if(!strcmp(variable, "wpc")) res = s->set_wpc(s, val);
-      else if(!strcmp(variable, "raw_gma")) res = s->set_raw_gma(s, val);
-      else if(!strcmp(variable, "lenc")) res = s->set_lenc(s, val);
-      else if(!strcmp(variable, "special_effect")) res = s->set_special_effect(s, val);
-      else if(!strcmp(variable, "wb_mode")) res = s->set_wb_mode(s, val);
-      else if(!strcmp(variable, "ae_level")) res = s->set_ae_level(s, val);         
+      else if(!strcmp(variable, "flash")) {
+        ledcAttachPin(4, 4);  
+        ledcSetup(4, 5000, 8);        
+        ledcWrite(4,val);
+      } 
       else {
           res = -1;
       }
@@ -714,32 +684,13 @@ static esp_err_t status_handler(httpd_req_t *req){
     sensor_t * s = esp_camera_sensor_get();
     char * p = json_response;
     *p++ = '{';
-
+    p+=sprintf(p, "\"flash\":%d,", 0);
     p+=sprintf(p, "\"framesize\":%u,", s->status.framesize);
     p+=sprintf(p, "\"quality\":%u,", s->status.quality);
     p+=sprintf(p, "\"brightness\":%d,", s->status.brightness);
     p+=sprintf(p, "\"contrast\":%d,", s->status.contrast);
-    p+=sprintf(p, "\"saturation\":%d,", s->status.saturation);
-    p+=sprintf(p, "\"sharpness\":%d,", s->status.sharpness);
-    p+=sprintf(p, "\"special_effect\":%u,", s->status.special_effect);
-    p+=sprintf(p, "\"wb_mode\":%u,", s->status.wb_mode);
-    p+=sprintf(p, "\"awb\":%u,", s->status.awb);
-    p+=sprintf(p, "\"awb_gain\":%u,", s->status.awb_gain);
-    p+=sprintf(p, "\"aec\":%u,", s->status.aec);
-    p+=sprintf(p, "\"aec2\":%u,", s->status.aec2);
-    p+=sprintf(p, "\"ae_level\":%d,", s->status.ae_level);
-    p+=sprintf(p, "\"aec_value\":%u,", s->status.aec_value);
-    p+=sprintf(p, "\"agc\":%u,", s->status.agc);
-    p+=sprintf(p, "\"agc_gain\":%u,", s->status.agc_gain);
-    p+=sprintf(p, "\"gainceiling\":%u,", s->status.gainceiling);
-    p+=sprintf(p, "\"bpc\":%u,", s->status.bpc);
-    p+=sprintf(p, "\"wpc\":%u,", s->status.wpc);
-    p+=sprintf(p, "\"raw_gma\":%u,", s->status.raw_gma);
-    p+=sprintf(p, "\"lenc\":%u,", s->status.lenc);
-    p+=sprintf(p, "\"vflip\":%u,", s->status.vflip);
-    p+=sprintf(p, "\"hmirror\":%u,", s->status.hmirror);
-    p+=sprintf(p, "\"dcw\":%u,", s->status.dcw);
-    p+=sprintf(p, "\"colorbar\":%u", s->status.colorbar);
+    p+=sprintf(p, "\"hmirror\":%u,", s->status.hmirror); 
+    p+=sprintf(p, "\"vflip\":%u", s->status.vflip);
     *p++ = '}';
     *p++ = 0;
     httpd_resp_set_type(req, "application/json");

@@ -19,8 +19,8 @@
     <td>MirrorImage</td> 
     <td colspan="2">  
       <select id="mirrorimage">
-        <option value="1">yes</option>
-        <option value="0">no</option>
+        <option value="1">Y</option>
+        <option value="0">N</option>
       </select>
     </td>
   </tr>       
@@ -106,6 +106,7 @@
       myTimer = setInterval(function(){error_handle();},5000);
       ShowImage.src=location.origin+'/capture?'+Math.random();
     }
+
     function error_handle() {
       restartCount++;
       clearInterval(myTimer);
@@ -116,6 +117,7 @@
       else
         message.innerHTML = "Get still error. <br>Please close the page and check ESP32-CAM.";
     }    
+
     ShowImage.onload = function (event) {
       clearInterval(myTimer);
       restartCount=0;      
