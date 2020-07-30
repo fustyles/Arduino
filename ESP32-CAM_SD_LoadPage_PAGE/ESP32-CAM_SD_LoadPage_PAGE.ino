@@ -698,15 +698,12 @@ static esp_err_t status_handler(httpd_req_t *req){
     return httpd_resp_send(req, json_response, strlen(json_response));
 }
 
-//自訂網頁首頁
-static const char PROGMEM INDEX_HTML[] = R"rawliteral(
-
-)rawliteral";
-
 //網頁首頁   http://192.168.xxx.xxx
 static esp_err_t index_handler(httpd_req_t *req){
     httpd_resp_set_type(req, "text/html");
-    return httpd_resp_send(req, (const char *)INDEX_HTML, strlen(INDEX_HTML));
+    String html = getList();
+    const char *buf = html.c_str();  
+    return httpd_resp_send(req, buf, strlen(buf));  
 }
 
 //自訂網址路徑要執行的函式
