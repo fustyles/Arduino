@@ -20,14 +20,13 @@
               <div id="stream-container" class="image-container hidden">
                 <div class="close" id="close-stream" style="display:none">×</div>
                 <img id="stream" src="" style="display:none">
-				<canvas id="canvas" width="0" height="0"></canvas>
+                <canvas id="canvas" width="0" height="0"></canvas>
               </div>
             </figure>         
             <section id="buttons">
                 <table>
-                <tr><td>Model Path</td><td align="center" colspan="2"><input type="text" id="modelPath" value=""></td></tr>
-                <tr><td><button id="restart" onclick="try{fetch(document.location.origin+'/control?restart');}catch(e){}">Restart</button></td><td><button id="get-still" style="display:none">Get Still</button></td><td><button id="toggle-stream" style="display:none"><button type="button" onclick="ObjectDetect();">Start Recognition</button></td></tr>
-				</table>
+                <tr><td><button id="restart" onclick="try{fetch(document.location.origin+'/control?restart');}catch(e){}">Restart</button></td><td><button id="get-still" style="display:none">Get Still</button></td><td><button id="toggle-stream" style="display:none"></td></tr>
+                </table>
             </section>        
             <div id="logo">
                 <label for="nav-toggle-cb" id="nav-toggle">&#9776;&nbsp;&nbsp;Toggle settings</label>
@@ -35,7 +34,15 @@
             <div id="content">
                 <div id="sidebar">
                     <input type="checkbox" id="nav-toggle-cb">
-                    <nav id="menu">  
+                    <nav id="menu">
+                        <div class="input-group">
+                          <label for="modelPath">Model Path</label>
+                          <input type="text" id="modelPath" value="">
+                        </div>
+                        <div class="input-group">
+                            <label for="btnModel"></label>
+                            <button type="button" id="btnModel" onclick="LoadModel();">Start Recognition</button>
+                        </div>                        
                         <div class="input-group" id="flash-group">
                             <label for="flash">Flash</label>
                             <div class="range-min">0</div>
