@@ -20,11 +20,6 @@ http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://192.168.xxx.xxx/control?ip                      //取得APIP, STAIP
 http://192.168.xxx.xxx/control?mac                     //取得MAC位址
 http://192.168.xxx.xxx/control?restart                 //重啟ESP32-CAM
-http://192.168.xxx.xxx/control?digitalwrite=pin;value  //數位輸出
-http://192.168.xxx.xxx/control?analogwrite=pin;value   //類比輸出
-http://192.168.xxx.xxx/control?digitalread=pin         //數位讀取
-http://192.168.xxx.xxx/control?analogread=pin          //類比讀取
-http://192.168.xxx.xxx/control?touchread=pin           //觸碰讀取
 http://192.168.xxx.xxx/control?flash=value             //內建閃光燈 value= 0~255
 http://192.168.xxx.xxx/control?serial=command            //以Uart傳送指令到Arduino Uno  http://192.168.xxx.xxx/control?serial=?car=S
 
@@ -533,32 +528,6 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if (cmd=="restart") {  //重設WIFI連線
         ESP.restart();
       }  
-      else if (cmd=="digitalwrite") {
-        ledcDetachPin(P1.toInt());
-        pinMode(P1.toInt(), OUTPUT);
-        digitalWrite(P1.toInt(), P2.toInt());
-      }   
-      else if (cmd=="digitalread") {
-        Feedback=String(digitalRead(P1.toInt()));
-      }
-      else if (cmd=="analogwrite") {   
-        if (P1=="4") {
-          ledcAttachPin(4, 4);  
-          ledcSetup(4, 5000, 8);
-          ledcWrite(4,P2.toInt());     
-        }
-        else {
-          ledcAttachPin(P1.toInt(), 9);
-          ledcSetup(9, 5000, 8);
-          ledcWrite(9,P2.toInt());
-        }
-      }       
-      else if (cmd=="analogread") {
-        Feedback=String(analogRead(P1.toInt()));
-      }
-      else if (cmd=="touchread") {
-        Feedback=String(touchRead(P1.toInt()));
-      }   
       else if (cmd=="flash") {  //控制內建閃光燈
         ledcAttachPin(4, 4);  
         ledcSetup(4, 5000, 8);   
