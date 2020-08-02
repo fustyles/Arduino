@@ -1,5 +1,5 @@
 /*
-Pixel:Bit (UNO)
+ESP32-CAM Pixel:Bit (UNO)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-2 16:00
 https://www.facebook.com/francefu
 
@@ -15,6 +15,7 @@ Serial baud rate : 9600
 ?car=BR      //右後退
 ?speedL=255  //左輪轉速
 ?speedR=255  //右輪轉速
+?speedRatio=0.8  //轉彎降速比例
 */
 
 //Webbit settings
@@ -104,6 +105,9 @@ void executeCommand() {
     else if (cmd=="speedR") {
       speedR = P1.toInt();
     }
+    else if (cmd=="speedRatio") {
+      speedRatio = P1.toInt();
+    }    
 }
 
 void setup()
