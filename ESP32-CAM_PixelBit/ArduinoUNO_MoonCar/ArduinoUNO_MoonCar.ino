@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Pixel:Bit (UNO)
+Pixel:Bit (UNO)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-2 16:00
 https://www.facebook.com/francefu
 
