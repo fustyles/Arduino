@@ -5,6 +5,7 @@ https://www.facebook.com/francefu
 
 Serial baud rate : 9600
 
+Uart Command：
 ?car=F       //前進
 ?car=B       //後退
 ?car=L       //左轉
