@@ -17,11 +17,11 @@ http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 預設AP端IP： 192.168.4.1
 
 自訂指令格式 http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+http://192.168.xxx.xxx/control?serial=command            //以Uart傳送指令到Arduino Uno  http://192.168.xxx.xxx/control?serial=?car=S
 http://192.168.xxx.xxx/control?ip                      //取得APIP, STAIP
 http://192.168.xxx.xxx/control?mac                     //取得MAC位址
 http://192.168.xxx.xxx/control?restart                 //重啟ESP32-CAM
 http://192.168.xxx.xxx/control?flash=value             //內建閃光燈 value= 0~255
-http://192.168.xxx.xxx/control?serial=command            //以Uart傳送指令到Arduino Uno  http://192.168.xxx.xxx/control?serial=?car=S
 
 官方指令格式 http://192.168.xxx.xxx/control?var=***&val=***
 http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
