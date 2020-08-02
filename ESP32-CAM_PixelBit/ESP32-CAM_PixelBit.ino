@@ -1,6 +1,6 @@
 /*
-ESP32-CAM Pixel:Bit
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-2 14:30
+Pixel:Bit (ESP32-CAM)
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-2 16:00
 https://www.facebook.com/francefu
 
 Serial baud rate : 9600
@@ -15,7 +15,6 @@ http://APIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 
 預設AP端IP： 192.168.4.1
-
 自訂指令格式 http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://192.168.xxx.xxx/control?serial=command             //以Uart傳送指令到Arduino Uno  http://192.168.xxx.xxx/control?serial=?car=S
 http://192.168.xxx.xxx/control?ip                         //取得APIP, STAIP
@@ -204,7 +203,7 @@ void setup() {
 
   //可動態改變視訊框架大小(解析度大小)
   sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_QVGA);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+  s->set_framesize(s, FRAMESIZE_CIF);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
   //閃光燈
   ledcAttachPin(4, 4);  
@@ -649,19 +648,19 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                     <td></td>
                   </tr>
                   <tr>
-                    <td align="center"><button onmousedown="try{fetch(location.origin+'/control?serial=?car=FL');}catch(e){}" onmouseup="noStopControl();" ontouchstart="event.preventDefault();try{fetch(location.origin+'/control?serial=?car=FL');}catch(e){}" ontouchend="noStopControl();">↖</button></td>
-                    <td align="center"><button onmousedown="try{fetch(location.origin+'/control?serial=?car=F');}catch(e){}" onmouseup="noStopControl();" ontouchstart="event.preventDefault();try{fetch(location.origin+'/control?serial=?car=F');}catch(e){}" ontouchend="noStopControl();">↑</button></td>
-                    <td align="center"><button onmousedown="try{fetch(location.origin+'/control?serial=?car=FR');}catch(e){}" onmouseup="noStopControl();" ontouchstart="event.preventDefault();try{fetch(location.origin+'/control?serial=?car=FR');}catch(e){}" ontouchend="noStopControl();">↗</button></td>
+                    <td align="center"><button onmousedown="uartCommand('?car=FL');" onmouseup="noStopControl();" ontouchstart="event.preventDefault();uartCommand('?car=FL');" ontouchend="noStopControl();">↖</button></td>
+                    <td align="center"><button onmousedown="uartCommand('?car=F');" onmouseup="noStopControl();" ontouchstart="event.preventDefault();uartCommand('?car=F');" ontouchend="noStopControl();">↑</button></td>
+                    <td align="center"><button onmousedown="uartCommand('?car=FR');" onmouseup="noStopControl();" ontouchstart="event.preventDefault();uartCommand('?car=FR');" ontouchend="noStopControl();">↗</button></td>
                   </tr>
                   <tr>
-                    <td align="center"><button onmousedown="try{fetch(location.origin+'/control?serial=?car=L');}catch(e){}" onmouseup="noStopControl();" ontouchstart="event.preventDefault();try{fetch(location.origin+'/control?serial=?car=L');}catch(e){}" ontouchend="noStopControl();">←</button></td>
-                    <td align="center"><button onclick="try{fetch(location.origin+'/control?serial=?car=S');}catch(e){}">●</button></td>
-                    <td align="center"><button onmousedown="try{fetch(location.origin+'/control?serial=?car=R');}catch(e){}" onmouseup="noStopControl();" ontouchstart="event.preventDefault();try{fetch(location.origin+'/control?serial=?car=R');}catch(e){}" ontouchend="noStopControl();">→</button></td>
+                    <td align="center"><button onmousedown="uartCommand('?car=L');" onmouseup="noStopControl();" ontouchstart="event.preventDefault();uartCommand('?car=L');" ontouchend="noStopControl();">←</button></td>
+                    <td align="center"><button onclick="uartCommand('?car=S');">●</button></td>
+                    <td align="center"><button onmousedown="uartCommand('?car=R');" onmouseup="noStopControl();" ontouchstart="event.preventDefault();uartCommand('?car=R');" ontouchend="noStopControl();">→</button></td>
                   </tr>
                   <tr>
-                    <td align="center"><button onmousedown="try{fetch(location.origin+'/control?serial=?car=LA');}catch(e){}" onmouseup="noStopControl();" ontouchstart="event.preventDefault();try{fetch(location.origin+'/control?serial=?car=LA');}catch(e){}" ontouchend="noStopControl();">↙</button></td>
-                    <td align="center"><button onmousedown="try{fetch(location.origin+'/control?serial=?car=B');}catch(e){}" onmouseup="noStopControl();" ontouchstart="event.preventDefault();try{fetch(location.origin+'/control?serial=?car=B');}catch(e){}" ontouchend="noStopControl();">↓</button></td>
-                    <td align="center"><button onmousedown="try{fetch(location.origin+'/control?serial=?car=RA');}catch(e){}" onmouseup="noStopControl();" ontouchstart="event.preventDefault();try{fetch(location.origin+'/control?serial=?car=RA');}catch(e){}" ontouchend="noStopControl();">↘</button></td>
+                    <td align="center"><button onmousedown="uartCommand('?car=LA');" onmouseup="noStopControl();" ontouchstart="event.preventDefault();uartCommand('?car=LA');" ontouchend="noStopControl();">↙</button></td>
+                    <td align="center"><button onmousedown="uartCommand('?car=B');" onmouseup="noStopControl();" ontouchstart="event.preventDefault();uartCommand('?car=B');" ontouchend="noStopControl();">↓</button></td>
+                    <td align="center"><button onmousedown="uartCommand('?car=RA');" onmouseup="noStopControl();" ontouchstart="event.preventDefault();uartCommand('?car=RA');" ontouchend="noStopControl();">↘</button></td>
                   </tr>   
                 </table>
             </section>       
@@ -849,16 +848,20 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 el.onchange = () => updateConfig(el)
               })
           })
-
           function noStopControl() {
             if (!nostop.checked) {
               try{
-                fetch(location.origin+'/control?serial=?car=S');
+                uartCommand("?car=S")
               }
               catch(e){}
             }
-          }           
-
+          }   
+          function uartCommand(command) {
+            try{
+              fetch(location.origin+'/control?serial='+command);
+            }
+            catch(e){}
+          }    
           var stream = document.getElementById('stream');
           var canvas = document.getElementById('canvas');
           var context = canvas.getContext("2d");
