@@ -1,11 +1,10 @@
 /*
-Pixel:Bit (UNO)
+ESP32-CAM Pixel:Bit (UNO)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-2 16:00
 https://www.facebook.com/francefu
 
 Serial baud rate : 9600
 
-Uart Command：
 ?car=F       //前進
 ?car=B       //後退
 ?car=L       //左轉
@@ -26,7 +25,7 @@ byte pingR1 = 6;
 byte pingR2 = 3;
 byte speedL = 255;
 byte speedR = 255;
-float speedRatio = 0.8;
+float speedRatio = 0.5;
 
 String ReceiveData="", command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";  
 
@@ -81,7 +80,7 @@ void executeCommand() {
         analogWrite(pingR1,0);
         analogWrite(pingR2,speedR);          
       }
-      else if  (P1=="BL") {
+      else if  (P1=="LA") {
         analogWrite(pingL1,0);
         analogWrite(pingL2,speedL*speedRatio);
         analogWrite(pingR1,speedR);
@@ -93,7 +92,7 @@ void executeCommand() {
         analogWrite(pingR1,0);
         analogWrite(pingR2,speedR*speedRatio);          
       }
-      else if  (P1=="BR") {
+      else if  (P1=="RA") {
         analogWrite(pingL1,0);
         analogWrite(pingL2,speedL);
         analogWrite(pingR1,speedR*speedRatio);
