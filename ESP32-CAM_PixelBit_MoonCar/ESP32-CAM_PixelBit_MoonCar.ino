@@ -1,6 +1,6 @@
 /*
 Pixel:Bit (ESP32-CAM)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-2 16:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-7 00:00
 https://www.facebook.com/francefu
 
 Serial baud rate : 9600
