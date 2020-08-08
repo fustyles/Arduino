@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Person Detect using tfjs coco-ssd (Send captured image to GoogleDrive and Linenotify)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-7 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-8 18:00
 https://www.facebook.com/francefu
 
 物件類別
@@ -309,7 +309,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
-  <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs"> </script>
+  <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"> </script>
   <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.1.0"> </script>   
   </head><body>
   <img id="ShowImage" src="" style="display:none">
