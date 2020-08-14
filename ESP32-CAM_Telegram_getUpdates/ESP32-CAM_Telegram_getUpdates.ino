@@ -203,7 +203,7 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
       String text = obj["result"][0]["message"]["text"];
 
       
-      // If it got new message, do what you want to do.
+      // If it gets new message, do what you want to do.
       if (message_id!=message_id_last) {
         message_id_last=message_id;
         //Serial.println(String(message_id));
