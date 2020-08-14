@@ -197,8 +197,7 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
          }
          if (getBody.length()>0) break;
       }
-      Serial.println(getBody);
-
+      
       deserializeJson(doc, getBody);
       obj = doc.as<JsonObject>();
       String result = obj["result"];
@@ -206,11 +205,11 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
       String message = obj["result"][0]["message"];
       int message_id = obj["result"][0]["message"]["message_id"];
       String text = obj["result"][0]["message"]["text"];
-
       
       // If client gets new message, do what you want to do.
       if (message_id!=message_id_last) {
         message_id_last=message_id;
+        Serial.println(getBody);
         //Serial.println(String(update_id));
         //Serial.println(String(message_id));
         Serial.println(text);
@@ -227,8 +226,12 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
       delay(delaytime);
     }
   }
+  
   Serial.println("Connected to api.telegram.org failed.");
-  ESP.restart();
+  if (WiFi.status() != WL_CONNECTED)
+    ESP.restart();
+  else
+    getTelegramMessage(token, chat_id, delaytime);
 }
 
 String sendCapturedImage2Telegram(String token, String chat_id) {
