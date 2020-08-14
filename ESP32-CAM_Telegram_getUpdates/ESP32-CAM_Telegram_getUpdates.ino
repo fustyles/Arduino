@@ -228,7 +228,6 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
     }
   }
   Serial.println("Connected to api.telegram.org failed.");
-  delay(1000);
   ESP.restart();
 }
 
