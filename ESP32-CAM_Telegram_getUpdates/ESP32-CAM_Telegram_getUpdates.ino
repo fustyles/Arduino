@@ -140,7 +140,7 @@ void setup()
   sensor_t * s = esp_camera_sensor_get();
   s->set_framesize(s, FRAMESIZE_CIF);  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
-  //Get your message from Telegram bot every 1000 ms.
+  //Get your message from Telegram Bot every 1000 ms.
   getTelegramMessage(token, chat_id, 1000);  
 }
 
@@ -199,7 +199,6 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
       }
       Serial.println(getBody);
 
-      //Get the telegram message
       deserializeJson(doc, getBody);
       obj = doc.as<JsonObject>();
       String result = obj["result"];
@@ -223,6 +222,7 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
           sendMessage2Telegram(token, chat_id, "God bless you.");
         }
       }
+      
       
       delay(delaytime);
     }
