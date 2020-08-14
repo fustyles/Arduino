@@ -174,7 +174,7 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
       client_tcp.println();
       client_tcp.print(request);
       
-      int waitTime = 3000;   // timeout 3 seconds
+      int waitTime = 5000;   // timeout 5 seconds
       long startTime = millis();
       boolean state = false;
       
@@ -284,7 +284,7 @@ String sendCapturedImage2Telegram(String token, String chat_id) {
     
     esp_camera_fb_return(fb);
     
-    int waitTime = 10000;   // timeout 10 seconds
+    int waitTime = 5000;   // timeout 5 seconds
     long startTime = millis();
     boolean state = false;
     
