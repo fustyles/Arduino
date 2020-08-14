@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Get your message from Telegram Bot
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-14 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-15 00:30
 https://www.facebook.com/francefu
 
 ArduinoJson Library：
@@ -164,10 +164,15 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
     while (client_tcp.connected()) {
       getAll = "";
       getBody = "";
-      client_tcp.println("POST /bot"+token+"/getUpdates?limit=1&offset=-1&allowed_updates=message HTTP/1.1");
+
+      String request = "limit=1&offset=-1&allowed_updates=message";
+      client_tcp.println("POST /bot"+token+"/getUpdates HTTP/1.1");
       client_tcp.println("Host: " + String(myDomain));
+      client_tcp.println("Content-Length: " + String(request.length()));
       client_tcp.println("Content-Type: application/x-www-form-urlencoded");
+      client_tcp.println("Connection: keep-alive");
       client_tcp.println();
+      client_tcp.print(request);
       
       int waitTime = 10000;   // timeout 10 seconds
       long startTime = millis();
@@ -198,6 +203,7 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
       deserializeJson(doc, getBody);
       obj = doc.as<JsonObject>();
       String result = obj["result"];
+      long update_id = obj["result"][0]["update_id"];
       String message = obj["result"][0]["message"];
       int message_id = obj["result"][0]["message"]["message_id"];
       String text = obj["result"][0]["message"]["text"];
@@ -206,6 +212,7 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
       // If client gets new message, do what you want to do.
       if (message_id!=message_id_last) {
         message_id_last=message_id;
+        //Serial.println(String(update_id));
         //Serial.println(String(message_id));
         Serial.println(text);
         
@@ -213,11 +220,10 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
           sendCapturedImage2Telegram(token, chat_id);
         }
         else if (text=="hello") {
-          sendMessage2Telegram(token, chat_id, "Taiwan can help.");
+          sendMessage2Telegram(token, chat_id, "God bless you.");
         }
       }
       
-
       delay(delaytime);
     }
   }
@@ -320,13 +326,13 @@ String sendMessage2Telegram(String token, String chat_id, String text) {
   if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
 
-    String message = "chat_id="+chat_id+"&text="+text;
+    String request = "chat_id="+chat_id+"&text="+text;
     client_tcp.println("POST /bot"+token+"/sendMessage HTTP/1.1");
     client_tcp.println("Host: " + String(myDomain));
-    client_tcp.println("Content-Length: " + String(message.length()));
+    client_tcp.println("Content-Length: " + String(request.length()));
     client_tcp.println("Content-Type: application/x-www-form-urlencoded");
     client_tcp.println();
-    client_tcp.print(message);
+    client_tcp.print(request);
     
     int waitTime = 10000;   // timeout 10 seconds
     long startTime = millis();
