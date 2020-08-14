@@ -1,6 +1,6 @@
 /*
 ESP32-CAM 人體移動感測器啟動上傳影像到Telegram
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-21 13:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-15 00:00
 https://www.facebook.com/francefu
 
 人體移動感測器 -> GND, gpio13, 3.3V
@@ -238,5 +238,57 @@ String sendCapturedImage2Telegram(String token, String chat_id) {
     getBody="Connected to api.telegram.org failed.";
     Serial.println("Connected to api.telegram.org failed.");
   }
+  return getBody;
+}
+
+String sendMessage2Telegram(String token, String chat_id, String text) {
+  const char* myDomain = "api.telegram.org";
+  String getAll="", getBody = "";
+  
+  Serial.println("Connect to " + String(myDomain));
+  WiFiClientSecure client_tcp;
+  
+  if (client_tcp.connect(myDomain, 443)) {
+    Serial.println("Connection successful");
+
+    String message = "chat_id="+chat_id+"&text="+text;
+    client_tcp.println("POST /bot"+token+"/sendMessage HTTP/1.1");
+    client_tcp.println("Host: " + String(myDomain));
+    client_tcp.println("Content-Length: " + String(message.length()));
+    client_tcp.println("Content-Type: application/x-www-form-urlencoded");
+    client_tcp.println();
+    client_tcp.print(message);
+    
+    int waitTime = 10000;   // timeout 10 seconds
+    long startTime = millis();
+    boolean state = false;
+    
+    while ((startTime + waitTime) > millis())
+    {
+      Serial.print(".");
+      delay(100);      
+      while (client_tcp.available()) 
+      {
+          char c = client_tcp.read();
+          if (c == '\n') 
+          {
+            if (getAll.length()==0) state=true; 
+            getAll = "";
+          } 
+          else if (c != '\r')
+            getAll += String(c);
+          if (state==true) getBody += String(c);
+          startTime = millis();
+       }
+       if (getBody.length()>0) break;
+    }
+    client_tcp.stop();
+    Serial.println(getBody);
+  }
+  else {
+    getBody="Connected to api.telegram.org failed.";
+    Serial.println("Connected to api.telegram.org failed.");
+  }
+  
   return getBody;
 }
