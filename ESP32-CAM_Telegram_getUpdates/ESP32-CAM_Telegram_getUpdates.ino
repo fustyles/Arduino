@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Get the message from Telegram Bot
+ESP32-CAM Get your message from Telegram Bot
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-14 23:00
 https://www.facebook.com/francefu
 
