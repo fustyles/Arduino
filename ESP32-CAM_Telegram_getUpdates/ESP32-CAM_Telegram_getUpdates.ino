@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Get your latest message from Telegram Bot
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-15 10:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-15 18:00
 https://www.facebook.com/francefu
 
 ArduinoJson Library：
@@ -214,17 +214,29 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
         Serial.println(getBody);
         //Serial.println(String(update_id));
         //Serial.println(String(message_id));
-        Serial.println("text = " + text);
+        Serial.println("["+String(message_id)+"] "+text);
         
         // If client gets new message, do what you want to do.
         if (text=="capture") {
           sendCapturedImage2Telegram(token, chat_id);
         }
+        else if (text=="on") {
+          ledcAttachPin(4, 3);
+          ledcSetup(3, 5000, 8);
+          ledcWrite(3,10);
+          sendMessage2Telegram(token, chat_id, "Led on");
+        }
+        else if (text=="off") {
+          ledcAttachPin(4, 3);
+          ledcSetup(3, 5000, 8);
+          ledcWrite(3,0);
+          sendMessage2Telegram(token, chat_id, "Led off");
+        }
         else if (text=="help") {
-          sendMessage2Telegram(token, chat_id, "God bless you.");
+          sendMessage2Telegram(token, chat_id, "God bless you");
         }
         else
-          sendMessage2Telegram(token, chat_id, "Command is not defined.");
+          sendMessage2Telegram(token, chat_id, "Command is not defined");
       }
       
       
@@ -269,6 +281,7 @@ String sendCapturedImage2Telegram(String token, String chat_id) {
     client_tcp.println("Host: " + String(myDomain));
     client_tcp.println("Content-Length: " + String(totalLen));
     client_tcp.println("Content-Type: multipart/form-data; boundary=Taiwan");
+    client_tcp.println("Connection: close");
     client_tcp.println();
     client_tcp.print(head);
   
@@ -289,7 +302,7 @@ String sendCapturedImage2Telegram(String token, String chat_id) {
     
     esp_camera_fb_return(fb);
     
-    int waitTime = 5000;   // timeout 5 seconds
+    int waitTime = 10000;   // timeout 10 seconds
     long startTime = millis();
     boolean state = false;
     
@@ -338,10 +351,11 @@ String sendMessage2Telegram(String token, String chat_id, String text) {
     client_tcp.println("Host: " + String(myDomain));
     client_tcp.println("Content-Length: " + String(request.length()));
     client_tcp.println("Content-Type: application/x-www-form-urlencoded");
+    client_tcp.println("Connection: close");
     client_tcp.println();
     client_tcp.print(request);
     
-    int waitTime = 5000;   // timeout 5 seconds
+    int waitTime = 10000;   // timeout 10 seconds
     long startTime = millis();
     boolean state = false;
     
