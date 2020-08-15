@@ -81,9 +81,6 @@ void setup()
     delay(200);
     ledcWrite(3,0);
     delay(200);    
-    ledcDetachPin(3);
-        
-    delay(1000);
     ESP.restart();
   }
   else {
