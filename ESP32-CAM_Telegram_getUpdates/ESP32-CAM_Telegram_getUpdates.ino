@@ -211,9 +211,9 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
       String text = obj["result"][0]["message"]["text"];
 
       if (message_id!=message_id_last&&message_id) {
-        int id = message_id_last;
+        int id_last = message_id_last;
         message_id_last = message_id;
-        if (id==0) {
+        if (id_last==0) {
           message_id = 0;
           text = "/help";      
         }
