@@ -218,8 +218,10 @@ void getTelegramMessage(int delaytime) {
           message_id = 0;
           text = "/help";      
         }
-        else
+        else {
           Serial.println(getBody);
+          Serial.println();
+        }
           
         //Serial.println(String(update_id));
         //Serial.println(String(message_id));
@@ -328,6 +330,7 @@ void sendCapturedImage2Telegram() {
      if (getBody.length()>0) break;
   }
   Serial.println(getBody);
+  Serial.println();
 }
 
 void sendMessage2Telegram(String text) {
@@ -367,4 +370,5 @@ void sendMessage2Telegram(String text) {
      if (getBody.length()>0) break;
   }
   Serial.println(getBody);
+  Serial.println();
 }
