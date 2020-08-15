@@ -20,6 +20,7 @@ String chat_id = "*****";   // Get chat_id -> https://telegram.me/chatid_echo_bo
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
 #include "esp_camera.h"
+#include <EEPROM.h>
 
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
 //            or another board which has PSRAM enabled
@@ -151,7 +152,6 @@ void loop()
 void getTelegramMessage(String token, String chat_id, int delaytime) {
   const char* myDomain = "api.telegram.org";
   String getAll="", getBody = ""; 
-  int message_id_last = 0;
   JsonObject obj;
   DynamicJsonDocument doc(1024);
 
@@ -174,7 +174,7 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
       client_tcp.println();
       client_tcp.print(request);
       
-      int waitTime = 5000;   // timeout 5 seconds
+      int waitTime = 10000;   // timeout 10 seconds
       long startTime = millis();
       boolean state = false;
       
@@ -207,12 +207,15 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
       String text = obj["result"][0]["message"]["text"];
       
       // If client gets new message, do what you want to do.
-      if (message_id!=message_id_last) {
-        message_id_last=message_id;
+      if (message_id!=EEPROM.read(0)) {
+        EEPROM.begin(sizeof(int)*4);
+        EEPROM.write(0, message_id);
+        EEPROM.commit();
+        
         Serial.println(getBody);
         //Serial.println(String(update_id));
         //Serial.println(String(message_id));
-        Serial.println(text);
+        Serial.println("text = " + text);
         
         if (text=="capture") {
           sendCapturedImage2Telegram(token, chat_id);
@@ -336,7 +339,7 @@ String sendMessage2Telegram(String token, String chat_id, String text) {
     client_tcp.println();
     client_tcp.print(request);
     
-    int waitTime = 10000;   // timeout 10 seconds
+    int waitTime = 5000;   // timeout 5 seconds
     long startTime = millis();
     boolean state = false;
     
