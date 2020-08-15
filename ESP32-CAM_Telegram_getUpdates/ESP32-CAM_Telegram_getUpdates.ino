@@ -157,10 +157,11 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
   DynamicJsonDocument doc(1024);
 
   Serial.println("Connect to " + String(myDomain));
-  
   if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
     
+    ledcAttachPin(4, 3);
+    ledcSetup(3, 5000, 8);
     ledcWrite(3,10);
     delay(2000);
     ledcWrite(3,0);
