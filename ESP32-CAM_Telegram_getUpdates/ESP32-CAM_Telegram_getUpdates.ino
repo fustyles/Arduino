@@ -23,8 +23,6 @@ String chat_id = "*****";   // Get chat_id -> https://telegram.me/chatid_echo_bo
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
 #include "esp_camera.h"
-WiFiClientSecure client_tcp;
-int message_id_last = 0;
   
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
 //            or another board which has PSRAM enabled
@@ -47,6 +45,9 @@ int message_id_last = 0;
 #define VSYNC_GPIO_NUM    25
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
+
+WiFiClientSecure client_tcp;
+int message_id_last = 0;
 
 void setup()
 {
