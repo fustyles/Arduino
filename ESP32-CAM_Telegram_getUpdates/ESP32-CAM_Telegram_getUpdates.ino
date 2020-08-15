@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Get your latest message from Telegram Bot
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-15 20:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-15 21:00
 https://www.facebook.com/francefu
 
 ArduinoJson Library：
@@ -143,14 +143,14 @@ void setup()
   s->set_framesize(s, FRAMESIZE_CIF);  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
   //Get your latest message from Telegram Bot every 1000 ms.
-  getTelegramMessage(token, chat_id, 1000);  
+  getTelegramMessage(1000);  
 }
 
 void loop()
 {
 }
 
-void getTelegramMessage(String token, String chat_id, int delaytime) {
+void getTelegramMessage(int delaytime) {
   const char* myDomain = "api.telegram.org";
   String getAll="", getBody = ""; 
   JsonObject obj;
@@ -228,25 +228,25 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
         
         // If client gets new message, do what you want to do.
         if (text=="help"||text=="/help") {
-          sendMessage2Telegram(token, chat_id, "/capture Take a photo\n/on Turn on the flash\n/off Turn off the flash");
+          sendMessage2Telegram("/capture Take a photo\n/on Turn on the flash\n/off Turn off the flash");
         }        
         else if (text=="/capture") {
-          sendCapturedImage2Telegram(token, chat_id);
+          sendCapturedImage2Telegram();
         }
         else if (text=="/on") {
           ledcAttachPin(4, 3);
           ledcSetup(3, 5000, 8);
           ledcWrite(3,10);
-          sendMessage2Telegram(token, chat_id, "Led on");
+          sendMessage2Telegram("Led on");
         }
         else if (text=="/off") {
           ledcAttachPin(4, 3);
           ledcSetup(3, 5000, 8);
           ledcWrite(3,0);
-          sendMessage2Telegram(token, chat_id, "Led off");
+          sendMessage2Telegram("Led off");
         }
         else
-          sendMessage2Telegram(token, chat_id, "Command is not defined");
+          sendMessage2Telegram("Command is not defined");
       }
       
       delay(delaytime);
@@ -257,10 +257,10 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
   if (WiFi.status() != WL_CONNECTED)
     ESP.restart();
   else
-    getTelegramMessage(token, chat_id, delaytime);
+    getTelegramMessage(delaytime);
 }
 
-void sendCapturedImage2Telegram(String token, String chat_id) {
+void sendCapturedImage2Telegram() {
   const char* myDomain = "api.telegram.org";
   String getAll="", getBody = "";
 
@@ -330,7 +330,7 @@ void sendCapturedImage2Telegram(String token, String chat_id) {
   Serial.println(getBody);
 }
 
-void sendMessage2Telegram(String token, String chat_id, String text) {
+void sendMessage2Telegram(String text) {
   const char* myDomain = "api.telegram.org";
   String getAll="", getBody = "";
   
