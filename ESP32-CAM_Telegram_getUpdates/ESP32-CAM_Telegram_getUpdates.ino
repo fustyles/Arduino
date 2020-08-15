@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Get your latest message from Telegram Bot
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-15 19:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-15 19:30
 https://www.facebook.com/francefu
 
 ArduinoJson Library：
@@ -21,7 +21,8 @@ String chat_id = "*****";   // Get chat_id -> https://telegram.me/chatid_echo_bo
 #include "soc/rtc_cntl_reg.h"
 #include "esp_camera.h"
 #include <EEPROM.h>
-
+WiFiClientSecure client_tcp;
+  
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
 //            or another board which has PSRAM enabled
 
@@ -156,7 +157,6 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
   DynamicJsonDocument doc(1024);
 
   Serial.println("Connect to " + String(myDomain));
-  WiFiClientSecure client_tcp;
   
   if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
@@ -260,7 +260,7 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
     getTelegramMessage(token, chat_id, delaytime);
 }
 
-String sendCapturedImage2Telegram(String token, String chat_id) {
+void sendCapturedImage2Telegram(String token, String chat_id) {
   const char* myDomain = "api.telegram.org";
   String getAll="", getBody = "";
 
@@ -270,130 +270,101 @@ String sendCapturedImage2Telegram(String token, String chat_id) {
     Serial.println("Camera capture failed");
     delay(1000);
     ESP.restart();
-    return "Camera capture failed";
   }  
   
-  Serial.println("Connect to " + String(myDomain));
-  WiFiClientSecure client_tcp;
-  
-  if (client_tcp.connect(myDomain, 443)) {
-    Serial.println("Connection successful");
-    
-    String head = "--Taiwan\r\nContent-Disposition: form-data; name=\"chat_id\"; \r\n\r\n" + chat_id + "\r\n--Taiwan\r\nContent-Disposition: form-data; name=\"photo\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
-    String tail = "\r\n--Taiwan--\r\n";
+  String head = "--Taiwan\r\nContent-Disposition: form-data; name=\"chat_id\"; \r\n\r\n" + chat_id + "\r\n--Taiwan\r\nContent-Disposition: form-data; name=\"photo\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
+  String tail = "\r\n--Taiwan--\r\n";
 
-    uint16_t imageLen = fb->len;
-    uint16_t extraLen = head.length() + tail.length();
-    uint16_t totalLen = imageLen + extraLen;
-  
-    client_tcp.println("POST /bot"+token+"/sendPhoto HTTP/1.1");
-    client_tcp.println("Host: " + String(myDomain));
-    client_tcp.println("Content-Length: " + String(totalLen));
-    client_tcp.println("Content-Type: multipart/form-data; boundary=Taiwan");
-    client_tcp.println("Connection: close");
-    client_tcp.println();
-    client_tcp.print(head);
-  
-    uint8_t *fbBuf = fb->buf;
-    size_t fbLen = fb->len;
-    for (size_t n=0;n<fbLen;n=n+1024) {
-      if (n+1024<fbLen) {
-        client_tcp.write(fbBuf, 1024);
-        fbBuf += 1024;
-      }
-      else if (fbLen%1024>0) {
-        size_t remainder = fbLen%1024;
-        client_tcp.write(fbBuf, remainder);
-      }
-    }  
-    
-    client_tcp.print(tail);
-    
-    esp_camera_fb_return(fb);
-    
-    int waitTime = 10000;   // timeout 10 seconds
-    long startTime = millis();
-    boolean state = false;
-    
-    while ((startTime + waitTime) > millis())
-    {
-      Serial.print(".");
-      delay(100);      
-      while (client_tcp.available()) 
-      {
-          char c = client_tcp.read();
-          if (c == '\n') 
-          {
-            if (getAll.length()==0) state=true; 
-            getAll = "";
-          } 
-          else if (c != '\r')
-            getAll += String(c);
-          if (state==true) getBody += String(c);
-          startTime = millis();
-       }
-       if (getBody.length()>0) break;
+  uint16_t imageLen = fb->len;
+  uint16_t extraLen = head.length() + tail.length();
+  uint16_t totalLen = imageLen + extraLen;
+
+  client_tcp.println("POST /bot"+token+"/sendPhoto HTTP/1.1");
+  client_tcp.println("Host: " + String(myDomain));
+  client_tcp.println("Content-Length: " + String(totalLen));
+  client_tcp.println("Content-Type: multipart/form-data; boundary=Taiwan");
+  client_tcp.println("Connection: keep-alive");
+  client_tcp.println();
+  client_tcp.print(head);
+
+  uint8_t *fbBuf = fb->buf;
+  size_t fbLen = fb->len;
+  for (size_t n=0;n<fbLen;n=n+1024) {
+    if (n+1024<fbLen) {
+      client_tcp.write(fbBuf, 1024);
+      fbBuf += 1024;
     }
-    client_tcp.stop();
-    Serial.println(getBody);
-  }
-  else {
-    getBody="Connected to api.telegram.org failed.";
-    Serial.println("Connected to api.telegram.org failed.");
-  }
+    else if (fbLen%1024>0) {
+      size_t remainder = fbLen%1024;
+      client_tcp.write(fbBuf, remainder);
+    }
+  }  
   
-  return getBody;
+  client_tcp.print(tail);
+  
+  esp_camera_fb_return(fb);
+  
+  int waitTime = 10000;   // timeout 10 seconds
+  long startTime = millis();
+  boolean state = false;
+  
+  while ((startTime + waitTime) > millis())
+  {
+    Serial.print(".");
+    delay(100);      
+    while (client_tcp.available()) 
+    {
+        char c = client_tcp.read();
+        if (c == '\n') 
+        {
+          if (getAll.length()==0) state=true; 
+          getAll = "";
+        } 
+        else if (c != '\r')
+          getAll += String(c);
+        if (state==true) getBody += String(c);
+        startTime = millis();
+     }
+     if (getBody.length()>0) break;
+  }
+  Serial.println(getBody);
 }
 
-String sendMessage2Telegram(String token, String chat_id, String text) {
+void sendMessage2Telegram(String token, String chat_id, String text) {
   const char* myDomain = "api.telegram.org";
   String getAll="", getBody = "";
   
-  Serial.println("Connect to " + String(myDomain));
-  WiFiClientSecure client_tcp;
+  String request = "chat_id="+chat_id+"&text="+text;
+  client_tcp.println("POST /bot"+token+"/sendMessage HTTP/1.1");
+  client_tcp.println("Host: " + String(myDomain));
+  client_tcp.println("Content-Length: " + String(request.length()));
+  client_tcp.println("Content-Type: application/x-www-form-urlencoded");
+  client_tcp.println("Connection: keep-alive");
+  client_tcp.println();
+  client_tcp.print(request);
   
-  if (client_tcp.connect(myDomain, 443)) {
-    Serial.println("Connection successful");
-
-    String request = "chat_id="+chat_id+"&text="+text;
-    client_tcp.println("POST /bot"+token+"/sendMessage HTTP/1.1");
-    client_tcp.println("Host: " + String(myDomain));
-    client_tcp.println("Content-Length: " + String(request.length()));
-    client_tcp.println("Content-Type: application/x-www-form-urlencoded");
-    client_tcp.println("Connection: close");
-    client_tcp.println();
-    client_tcp.print(request);
-    
-    int waitTime = 10000;   // timeout 10 seconds
-    long startTime = millis();
-    boolean state = false;
-    
-    while ((startTime + waitTime) > millis())
+  int waitTime = 10000;   // timeout 10 seconds
+  long startTime = millis();
+  boolean state = false;
+  
+  while ((startTime + waitTime) > millis())
+  {
+    Serial.print(".");
+    delay(100);      
+    while (client_tcp.available()) 
     {
-      Serial.print(".");
-      delay(100);      
-      while (client_tcp.available()) 
-      {
-          char c = client_tcp.read();
-          if (c == '\n') 
-          {
-            if (getAll.length()==0) state=true; 
-            getAll = "";
-          } 
-          else if (c != '\r')
-            getAll += String(c);
-          if (state==true) getBody += String(c);
-          startTime = millis();
-       }
-       if (getBody.length()>0) break;
-    }
-    client_tcp.stop();
-    Serial.println(getBody);
+        char c = client_tcp.read();
+        if (c == '\n') 
+        {
+          if (getAll.length()==0) state=true; 
+          getAll = "";
+        } 
+        else if (c != '\r')
+          getAll += String(c);
+        if (state==true) getBody += String(c);
+        startTime = millis();
+     }
+     if (getBody.length()>0) break;
   }
-  else {
-    getBody="Connected to api.telegram.org failed.";
-    Serial.println("Connected to api.telegram.org failed.");
-  }
-  
-  return getBody;
+  Serial.println(getBody);
 }
