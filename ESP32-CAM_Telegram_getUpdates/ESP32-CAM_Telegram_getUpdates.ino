@@ -207,7 +207,7 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
       String text = obj["result"][0]["message"]["text"];
       
       // If client gets new message, do what you want to do.
-      if (message_id!=EEPROM.read(0)) {
+      if (message_id!=EEPROM.read(0)&&message_id) {
         EEPROM.begin(sizeof(int)*4);
         EEPROM.write(0, message_id);
         EEPROM.commit();
