@@ -5,6 +5,9 @@ https://www.facebook.com/francefu
 
 ArduinoJson Library：
 https://github.com/bblanchon/ArduinoJson
+
+Telegram Bot API
+https://core.telegram.org/bots/api
 */
 
 // Enter your WiFi ssid and password
