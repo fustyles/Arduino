@@ -220,7 +220,7 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
         if (text=="capture") {
           sendCapturedImage2Telegram(token, chat_id);
         }
-        else if (text=="hello") {
+        else if (text=="help") {
           sendMessage2Telegram(token, chat_id, "God bless you.");
         }
         else
