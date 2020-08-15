@@ -227,7 +227,7 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
         
         // If client gets new message, do what you want to do.
         if (text=="help"||text=="/help") {
-          sendMessage2Telegram(token, chat_id, "/capture Capture an image\n/on Turn on led\n/off Turn off led");
+          sendMessage2Telegram(token, chat_id, "/capture Take a photo\n/on Turn on LED\n/off Turn off LED");
         }        
         else if (text=="/capture") {
           sendCapturedImage2Telegram(token, chat_id);
