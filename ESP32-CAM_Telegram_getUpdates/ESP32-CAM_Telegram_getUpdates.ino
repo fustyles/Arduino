@@ -222,6 +222,7 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
           
         //Serial.println(String(update_id));
         //Serial.println(String(message_id));
+        //Serial.println(text);
         Serial.println("["+String(message_id)+"] "+text);
         
         // If client gets new message, do what you want to do.
