@@ -221,7 +221,7 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
         Serial.println("["+String(message_id)+"] "+text);
         
         // If client gets new message, do what you want to do.
-        if (text=="help") {
+        if (text=="help"||text=="/help") {
           sendMessage2Telegram(token, chat_id, "/capture Capture an image\n/on Turn on led\n/off Turn off led");
         }        
         else if (text=="/capture") {
