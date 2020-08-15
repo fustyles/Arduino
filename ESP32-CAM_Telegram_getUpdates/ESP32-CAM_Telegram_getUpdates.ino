@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Get your latest message from Telegram Bot
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-15 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-15 21:30
 https://www.facebook.com/francefu
 
 ArduinoJson Library：
@@ -230,7 +230,7 @@ void getTelegramMessage() {
         
         // If client gets new message, do what you want to do.
         if (text=="help"||text=="/help") {
-          sendMessage2Telegram("/help Command list\n/capture Take a photo\n/on Turn on the flash\n/off Turn off the flash");
+          sendMessage2Telegram("/help Command list\n/capture Take a photo\n/on Turn on the flash\n/off Turn off the flash\n/restart Restart the board");
         }        
         else if (text=="/capture") {
           sendCapturedImage2Telegram();
@@ -247,6 +247,9 @@ void getTelegramMessage() {
           ledcWrite(3,0);
           sendMessage2Telegram("Led off");
         }
+        else if (text=="/restart") {
+          ESP.restart();
+        }        
         else
           sendMessage2Telegram("Command is not defined");
       }
