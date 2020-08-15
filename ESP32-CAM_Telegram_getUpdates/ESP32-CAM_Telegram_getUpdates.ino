@@ -179,7 +179,7 @@ void getTelegramMessage(int delaytime) {
       client_tcp.println();
       client_tcp.print(request);
       
-      int waitTime = 10000;   // timeout 10 seconds
+      int waitTime = 5000;   // timeout 5 seconds
       long startTime = millis();
       boolean state = false;
       
@@ -230,7 +230,7 @@ void getTelegramMessage(int delaytime) {
         
         // If client gets new message, do what you want to do.
         if (text=="help"||text=="/help") {
-          sendMessage2Telegram("/capture Take a photo\n/on Turn on the flash\n/off Turn off the flash");
+          sendMessage2Telegram("/help Command list\n/capture Take a photo\n/on Turn on the flash\n/off Turn off the flash");
         }        
         else if (text=="/capture") {
           sendCapturedImage2Telegram();
@@ -346,7 +346,7 @@ void sendMessage2Telegram(String text) {
   client_tcp.println();
   client_tcp.print(request);
   
-  int waitTime = 10000;   // timeout 10 seconds
+  int waitTime = 5000;   // timeout 5 seconds
   long startTime = millis();
   boolean state = false;
   
