@@ -239,15 +239,16 @@ void getTelegramMessage() {
           ledcAttachPin(4, 3);
           ledcSetup(3, 5000, 8);
           ledcWrite(3,10);
-          sendMessage2Telegram("Led on");
+          sendMessage2Telegram("Turn on the flash");
         }
         else if (text=="/off") {
           ledcAttachPin(4, 3);
           ledcSetup(3, 5000, 8);
           ledcWrite(3,0);
-          sendMessage2Telegram("Led off");
+          sendMessage2Telegram("Turn off the flash");
         }
         else if (text=="/restart") {
+          sendMessage2Telegram("Restart the board");
           ESP.restart();
         }        
         else
