@@ -142,15 +142,15 @@ void setup()
   sensor_t * s = esp_camera_sensor_get();
   s->set_framesize(s, FRAMESIZE_CIF);  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
-  //Get your latest message from Telegram Bot every 1000 ms.
-  getTelegramMessage(1000);  
+  //Get your latest message from Telegram Bot.
+  getTelegramMessage();  
 }
 
 void loop()
 {
 }
 
-void getTelegramMessage(int delaytime) {
+void getTelegramMessage() {
   const char* myDomain = "api.telegram.org";
   String getAll="", getBody = ""; 
   JsonObject obj;
@@ -251,7 +251,7 @@ void getTelegramMessage(int delaytime) {
           sendMessage2Telegram("Command is not defined");
       }
       
-      delay(delaytime);
+      delay(1000);
     }
   }
   
@@ -259,7 +259,7 @@ void getTelegramMessage(int delaytime) {
   if (WiFi.status() != WL_CONNECTED)
     ESP.restart();
   else
-    getTelegramMessage(delaytime);
+    getTelegramMessage();
 }
 
 void sendCapturedImage2Telegram() {
