@@ -160,8 +160,12 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
   
   if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
-
-    while (client_tcp.connected()) {
+    
+    ledcWrite(3,10);
+    delay(1000);
+    ledcWrite(3,0);
+      
+    while (client_tcp.connected()) {            
       getAll = "";
       getBody = "";
 
@@ -217,23 +221,23 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
         Serial.println("["+String(message_id)+"] "+text);
         
         // If client gets new message, do what you want to do.
-        if (text=="capture") {
+        if (text=="help") {
+          sendMessage2Telegram(token, chat_id, "/capture Capture an image\n/on Turn on led\n/off Turn off led");
+        }        
+        else if (text=="/capture") {
           sendCapturedImage2Telegram(token, chat_id);
         }
-        else if (text=="on") {
+        else if (text=="/on") {
           ledcAttachPin(4, 3);
           ledcSetup(3, 5000, 8);
           ledcWrite(3,10);
           sendMessage2Telegram(token, chat_id, "Led on");
         }
-        else if (text=="off") {
+        else if (text=="/off") {
           ledcAttachPin(4, 3);
           ledcSetup(3, 5000, 8);
           ledcWrite(3,0);
           sendMessage2Telegram(token, chat_id, "Led off");
-        }
-        else if (text=="help") {
-          sendMessage2Telegram(token, chat_id, "God bless you");
         }
         else
           sendMessage2Telegram(token, chat_id, "Command is not defined");
