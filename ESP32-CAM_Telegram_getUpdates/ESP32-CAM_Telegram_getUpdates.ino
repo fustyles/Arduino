@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Get your latest message from Telegram Bot
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-15 19:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-15 20:00
 https://www.facebook.com/francefu
 
 ArduinoJson Library：
@@ -20,8 +20,8 @@ String chat_id = "*****";   // Get chat_id -> https://telegram.me/chatid_echo_bo
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
 #include "esp_camera.h"
-#include <EEPROM.h>
 WiFiClientSecure client_tcp;
+int message_id_last = 0;
   
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
 //            or another board which has PSRAM enabled
@@ -209,13 +209,11 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
       String message = obj["result"][0]["message"];
       int message_id = obj["result"][0]["message"]["message_id"];
       String text = obj["result"][0]["message"]["text"];
-      
-      int eep = EEPROM.read(0);
-      if (message_id!=eep&&message_id) {
-        EEPROM.begin(sizeof(int)*4);
-        EEPROM.write(0, message_id);
-        EEPROM.commit();
-        if (eep==0) {
+
+      if (message_id!=message_id_last&&message_id) {
+        int id = message_id_last;
+        message_id_last = message_id;
+        if (id==0) {
           message_id = 0;
           text = "/help";      
         }
