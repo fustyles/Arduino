@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Get your message from Telegram Bot
+ESP32-CAM Get your latest message from Telegram Bot
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-15 08:00
 https://www.facebook.com/francefu
 
@@ -141,7 +141,7 @@ void setup()
   sensor_t * s = esp_camera_sensor_get();
   s->set_framesize(s, FRAMESIZE_CIF);  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
-  //Get your message from Telegram Bot every 1000 ms.
+  //Get your latest message from Telegram Bot every 1000 ms.
   getTelegramMessage(token, chat_id, 1000);  
 }
 
