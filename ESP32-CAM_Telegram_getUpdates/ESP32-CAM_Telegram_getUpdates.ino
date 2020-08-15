@@ -206,7 +206,6 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
       int message_id = obj["result"][0]["message"]["message_id"];
       String text = obj["result"][0]["message"]["text"];
       
-      // If client gets new message, do what you want to do.
       if (message_id!=EEPROM.read(0)&&message_id) {
         EEPROM.begin(sizeof(int)*4);
         EEPROM.write(0, message_id);
@@ -217,6 +216,7 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
         //Serial.println(String(message_id));
         Serial.println("text = " + text);
         
+        // If client gets new message, do what you want to do.
         if (text=="capture") {
           sendCapturedImage2Telegram(token, chat_id);
         }
