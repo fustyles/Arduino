@@ -224,7 +224,7 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
           sendMessage2Telegram(token, chat_id, "God bless you.");
         }
         else
-          Serial.println("Command is not defined.");
+          sendMessage2Telegram(token, chat_id, "Command is not defined.");
       }
       
       
