@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Get your latest message from Telegram Bot
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-15 18:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-15 19:00
 https://www.facebook.com/francefu
 
 ArduinoJson Library：
@@ -162,7 +162,7 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
     Serial.println("Connection successful");
     
     ledcWrite(3,10);
-    delay(1000);
+    delay(2000);
     ledcWrite(3,0);
       
     while (client_tcp.connected()) {            
@@ -210,12 +210,18 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
       int message_id = obj["result"][0]["message"]["message_id"];
       String text = obj["result"][0]["message"]["text"];
       
-      if (message_id!=EEPROM.read(0)&&message_id) {
+      int eep = EEPROM.read(0);
+      if (message_id!=eep&&message_id) {
         EEPROM.begin(sizeof(int)*4);
         EEPROM.write(0, message_id);
         EEPROM.commit();
-        
-        Serial.println(getBody);
+        if (eep==0) {
+          message_id = 0;
+          text = "/help";      
+        }
+        else
+          Serial.println(getBody);
+          
         //Serial.println(String(update_id));
         //Serial.println(String(message_id));
         Serial.println("["+String(message_id)+"] "+text);
@@ -242,7 +248,6 @@ void getTelegramMessage(String token, String chat_id, int delaytime) {
         else
           sendMessage2Telegram(token, chat_id, "Command is not defined");
       }
-      
       
       delay(delaytime);
     }
