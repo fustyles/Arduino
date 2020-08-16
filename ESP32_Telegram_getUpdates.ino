@@ -22,7 +22,6 @@ String chat_id = "*****";   // Get chat_id -> https://telegram.me/chatid_echo_bo
 #include <WiFiClientSecure.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
-#include "esp_camera.h"
 
 WiFiClientSecure client_tcp;
 int message_id_last = 0;
