@@ -166,12 +166,12 @@ void getTelegramMessage() {
         else if (text=="/on") {
           pinMode(2, OUTPUT);
           digitalWrite(2,HIGH);
-          sendMessage2Telegram("Turn on the flash");
+          sendMessage2Telegram("Turn on the led");
         }
         else if (text=="/off") {
           pinMode(2, OUTPUT);
           digitalWrite(2,LOW);
-          sendMessage2Telegram("Turn off the flash");
+          sendMessage2Telegram("Turn off the led");
         }
         else if (text=="/restart") {
           sendMessage2Telegram("Restart the board");
