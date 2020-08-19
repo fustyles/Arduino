@@ -699,7 +699,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <div class="close" id="close-stream">×</div>
         <img id="stream" src="">
       </div>
-    <div id="joy3Div" style="width:300px;height:300px;"></div>
+    <div id="joy3Div" style="width:320px;height:320px;"></div>
     </figure>
         <section class="main">
             <section id="buttons">
