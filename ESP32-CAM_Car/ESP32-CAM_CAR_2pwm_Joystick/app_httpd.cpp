@@ -927,7 +927,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <script type="text/javascript">
           var joy3Param = { "title": "joystick3" };
           var Joy3 = new JoyStick('joy3Div', joy3Param);
-          var carState = "C";
+          var carState = "";
           
           setInterval(function(){ 
             if (Joy3.GetDir()=="N"&&carState!="N") {
