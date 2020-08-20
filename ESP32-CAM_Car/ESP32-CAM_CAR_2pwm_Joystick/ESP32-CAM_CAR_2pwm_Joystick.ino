@@ -1,5 +1,5 @@
 /*
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-20 19:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-20 20:00
 https://www.facebook.com/francefu
 
 Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
@@ -219,7 +219,7 @@ void setup() {
   //閃光燈(GPIO4)
   ledcAttachPin(4, 4);  
   ledcSetup(4, 5000, 8);
-      
+
   //馬達驅動IC
   ledcAttachPin(12, 5);
   ledcSetup(5, 2000, 8);      
@@ -230,7 +230,7 @@ void setup() {
   ledcSetup(7, 2000, 8);      
   ledcAttachPin(14, 8);
   ledcSetup(8, 2000, 8); 
-
+  
   
   WiFi.mode(WIFI_AP_STA);  //其他模式 WiFi.mode(WIFI_AP); WiFi.mode(WIFI_STA);
 
@@ -1295,7 +1295,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           function controlCar(state, value) {
               carState=state;
               runState = 1;
-              $.ajax({url: document.location.origin+'/control?var=car&val='+value, async: false});
+              var cmd = document.location.origin+'/control?var=car&val='+value;
+              //console.log(cmd);
+              $.ajax({url: cmd, async: false});
               runState = 0;
           }
         </script>       
