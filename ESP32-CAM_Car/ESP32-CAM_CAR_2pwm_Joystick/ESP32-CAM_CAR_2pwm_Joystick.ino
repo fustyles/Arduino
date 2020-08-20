@@ -1052,6 +1052,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             <section id="buttons">
                 <table>
                 <tr><td><button id="restart" onclick="try{fetch(document.location.origin+'/control?restart');}catch(e){}">Restart</button></td><td><button id="get-still">Get Still</button></td><td><button id="toggle-stream">Start Stream</button></td></tr>
+                <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="fetch(document.location.origin+'/control?var=flash&val='+this.value);"></td></tr>
+                <tr><td>SpeedL</td><td align="center" colspan="2"><input type="range" id="speedL" min="0" max="255" value="255" onchange="fetch(document.location.origin+'/control?var=speedL&val='+this.value);"></td></tr>
+                <tr><td>SpeedR</td><td align="center" colspan="2"><input type="range" id="speedR" min="0" max="255" value="255" onchange="fetch(document.location.origin+'/control?var=speedR&val='+this.value);"></td></tr>
                 </table>
             </section>        
             <div id="logo">
