@@ -1,5 +1,5 @@
 /*
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-20 20:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-21 01:30
 https://www.facebook.com/francefu
 
 Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
@@ -28,7 +28,6 @@ http://192.168.xxx.xxx/control?analogwrite=pin;value   //類比輸出
 http://192.168.xxx.xxx/control?digitalread=pin         //數位讀取
 http://192.168.xxx.xxx/control?analogread=pin          //類比讀取
 http://192.168.xxx.xxx/control?touchread=pin           //觸碰讀取
-http://192.168.xxx.xxx/control?flash=value             //內建閃光燈 value= 0~255
 
 官方指令格式 http://192.168.xxx.xxx/control?var=***&val=***
 http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
@@ -610,111 +609,111 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         ledcSetup(4, 5000, 8);        
         ledcWrite(4,val);
       } 
-    //Remote Control Car 
-    else if(!strcmp(variable, "flash")) {
-      ledcWrite(4,val);
-    }  
-    else if(!strcmp(variable, "speedL")) {
-      if (val > 255)
-         val = 255;
-      else if (val < 0)
-        val = 0;       
-      speedL = val;
-      Serial.println("LeftSpeed = " + String(val));       
-    }  
-    else if(!strcmp(variable, "speedR")) {
-      if (val > 255)
-         val = 255;
-      else if (val < 0)
-        val = 0;       
-      speedR = val;
-      Serial.println("RightSpeed = " + String(val));       
-    }                   
-    else if(!strcmp(variable, "car")) { 
-      float d = 0.3; 
-      if (val==1) {
-        Serial.println("Forward");     
-        ledcWrite(5,speedR);
-        ledcWrite(6,0);
-        ledcWrite(7,speedL);
-        ledcWrite(8,0);   
+      //Remote Control Car 
+      else if(!strcmp(variable, "flash")) {
+        ledcWrite(4,val);
+      }  
+      else if(!strcmp(variable, "speedL")) {
+        if (val > 255)
+           val = 255;
+        else if (val < 0)
+          val = 0;       
+        speedL = val;
+        Serial.println("Left Speed = " + String(val));       
+      }  
+      else if(!strcmp(variable, "speedR")) {
+        if (val > 255)
+           val = 255;
+        else if (val < 0)
+          val = 0;       
+        speedR = val;
+        Serial.println("Right Speed = " + String(val));       
+      }                   
+      else if(!strcmp(variable, "car")) { 
+        float d = 0.3; 
+        if (val==1) {
+          Serial.println("Forward");     
+          ledcWrite(5,speedR);
+          ledcWrite(6,0);
+          ledcWrite(7,speedL);
+          ledcWrite(8,0);   
+        }
+        else if (val==2) {
+          Serial.println("Left");     
+          ledcWrite(5,speedR);
+          ledcWrite(6,0);
+          ledcWrite(7,0);
+          ledcWrite(8,speedL);   
+        }
+        else if (val==3) {
+          Serial.println("Stop");      
+          ledcWrite(5,0);
+          ledcWrite(6,0);
+          ledcWrite(7,0);
+          ledcWrite(8,0);    
+        }
+        else if (val==4) {
+          Serial.println("Right");
+          ledcWrite(5,0);
+          ledcWrite(6,speedR);
+          ledcWrite(7,speedL);
+          ledcWrite(8,0);        
+        }
+        else if (val==5) {
+          Serial.println("Backward");      
+          ledcWrite(5,0);
+          ledcWrite(6,speedR);
+          ledcWrite(7,0);
+          ledcWrite(8,speedL);    
+        }    
+        else if (val==6) {
+          Serial.println("Left-Forward");     
+          ledcWrite(5,speedR);
+          ledcWrite(6,0);
+          ledcWrite(7,speedL*d);
+          ledcWrite(8,0);   
+        }
+        else if (val==7) {
+          Serial.println("Right-Forward");          
+          ledcWrite(5,speedR*d);
+          ledcWrite(6,0);
+          ledcWrite(7,speedL);
+          ledcWrite(8,0);    
+        }
+        else if (val==8) {
+          Serial.println("Left-Backward");      
+          ledcWrite(5,0);
+          ledcWrite(6,speedR);
+          ledcWrite(7,0);
+          ledcWrite(8,speedL*d);        
+        }
+        else if (val==9) {
+          Serial.println("Right-Backward");      
+          ledcWrite(5,0);
+          ledcWrite(6,speedR*d);
+          ledcWrite(7,0);
+          ledcWrite(8,speedL);   
+        }         
+      }        
+      else {
+          res = -1;
       }
-      else if (val==2) {
-        Serial.println("Left");     
-        ledcWrite(5,speedR);
-        ledcWrite(6,0);
-        ledcWrite(7,0);
-        ledcWrite(8,speedL);   
+  
+      if(res){
+          return httpd_resp_send_500(req);
       }
-      else if (val==3) {
-        Serial.println("Stop");      
-        ledcWrite(5,0);
-        ledcWrite(6,0);
-        ledcWrite(7,0);
-        ledcWrite(8,0);    
+  
+      if (buf) {
+        Feedback = String(buf);
+        const char *resp = Feedback.c_str();
+        httpd_resp_set_type(req, "text/html");
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+        return httpd_resp_send(req, resp, strlen(resp));  //回傳參數字串
       }
-      else if (val==4) {
-        Serial.println("Right");
-        ledcWrite(5,0);
-        ledcWrite(6,speedR);
-        ledcWrite(7,speedL);
-        ledcWrite(8,0);        
+      else {
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+        return httpd_resp_send(req, NULL, 0);
       }
-      else if (val==5) {
-        Serial.println("Backward");      
-        ledcWrite(5,0);
-        ledcWrite(6,speedR);
-        ledcWrite(7,0);
-        ledcWrite(8,speedL);    
-      }    
-      else if (val==6) {
-        Serial.println("Left-Forward");     
-        ledcWrite(5,speedR);
-        ledcWrite(6,0);
-        ledcWrite(7,speedL*d);
-        ledcWrite(8,0);   
-      }
-      else if (val==7) {
-        Serial.println("Right-Forward");          
-        ledcWrite(5,speedR*d);
-        ledcWrite(6,0);
-        ledcWrite(7,speedL);
-        ledcWrite(8,0);    
-      }
-      else if (val==8) {
-        Serial.println("Left-Backward");      
-        ledcWrite(5,0);
-        ledcWrite(6,speedR);
-        ledcWrite(7,0);
-        ledcWrite(8,speedL*d);        
-      }
-      else if (val==9) {
-        Serial.println("Right-Backward");      
-        ledcWrite(5,0);
-        ledcWrite(6,speedR*d);
-        ledcWrite(7,0);
-        ledcWrite(8,speedL);   
-      }         
-    }        
-    else {
-        res = -1;
-    }
-
-    if(res){
-        return httpd_resp_send_500(req);
-    }
-
-    if (buf) {
-      Feedback = String(buf);
-      const char *resp = Feedback.c_str();
-      httpd_resp_set_type(req, "text/html");
-      httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-      return httpd_resp_send(req, resp, strlen(resp));  //回傳參數字串
-    }
-    else {
-      httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-      return httpd_resp_send(req, NULL, 0);
-    }
   }
 }
 
@@ -726,6 +725,8 @@ static esp_err_t status_handler(httpd_req_t *req){
     char * p = json_response;
     *p++ = '{';
     p+=sprintf(p, "\"flash\":%d,", 0);
+    p+=sprintf(p, "\"speedR\":%d,", speedR);
+    p+=sprintf(p, "\"speedL\":%d,", speedL);
     p+=sprintf(p, "\"framesize\":%u,", s->status.framesize);
     p+=sprintf(p, "\"quality\":%u,", s->status.quality);
     p+=sprintf(p, "\"brightness\":%d,", s->status.brightness);
@@ -1047,16 +1048,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             <img id="stream" src="">
           </div>
         </figure>
-        <div id="joy3Div" style="width:350px;height:350px;"></div>         
-        <section class="main">
-            <section id="buttons">
-                <table>
-                <tr><td><button id="restart" onclick="try{fetch(document.location.origin+'/control?restart');}catch(e){}">Restart</button></td><td><button id="get-still">Get Still</button></td><td><button id="toggle-stream">Start Stream</button></td></tr>
-                <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="fetch(document.location.origin+'/control?var=flash&val='+this.value);"></td></tr>
-                <tr><td>SpeedL</td><td align="center" colspan="2"><input type="range" id="speedL" min="0" max="255" value="255" onchange="fetch(document.location.origin+'/control?var=speedL&val='+this.value);"></td></tr>
-                <tr><td>SpeedR</td><td align="center" colspan="2"><input type="range" id="speedR" min="0" max="255" value="255" onchange="fetch(document.location.origin+'/control?var=speedR&val='+this.value);"></td></tr>
-                </table>
-            </section>        
+        <section id="buttons">
+            <table>
+              <tr><td><button id="restart" onclick="try{fetch(document.location.origin+'/control?restart');}catch(e){}">Restart</button></td><td><button id="get-still">Get Still</button></td><td><button id="toggle-stream">Start Stream</button></td></tr>
+            </table>
+        </section>          
+        <div id="joy3Div" style="width:320px;height:320px;"></div>         
+        <section class="main">      
             <div id="logo">
                 <label for="nav-toggle-cb" id="nav-toggle">&#9776;&nbsp;&nbsp;Toggle settings</label>
             </div>
@@ -1070,6 +1068,18 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                             <input type="range" id="flash" min="0" max="255" value="0" class="default-action">
                             <div class="range-max">255</div>
                         </div>
+                        <div class="input-group" id="speedR-group">
+                            <label for="speedR">Right Speed</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="speedR" min="0" max="255" value="0" class="default-action">
+                            <div class="range-max">255</div>
+                        </div>
+                        <div class="input-group" id="speedL-group">
+                            <label for="speedL">Left Speed</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="speedL" min="0" max="255" value="0" class="default-action">
+                            <div class="range-max">255</div>
+                        </div>
                         <div class="input-group" id="framesize-group">
                             <label for="framesize">Resolution</label>
                             <select id="framesize" class="default-action">
@@ -1078,8 +1088,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                                 <option value="8">XGA(1024x768)</option>
                                 <option value="7">SVGA(800x600)</option>
                                 <option value="6">VGA(640x480)</option>
-                                <option value="5" selected="selected">CIF(400x296)</option>
-                                <option value="4">QVGA(320x240)</option>
+                                <option value="5">CIF(400x296)</option>
+                                <option value="4" selected="selected">QVGA(320x240)</option>
                                 <option value="3">HQVGA(240x176)</option>
                                 <option value="0">QQVGA(160x120)</option>
                             </select>
