@@ -966,7 +966,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               carState="C";
               fetch(document.location.origin+'/control?var=car&val=3');
             }
-          }, 250);
+          }, 100);
         </script>       
     </body>
 </html>
