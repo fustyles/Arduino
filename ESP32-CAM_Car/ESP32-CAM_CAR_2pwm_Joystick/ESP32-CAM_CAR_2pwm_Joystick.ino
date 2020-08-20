@@ -1,5 +1,5 @@
 /*
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-21 01:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-21 02:00
 https://www.facebook.com/francefu
 
 Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
@@ -767,7 +767,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 flex-direction: column
             }
             #menu {
-                display: none;
+                display: block;
                 flex-wrap: nowrap;
                 min-width: 340px;
                 background: #363636;
@@ -842,7 +842,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 height: 0
             }
             #nav-toggle-cb:checked+#menu {
-                display: block
+                display: none
             }
             .input-group {
                 display: flex;
@@ -1047,13 +1047,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           <div class="close" id="close-stream">×</div>
             <img id="stream" src="">
           </div>
+          <div id="joy3Div" style="width:200px;height:200px;margin:50px"></div>
         </figure>
         <section id="buttons">
             <table>
               <tr><td><button id="restart" onclick="try{fetch(document.location.origin+'/control?restart');}catch(e){}">Restart</button></td><td><button id="get-still">Get Still</button></td><td><button id="toggle-stream">Start Stream</button></td></tr>
             </table>
-        </section>          
-        <div id="joy3Div" style="width:320px;height:320px;"></div>         
+        </section>
         <section class="main">      
             <div id="logo">
                 <label for="nav-toggle-cb" id="nav-toggle">&#9776;&nbsp;&nbsp;Toggle settings</label>
@@ -1225,20 +1225,21 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           
             const stopStream = () => {
               window.stop();
-              streamButton.innerHTML = 'Start Stream'
+              streamButton.innerHTML = 'Start Stream';
+              viewContainer.style.display = "none";
             }
           
             const startStream = () => {
               view.src = `${streamUrl}/stream`
-              show(viewContainer)
               streamButton.innerHTML = 'Stop Stream'
+              viewContainer.style.display = "block";
             }
           
             // Attach actions to buttons
             stillButton.onclick = () => {
               stopStream()
               view.src = `${baseHost}/capture?_cb=${Date.now()}`
-              show(viewContainer)
+              viewContainer.style.display = "block";
             }
           
             closeButton.onclick = () => {
