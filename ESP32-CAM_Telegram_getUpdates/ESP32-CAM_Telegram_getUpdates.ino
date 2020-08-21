@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Get your latest message from Telegram Bot
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-16 09:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-21 22:00
 https://www.facebook.com/francefu
 
 ArduinoJson Library：
@@ -156,6 +156,11 @@ void getTelegramMessage() {
   String getAll="", getBody = ""; 
   JsonObject obj;
   DynamicJsonDocument doc(1024);
+  String result;
+  long update_id;
+  String message;
+  long message_id;
+  String text;  
 
   Serial.println("Connect to " + String(myDomain));
   if (client_tcp.connect(myDomain, 443)) {
@@ -206,11 +211,11 @@ void getTelegramMessage() {
       
       deserializeJson(doc, getBody);
       obj = doc.as<JsonObject>();
-      String result = obj["result"];
-      long update_id = obj["result"][0]["update_id"];
-      String message = obj["result"][0]["message"];
-      int message_id = obj["result"][0]["message"]["message_id"];
-      String text = obj["result"][0]["message"]["text"];
+      result = obj["result"].as<String>();
+      update_id =  obj["result"][0]["update_id"].as<String>().toInt();
+      message = obj["result"][0]["message"].as<String>();
+      message_id = obj["result"][0]["message"]["message_id"].as<String>().toInt();
+      text = obj["result"][0]["message"]["text"].as<String>();
 
       if (message_id!=message_id_last&&message_id) {
         int id_last = message_id_last;
