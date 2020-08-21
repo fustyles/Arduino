@@ -24,7 +24,7 @@ String chat_id = "*****";   // Get chat_id -> https://telegram.me/chatid_echo_bo
 #include "soc/rtc_cntl_reg.h"
 
 WiFiClientSecure client_tcp;
-int message_id_last = 0;
+long message_id_last = 0;
 
 void setup()
 {
@@ -86,6 +86,11 @@ void getTelegramMessage() {
   String getAll="", getBody = ""; 
   JsonObject obj;
   DynamicJsonDocument doc(1024);
+  String result;
+  long update_id;
+  String message;
+  long message_id;
+  String text;    
 
   Serial.println("Connect to " + String(myDomain));
   if (client_tcp.connect(myDomain, 443)) {
@@ -136,11 +141,11 @@ void getTelegramMessage() {
       
       deserializeJson(doc, getBody);
       obj = doc.as<JsonObject>();
-      String result = obj["result"];
-      long update_id = obj["result"][0]["update_id"];
-      String message = obj["result"][0]["message"];
-      int message_id = obj["result"][0]["message"]["message_id"];
-      String text = obj["result"][0]["message"]["text"];
+      //result = obj["result"].as<String>();
+      //update_id =  obj["result"][0]["update_id"].as<String>().toInt();
+      //message = obj["result"][0]["message"].as<String>();
+      message_id = obj["result"][0]["message"]["message_id"].as<String>().toInt();
+      text = obj["result"][0]["message"]["text"].as<String>();
 
       if (message_id!=message_id_last&&message_id) {
         int id_last = message_id_last;
@@ -154,9 +159,6 @@ void getTelegramMessage() {
           Serial.println();
         }
           
-        //Serial.println(String(update_id));
-        //Serial.println(String(message_id));
-        //Serial.println(text);
         Serial.println("["+String(message_id)+"] "+text);
         
         // If client gets new message, do what you want to do.
