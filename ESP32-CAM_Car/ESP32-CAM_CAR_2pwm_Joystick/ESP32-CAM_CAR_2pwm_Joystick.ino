@@ -1304,7 +1304,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
               controlCar("SE", 9)
             else if (Joy3.GetDir()=="C"&&carState!="C")
               controlCar("C", 3)
-          }, 100);
+          }, 200);
 
           function controlCar(state, value) {
               carState=state;
