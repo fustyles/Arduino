@@ -47,7 +47,7 @@ String chat_id = "*****";   // Get chat_id -> https://telegram.me/chatid_echo_bo
 #define PCLK_GPIO_NUM     22
 
 WiFiClientSecure client_tcp;
-int message_id_last = 0;
+long message_id_last = 0;
 
 void setup()
 {
