@@ -1,10 +1,11 @@
 /*
-Library
-https://github.com/ThaiEasyElec/ESPIno32CAM
+https://www.thaieasyelec.com/article-wiki/embedded-electronics-application/espino32camintroduction
+Library： https://github.com/ThaiEasyElec/ESPIno32CAM
+
 
 You must modify the file "ESPino32CAM.h" of the library.
 
-// Config Camera Pin 
+// Config Camera Pin (ESPIno32CAM)
 #define PWDN_GPIO_NUM     -1 
 #define RESET_GPIO_NUM     4
 #define XCLK_GPIO_NUM      13
