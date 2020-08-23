@@ -335,6 +335,7 @@ static esp_err_t stream_handler(httpd_req_t *req){
     if(res != ESP_OK){
         return res;
     }
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
     while(true){
         detected = false;
@@ -649,7 +650,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     <figure>
       <div id="stream-container" class="image-container hidden">
         <div class="close" id="close-stream">×</div>
-        <img id="stream" src="">
+        <img id="stream" src="" crossorigin="anonymous">
       </div>
     </figure>
         <section class="main">
