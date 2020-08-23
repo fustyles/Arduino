@@ -25,7 +25,7 @@ You must modify the file "ESPino32CAM.h" of the library.
 
 Replace to ...
 
-//ESP32-CAM
+// Config Camera Pin (ESP32-CAM)
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -51,8 +51,7 @@ ESPino32QRCode qr;
 
 void setup() {
   Serial.begin(115200);
-  if (cam.init() != ESP_OK)
-  {
+  if (cam.init() != ESP_OK) {
     Serial.println("Fail");
     while (10);
   }
@@ -63,8 +62,7 @@ void setup() {
   s->set_whitebal(s,true);
 }
 
-void loop()
-{
+void loop() {
   camera_fb_t *fb = cam.capture(); 
   if (!fb) {
     Serial.println("Camera capture failed");
