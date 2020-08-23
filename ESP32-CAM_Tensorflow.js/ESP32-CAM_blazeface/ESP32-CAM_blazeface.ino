@@ -373,6 +373,7 @@ static esp_err_t stream_handler(httpd_req_t *req){
     if(res != ESP_OK){
         return res;
     }
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
     while(true){
         fb = esp_camera_fb_get();
@@ -658,7 +659,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             <figure>
               <div id="stream-container" class="image-container hidden">
                 <div class="close" id="close-stream" style="display:none">×</div>
-                <img id="stream" src="" style="display:none">
+                <img id="stream" src="" style="display:none" crossorigin="anonymous">
               </div>
             </figure>         
             <div id="logo">
