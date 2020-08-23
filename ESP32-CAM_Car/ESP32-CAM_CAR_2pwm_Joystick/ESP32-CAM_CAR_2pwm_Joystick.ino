@@ -609,10 +609,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         ledcSetup(4, 5000, 8);        
         ledcWrite(4,val);
       } 
-      //Remote Control Car 
-      else if(!strcmp(variable, "flash")) {
-        ledcWrite(4,val);
-      }  
+      //Remote Control Car  
       else if(!strcmp(variable, "speedL")) {
         if (val > 255)
            val = 255;
