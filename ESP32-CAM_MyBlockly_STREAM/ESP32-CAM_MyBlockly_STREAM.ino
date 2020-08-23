@@ -437,6 +437,7 @@ static esp_err_t stream_handler(httpd_req_t *req){
     if(res != ESP_OK){
         return res;
     }
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
     while(true){
         fb = esp_camera_fb_get();
@@ -1012,7 +1013,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <body>
   <button onclick="document.getElementById('stream').src=location.origin+':81/stream';">Start Stream</button><button onclick="document.getElementById('stream').src='';">Stop Stream</button><button onclick="document.getElementById('stream').src=window.location.origin+'/capture?'+Math.floor(Math.random()*1000000);">Get Still</button></td>
   <br>
-  <img id="stream" src="">
+  <img id="stream" src="" crossorigin="anonymous">
   <br>  
   <form onreset="document.getElementById('MyFirmata').src='about:blank';">
       <table width="350px">
