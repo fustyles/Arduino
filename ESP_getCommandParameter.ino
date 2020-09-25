@@ -33,7 +33,7 @@ https://fustyles.github.io/webduino/ESP8266_MyFirmata.html
 */
 
 #include <ESP8266WiFi.h>    // ESP01, ESP12E
-//#include <WiFi.h>         // ESP32 (If you use ESP32, you must modify the line number 22,23,255,256 of the code.)
+//#include <WiFi.h>         // ESP32
 
 // Enter your WiFi ssid and password
 const char* ssid     = "xxxxx";   //your network SSID
