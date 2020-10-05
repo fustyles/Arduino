@@ -191,6 +191,7 @@ String SendCapturedImage() {
     client_tcp.println("Host: " + String(myDomain));
     client_tcp.println("Content-Length: " + String(Data.length()+imageFile.length()));
     client_tcp.println("Content-Type: application/x-www-form-urlencoded");
+    client_tcp.println("Connection: keep-alive");
     client_tcp.println();
     
     client_tcp.print(Data);
