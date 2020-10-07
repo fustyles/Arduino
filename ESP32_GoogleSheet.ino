@@ -82,7 +82,7 @@ void setup() {
 void loop() {
   String jsonString = getSpreadsheetJson("A1");
   Serial.println(getSpreadsheetField(jsonString, 1, 1));
-  delay(10000);
+  delay(5000);
 }
 
 String getSpreadsheetJson(String range) {
@@ -93,12 +93,12 @@ String getSpreadsheetJson(String range) {
   if (client_tcp.connect("spreadsheets.google.com", 443)) 
   {
     Serial.println("Connection successful");
-    client_tcp.println("GET https://spreadsheets.google.com/feeds/cells/"+sheetid+"/1/public/values?alt=json&range="+range);
+    client_tcp.println("GET https://spreadsheets.google.com/feeds/cells/"+sheetid+"/1/public/values?alt=json&range="+range+"&rnd="+String(random(1000)));
     client_tcp.println("Host: spreadsheets.google.com");
     client_tcp.println("Connection: close");
     client_tcp.println();
     
-    int waitTime = 10000;   // timeout 10 seconds
+    int waitTime = 5000;   // timeout 5 seconds
     long startTime = millis();
     boolean state = false;
     
