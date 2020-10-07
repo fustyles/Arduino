@@ -73,29 +73,9 @@ void setup() {
   Serial.println("");
 
   if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("Reset");
-    
-    ledcAttachPin(4, 3);
-    ledcSetup(3, 5000, 8);
-    ledcWrite(3,10);
-    delay(200);
-    ledcWrite(3,0);
-    delay(200);    
-    ledcDetachPin(3);
-        
+    Serial.println("Restart");
     delay(1000);
     ESP.restart();  //若未連上Wi-Fi閃燈兩次後重啟
-  }
-  else {
-    ledcAttachPin(4, 3);
-    ledcSetup(3, 5000, 8);
-    for (int i=0;i<5;i++) {  //若連上Wi-Fi閃燈五次
-      ledcWrite(3,10);
-      delay(200);
-      ledcWrite(3,0);
-      delay(200);    
-    }
-    ledcDetachPin(3);      
   }
 }
 
