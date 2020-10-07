@@ -75,7 +75,7 @@ void setup() {
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("Restart");
     delay(1000);
-    ESP.restart();  //若未連上Wi-Fi閃燈兩次後重啟
+    ESP.restart();
   }
 }
 
