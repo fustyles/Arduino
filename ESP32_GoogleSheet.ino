@@ -137,6 +137,7 @@ String getSpreadsheetJson(String range) {
 
 String getSpreadsheetField(String jsonString, int row, int col) {
   String fieldString = "\"row\":\""+String(row)+"\",\"col\":\""+String(col)+"\",";
+  if (jsonString.indexOf(fieldString)==-1) return "error";
   jsonString = jsonString.substring(jsonString.indexOf(fieldString)+fieldString.length());
   jsonString = jsonString.substring(0,jsonString.indexOf("}")-1);
   return jsonString.substring(jsonString.indexOf(":")+2);
