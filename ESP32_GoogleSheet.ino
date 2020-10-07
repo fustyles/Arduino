@@ -93,7 +93,7 @@ String getSpreadsheetJson(String range) {
   if (client_tcp.connect("spreadsheets.google.com", 443)) 
   {
     Serial.println("Connection successful");
-    client_tcp.println("GET https://spreadsheets.google.com/feeds/cells/"+sheetid+"/1/public/values?alt=json&range="+range+"&rnd="+String(random(1000)));
+    client_tcp.println("GET https://spreadsheets.google.com/feeds/cells/"+sheetid+"/1/public/values?alt=json&range="+range);
     client_tcp.println("Host: spreadsheets.google.com");
     client_tcp.println("Connection: close");
     client_tcp.println();
