@@ -97,6 +97,7 @@ String getSpreadsheetJson(String range) {
     client_tcp.println("Host: spreadsheets.google.com");
     client_tcp.println("Connection: close");
     client_tcp.println();
+    delay(3000);
     
     int waitTime = 5000;   // timeout 5 seconds
     long startTime = millis();
