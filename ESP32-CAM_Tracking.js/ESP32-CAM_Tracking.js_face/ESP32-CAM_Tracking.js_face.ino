@@ -509,9 +509,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       tracker.setEdgesDensity(0.1);
       tracker.setInitialScale(4);
       tracker.setStepSize(2);
-  
-      tracker.setInitialScale(2);
-      tracker.setStepSize(1);
 
       var trackerTask = tracking.track('#resizeImage', tracker);
   
