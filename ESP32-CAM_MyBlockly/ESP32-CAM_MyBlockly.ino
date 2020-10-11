@@ -35,20 +35,17 @@ http://192.168.xxx.xxx/?thingspeakread=request
 http://192.168.xxx.xxx/?linenotify=token;request
 --> request = message=xxxxx
 --> request = message=xxxxx&stickerPackageId=xxxxx&stickerId=xxxxx
-http://192.168.xxx.xxx/?flash=value        //vale= 0~255  (閃光燈)
-http://192.168.xxx.xxx/?servo=value        //vale= 1700~8000   伺服馬達(gpio2)
-http://192.168.xxx.xxx/?servo1=value       //vale= 1700~8000   伺服馬達1(gpio2)
-http://192.168.xxx.xxx/?servo2=value       //vale= 1700~8000   伺服馬達2(gpio13)
-http://192.168.xxx.xxx/?speedL=value       //vale= 0~255  (左輪速度)
-http://192.168.xxx.xxx/?speedR=value       //vale= 0~255  (右輪速度)
-http://192.168.xxx.xxx/?decelerate=value   //vale= 0~100  (轉彎輪子減速後的速度為原速的百分比%)
-http://192.168.xxx.xxx/?car=state          //state= 1(前進),2(左轉),3(停止),4(右轉),5(後退),6(左前轉),7(右前轉),8(左後轉),9(右後轉)
-http://192.168.xxx.xxx/?getstill           //回傳base64格式文字
-http://192.168.xxx.xxx/?getstill=img       //<img id='gameimage_getstill' src='base64'> 回傳影像
-http://192.168.xxx.xxx/?downloadstill      //影像檔案下載
-http://192.168.xxx.xxx/?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA (支援格式)
+http://192.168.xxx.xxx/?flash=value                 //vale= 0~255  (閃光燈)
+http://192.168.xxx.xxx/control?servo=value;channel  //vale= 1700~8000, channel=9, 10, 11
+http://192.168.xxx.xxx/?speedL=value                //vale= 0~255  (左輪速度)
+http://192.168.xxx.xxx/?speedR=value                //vale= 0~255  (右輪速度)
+http://192.168.xxx.xxx/?decelerate=value            //vale= 0~100  (轉彎輪子減速後的速度為原速的百分比%)
+http://192.168.xxx.xxx/?car=state                   //state= 1(前進),2(左轉),3(停止),4(右轉),5(後退),6(左前轉),7(右前轉),8(左後轉),9(右後轉)
+http://192.168.xxx.xxx/?getstill                    //回傳base64格式文字
+http://192.168.xxx.xxx/?getstill=img                //<img id='gameimage_getstill' src='base64'> 回傳影像
+http://192.168.xxx.xxx/?downloadstill               //影像檔案下載
+http://192.168.xxx.xxx/?framesize=size              //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA (支援格式)
 http://192.168.xxx.xxx/?sendCapturedImageToLineNotify=token  //傳送影像截圖至LineNotify
-
 
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
@@ -69,9 +66,6 @@ const char* appassword = "12345678";         //AP端密碼至少要八個字元�
 
 int speedR = 255;  //右輪初速 (gpio12, gpio13)
 int speedL = 255;  //左輪初速 (gpio14, gpio15)
-int servoPin = 2;
-int servo1Pin = 2;
-int servo2Pin = 13;
 double decelerate = 60;
 
 #include <WiFi.h>
@@ -272,20 +266,10 @@ void ExecuteCommand()
     ledcWrite(4,val);
   }  
   else if (cmd=="servo") {
-    ledcAttachPin(servoPin, 3);  
-    ledcSetup(3, 50, 16);
-    
-    int val = P1.toInt();      
-    if (val > 8000)
-       val = 8000;
-    else if (val < 1700)
-      val = 1700;   
-    val = 1700 + (8000 - val);   
-    ledcWrite(3, val); 
-  }  
-  else if (cmd=="servo1") {
-    ledcAttachPin(servo1Pin, 3);  
-    ledcSetup(3, 50, 16); 
+    int pin = P1.toInt();
+    int channel = P3.toInt();
+    ledcAttachPin(pin, channel);  
+    ledcSetup(channel, 50, 16); 
     
     int val = P1.toInt();     
     if (val > 8000)
@@ -293,20 +277,8 @@ void ExecuteCommand()
     else if (val < 1700)
       val = 1700;   
     val = 1700 + (8000 - val);   
-    ledcWrite(3, val); 
+    ledcWrite(channel, val); 
   }  
-  else if (cmd=="servo2") {
-    ledcAttachPin(servo2Pin, 6);  
-    ledcSetup(6, 50, 16); 
-    
-    int val = P1.toInt();     
-    if (val > 8000)
-       val = 8000;
-    else if (val < 1700)
-      val = 1700;   
-    val = 1700 + (8000 - val);   
-    ledcWrite(6, val); 
-  }
   else if (cmd=="speedL") {
     int val = P1.toInt();
     if (val > 255)
