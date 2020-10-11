@@ -30,15 +30,13 @@ http://192.168.xxx.xxx/control?thingspeakread=request
 --> request = /channels/xxxxx/fields/1.jsoncontrol?results=1
 http://192.168.xxx.xxx/control?linenotify=token;request
 --> request = message=xxxxx
-http://192.168.xxx.xxx/control?flash=value        //vale= 0~255
-http://192.168.xxx.xxx/control?servo=value        //vale= 1700~8000
-http://192.168.xxx.xxx/control?servo1=value       //vale= 1700~8000
-http://192.168.xxx.xxx/control?servo2=value       //vale= 1700~8000
-http://192.168.xxx.xxx/control?speedL=value       //vale= 0~255
-http://192.168.xxx.xxx/control?speedR=value       //vale= 0~255
-http://192.168.xxx.xxx/control?decelerate=value   //vale= 0~100  (%)
-http://192.168.xxx.xxx/control?car=state          //state= 1(Front),2(Left),3(Stop),4(Right),5(Back),6(FrontLeft),7(FrontRight),8(LeftAfter),9(RightAfter)
-http://192.168.xxx.xxx/control?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+http://192.168.xxx.xxx/control?flash=value          //vale= 0~255
+http://192.168.xxx.xxx/control?servo=value;channel  //vale= 1700~8000, channel=9, 10, 11
+http://192.168.xxx.xxx/control?speedL=value         //vale= 0~255
+http://192.168.xxx.xxx/control?speedR=value         //vale= 0~255
+http://192.168.xxx.xxx/control?decelerate=value     //vale= 0~100  (%)
+http://192.168.xxx.xxx/control?car=state            //state= 1(Front),2(Left),3(Stop),4(Right),5(Back),6(FrontLeft),7(FrontRight),8(LeftAfter),9(RightAfter)
+http://192.168.xxx.xxx/control?framesize=size       //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
 STAIP：
 Query：http://192.168.4.1/control?ip
@@ -84,9 +82,6 @@ const char* appassword = "12345678";         //AP password require at least 8 ch
 
 int speedR = 255;  //You can adjust the speed of the wheel. (gpio12, gpio13)
 int speedL = 255;  //You can adjust the speed of the wheel. (gpio14, gpio15)
-int servoPin = 2;
-int servo1Pin = 2;
-int servo2Pin = 13;
 double decelerate = 60;
 
 #include <WiFi.h>
@@ -694,20 +689,10 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         ledcWrite(4,val);  
       }  
       else if (cmd=="servo") {
-        ledcAttachPin(servoPin, 3);  
-        ledcSetup(3, 50, 16);
-        
-        int val = P1.toInt();      
-        if (val > 8000)
-           val = 8000;
-        else if (val < 1700)
-          val = 1700;   
-        val = 1700 + (8000 - val);   
-        ledcWrite(3, val); 
-      }  
-      else if (cmd=="servo1") {
-        ledcAttachPin(servo1Pin, 3);  
-        ledcSetup(3, 50, 16); 
+        int pin = P1.toInt();
+        int channel = P3.toInt();
+        ledcAttachPin(pin, channel);  
+        ledcSetup(channel, 50, 16); 
         
         int val = P1.toInt();     
         if (val > 8000)
@@ -715,20 +700,8 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         else if (val < 1700)
           val = 1700;   
         val = 1700 + (8000 - val);   
-        ledcWrite(3, val); 
-      }  
-      else if (cmd=="servo2") {
-        ledcAttachPin(servo2Pin, 6);  
-        ledcSetup(6, 50, 16); 
-        
-        int val = P1.toInt();     
-        if (val > 8000)
-           val = 8000;
-        else if (val < 1700)
-          val = 1700;   
-        val = 1700 + (8000 - val);   
-        ledcWrite(6, val); 
-      }
+        ledcWrite(channel, val); 
+      } 
       else if (cmd=="speedL") {
         int val = P1.toInt();
         if (val > 255)
