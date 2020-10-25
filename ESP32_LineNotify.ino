@@ -56,7 +56,15 @@ void setup() {
   String message = encodeMessage("message=Taiwan\nI'm a \"Maker\"");
   String emoji = "&stickerPackageId=1&stickerId=2";
   String request = message + emoji;
-  Serial.println(LineNotify(request, 1));  
+  Serial.println(LineNotify(request, 1)); 
+  
+
+  message = encodeMessage("message=Taiwan\nI'm a \"Maker\"");
+  String imageFullsize = "https://video.nextmag.com.tw/photo/2016/04/25/1461565395_f66f-tile_1461575684432_555961_ver1.0.jpg";
+  String imageThumbnail = "https://video.nextmag.com.tw/photo/2016/01/26/B766ENT02-01_1453804306593_487920_ver1.0.jpg";
+  String image = "&imageFullsize="+imageFullsize+"&imageThumbnail="+imageThumbnail;
+  request = message + image;
+  Serial.println(LineNotify(request, 1)); 
 }
 
 void loop()
