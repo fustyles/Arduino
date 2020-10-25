@@ -1,15 +1,15 @@
 /* 
 NodeMCU (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2018-10-09 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-10-25 16:00
 https://www.facebook.com/francefu
 */
 
 #include <WiFi.h>             
 #include <WiFiClientSecure.h>
 
-const char* ssid     = "";   // your network SSID
-const char* password = "";   // your network password
-String token = "";  // LineNotify Token
+const char* ssid     = "*****";   // your network SSID
+const char* password = "*****";   // your network password
+String token = "*****";  // LineNotify Token
 
 void setup() {
   Serial.begin(115200);
@@ -48,25 +48,15 @@ void setup() {
   else
      Serial.println("Unable to connect!"); 
 
-  //Push a message to LineNotify
-  if (WiFi.status() == WL_CONNECTED) {
-    /*
-    request = message=xxxxx
-    request = message=xxxxx&stickerPackageId=xxxxx&stickerId=xxxxx
-    */
-    
-    String request = "message=Taiwan\nI'm a \"Maker\"";
-    request.replace(" ","%20");
-    request.replace("&","%20");
-    request.replace("#","%20");
-    //request.replace("\'","%27");
-    request.replace("\"","%22");
-    request.replace("\n","%0D%0A");
-    
-    request += "&stickerPackageId=1&stickerId=2";
-    String Response = LineNotify(request, 1);
-    Serial.println(Response);
+  if (WiFi.status() != WL_CONNECTED) {
+    ESP.restart();
   }
+  
+  //Push a message to LineNotify
+  String message = encodeMessage("message=Taiwan\nI'm a \"Maker\"");
+  String emoji = "&stickerPackageId=1&stickerId=2";
+  String request = message + emoji;
+  Serial.println(LineNotify(request, 1));  
 }
 
 void loop()
@@ -74,7 +64,7 @@ void loop()
 }
 
 String LineNotify(String request, byte wait)
-{
+{ 
   WiFiClientSecure client_tcp;
   
   if (client_tcp.connect("notify-api.line.me", 443)) 
@@ -118,4 +108,14 @@ String LineNotify(String request, byte wait)
   }
   else
     return "Connection failed";  
+}
+String encodeMessage(String message)
+{
+  message.replace(" ","%20");
+  message.replace("&","%20");
+  message.replace("#","%20");
+  //message.replace("\'","%27");
+  message.replace("\"","%22");
+  message.replace("\n","%0D%0A"); 
+  return message;
 }
