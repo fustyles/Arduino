@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-10-25 16:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-10-25 17:00
 https://www.facebook.com/francefu
 */
 
@@ -53,13 +53,16 @@ void setup() {
   }
   
   //Push a message to LineNotify
-  String message = encodeMessage("message=Taiwan\nI'm a \"Maker\"");
-  String emoji = "&stickerPackageId=1&stickerId=2";
-  String request = message + emoji;
+  String message = encodeMessage("message=Test message\nI'm a \"Maker\"");
+  String request = message;
   Serial.println(LineNotify(request, 1)); 
-  
 
-  message = encodeMessage("message=Taiwan\nI'm a \"Maker\"");
+  message = encodeMessage("message=Test emoji\nI'm a \"Maker\"");    
+  String emoji = "&stickerPackageId=1&stickerId=2";
+  request = message + emoji;
+  Serial.println(LineNotify(request, 1)); 
+
+  message = encodeMessage("message=Test image\nI'm a \"Maker\"");  
   String imageFullsize = "https://video.nextmag.com.tw/photo/2016/04/25/1461565395_f66f-tile_1461575684432_555961_ver1.0.jpg";
   String imageThumbnail = "https://video.nextmag.com.tw/photo/2016/01/26/B766ENT02-01_1453804306593_487920_ver1.0.jpg";
   String image = "&imageFullsize="+imageFullsize+"&imageThumbnail="+imageThumbnail;
