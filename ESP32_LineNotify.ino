@@ -11,7 +11,8 @@ const char* ssid     = "*****";   // your network SSID
 const char* password = "*****";   // your network password
 String token = "*****";  // LineNotify Token
 
-void setup() {
+void setup() 
+{
   Serial.begin(115200);
   delay(10);
   
