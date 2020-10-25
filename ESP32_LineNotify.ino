@@ -109,6 +109,7 @@ String LineNotify(String request, byte wait)
   else
     return "Connection failed";  
 }
+
 String encodeMessage(String message)
 {
   message.replace(" ","%20");
