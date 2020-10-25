@@ -45,10 +45,10 @@ void setup() {
     Serial.println(WiFi.localIP());
     Serial.println();     
   }  
-  else
-     Serial.println("Unable to connect!"); 
-
-  if (WiFi.status() != WL_CONNECTED) {
+  else 
+  {
+    Serial.println("Unable to connect!"); 
+    delay(2000);
     ESP.restart();
   }
   
