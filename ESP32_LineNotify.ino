@@ -57,17 +57,17 @@ void setup() {
   String request = message;
   Serial.println(LineNotify(request, 1)); 
 
-  message = encodeMessage("message=Test emoji\nI'm a \"Maker\"");    
+  String message_emoji = encodeMessage("message=Test emoji\nI'm a \"Maker\"");    
   String emoji = "&stickerPackageId=1&stickerId=2";
-  request = message + emoji;
-  Serial.println(LineNotify(request, 1)); 
+  String request_emoji = message_emoji + emoji;
+  Serial.println(LineNotify(request_emoji, 1)); 
 
-  message = encodeMessage("message=Test image\nI'm a \"Maker\"");  
+  String message_image = encodeMessage("message=Test image\nI'm a \"Maker\"");  
   String imageFullsize = "https://video.nextmag.com.tw/photo/2016/04/25/1461565395_f66f-tile_1461575684432_555961_ver1.0.jpg";
   String imageThumbnail = "https://video.nextmag.com.tw/photo/2016/01/26/B766ENT02-01_1453804306593_487920_ver1.0.jpg";
   String image = "&imageFullsize="+imageFullsize+"&imageThumbnail="+imageThumbnail;
-  request = message + image;
-  Serial.println(LineNotify(request, 1)); 
+  String request_image = message_image + image;
+  Serial.println(LineNotify(request_image, 1)); 
 }
 
 void loop()
