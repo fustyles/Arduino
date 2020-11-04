@@ -31,7 +31,7 @@ http://192.168.xxx.xxx/control?thingspeakread=request
 http://192.168.xxx.xxx/control?linenotify=token;request
 --> request = message=xxxxx
 http://192.168.xxx.xxx/control?flash=value          //vale= 0~255
-http://192.168.xxx.xxx/control?servo=value;channel  //vale= 1700~8000, channel=9, 10, 11
+http://192.168.xxx.xxx/control?servo=pin;value;channel  //vale= 1700~8000, channel=9, 10, 11
 http://192.168.xxx.xxx/control?speedL=value         //vale= 0~255
 http://192.168.xxx.xxx/control?speedR=value         //vale= 0~255
 http://192.168.xxx.xxx/control?decelerate=value     //vale= 0~100  (%)
@@ -692,11 +692,11 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       }  
       else if (cmd=="servo") {
         int pin = P1.toInt();
-        int channel = P2.toInt();
+        int channel = P3.toInt();
         ledcAttachPin(pin, channel);  
         ledcSetup(channel, 50, 16); 
         
-        int val = P1.toInt();     
+        int val = P2.toInt();     
         if (val > 8000)
            val = 8000;
         else if (val < 1700)
