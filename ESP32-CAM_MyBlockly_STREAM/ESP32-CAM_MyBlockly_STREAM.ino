@@ -706,11 +706,11 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       }
       else if (cmd=="servo") {
         int pin = P1.toInt();
-        int channel = P2.toInt();
+        int channel = P3.toInt();
         ledcAttachPin(pin, channel);  
         ledcSetup(channel, 50, 16); 
         
-        int val = P1.toInt();     
+        int val = P2.toInt();     
         if (val > 8000)
            val = 8000;
         else if (val < 1700)
