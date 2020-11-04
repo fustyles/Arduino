@@ -31,7 +31,7 @@ http://192.168.xxx.xxx/control?thingspeakread=request
 http://192.168.xxx.xxx/control?linenotify=token;request
 --> request = message=xxxxx
 http://192.168.xxx.xxx/control?flash=value          //vale= 0~255
-http://192.168.xxx.xxx/control?servo=value;channel  //vale= 1700~8000, channel=9, 10, 11
+http://192.168.xxx.xxx/control?servo=pin;value;channel  //vale= 1700~8000, channel=9, 10, 11
 http://192.168.xxx.xxx/control?speedL=value         //vale= 0~255
 http://192.168.xxx.xxx/control?speedR=value         //vale= 0~255
 http://192.168.xxx.xxx/control?decelerate=value     //vale= 0~100  (%)
