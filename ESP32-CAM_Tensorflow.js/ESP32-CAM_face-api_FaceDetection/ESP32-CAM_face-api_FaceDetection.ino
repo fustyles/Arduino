@@ -1,6 +1,6 @@
 /*
-ESP32-CAM Face Detection (face-api.js)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-16 20:00
+ESP32-CAM 人臉偵測 (face-api.js)
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-11-6 20:00
 https://www.facebook.com/francefu
 
 首頁
@@ -8,8 +8,8 @@ http://APIP
 http://STAIP
 
 自訂指令格式 :  
-http://APIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
-http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+http://APIP?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+http://STAIP?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 
 預設AP端IP： 192.168.4.1
 http://192.168.xxx.xxx?ip
@@ -19,19 +19,25 @@ http://192.168.xxx.xxx?digitalwrite=pin;value
 http://192.168.xxx.xxx?analogwrite=pin;value
 http://192.168.xxx.xxx?flash=value        //value= 0~255 閃光燈
 http://192.168.xxx.xxx?getstill                 //取得視訊影像
-http://192.168.xxx.xxx?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA 改變影像解析度
+http://192.168.xxx.xxx?framesize=size     //size= 10 UXGA|9 SXGA|8 XGA|7 SVGA|6 VGA|5 CIF|4 QVGA|3 HQVGA|0 QQVGA 改變影像解析度
 http://192.168.xxx.xxx?quality=value    // value = 10 to 63
 http://192.168.xxx.xxx?brightness=value    // value = -2 to 2
 http://192.168.xxx.xxx?contrast=value    // value = -2 to 2 
+
+http://192.168.xxx.xxx?telegram_text=text   //傳送文字至Telegram Bot
+http://192.168.xxx.xxx?telegram_image   //傳送影像至Telegram Bot
 
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
 重設網路：http://192.168.4.1/?resetwifi=ssid;password
 */
 
-//輸入WIFI連線帳號密碼
-const char* ssid     = "*****";   //your network SSID
-const char* password = "*****";   //your network password
+//輸入Wi-Fi帳密
+const char* ssid     = "*****";   //Wi-Fi帳號
+const char* password = "*****";   //Wi-Fi密碼
+
+String token = "*****:*****";   // 搜尋fatherbot對話建立bot與取得token -> https://telegram.me/fatherbot
+String chat_id = "*****";   //搜尋chatid_echo_bot對話取得chat_id -> https://telegram.me/chatid_echo_bot
 
 //輸入AP端連線帳號密碼
 const char* apssid = "ESP32-CAM";
@@ -81,7 +87,8 @@ void ExecuteCommand()
     Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
     Serial.println("");
   }
-  
+
+  //自訂指令區
   if (cmd=="your cmd") {
     // You can do anything.
     // Feedback="<font color=\"red\">Hello World</font>";
@@ -94,7 +101,7 @@ void ExecuteCommand()
   else if (cmd=="mac") {
     Feedback="STA MAC: "+WiFi.macAddress();
   }  
-  else if (cmd=="resetwifi") {  //重設WIFI連線
+  else if (cmd=="resetwifi") {
     WiFi.begin(P1.c_str(), P2.c_str());
     Serial.print("Connecting to ");
     Serial.println(P1);
@@ -137,23 +144,23 @@ void ExecuteCommand()
   }  
   else if (cmd=="framesize") { 
     sensor_t * s = esp_camera_sensor_get();  
-    if (P1=="QQVGA")
+    if (P1=="0")
       s->set_framesize(s, FRAMESIZE_QQVGA);
-    else if (P1=="HQVGA")
+    else if (P1=="3")
       s->set_framesize(s, FRAMESIZE_HQVGA);
-    else if (P1=="QVGA")
+    else if (P1=="4")
       s->set_framesize(s, FRAMESIZE_QVGA);
-    else if (P1=="CIF")
+    else if (P1=="5")
       s->set_framesize(s, FRAMESIZE_CIF);
-    else if (P1=="VGA")
+    else if (P1=="6")
       s->set_framesize(s, FRAMESIZE_VGA);  
-    else if (P1=="SVGA")
+    else if (P1=="7")
       s->set_framesize(s, FRAMESIZE_SVGA);
-    else if (P1=="XGA")
+    else if (P1=="8")
       s->set_framesize(s, FRAMESIZE_XGA);
-    else if (P1=="SXGA")
+    else if (P1=="9")
       s->set_framesize(s, FRAMESIZE_SXGA);
-    else if (P1=="UXGA")
+    else if (P1=="10")
       s->set_framesize(s, FRAMESIZE_UXGA);           
     else 
       s->set_framesize(s, FRAMESIZE_QVGA);     
@@ -172,7 +179,13 @@ void ExecuteCommand()
     sensor_t * s = esp_camera_sensor_get();
     int val = P1.toInt();  
     s->set_brightness(s, val);  
-  }   
+  }
+  else if (cmd=="telegram_text") {   //傳送文字至Telegram Bot
+    sendMessage2Telegram(token, chat_id, P1); 
+  }  
+  else if (cmd=="telegram_image") {   //傳送影像至Telegram Bot
+    sendCapturedImage2Telegram(token, chat_id);  
+  }  
   else {
     Feedback="Command is not defined.";
   }
@@ -296,6 +309,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
   <script src='https:\/\/fustyles.github.io/webduino/TensorFlow/Face-api/face-api.min.js'></script>
   </head><body>
   <div id="container"></div>
@@ -359,9 +373,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     </td>
   </tr>  
   </table>
-  <iframe id="ifr" style="display:none"></iframe>
   <div id="message" style="color:red">Please wait for loading model.<div>
-
   </body>
   </html> 
   
@@ -373,7 +385,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var mirrorimage = document.getElementById("mirrorimage");  
     var message = document.getElementById('message');
     var flash = document.getElementById('flash'); 
-    var ifr = document.getElementById('ifr');
     var myTimer;
     var restartCount=0;
 
@@ -405,9 +416,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       restartCount++;
       clearInterval(myTimer);
       if (restartCount<=2) {
-        message.innerHTML = "Get still error. <br>Restart ESP32-CAM "+restartCount+" times.";
-        myTimer = setInterval(function(){getStill.click();},10000);
-        //ifr.src = document.location.origin+'?restart';
+        //message.innerHTML = "Get still error. <br>Restart ESP32-CAM "+restartCount+" times.";
+        myTimer = setInterval(function(){getStill.click();},6000);
       }
       else
         message.innerHTML = "Get still error. <br>Please close the page and check ESP32-CAM.";
@@ -495,6 +505,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           maxEmotion="surprised";
         }
 
+        //當可能性最大的表情是happy時
+        if (maxEmotion=="happy") {
+          $.ajax({url: document.location.origin+'?telegram_image', async: false});    //傳送影像
+          $.ajax({url: document.location.origin+'?telegram_text='+maxEmotion, async: false});    //傳送文字
+        }
+
         message.innerHTML+= i+",age,"+Math.round(age)+",gender,"+gender+",genderProbability,"+Round(genderProbability)+",emotion,"+maxEmotion+",neutral,"+Round(expressions.neutral)+",happy,"+Round(expressions.happy)+",sad,"+Round(expressions.sad)+",angry,"+Round(expressions.angry)+",fearful,"+Round(expressions.fearful)+",disgusted,"+Round(expressions.disgusted)+",surprised,"+Round(expressions.surprised)+",boxX,"+Round(detection._box._x)+",boxY,"+Round(detection._box._y)+",boxWidth,"+Round(detection._box._width)+",boxHeight,"+Round(detection._box._height)+"<br>";
                 
         new faceapi.draw.DrawTextField(
@@ -520,8 +536,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     }      
   </script>   
 )rawliteral";
-
-
 
 void loop() {
   Feedback="";Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
@@ -658,4 +672,142 @@ void getCommand(char c)
     if (c=='=') equalstate=1;
     if ((strState>=9)&&(c==';')) semicolonstate=1;
   }
+}
+
+//傳送影像至Telegram
+String sendCapturedImage2Telegram(String token, String chat_id) {
+  const char* myDomain = "api.telegram.org";
+  String getAll="", getBody = "";
+
+  camera_fb_t * fb = NULL;
+  fb = esp_camera_fb_get();  
+  if(!fb) {
+    Serial.println("Camera capture failed");
+    delay(1000);
+    ESP.restart();
+    return "Camera capture failed";
+  }  
+  
+  Serial.println("Connect to " + String(myDomain));
+  WiFiClientSecure client_tcp;
+  
+  if (client_tcp.connect(myDomain, 443)) {
+    Serial.println("Connection successful");
+    
+    String head = "--Taiwan\r\nContent-Disposition: form-data; name=\"chat_id\"; \r\n\r\n" + chat_id + "\r\n--Taiwan\r\nContent-Disposition: form-data; name=\"photo\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
+    String tail = "\r\n--Taiwan--\r\n";
+
+    uint16_t imageLen = fb->len;
+    uint16_t extraLen = head.length() + tail.length();
+    uint16_t totalLen = imageLen + extraLen;
+  
+    client_tcp.println("POST /bot"+token+"/sendPhoto HTTP/1.1");
+    client_tcp.println("Host: " + String(myDomain));
+    client_tcp.println("Content-Length: " + String(totalLen));
+    client_tcp.println("Content-Type: multipart/form-data; boundary=Taiwan");
+    client_tcp.println();
+    client_tcp.print(head);
+  
+    uint8_t *fbBuf = fb->buf;
+    size_t fbLen = fb->len;
+    for (size_t n=0;n<fbLen;n=n+1024) {
+      if (n+1024<fbLen) {
+        client_tcp.write(fbBuf, 1024);
+        fbBuf += 1024;
+      }
+      else if (fbLen%1024>0) {
+        size_t remainder = fbLen%1024;
+        client_tcp.write(fbBuf, remainder);
+      }
+    }  
+    
+    client_tcp.print(tail);
+    
+    esp_camera_fb_return(fb);
+    
+    int waitTime = 10000;   // timeout 10 seconds
+    long startTime = millis();
+    boolean state = false;
+    
+    while ((startTime + waitTime) > millis())
+    {
+      Serial.print(".");
+      delay(100);      
+      while (client_tcp.available()) 
+      {
+          char c = client_tcp.read();
+          if (c == '\n') 
+          {
+            if (getAll.length()==0) state=true; 
+            getAll = "";
+          } 
+          else if (c != '\r')
+            getAll += String(c);
+          if (state==true) getBody += String(c);
+          startTime = millis();
+       }
+       if (getBody.length()>0) break;
+    }
+    client_tcp.stop();
+    Serial.println(getBody);
+  }
+  else {
+    getBody="Connected to api.telegram.org failed.";
+    Serial.println("Connected to api.telegram.org failed.");
+  }
+  
+  return getBody;
+}
+
+//傳送文字至Telegram
+String sendMessage2Telegram(String token, String chat_id, String text) {
+  const char* myDomain = "api.telegram.org";
+  String getAll="", getBody = "";
+  
+  Serial.println("Connect to " + String(myDomain));
+  WiFiClientSecure client_tcp;
+  
+  if (client_tcp.connect(myDomain, 443)) {
+    Serial.println("Connection successful");
+
+    String message = "chat_id="+chat_id+"&text="+text;
+    client_tcp.println("POST /bot"+token+"/sendMessage HTTP/1.1");
+    client_tcp.println("Host: " + String(myDomain));
+    client_tcp.println("Content-Length: " + String(message.length()));
+    client_tcp.println("Content-Type: application/x-www-form-urlencoded");
+    client_tcp.println();
+    client_tcp.print(message);
+    
+    int waitTime = 10000;   // timeout 10 seconds
+    long startTime = millis();
+    boolean state = false;
+    
+    while ((startTime + waitTime) > millis())
+    {
+      Serial.print(".");
+      delay(100);      
+      while (client_tcp.available()) 
+      {
+          char c = client_tcp.read();
+          if (c == '\n') 
+          {
+            if (getAll.length()==0) state=true; 
+            getAll = "";
+          } 
+          else if (c != '\r')
+            getAll += String(c);
+          if (state==true) getBody += String(c);
+          startTime = millis();
+       }
+       if (getBody.length()>0) break;
+    }
+    client_tcp.stop();
+    Serial.println(getBody);
+  }
+  else {
+    getBody="Connected to api.telegram.org failed.";
+    Serial.println("Connected to api.telegram.org failed.");
+  }
+  
+  return getBody;
 }
