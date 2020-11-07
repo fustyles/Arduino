@@ -1,9 +1,9 @@
 /*
 ESP32-CAM Face Recognition (face-api.js)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-18 00:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-11-6 00:30
 https://www.facebook.com/francefu
 
-The canvas in Chrome will cause memory leak if it detects face continuously.
+The canvas in Chrome will cause memory leak if it recognizes face continuously.
 
 Easy Face Recognition Tutorial With JavaScript
 https://www.youtube.com/watch?v=AZ4PdALMqx0
@@ -29,14 +29,21 @@ http://192.168.xxx.xxx?quality=value    // value = 10 to 63
 http://192.168.xxx.xxx?brightness=value    // value = -2 to 2
 http://192.168.xxx.xxx?contrast=value    // value = -2 to 2 
 
+http://192.168.xxx.xxx?telegram_text=text
+http://192.168.xxx.xxx?telegram_image
+http://192.168.xxx.xxx?servo=pin;value;channel
+
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
 重設網路：http://192.168.4.1/?resetwifi=ssid;password
 */
 
-//輸入WIFI連線帳號密碼
-const char* ssid     = "*****";   //your network SSID
-const char* password = "*****";   //your network password
+//輸入Wi-Fi帳密
+const char* ssid     = "*****";   //Wi-Fi帳號
+const char* password = "*****";   //Wi-Fi密碼
+
+String token = "*****:*****";   // 搜尋fatherbot對話建立bot與取得token -> https://telegram.me/fatherbot
+String chat_id = "*****";   //搜尋chatid_echo_bot對話取得chat_id -> https://telegram.me/chatid_echo_bot
 
 //輸入AP端連線帳號密碼
 const char* apssid = "ESP32-CAM";
@@ -87,6 +94,7 @@ void ExecuteCommand()
     Serial.println("");
   }
   
+  //自訂指令區
   if (cmd=="your cmd") {
     // You can do anything.
     // Feedback="<font color=\"red\">Hello World</font>";
@@ -177,7 +185,27 @@ void ExecuteCommand()
     sensor_t * s = esp_camera_sensor_get();
     int val = P1.toInt();  
     s->set_brightness(s, val);  
-  }   
+  } 
+  else if (cmd=="telegram_text") {
+    sendMessage2Telegram(token, chat_id, P1); 
+  }  
+  else if (cmd=="telegram_image") {
+    sendCapturedImage2Telegram(token, chat_id);  
+  }
+  else if (cmd=="servo") {
+    int pin = P1.toInt();
+    int channel = P3.toInt();
+    ledcAttachPin(pin, channel);  
+    ledcSetup(channel, 50, 16); 
+    
+    int val = P2.toInt();     
+    if (val > 8000)
+       val = 8000;
+    else if (val < 1700)
+      val = 1700;   
+    val = 1700 + (8000 - val);   
+    ledcWrite(channel, val); 
+  }  
   else {
     Feedback="Command is not defined.";
   }
@@ -301,17 +329,18 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
   <script src='https:\/\/fustyles.github.io/webduino/TensorFlow/Face-api/face-api.min.js'></script>
   </head><body>
   <div id="container"></div>
   <img id="ShowImage" src="" style="display:none">
   <canvas id="canvas"></canvas>
-  <canvas id="canvas_detect" style="display:none"></canvas>
+  <canvas id="canvas_recognize" style="display:none"></canvas>
   <table>
   <tr>
     <td><input type="button" id="restart" value="Restart"></td> 
     <td><input type="button" id="getStill" value="Get Still"></td>
-    <td><input type="checkbox" id="detect">detect</td> 
+    <td><input type="button" id="recognize" value="Recognize"></td> 
   </tr>
   <tr>
     <td>MirrorImage</td> 
@@ -366,17 +395,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     </td>
   </tr>  
   </table>
-  <iframe id="ifr" style="display:none"></iframe>
   <div id="message" style="color:red">Please wait for loading model.<div>
   </body>
   </html> 
   
   <script>
-    const faceImagesPath = 'https://fustyles.github.io/webduino/TensorFlow/Face-api/facelist/'; 
-    const faceLabels = ['France', 'Terry'];
-    faceImagesCount = 2 ;
-    // LabelName/n.jpg  -->  France/1.jpg, France/2.jpg, Terry/1.jpg, Terry/2.jpg
-    const distanceLimit = 0.4;
+    const faceImagesPath = 'https://fustyles.github.io/webduino/TensorFlow/Face-api/facelist/';     //人名命名的資料夾路徑
+    const faceLabels = ['France', 'Terry'];     //人名命名的資料夾列表
+    faceImagesCount = 2 ;                       //每個人名命名的資料夾內的照片數，以流水編號命名JPG圖檔 1.jpg, 2.jpg...
+    const distanceLimit = 0.4;                  //距離上限，若超過此值則顯示unknow，否則顯示人名
     
     const modelPath = 'https://fustyles.github.io/webduino/TensorFlow/Face-api/';
     //Model: https://github.com/fustyles/webduino/tree/master/TensorFlow/Face-api
@@ -388,15 +415,16 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var ShowImage = document.getElementById('ShowImage');
     var canvas = document.getElementById("canvas");
     var context = canvas.getContext("2d");
-    var canvas_detect = document.getElementById("canvas_detect");
-    var context_detect = canvas_detect.getContext("2d");    
-    var detect = document.getElementById('detect'); 
+    var canvas_recognize = document.getElementById("canvas_recognize");
+    var context_recognize = canvas_recognize.getContext("2d");    
+    var recognize = document.getElementById('recognize'); 
     var mirrorimage = document.getElementById("mirrorimage");  
     var message = document.getElementById('message');
     var flash = document.getElementById('flash'); 
-    var ifr = document.getElementById('ifr');
     var myTimer;
     var restartCount=0;
+    var RecognizeState = false;
+    
     Promise.all([
       faceapi.nets.faceLandmark68Net.load(modelPath),
       faceapi.nets.faceRecognitionNet.load(modelPath),
@@ -411,17 +439,18 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       myTimer = setInterval(function(){error_handle();},5000);
       ShowImage.src=location.origin+'/?getstill='+Math.random();
     }
+    
     function error_handle() {
       restartCount++;
       clearInterval(myTimer);
       if (restartCount<=2) {
-        message.innerHTML = "Get still error. <br>Restart ESP32-CAM "+restartCount+" times.";
-        myTimer = setInterval(function(){getStill.click();},10000);
-        //ifr.src = document.location.origin+'?restart';
+        //message.innerHTML = "Get still error. <br>Restart ESP32-CAM "+restartCount+" times.";
+        myTimer = setInterval(function(){getStill.click();},6000);
       }
       else
         message.innerHTML = "Get still error. <br>Please close the page and check ESP32-CAM.";
     }    
+    
     ShowImage.onload = function (event) {
       clearInterval(myTimer);
       restartCount=0;      
@@ -437,9 +466,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       else
         context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height);
       
-      DetectImage();       
-    }     
-    
+      recognizeImage();       
+    } 
+        
+    recognize.onclick = function (event) {
+      RecognizeState = true;
+    } 
     restart.onclick = function (event) {
       fetch(location.origin+'/?restart=stop');
     }    
@@ -458,13 +490,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     contrast.onclick = function (event) {
       fetch(document.location.origin+'/?contrast='+this.value+';stop');
     }    
-    async function DetectImage() {
-      if (detect.checked) {
+    async function recognizeImage() {
+      if (RecognizeState == true) {
         canvas.style.display="none";
-        canvas_detect.style.display="block";
-        canvas_detect.setAttribute("width", canvas.width);
-        canvas_detect.setAttribute("height", canvas.height); 
-        context_detect.drawImage(canvas,0,0,canvas.width,canvas.height);
+        canvas_recognize.style.display="block";
+        canvas_recognize.setAttribute("width", canvas.width);
+        canvas_recognize.setAttribute("height", canvas.height); 
+        context_recognize.drawImage(canvas,0,0,canvas.width,canvas.height);
         let displaySize = { width:canvas.width, height: canvas.height }
   
         if (!labeledFaceDescriptors) {
@@ -472,25 +504,29 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           labeledFaceDescriptors = await loadLabeledImages();
           faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, distanceLimit)
         }
-        const detections = await faceapi.detectAllFaces(canvas_detect).withFaceLandmarks().withFaceDescriptors();
+        const detections = await faceapi.detectAllFaces(canvas_recognize).withFaceLandmarks().withFaceDescriptors();
         const resizedDetections = faceapi.resizeResults(detections, displaySize);
   
         const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
         message.innerHTML = JSON.stringify(results);
       
         results.forEach((result, i) => {
+
+          //辨識到人名傳送至Telegram，並控制伺服馬達開門
+          if (result.label=="Your name") {
+            //
+          }
+          
           const box = resizedDetections[i].detection.box
-          var drawBox;
-          //if (result.distance<=distanceLimit)
-            drawBox = new faceapi.draw.DrawBox(box, { label: result.toString()})
-          //else
-          //  drawBox = new faceapi.draw.DrawBox(box, { label: (Math.round(result.distance*100)/100).toString()})
-          drawBox.draw(canvas_detect);
+          var drawBox = new faceapi.draw.DrawBox(box, { label: result.toString()})
+          drawBox.draw(canvas_recognize);
         }) 
+        
+        RecognizeState = false;
       }
       else {
         canvas.style.display="block";
-        canvas_detect.style.display="none";
+        canvas_recognize.style.display="none";
       }
             
       try { 
@@ -516,8 +552,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     }     
   </script>   
 )rawliteral";
-
-
 
 void loop() {
   Feedback="";Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
@@ -654,4 +688,142 @@ void getCommand(char c)
     if (c=='=') equalstate=1;
     if ((strState>=9)&&(c==';')) semicolonstate=1;
   }
+}
+
+//傳送影像至Telegram
+String sendCapturedImage2Telegram(String token, String chat_id) {
+  const char* myDomain = "api.telegram.org";
+  String getAll="", getBody = "";
+
+  camera_fb_t * fb = NULL;
+  fb = esp_camera_fb_get();  
+  if(!fb) {
+    Serial.println("Camera capture failed");
+    delay(1000);
+    ESP.restart();
+    return "Camera capture failed";
+  }  
+  
+  Serial.println("Connect to " + String(myDomain));
+  WiFiClientSecure client_tcp;
+  
+  if (client_tcp.connect(myDomain, 443)) {
+    Serial.println("Connection successful");
+    
+    String head = "--Taiwan\r\nContent-Disposition: form-data; name=\"chat_id\"; \r\n\r\n" + chat_id + "\r\n--Taiwan\r\nContent-Disposition: form-data; name=\"photo\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
+    String tail = "\r\n--Taiwan--\r\n";
+
+    uint16_t imageLen = fb->len;
+    uint16_t extraLen = head.length() + tail.length();
+    uint16_t totalLen = imageLen + extraLen;
+  
+    client_tcp.println("POST /bot"+token+"/sendPhoto HTTP/1.1");
+    client_tcp.println("Host: " + String(myDomain));
+    client_tcp.println("Content-Length: " + String(totalLen));
+    client_tcp.println("Content-Type: multipart/form-data; boundary=Taiwan");
+    client_tcp.println();
+    client_tcp.print(head);
+  
+    uint8_t *fbBuf = fb->buf;
+    size_t fbLen = fb->len;
+    for (size_t n=0;n<fbLen;n=n+1024) {
+      if (n+1024<fbLen) {
+        client_tcp.write(fbBuf, 1024);
+        fbBuf += 1024;
+      }
+      else if (fbLen%1024>0) {
+        size_t remainder = fbLen%1024;
+        client_tcp.write(fbBuf, remainder);
+      }
+    }  
+    
+    client_tcp.print(tail);
+    
+    esp_camera_fb_return(fb);
+    
+    int waitTime = 10000;   // timeout 10 seconds
+    long startTime = millis();
+    boolean state = false;
+    
+    while ((startTime + waitTime) > millis())
+    {
+      Serial.print(".");
+      delay(100);      
+      while (client_tcp.available()) 
+      {
+          char c = client_tcp.read();
+          if (c == '\n') 
+          {
+            if (getAll.length()==0) state=true; 
+            getAll = "";
+          } 
+          else if (c != '\r')
+            getAll += String(c);
+          if (state==true) getBody += String(c);
+          startTime = millis();
+       }
+       if (getBody.length()>0) break;
+    }
+    client_tcp.stop();
+    Serial.println(getBody);
+  }
+  else {
+    getBody="Connected to api.telegram.org failed.";
+    Serial.println("Connected to api.telegram.org failed.");
+  }
+  
+  return getBody;
+}
+
+//傳送文字至Telegram
+String sendMessage2Telegram(String token, String chat_id, String text) {
+  const char* myDomain = "api.telegram.org";
+  String getAll="", getBody = "";
+  
+  Serial.println("Connect to " + String(myDomain));
+  WiFiClientSecure client_tcp;
+  
+  if (client_tcp.connect(myDomain, 443)) {
+    Serial.println("Connection successful");
+
+    String message = "chat_id="+chat_id+"&text="+text;
+    client_tcp.println("POST /bot"+token+"/sendMessage HTTP/1.1");
+    client_tcp.println("Host: " + String(myDomain));
+    client_tcp.println("Content-Length: " + String(message.length()));
+    client_tcp.println("Content-Type: application/x-www-form-urlencoded");
+    client_tcp.println();
+    client_tcp.print(message);
+    
+    int waitTime = 10000;   // timeout 10 seconds
+    long startTime = millis();
+    boolean state = false;
+    
+    while ((startTime + waitTime) > millis())
+    {
+      Serial.print(".");
+      delay(100);      
+      while (client_tcp.available()) 
+      {
+          char c = client_tcp.read();
+          if (c == '\n') 
+          {
+            if (getAll.length()==0) state=true; 
+            getAll = "";
+          } 
+          else if (c != '\r')
+            getAll += String(c);
+          if (state==true) getBody += String(c);
+          startTime = millis();
+       }
+       if (getBody.length()>0) break;
+    }
+    client_tcp.stop();
+    Serial.println(getBody);
+  }
+  else {
+    getBody="Connected to api.telegram.org failed.";
+    Serial.println("Connected to api.telegram.org failed.");
+  }
+  
+  return getBody;
 }
