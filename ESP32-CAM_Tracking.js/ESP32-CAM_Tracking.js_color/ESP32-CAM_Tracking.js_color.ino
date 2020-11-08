@@ -645,7 +645,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         //context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
         //context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
 
-        //回傳辨識結果，網址後要加";stop可加快立即斷線減少執行等待時間"
+        //回傳辨識結果，網址後要加 ";stop" 可加快立即斷線減少執行等待時間
         $.ajax({url:document.location.origin+'?serial='+rect.color+";"+rect.x+";"+rect.y+";"+rect.width+";"+rect.height+';stop', async: false});
         
         result.innerHTML+= rect.color+","+rect.x+","+rect.y+","+rect.width+","+rect.height+"<br>";
