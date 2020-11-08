@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Face Recognition (face-api.js)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-11-6 00:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-11-8 12:30
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
@@ -558,6 +558,9 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         int val = P1.toInt();
         ledcWrite(4,val);  
       }
+      else if (cmd=="serial") {  //控制內建閃光燈
+        Serial.println(P1);  
+      }      
       else {
         Feedback="Command is not defined";
       }
@@ -938,10 +941,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
       
         results.forEach((result, i) => {
 
-          //辨識到人名傳送至Telegram，並控制伺服馬達開門
-          if (result.label=="your name") {
-            //
-          }
+          //回傳辨識結果
+          $.ajax({url: document.location.origin+'/control?serial='+result.label, async: false});    //控制Servo轉動
           
           const box = resizedDetections[i].detection.box
           var drawBox = new faceapi.draw.DrawBox(box, { label: result.toString()})
