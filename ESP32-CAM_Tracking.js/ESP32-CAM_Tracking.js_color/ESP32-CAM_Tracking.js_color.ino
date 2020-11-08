@@ -40,12 +40,12 @@ http://192.168.xxx.xxx?sendCapturedImageToLineNotify=token  //傳送影像截圖
 */
 
 //輸入WIFI連線帳號密碼
-const char* ssid     = "*****";   //your network SSID
-const char* password = "*****";   //your network password
+const char* ssid     = "*****";   //Wi-Fi帳號
+const char* password = "*****";   //Wi-Fi密碼
 
 //輸入AP端連線帳號密碼
-const char* apssid = "ESP32-CAM";
-const char* appassword = "12345678";    //AP端密碼至少要八個字元以上
+const char* apssid = "ESP32-CAM";   //可自訂名稱於WiFi熱點清單中顯示名稱與區網IP
+const char* appassword = "12345678";    //AP密碼至少要8個字元以上
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -186,34 +186,17 @@ void ExecuteCommand()
   else if (cmd=="detectCount") {
     Serial.println(P1+" = "+P2); 
   }
-  else if (cmd=="tcp") {
-    String domain=P1;
-    int port=P2.toInt();
-    String request=P3;
-    int wait=P4.toInt();      // wait = 0 or 1
-
-    if ((port==443)||(domain.indexOf("https")==0)||(domain.indexOf("HTTPS")==0))
-      Feedback=tcp_https(domain,request,port,wait);
-    else
-      Feedback=tcp_http(domain,request,port,wait);  
-  }
-  else if (cmd=="linenotify") {    //message=xxx&stickerPackageId=xxx&stickerId=xxx
-    String token = P1;
-    String request = P2;
-    Feedback=LineNotify(token,request,1);
-    if (Feedback.indexOf("status")!=-1) {
-      int s=Feedback.indexOf("{");
-      Feedback=Feedback.substring(s);
-      int e=Feedback.indexOf("}");
-      Feedback=Feedback.substring(0,e);
-      Feedback.replace("\"","");
-      Feedback.replace("{","");
-      Feedback.replace("}","");
-    }
-  }
-  else if (cmd=="sendCapturedImageToLineNotify") { 
-    Feedback=sendCapturedImageToLineNotify(P1);
-    if (Feedback=="") Feedback="The image failed to send. <br>The framesize may be too large.";
+  else if (cmd=="serial") { 
+    if (P1!=""&P1!="stop") Serial.println(P1);
+    if (P2!=""&P2!="stop") Serial.println(P2);
+    if (P3!=""&P3!="stop") Serial.println(P3);
+    if (P4!=""&P4!="stop") Serial.println(P4);
+    if (P5!=""&P5!="stop") Serial.println(P5);
+    if (P6!=""&P6!="stop") Serial.println(P6);
+    if (P7!=""&P7!="stop") Serial.println(P7);
+    if (P8!=""&P8!="stop") Serial.println(P8);
+    if (P9!=""&P9!="stop") Serial.println(P9);
+    Serial.println();
   } 
   else {
     Feedback="Command is not defined.";
@@ -350,160 +333,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     <td colspan="2"><input type="button" id="getStill" value="Start Detection"><input type="checkbox" id="showpix" value="Show Pixel" onclick="if (this.checked) canvas_custom.style.display='block'; else canvas_custom.style.display='none';">Show Pixel</td>
   </tr>
   <tr>
-    <td style="border:2px red solid;"><a style="color:red;" onclick="changeTab('red');">Tab(Red)</a>
-    <td style="border:2px green solid;"><a style="color:green" onclick="changeTab('green');">Tab(Green)</a></td>
-    <td style="border:2px blue solid;"><a style="color:blue" onclick="changeTab('blue');">Tab(Blue)</a></td>
+    <td style="border:2px red solid;"><a style="color:red;" onclick="changeTab('red');">Rect (Red)</a>
+    <td style="border:2px green solid;"><a style="color:green" onclick="changeTab('green');">Rect (Green)</a></td>
+    <td style="border:2px blue solid;"><a style="color:blue" onclick="changeTab('blue');">Rect (Blue)</a></td>
   </td>
   </tr>
   <tr>
     <td colspan="3">
     <div id="divColor1">
-      <table style="border:2px red solid;"><tr>
-        <td colspan="2">
-        <select id="myColor1" onchange="changeColor(this.options[this.selectedIndex].text,1);">
-        <option value="Black">Black_0,0,0</option>
-        <option value="AliceBlue">AliceBlue_240,248,255</option>
-        <option value="AntiqueWhite">AntiqueWhite_250,235,215</option>
-        <option value="Aqua">Aqua_0,255,255</option>
-        <option value="Aquamarine">Aquamarine_127,255,212</option>
-        <option value="Azure">Azure_240,255,255</option>
-        <option value="Beige">Beige_245,245,220</option>
-        <option value="Bisque">Bisque_255,228,196</option>
-        <option value="BlanchedAlmond">BlanchedAlmond_255,235,205</option>
-        <option value="Blue">Blue_0,0,255</option>
-        <option value="BlueViolet">BlueViolet_138,43,226</option>
-        <option value="Brown">Brown_165,42,42</option>
-        <option value="Burlywood">Burlywood_222,184,135</option>
-        <option value="CadetBlue">CadetBlue_95,158,160</option>
-        <option value="Chartreuse">Chartreuse_127,255,0</option>
-        <option value="Chocolate">Chocolate_210,105,30</option>
-        <option value="Coral">Coral_255,127,80</option>
-        <option value="CornflowerBlue">CornflowerBlue_100,149,237</option>
-        <option value="Cornsilk">Cornsilk_255,248,220</option>
-        <option value="Crimson">Crimson_220,20,60</option>
-        <option value="Cyan">Cyan_0,255,255</option>
-        <option value="DarkBlue">DarkBlue_0,0,139</option>
-        <option value="DarkCyan">DarkCyan_0,139,139</option>
-        <option value="DarkGoldenrod">DarkGoldenrod_184,134,11</option>
-        <option value="DarkGray">DarkGray_169,169,169</option>
-        <option value="DarkGreen">DarkGreen_0,100,0</option>
-        <option value="DarkKhaki">DarkKhaki_189,183,107</option>
-        <option value="DarkMagenta">DarkMagenta_139,0,139</option>
-        <option value="DarkOliveGreen">DarkOliveGreen_85,107,47</option>
-        <option value="DarkOrange">DarkOrange_255,140,0</option>
-        <option value="DarkOrchid">DarkOrchid_153,50,204</option>
-        <option value="DarkRed">DarkRed_139,0,0</option>
-        <option value="DarkSalmon">DarkSalmon_233,150,122</option>
-        <option value="DarkSeaGreen">DarkSeaGreen_143,188,143</option>
-        <option value="DarkSlateBlue">DarkSlateBlue_72,61,139</option>
-        <option value="DarkSlateGray">DarkSlateGray_47,79,79</option>
-        <option value="DarkTurquoise">DarkTurquoise_0,206,209</option>
-        <option value="DarkViolet">DarkViolet_148,0,211</option>
-        <option value="DeepPink">DeepPink_255,20,147</option>
-        <option value="DeepSkyBlue">DeepSkyBlue_0,191,255</option>
-        <option value="DimGray">DimGray_105,105,105</option>
-        <option value="DodgerBlue">DodgerBlue_30,144,255</option>
-        <option value="Firebrick">Firebrick_178,34,34</option>
-        <option value="FloralWhite">FloralWhite_255,250,240</option>
-        <option value="ForestGreen">ForestGreen_34,139,34</option>
-        <option value="Fuchsia">Fuchsia_255,0,255</option>
-        <option value="Gainsboro">Gainsboro_220,220,220</option>
-        <option value="GhostWhite">GhostWhite_248,248,255</option>
-        <option value="Gold">Gold_255,215,0</option>
-        <option value="Goldenrod">Goldenrod_218,165,32</option>
-        <option value="Gray">Gray_128,128,128</option>
-        <option value="Green">Green_0,128,0</option>
-        <option value="GreenYellow">GreenYellow_173,255,47</option>
-        <option value="Honeydew">Honeydew_240,255,240</option>
-        <option value="HotPink">HotPink_255,105,180</option>
-        <option value="IndianRed">IndianRed_205,92,92</option>
-        <option value="Indigo">Indigo_75,0,130</option>
-        <option value="Ivory">Ivory_255,255,240</option>
-        <option value="Khaki">Khaki_240,230,140</option>
-        <option value="Lavender">Lavender_230,230,250</option>
-        <option value="LavenderBlush">LavenderBlush_255,240,245</option>
-        <option value="LawnGreen">LawnGreen_124,252,0</option>
-        <option value="LemonChiffon">LemonChiffon_255,250,205</option>
-        <option value="LightBlue">LightBlue_173,216,230</option>
-        <option value="LightCoral">LightCoral_240,128,128</option>
-        <option value="LightCyan">LightCyan_224,255,255</option>
-        <option value="LightGoldenrodYellow">LightGoldenrodYellow_250,250,210</option>
-        <option value="LightGray">LightGray_211,211,211</option>
-        <option value="LightGreen">LightGreen_144,238,144</option>
-        <option value="LightPink">LightPink_255,182,193</option>
-        <option value="LightSalmon">LightSalmon_255,160,122</option>
-        <option value="LightSeaGreen">LightSeaGreen_32,178,170</option>
-        <option value="LightSkyBlue">LightSkyBlue_135,206,250</option>
-        <option value="LightSlateGray">LightSlateGray_119,136,153</option>
-        <option value="LightSteelBlue">LightSteelBlue_176,196,222</option>
-        <option value="LightYellow">LightYellow_255,255,224</option>
-        <option value="Lime">Lime_0,255,0</option>
-        <option value="LimeGreen">LimeGreen_50,205,50</option>
-        <option value="Linen">Linen_250,240,230</option>
-        <option value="Magenta">Magenta_255,0,255</option>
-        <option value="Maroon">Maroon_128,0,0</option>
-        <option value="MediumAquamarine">MediumAquamarine_102,205,170</option>
-        <option value="MediumBlue">MediumBlue_0,0,205</option>
-        <option value="MediumOrchid">MediumOrchid_186,85,211</option>
-        <option value="MediumPurple">MediumPurple_147,112,219</option>
-        <option value="MediumSeaGreen">MediumSeaGreen_60,179,113</option>
-        <option value="MediumSlateBlue">MediumSlateBlue_123,104,238</option>
-        <option value="MediumSpringGreen">MediumSpringGreen_0,250,154</option>
-        <option value="MediumTurquoise">MediumTurquoise_72,209,204</option>
-        <option value="MediumVioletRed">MediumVioletRed_199,21,133</option>
-        <option value="MidnightBlue">MidnightBlue_25,25,112</option>
-        <option value="MintCream">MintCream_245,255,250</option>
-        <option value="MistyRose">MistyRose_255,228,225</option>
-        <option value="Moccasin">Moccasin_255,228,181</option>
-        <option value="NavajoWhite">NavajoWhite_255,222,173</option>
-        <option value="Navy">Navy_0,0,128</option>
-        <option value="OldLace">OldLace_253,245,230</option>
-        <option value="Olive">Olive_128,128,0</option>
-        <option value="OliveDrab">OliveDrab_107,142,35</option>
-        <option value="Orange">Orange_255,165,0</option>
-        <option value="OrangeRed">OrangeRed_255,69,0</option>
-        <option value="Orchid">Orchid_218,112,214</option>
-        <option value="PaleGoldenrod">PaleGoldenrod_238,232,170</option>
-        <option value="PaleGreen">PaleGreen_152,251,152</option>
-        <option value="PaleTurquoise">PaleTurquoise_175,238,238</option>
-        <option value="PaleVioletRed">PaleVioletRed_219,112,147</option>
-        <option value="PapayaWhip">PapayaWhip_255,239,213</option>
-        <option value="PeachPuff">PeachPuff_255,218,185</option>
-        <option value="Peru">Peru_205,133,63</option>
-        <option value="Pink">Pink_255,192,203</option>
-        <option value="Plum">Plum_221,160,221</option>
-        <option value="PowderBlue">PowderBlue_176,224,230</option>
-        <option value="Purple">Purple_128,0,128</option>
-        <option value="Red">Red_255,0,0</option>
-        <option value="RosyBrown">RosyBrown_188,143,143</option>
-        <option value="RoyalBlue">RoyalBlue_65,105,225</option>
-        <option value="SaddleBrown">SaddleBrown_139,69,19</option>
-        <option value="Salmon">Salmon_250,128,114</option>
-        <option value="SandyBrown">SandyBrown_244,164,96</option>
-        <option value="SeaGreen">SeaGreen_46,139,87</option>
-        <option value="Seashell">Seashell_255,245,238</option>
-        <option value="Sienna">Sienna_160,82,45</option>
-        <option value="Silver">Silver_192,192,192</option>
-        <option value="SkyBlue">SkyBlue_135,206,235</option>
-        <option value="SlateBlue">SlateBlue_106,90,205</option>
-        <option value="SlateGray">SlateGray_112,128,144</option>
-        <option value="Snow">Snow_255,250,250</option>
-        <option value="SpringGreen">SpringGreen_0,255,127</option>
-        <option value="SteelBlue">SteelBlue_70,130,180</option>
-        <option value="Tan">Tan_210,180,140</option>
-        <option value="Teal">Teal_0,128,128</option>
-        <option value="Thistle">Thistle_216,191,216</option>
-        <option value="Tomato">Tomato_255,99,71</option>
-        <option value="Turquoise">Turquoise_64,224,208</option>
-        <option value="Violet">Violet_238,130,238</option>
-        <option value="Wheat">Wheat_245,222,179</option>
-        <option value="White">White_255,255,255</option>
-        <option value="WhiteSmoke">WhiteSmoke_245,245,245</option>
-        <option value="Yellow">Yellow_255,255,0</option>
-        <option value="YellowGreen">YellowGreen_154,205,50</option>
-        </select>
-        </td>
-      </tr>
+      <table style="border:2px red solid;">
       <tr>
         <td align="right">R</td>
         <td colspan="2">min<input type="range" id="myColor_r_min1" min="0" max="255" value="0" step="1" onchange="myColor_r_min_v1.innerHTML=this.value;"><span id="myColor_r_min_v1">0</span><br>
@@ -525,152 +363,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       </table>
     </div>
     <div id="divColor2" style="display:none">
-      <table style="border:2px green solid;"><tr>
-        <td colspan="3">
-        <select id="myColor2" onchange="changeColor(this.options[this.selectedIndex].text,2);">
-        <option value="Black">Black_0,0,0</option>
-        <option value="AliceBlue">AliceBlue_240,248,255</option>
-        <option value="AntiqueWhite">AntiqueWhite_250,235,215</option>
-        <option value="Aqua">Aqua_0,255,255</option>
-        <option value="Aquamarine">Aquamarine_127,255,212</option>
-        <option value="Azure">Azure_240,255,255</option>
-        <option value="Beige">Beige_245,245,220</option>
-        <option value="Bisque">Bisque_255,228,196</option>
-        <option value="BlanchedAlmond">BlanchedAlmond_255,235,205</option>
-        <option value="Blue">Blue_0,0,255</option>
-        <option value="BlueViolet">BlueViolet_138,43,226</option>
-        <option value="Brown">Brown_165,42,42</option>
-        <option value="Burlywood">Burlywood_222,184,135</option>
-        <option value="CadetBlue">CadetBlue_95,158,160</option>
-        <option value="Chartreuse">Chartreuse_127,255,0</option>
-        <option value="Chocolate">Chocolate_210,105,30</option>
-        <option value="Coral">Coral_255,127,80</option>
-        <option value="CornflowerBlue">CornflowerBlue_100,149,237</option>
-        <option value="Cornsilk">Cornsilk_255,248,220</option>
-        <option value="Crimson">Crimson_220,20,60</option>
-        <option value="Cyan">Cyan_0,255,255</option>
-        <option value="DarkBlue">DarkBlue_0,0,139</option>
-        <option value="DarkCyan">DarkCyan_0,139,139</option>
-        <option value="DarkGoldenrod">DarkGoldenrod_184,134,11</option>
-        <option value="DarkGray">DarkGray_169,169,169</option>
-        <option value="DarkGreen">DarkGreen_0,100,0</option>
-        <option value="DarkKhaki">DarkKhaki_189,183,107</option>
-        <option value="DarkMagenta">DarkMagenta_139,0,139</option>
-        <option value="DarkOliveGreen">DarkOliveGreen_85,107,47</option>
-        <option value="DarkOrange">DarkOrange_255,140,0</option>
-        <option value="DarkOrchid">DarkOrchid_153,50,204</option>
-        <option value="DarkRed">DarkRed_139,0,0</option>
-        <option value="DarkSalmon">DarkSalmon_233,150,122</option>
-        <option value="DarkSeaGreen">DarkSeaGreen_143,188,143</option>
-        <option value="DarkSlateBlue">DarkSlateBlue_72,61,139</option>
-        <option value="DarkSlateGray">DarkSlateGray_47,79,79</option>
-        <option value="DarkTurquoise">DarkTurquoise_0,206,209</option>
-        <option value="DarkViolet">DarkViolet_148,0,211</option>
-        <option value="DeepPink">DeepPink_255,20,147</option>
-        <option value="DeepSkyBlue">DeepSkyBlue_0,191,255</option>
-        <option value="DimGray">DimGray_105,105,105</option>
-        <option value="DodgerBlue">DodgerBlue_30,144,255</option>
-        <option value="Firebrick">Firebrick_178,34,34</option>
-        <option value="FloralWhite">FloralWhite_255,250,240</option>
-        <option value="ForestGreen">ForestGreen_34,139,34</option>
-        <option value="Fuchsia">Fuchsia_255,0,255</option>
-        <option value="Gainsboro">Gainsboro_220,220,220</option>
-        <option value="GhostWhite">GhostWhite_248,248,255</option>
-        <option value="Gold">Gold_255,215,0</option>
-        <option value="Goldenrod">Goldenrod_218,165,32</option>
-        <option value="Gray">Gray_128,128,128</option>
-        <option value="Green">Green_0,128,0</option>
-        <option value="GreenYellow">GreenYellow_173,255,47</option>
-        <option value="Honeydew">Honeydew_240,255,240</option>
-        <option value="HotPink">HotPink_255,105,180</option>
-        <option value="IndianRed">IndianRed_205,92,92</option>
-        <option value="Indigo">Indigo_75,0,130</option>
-        <option value="Ivory">Ivory_255,255,240</option>
-        <option value="Khaki">Khaki_240,230,140</option>
-        <option value="Lavender">Lavender_230,230,250</option>
-        <option value="LavenderBlush">LavenderBlush_255,240,245</option>
-        <option value="LawnGreen">LawnGreen_124,252,0</option>
-        <option value="LemonChiffon">LemonChiffon_255,250,205</option>
-        <option value="LightBlue">LightBlue_173,216,230</option>
-        <option value="LightCoral">LightCoral_240,128,128</option>
-        <option value="LightCyan">LightCyan_224,255,255</option>
-        <option value="LightGoldenrodYellow">LightGoldenrodYellow_250,250,210</option>
-        <option value="LightGray">LightGray_211,211,211</option>
-        <option value="LightGreen">LightGreen_144,238,144</option>
-        <option value="LightPink">LightPink_255,182,193</option>
-        <option value="LightSalmon">LightSalmon_255,160,122</option>
-        <option value="LightSeaGreen">LightSeaGreen_32,178,170</option>
-        <option value="LightSkyBlue">LightSkyBlue_135,206,250</option>
-        <option value="LightSlateGray">LightSlateGray_119,136,153</option>
-        <option value="LightSteelBlue">LightSteelBlue_176,196,222</option>
-        <option value="LightYellow">LightYellow_255,255,224</option>
-        <option value="Lime">Lime_0,255,0</option>
-        <option value="LimeGreen">LimeGreen_50,205,50</option>
-        <option value="Linen">Linen_250,240,230</option>
-        <option value="Magenta">Magenta_255,0,255</option>
-        <option value="Maroon">Maroon_128,0,0</option>
-        <option value="MediumAquamarine">MediumAquamarine_102,205,170</option>
-        <option value="MediumBlue">MediumBlue_0,0,205</option>
-        <option value="MediumOrchid">MediumOrchid_186,85,211</option>
-        <option value="MediumPurple">MediumPurple_147,112,219</option>
-        <option value="MediumSeaGreen">MediumSeaGreen_60,179,113</option>
-        <option value="MediumSlateBlue">MediumSlateBlue_123,104,238</option>
-        <option value="MediumSpringGreen">MediumSpringGreen_0,250,154</option>
-        <option value="MediumTurquoise">MediumTurquoise_72,209,204</option>
-        <option value="MediumVioletRed">MediumVioletRed_199,21,133</option>
-        <option value="MidnightBlue">MidnightBlue_25,25,112</option>
-        <option value="MintCream">MintCream_245,255,250</option>
-        <option value="MistyRose">MistyRose_255,228,225</option>
-        <option value="Moccasin">Moccasin_255,228,181</option>
-        <option value="NavajoWhite">NavajoWhite_255,222,173</option>
-        <option value="Navy">Navy_0,0,128</option>
-        <option value="OldLace">OldLace_253,245,230</option>
-        <option value="Olive">Olive_128,128,0</option>
-        <option value="OliveDrab">OliveDrab_107,142,35</option>
-        <option value="Orange">Orange_255,165,0</option>
-        <option value="OrangeRed">OrangeRed_255,69,0</option>
-        <option value="Orchid">Orchid_218,112,214</option>
-        <option value="PaleGoldenrod">PaleGoldenrod_238,232,170</option>
-        <option value="PaleGreen">PaleGreen_152,251,152</option>
-        <option value="PaleTurquoise">PaleTurquoise_175,238,238</option>
-        <option value="PaleVioletRed">PaleVioletRed_219,112,147</option>
-        <option value="PapayaWhip">PapayaWhip_255,239,213</option>
-        <option value="PeachPuff">PeachPuff_255,218,185</option>
-        <option value="Peru">Peru_205,133,63</option>
-        <option value="Pink">Pink_255,192,203</option>
-        <option value="Plum">Plum_221,160,221</option>
-        <option value="PowderBlue">PowderBlue_176,224,230</option>
-        <option value="Purple">Purple_128,0,128</option>
-        <option value="Red">Red_255,0,0</option>
-        <option value="RosyBrown">RosyBrown_188,143,143</option>
-        <option value="RoyalBlue">RoyalBlue_65,105,225</option>
-        <option value="SaddleBrown">SaddleBrown_139,69,19</option>
-        <option value="Salmon">Salmon_250,128,114</option>
-        <option value="SandyBrown">SandyBrown_244,164,96</option>
-        <option value="SeaGreen">SeaGreen_46,139,87</option>
-        <option value="Seashell">Seashell_255,245,238</option>
-        <option value="Sienna">Sienna_160,82,45</option>
-        <option value="Silver">Silver_192,192,192</option>
-        <option value="SkyBlue">SkyBlue_135,206,235</option>
-        <option value="SlateBlue">SlateBlue_106,90,205</option>
-        <option value="SlateGray">SlateGray_112,128,144</option>
-        <option value="Snow">Snow_255,250,250</option>
-        <option value="SpringGreen">SpringGreen_0,255,127</option>
-        <option value="SteelBlue">SteelBlue_70,130,180</option>
-        <option value="Tan">Tan_210,180,140</option>
-        <option value="Teal">Teal_0,128,128</option>
-        <option value="Thistle">Thistle_216,191,216</option>
-        <option value="Tomato">Tomato_255,99,71</option>
-        <option value="Turquoise">Turquoise_64,224,208</option>
-        <option value="Violet">Violet_238,130,238</option>
-        <option value="Wheat">Wheat_245,222,179</option>
-        <option value="White">White_255,255,255</option>
-        <option value="WhiteSmoke">WhiteSmoke_245,245,245</option>
-        <option value="Yellow">Yellow_255,255,0</option>
-        <option value="YellowGreen">YellowGreen_154,205,50</option>
-        </select>
-        </td>
-      </tr>
+      <table style="border:2px green solid;">
       <tr>
         <td align="right">R</td>
         <td colspan="2">min<input type="range" id="myColor_r_min2" min="0" max="255" value="0" step="1" onchange="myColor_r_min_v2.innerHTML=this.value;"><span id="myColor_r_min_v2">0</span><br>
@@ -692,152 +385,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       </table>
     </div>
     <div id="divColor3" style="display:none">
-      <table style="border:2px blue solid;"><tr>
-        <td colspan="3">
-        <select id="myColor3" onchange="changeColor(this.options[this.selectedIndex].text,3);">
-        <option value="Black">Black_0,0,0</option>
-        <option value="AliceBlue">AliceBlue_240,248,255</option>
-        <option value="AntiqueWhite">AntiqueWhite_250,235,215</option>
-        <option value="Aqua">Aqua_0,255,255</option>
-        <option value="Aquamarine">Aquamarine_127,255,212</option>
-        <option value="Azure">Azure_240,255,255</option>
-        <option value="Beige">Beige_245,245,220</option>
-        <option value="Bisque">Bisque_255,228,196</option>
-        <option value="BlanchedAlmond">BlanchedAlmond_255,235,205</option>
-        <option value="Blue">Blue_0,0,255</option>
-        <option value="BlueViolet">BlueViolet_138,43,226</option>
-        <option value="Brown">Brown_165,42,42</option>
-        <option value="Burlywood">Burlywood_222,184,135</option>
-        <option value="CadetBlue">CadetBlue_95,158,160</option>
-        <option value="Chartreuse">Chartreuse_127,255,0</option>
-        <option value="Chocolate">Chocolate_210,105,30</option>
-        <option value="Coral">Coral_255,127,80</option>
-        <option value="CornflowerBlue">CornflowerBlue_100,149,237</option>
-        <option value="Cornsilk">Cornsilk_255,248,220</option>
-        <option value="Crimson">Crimson_220,20,60</option>
-        <option value="Cyan">Cyan_0,255,255</option>
-        <option value="DarkBlue">DarkBlue_0,0,139</option>
-        <option value="DarkCyan">DarkCyan_0,139,139</option>
-        <option value="DarkGoldenrod">DarkGoldenrod_184,134,11</option>
-        <option value="DarkGray">DarkGray_169,169,169</option>
-        <option value="DarkGreen">DarkGreen_0,100,0</option>
-        <option value="DarkKhaki">DarkKhaki_189,183,107</option>
-        <option value="DarkMagenta">DarkMagenta_139,0,139</option>
-        <option value="DarkOliveGreen">DarkOliveGreen_85,107,47</option>
-        <option value="DarkOrange">DarkOrange_255,140,0</option>
-        <option value="DarkOrchid">DarkOrchid_153,50,204</option>
-        <option value="DarkRed">DarkRed_139,0,0</option>
-        <option value="DarkSalmon">DarkSalmon_233,150,122</option>
-        <option value="DarkSeaGreen">DarkSeaGreen_143,188,143</option>
-        <option value="DarkSlateBlue">DarkSlateBlue_72,61,139</option>
-        <option value="DarkSlateGray">DarkSlateGray_47,79,79</option>
-        <option value="DarkTurquoise">DarkTurquoise_0,206,209</option>
-        <option value="DarkViolet">DarkViolet_148,0,211</option>
-        <option value="DeepPink">DeepPink_255,20,147</option>
-        <option value="DeepSkyBlue">DeepSkyBlue_0,191,255</option>
-        <option value="DimGray">DimGray_105,105,105</option>
-        <option value="DodgerBlue">DodgerBlue_30,144,255</option>
-        <option value="Firebrick">Firebrick_178,34,34</option>
-        <option value="FloralWhite">FloralWhite_255,250,240</option>
-        <option value="ForestGreen">ForestGreen_34,139,34</option>
-        <option value="Fuchsia">Fuchsia_255,0,255</option>
-        <option value="Gainsboro">Gainsboro_220,220,220</option>
-        <option value="GhostWhite">GhostWhite_248,248,255</option>
-        <option value="Gold">Gold_255,215,0</option>
-        <option value="Goldenrod">Goldenrod_218,165,32</option>
-        <option value="Gray">Gray_128,128,128</option>
-        <option value="Green">Green_0,128,0</option>
-        <option value="GreenYellow">GreenYellow_173,255,47</option>
-        <option value="Honeydew">Honeydew_240,255,240</option>
-        <option value="HotPink">HotPink_255,105,180</option>
-        <option value="IndianRed">IndianRed_205,92,92</option>
-        <option value="Indigo">Indigo_75,0,130</option>
-        <option value="Ivory">Ivory_255,255,240</option>
-        <option value="Khaki">Khaki_240,230,140</option>
-        <option value="Lavender">Lavender_230,230,250</option>
-        <option value="LavenderBlush">LavenderBlush_255,240,245</option>
-        <option value="LawnGreen">LawnGreen_124,252,0</option>
-        <option value="LemonChiffon">LemonChiffon_255,250,205</option>
-        <option value="LightBlue">LightBlue_173,216,230</option>
-        <option value="LightCoral">LightCoral_240,128,128</option>
-        <option value="LightCyan">LightCyan_224,255,255</option>
-        <option value="LightGoldenrodYellow">LightGoldenrodYellow_250,250,210</option>
-        <option value="LightGray">LightGray_211,211,211</option>
-        <option value="LightGreen">LightGreen_144,238,144</option>
-        <option value="LightPink">LightPink_255,182,193</option>
-        <option value="LightSalmon">LightSalmon_255,160,122</option>
-        <option value="LightSeaGreen">LightSeaGreen_32,178,170</option>
-        <option value="LightSkyBlue">LightSkyBlue_135,206,250</option>
-        <option value="LightSlateGray">LightSlateGray_119,136,153</option>
-        <option value="LightSteelBlue">LightSteelBlue_176,196,222</option>
-        <option value="LightYellow">LightYellow_255,255,224</option>
-        <option value="Lime">Lime_0,255,0</option>
-        <option value="LimeGreen">LimeGreen_50,205,50</option>
-        <option value="Linen">Linen_250,240,230</option>
-        <option value="Magenta">Magenta_255,0,255</option>
-        <option value="Maroon">Maroon_128,0,0</option>
-        <option value="MediumAquamarine">MediumAquamarine_102,205,170</option>
-        <option value="MediumBlue">MediumBlue_0,0,205</option>
-        <option value="MediumOrchid">MediumOrchid_186,85,211</option>
-        <option value="MediumPurple">MediumPurple_147,112,219</option>
-        <option value="MediumSeaGreen">MediumSeaGreen_60,179,113</option>
-        <option value="MediumSlateBlue">MediumSlateBlue_123,104,238</option>
-        <option value="MediumSpringGreen">MediumSpringGreen_0,250,154</option>
-        <option value="MediumTurquoise">MediumTurquoise_72,209,204</option>
-        <option value="MediumVioletRed">MediumVioletRed_199,21,133</option>
-        <option value="MidnightBlue">MidnightBlue_25,25,112</option>
-        <option value="MintCream">MintCream_245,255,250</option>
-        <option value="MistyRose">MistyRose_255,228,225</option>
-        <option value="Moccasin">Moccasin_255,228,181</option>
-        <option value="NavajoWhite">NavajoWhite_255,222,173</option>
-        <option value="Navy">Navy_0,0,128</option>
-        <option value="OldLace">OldLace_253,245,230</option>
-        <option value="Olive">Olive_128,128,0</option>
-        <option value="OliveDrab">OliveDrab_107,142,35</option>
-        <option value="Orange">Orange_255,165,0</option>
-        <option value="OrangeRed">OrangeRed_255,69,0</option>
-        <option value="Orchid">Orchid_218,112,214</option>
-        <option value="PaleGoldenrod">PaleGoldenrod_238,232,170</option>
-        <option value="PaleGreen">PaleGreen_152,251,152</option>
-        <option value="PaleTurquoise">PaleTurquoise_175,238,238</option>
-        <option value="PaleVioletRed">PaleVioletRed_219,112,147</option>
-        <option value="PapayaWhip">PapayaWhip_255,239,213</option>
-        <option value="PeachPuff">PeachPuff_255,218,185</option>
-        <option value="Peru">Peru_205,133,63</option>
-        <option value="Pink">Pink_255,192,203</option>
-        <option value="Plum">Plum_221,160,221</option>
-        <option value="PowderBlue">PowderBlue_176,224,230</option>
-        <option value="Purple">Purple_128,0,128</option>
-        <option value="Red">Red_255,0,0</option>
-        <option value="RosyBrown">RosyBrown_188,143,143</option>
-        <option value="RoyalBlue">RoyalBlue_65,105,225</option>
-        <option value="SaddleBrown">SaddleBrown_139,69,19</option>
-        <option value="Salmon">Salmon_250,128,114</option>
-        <option value="SandyBrown">SandyBrown_244,164,96</option>
-        <option value="SeaGreen">SeaGreen_46,139,87</option>
-        <option value="Seashell">Seashell_255,245,238</option>
-        <option value="Sienna">Sienna_160,82,45</option>
-        <option value="Silver">Silver_192,192,192</option>
-        <option value="SkyBlue">SkyBlue_135,206,235</option>
-        <option value="SlateBlue">SlateBlue_106,90,205</option>
-        <option value="SlateGray">SlateGray_112,128,144</option>
-        <option value="Snow">Snow_255,250,250</option>
-        <option value="SpringGreen">SpringGreen_0,255,127</option>
-        <option value="SteelBlue">SteelBlue_70,130,180</option>
-        <option value="Tan">Tan_210,180,140</option>
-        <option value="Teal">Teal_0,128,128</option>
-        <option value="Thistle">Thistle_216,191,216</option>
-        <option value="Tomato">Tomato_255,99,71</option>
-        <option value="Turquoise">Turquoise_64,224,208</option>
-        <option value="Violet">Violet_238,130,238</option>
-        <option value="Wheat">Wheat_245,222,179</option>
-        <option value="White">White_255,255,255</option>
-        <option value="WhiteSmoke">WhiteSmoke_245,245,245</option>
-        <option value="Yellow">Yellow_255,255,0</option>
-        <option value="YellowGreen">YellowGreen_154,205,50</option>
-        </select>
-        </td>
-      </tr>
+      <table style="border:2px blue solid;">
       <tr>
         <td align="right">R</td>
         <td colspan="2">min<input type="range" id="myColor_r_min3" min="0" max="255" value="0" step="1" onchange="myColor_r_min_v3.innerHTML=this.value;"><span id="myColor_r_min_v3">0</span><br>
@@ -896,8 +444,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     <td>MirrorImage</td> 
     <td colspan="2">  
       <select id="mirrorimage">
-        <option value="1">yes</option>
-        <option value="0">no</option>
+        <option value="1">Y</option>
+        <option value="0">N</option>
       </select>
     </td>
   </tr>     
@@ -913,8 +461,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     </td>
   </tr> 
   </table>
-  <iframe id="ifr" style="display:none"></iframe>
-  <div id="result" style="color:red"><div>
+  <div id="result" style="color:red;display:none"></div>
+  <div id="red" style="color:red"></div>
+  <div id="green" style="color:green"></div>
+  <div id="blue" style="color:blue"></div>   
+  <div id="magenta" style="color:magenta"></div>
+  <div id="cyan" style="color:cyan"></div>
+  <div id="yellow" style="color:yellow"></div>      
   </body>
   </html> 
   
@@ -928,9 +481,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var myColor = document.getElementById('myColor');
     var mirrorimage = document.getElementById("mirrorimage");   
     var result = document.getElementById('result');
-    var flash = document.getElementById('flash'); 
-    var ifr = document.getElementById('ifr');
-    var lastValue = "";
+    var red = document.getElementById('red');
+    var green = document.getElementById('green');
+    var blue = document.getElementById('blue');
+    var magenta = document.getElementById('magenta');
+    var cyan = document.getElementById('cyan');
+    var yellow = document.getElementById('yellow');
+    var flash = document.getElementById('flash');
     var myTimer;
     var restartCount=0;  
     var myColor_r_min1,myColor_r_max1,myColor_g_min1,myColor_g_max1,myColor_b_min1,myColor_b_max1;
@@ -980,22 +537,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       if (tab=='red') divColor1.style.display="block"; else divColor1.style.display="none";
       if (tab=='green') divColor2.style.display="block"; else divColor2.style.display="none";
       if (tab=='blue') divColor3.style.display="block"; else divColor3.style.display="none";
-    } 
-  
-    function changeColor(detectColor, n) {
-      var val = detectColor.split("_");
-      document.getElementById('myColor_r_min'+n).value = val[1].split(",")[0];
-      document.getElementById('myColor_r_min_v'+n).innerHTML = val[1].split(",")[0];
-      document.getElementById('myColor_r_max'+n).value = val[1].split(",")[0];
-      document.getElementById('myColor_r_max_v'+n).innerHTML = val[1].split(",")[0];
-      document.getElementById('myColor_g_min'+n).value = val[1].split(",")[1];
-      document.getElementById('myColor_g_min_v'+n).innerHTML = val[1].split(",")[1];
-      document.getElementById('myColor_g_max'+n).value = val[1].split(",")[1];
-      document.getElementById('myColor_g_max_v'+n).innerHTML = val[1].split(",")[1];
-      document.getElementById('myColor_b_min'+n).value = val[1].split(",")[2];
-      document.getElementById('myColor_b_min_v'+n).innerHTML = val[1].split(",")[2];
-      document.getElementById('myColor_b_max'+n).value = val[1].split(",")[2];
-      document.getElementById('myColor_b_max_v'+n).innerHTML = val[1].split(",")[2];
     }   
 
     getStill.onclick = function (event) {  
@@ -1010,7 +551,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       if (restartCount<=2) {
         result.innerHTML = "Get still error. <br>Restart ESP32-CAM "+restartCount+" times.";
         myTimer = setInterval(function(){getStill.click();},10000);
-        //ifr.src = document.location.origin+'?restart';
+        //$.ajax({url: document.location.origin+'?restart', async: false});
       }
       else
         result.innerHTML = "Get still error. <br>Please close the page and check ESP32-CAM.";
@@ -1089,7 +630,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 
     tracker.on('track', function(event) {
       result.innerHTML = "";
-      
+      red.innerHTML = "";
+      green.innerHTML = "";
+      blue.innerHTML = "";
+      magenta.innerHTML = "";
+      cyan.innerHTML = "";
+      yellow.innerHTML = "";
+            
       event.data.forEach(function(rect) {
         context.strokeStyle = rect.color;
         context.strokeRect(rect.x, rect.y, rect.width, rect.height);
@@ -1099,63 +646,44 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         //context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
 
         result.innerHTML+= rect.color+","+rect.x+","+rect.y+","+rect.width+","+rect.height+"<br>";
-        if (rect.color=="red"&&lastValue!="red") {
-          lastValue = "red";
-          /*
-          var gpio = 4;
-          var val = 10;
-          var cmd = "analogwrite";  //digitalwrite
-          ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
-          */
+        if (rect.color=="red") {
+          red.innerHTML+= rect.color+","+rect.x+","+rect.y+","+rect.width+","+rect.height+";";
         }
-        else if (rect.color=="green"&&lastValue!="green") {
-          lastValue = "green";
-          /*
-          var gpio = 4;
-          var val = 10;
-          var cmd = "analogwrite";  //digitalwrite
-          ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
-          */
+        else if (rect.color=="green") {
+          green.innerHTML+= rect.color+","+rect.x+","+rect.y+","+rect.width+","+rect.height+";";
         }
-        else if (rect.color=="blue"&&lastValue!="blue") {
-          lastValue = "blue";
-          /*
-          var gpio = 4;
-          var val = 10;
-          var cmd = "analogwrite";  //digitalwrite
-          ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
-          */
+        else if (rect.color=="blue") {
+          blue.innerHTML+= rect.color+","+rect.x+","+rect.y+","+rect.width+","+rect.height+";";
         }
-        else if (rect.color=="magenta"&&lastValue!="magenta") {
-          lastValue = "magenta";
-          /*
-          var gpio = 4;
-          var val = 10;
-          var cmd = "analogwrite";  //digitalwrite
-          ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
-          */
+        else if (rect.color=="magenta") {
+          magenta.innerHTML+= rect.color+","+rect.x+","+rect.y+","+rect.width+","+rect.height+";";
         }
-        else if (rect.color=="cyan"&&lastValue!="cyan") {
-          lastValue = "cyan";
-          /*
-          var gpio = 4;
-          var val = 10;
-          var cmd = "analogwrite";  //digitalwrite
-          ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
-          */
+        else if (rect.color=="cyan") {
+          cyan.innerHTML+= rect.color+","+rect.x+","+rect.y+","+rect.width+","+rect.height+";";
         } 
-        else if (rect.color=="yellow"&&lastValue!="yellow") {
-          lastValue = "yellow";
-          /*
-          var gpio = 4;
-          var val = 0;
-          var cmd = "analogwrite";  //digitalwrite
-          ifr.src = document.location.origin+'?'+cmd+'='+gpio+';'+val;
-          */
+        else if (rect.color=="yellow") {
+          yellow.innerHTML+= rect.color+","+rect.x+","+rect.y+","+rect.width+","+rect.height+";";
         }           
       });
-    });           
-    
+    });
+
+    setTimeout(function(){sendResult()},0);
+    function sendResult() {
+      if (red.innerHTML!="")
+        $.ajax({url:document.location.origin+'?serial='+red.innerHTML+';stop', async: false});
+      if (green.innerHTML!="")
+        $.ajax({url:document.location.origin+'?serial='+green.innerHTML+';stop', async: false});
+      if (blue.innerHTML!="")
+        $.ajax({url:document.location.origin+'?serial='+blue.innerHTML+';stop', async: false});
+      if (magenta.innerHTML!="")
+        $.ajax({url:document.location.origin+'?serial='+magenta.innerHTML+';stop', async: false});
+      if (cyan.innerHTML!="")
+        $.ajax({url:document.location.origin+'?serial='+cyan.innerHTML+';stop', async: false});
+      if (yellow.innerHTML!="")
+        $.ajax({url:document.location.origin+'?serial='+yellow.innerHTML+';stop', async: false});
+      setTimeout(function(){sendResult()},200);
+    }
+               
     restart.onclick = function (event) {
       fetch(location.origin+'?restart=stop');
     }    
@@ -1335,238 +863,4 @@ void getCommand(char c)
     if (c=='=') equalstate=1;
     if ((strState>=9)&&(c==';')) semicolonstate=1;
   }
-}
-
-String tcp_http(String domain,String request,int port,byte wait)
-{
-    WiFiClient client_tcp;
-
-    if (client_tcp.connect(domain.c_str(), port)) 
-    {
-      Serial.println("GET " + request);
-      client_tcp.println("GET " + request + " HTTP/1.1");
-      client_tcp.println("Host: " + domain);
-      client_tcp.println("Connection: close");
-      client_tcp.println();
-
-      String getResponse="",Feedback="";
-      boolean state = false;
-      int waitTime = 3000;   // timeout 3 seconds
-      long startTime = millis();
-      while ((startTime + waitTime) > millis())
-      {
-        while (client_tcp.available()) 
-        {
-            char c = client_tcp.read();
-            if (c == '\n') 
-            {
-              if (getResponse.length()==0) state=true; 
-              getResponse = "";
-            } 
-            else if (c != '\r')
-              getResponse += String(c);
-            if (state==true) Feedback += String(c);
-            if (wait==1)
-              startTime = millis();
-         }
-         if (wait==0)
-          if ((state==true)&&(Feedback.length()!= 0)) break;
-      }
-      client_tcp.stop();
-      return Feedback;
-    }
-    else
-      return "Connection failed";  
-}
-
-String tcp_https(String domain,String request,int port,byte wait)
-{
-    WiFiClientSecure client_tcp;
-
-    if (client_tcp.connect(domain.c_str(), port)) 
-    {
-      Serial.println("GET " + request);
-      client_tcp.println("GET " + request + " HTTP/1.1");
-      client_tcp.println("Host: " + domain);
-      client_tcp.println("Connection: close");
-      client_tcp.println();
-
-      String getResponse="",Feedback="";
-      boolean state = false;
-      int waitTime = 3000;   // timeout 3 seconds
-      long startTime = millis();
-      while ((startTime + waitTime) > millis())
-      {
-        while (client_tcp.available()) 
-        {
-            char c = client_tcp.read();
-            if (c == '\n') 
-            {
-              if (getResponse.length()==0) state=true; 
-              getResponse = "";
-            } 
-            else if (c != '\r')
-              getResponse += String(c);
-            if (state==true) Feedback += String(c);
-            if (wait==1)
-              startTime = millis();
-         }
-         if (wait==0)
-          if ((state==true)&&(Feedback.length()!= 0)) break;
-      }
-      client_tcp.stop();
-      return Feedback;
-    }
-    else
-      return "Connection failed";  
-}
-
-String LineNotify(String token, String request, byte wait)
-{
-  request.replace(" ","%20");
-  request.replace("&","%20");
-  request.replace("#","%20");
-  //request.replace("\'","%27");
-  request.replace("\"","%22");
-  request.replace("\n","%0D%0A");
-  request.replace("%3Cbr%3E","%0D%0A");
-  request.replace("%3Cbr/%3E","%0D%0A");
-  request.replace("%3Cbr%20/%3E","%0D%0A");
-  request.replace("%3CBR%3E","%0D%0A");
-  request.replace("%3CBR/%3E","%0D%0A");
-  request.replace("%3CBR%20/%3E","%0D%0A"); 
-  request.replace("%20stickerPackageId","&stickerPackageId");
-  request.replace("%20stickerId","&stickerId");    
-  
-  WiFiClientSecure client_tcp;
-  
-  if (client_tcp.connect("notify-api.line.me", 443)) 
-  {
-    client_tcp.println("POST /api/notify HTTP/1.1");
-    client_tcp.println("Connection: close"); 
-    client_tcp.println("Host: notify-api.line.me");
-    client_tcp.println("User-Agent: ESP8266/1.0");
-    client_tcp.println("Authorization: Bearer " + token);
-    client_tcp.println("Content-Type: application/x-www-form-urlencoded");
-    client_tcp.println("Content-Length: " + String(request.length()));
-    client_tcp.println();
-    client_tcp.println(request);
-    client_tcp.println();
-    
-    String getResponse="",Feedback="";
-    boolean state = false;
-    int waitTime = 3000;   // timeout 3 seconds
-    long startTime = millis();
-    while ((startTime + waitTime) > millis())
-    {
-      while (client_tcp.available()) 
-      {
-          char c = client_tcp.read();
-          if (c == '\n') 
-          {
-            if (getResponse.length()==0) state=true; 
-            getResponse = "";
-          } 
-          else if (c != '\r')
-            getResponse += String(c);
-          if (state==true) Feedback += String(c);
-          if (wait==1)
-            startTime = millis();
-       }
-       if (wait==0)
-        if ((state==true)&&(Feedback.length()!= 0)) break;
-    }
-    client_tcp.stop();
-    return Feedback;
-  }
-  else
-    return "Connection failed";  
-}
-
-String sendCapturedImageToLineNotify(String token) 
-{
-  String getAll="", getBody = "";
-  
-  camera_fb_t * fb = NULL;
-  fb = esp_camera_fb_get();  
-  if(!fb) {
-    Serial.println("Camera capture failed");
-    delay(1000);
-    ESP.restart();
-    return "";
-  }  
-      
-  WiFiClientSecure client_tcp;
-  Serial.println("Connect to notify-api.line.me");
-  
-  if (client_tcp.connect("notify-api.line.me", 443)) {
-    Serial.println("Connection successful");
-
-    String message = "Welcome to Taiwan.";
-    String head = "--Taiwan\r\nContent-Disposition: form-data; name=\"message\"; \r\n\r\n" + message + "\r\n--Taiwan\r\nContent-Disposition: form-data; name=\"imageFile\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
-    String tail = "\r\n--Taiwan--\r\n";
-
-    uint16_t imageLen = fb->len;
-    uint16_t extraLen = head.length() + tail.length();
-    uint16_t totalLen = imageLen + extraLen;
-  
-    client_tcp.println("POST /api/notify HTTP/1.1");
-    client_tcp.println("Connection: close"); 
-    client_tcp.println("Host: notify-api.line.me");
-    client_tcp.println("Authorization: Bearer " + token);
-    client_tcp.println("Content-Length: " + String(totalLen));
-    client_tcp.println("Content-Type: multipart/form-data; boundary=Taiwan");
-    client_tcp.println();
-    client_tcp.print(head);
-    
-    uint8_t *fbBuf = fb->buf;
-    size_t fbLen = fb->len;
-    for (size_t n=0;n<fbLen;n=n+1024) {
-      if (n+1024<fbLen) {
-        client_tcp.write(fbBuf, 1024);
-        fbBuf += 1024;
-      }
-      else if (fbLen%1024>0) {
-        size_t remainder = fbLen%1024;
-        client_tcp.write(fbBuf, remainder);
-      }
-    }  
-    
-    client_tcp.print(tail);
-    esp_camera_fb_return(fb);
-    
-    int waitTime = 10000;   // timeout 10 seconds
-    long startTime = millis();
-    boolean state = false;
-    while ((startTime + waitTime) > millis())
-    {
-      Serial.print(".");
-      delay(100);      
-      while (client_tcp.available()) 
-      {
-          char c = client_tcp.read();
-          if (c == '\n') 
-          {
-            if (getAll.length()==0) state=true; 
-            getAll = "";
-          } 
-          else if (c != '\r')
-            getAll += String(c);
-          if (state==true) getBody += String(c);
-          startTime = millis();
-       }
-       if (getBody.length()>0) break;
-    }
-    client_tcp.stop();
-    //Serial.println(getAll); 
-    Serial.println(getBody);
-  }
-  else {
-    getAll="Connected to notify-api.line.me failed.";
-    getBody="Connected to notify-api.line.me failed.";
-    Serial.println("Connected to notify-api.line.me failed.");
-  }
-  
-  //return getAll;
-  return getBody;
 }
