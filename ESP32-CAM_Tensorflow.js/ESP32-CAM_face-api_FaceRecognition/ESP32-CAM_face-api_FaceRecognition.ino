@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Face Recognition (face-api.js)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-11-6 00:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-11-8 12:30
 https://www.facebook.com/francefu
 
 The canvas in Chrome will cause memory leak if it recognizes face continuously.
@@ -205,6 +205,7 @@ void ExecuteCommand()
       val = 1700;   
     val = 1700 + (8000 - val);   
     ledcWrite(channel, val); 
+    Serial.println("Open the door");
   }  
   else {
     Feedback="Command is not defined.";
@@ -512,10 +513,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       
         results.forEach((result, i) => {
 
-          //辨識到人名傳送至Telegram，並控制伺服馬達開門
-          if (result.label=="Your name") {
-            //
+          //辨識到陌生人unknow傳送至Telegram，並控制伺服馬達開門
+          if (result.label=="unknown") {
+            $.ajax({url: document.location.origin+'?telegram_image', async: false});    //傳送影像
+            $.ajax({url: document.location.origin+'?telegram_text=unknow', async: false});    //傳送文字
           }
+          else if (result.label=="France")  //辨識到主人人名控制伺服馬達開門
+            $.ajax({url: document.location.origin+'?servo=2;4850;9', async: false});    //控制Servo轉動
           
           const box = resizedDetections[i].detection.box
           var drawBox = new faceapi.draw.DrawBox(box, { label: result.toString()})
