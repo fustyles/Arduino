@@ -1,5 +1,5 @@
 /*
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-30 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-11-8 16:00
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
@@ -557,6 +557,11 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         int val = P1.toInt();
         ledcWrite(4,val);  
       }
+      else if (cmd=="serial") { 
+        if (P1!=""&P1!="stop") Serial.println(P1);
+        if (P2!=""&P2!="stop") Serial.println(P2);
+        Serial.println();
+      }       
       else {
         Feedback="Command is not defined";
       }
@@ -898,24 +903,27 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
     
           const prediction = await Model.predict(canvas);
           if (maxPredictions>0) {
-          for (let i = 0; i < maxPredictions; i++) {
-            if (i==0) {
-            maxClassName = prediction[i].className;
-            maxProbability = prediction[i].probability;
-            }
-            else {
-            if (prediction[i].probability>maxProbability) {
+            for (let i = 0; i < maxPredictions; i++) {
+              if (i==0) {
               maxClassName = prediction[i].className;
               maxProbability = prediction[i].probability;
+              }
+              else {
+              if (prediction[i].probability>maxProbability) {
+                maxClassName = prediction[i].className;
+                maxProbability = prediction[i].probability;
+              }
+              }
+              data += prediction[i].className + "," + prediction[i].probability.toFixed(2) + "<br>";
             }
-            }
-            data += prediction[i].className + "," + prediction[i].probability.toFixed(2) + "<br>";
-          }
-          result.innerHTML = data;
-          result.innerHTML += "<br>Result: " + maxClassName + "," + maxProbability;      
+            result.innerHTML = data;
+            result.innerHTML += "<br>Result: " + maxClassName + "," + maxProbability; 
+
+            $.ajax({url: document.location.origin+'/control?serial='+maxClassName+";"+maxProbability+';stop', async: false});
           }
           else
-          result.innerHTML = "Unrecognizable";
+            result.innerHTML = "Unrecognizable";
+            
           getStill.click();
         }
     
