@@ -1,7 +1,7 @@
 /*
 ESP32-CAM Remote Control Car (knn-classifier) 
 Open the page in Chrome.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-24 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-11-8 19:00
 https://www.facebook.com/francefu
 
 //If you use Motor Driver IC L9110(s), it can't work well.
