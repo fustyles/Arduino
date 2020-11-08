@@ -1,7 +1,7 @@
 /*
 ESP32-CAM Remote Control Car (knn-classifier) 
 Open the page in Chrome.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-11-8 19:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-11-8 21:00
 https://www.facebook.com/francefu
 
 //If you use Motor Driver IC L9110(s), it can't work well.
@@ -28,6 +28,7 @@ http://192.168.xxx.xxx/control?digitalread=pin         //數位讀取
 http://192.168.xxx.xxx/control?analogread=pin          //類比讀取
 http://192.168.xxx.xxx/control?touchread=pin           //觸碰讀取
 http://192.168.xxx.xxx/control?flash=value             //內建閃光燈 value= 0~255
+http://192.168.xxx.xxx/control?servo=value        // value = 0 ~ 180
 
 官方指令格式 http://192.168.xxx.xxx/control?var=***&val=***
 http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
@@ -36,7 +37,7 @@ http://192.168.xxx.xxx/control?var=brightness&val=value   // value = -2 ~ 2
 http://192.168.xxx.xxx/control?var=contrast&val=value     // value = -2 ~ 2
 http://192.168.xxx.xxx/control?var=hmirror&val=value      // value = 0 or 1 
 http://192.168.xxx.xxx/control?var=vflip&val=value        // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255   
+http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255 
       
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
@@ -54,6 +55,7 @@ const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 int speedR = 255;  //紀錄右輪初始轉速 (gpio12, gpio13)
 int speedL = 255;  //紀錄左輪初始轉速 (gpio14, gpio15)
 double decelerate = 60;  //紀錄轉彎減速為 原速*百分比
+double servoPin = 2;  //Servo Pin
 
 #include <WiFi.h>
 #include <esp32-hal-ledc.h>      //用於控制伺服馬達
@@ -220,6 +222,10 @@ void setup() {
 
   //鏡像
   s->set_hmirror(s, 1);
+
+  ledcAttachPin(servoPin, 3);  
+  ledcSetup(3, 50, 16);  
+  ledcWrite(3, 6950);   
   
   //閃光燈(GPIO4)
   ledcAttachPin(4, 4);  
@@ -235,7 +241,7 @@ void setup() {
   ledcSetup(7, 2000, 8);      
   ledcAttachPin(14, 8);
   ledcSetup(8, 2000, 8); 
-  
+        
   WiFi.mode(WIFI_AP_STA);  //其他模式 WiFi.mode(WIFI_AP); WiFi.mode(WIFI_STA);
 
   //指定Client端靜態IP
@@ -587,6 +593,18 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         if (P2!=""&P2!="stop") Serial.println(P2);
         Serial.println();
       }       
+      else if (cmd=="servo") {  //自走車運動狀態
+        int val = P1.toInt();    
+        ledcAttachPin(servoPin, 3);  
+        ledcSetup(3, 50, 16);      
+        if (val > 180)
+           val = 180;
+        else if (val < 0)
+          val = 0;
+        val = 180 - val;     
+        val = val*6300/180+1700;
+        ledcWrite(3, val);  
+      }      
       //自走車運動狀態控制      
       else if (cmd=="speedL") {  //左輪車速
         int val = P1.toInt();
@@ -738,6 +756,9 @@ static esp_err_t status_handler(httpd_req_t *req){
     char * p = json_response;
     *p++ = '{';
     p+=sprintf(p, "\"flash\":%d,", 0);
+    p+=sprintf(p, "\"servo\":%d,", 30);
+    p+=sprintf(p, "\"speedL\":%d,", 255);
+    p+=sprintf(p, "\"speedR\":%d,", 255);
     p+=sprintf(p, "\"framesize\":%u,", s->status.framesize);
     p+=sprintf(p, "\"quality\":%u,", s->status.quality);
     p+=sprintf(p, "\"brightness\":%d,", s->status.brightness);
@@ -788,6 +809,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <tr><td colspan="2"><select id="Class"><option value="1">Front(1)</option><option value="2">Left(2)</option><option value="3">Stop(3)</option><option value="4">Right(4)</option><option value="5">Back(5)</option><option value="6">FrontLeft(6)</option><option value="7">FrontRight(7)</option><option value="8">LeftAfter(8)</option><option value="9">RightAfter(9)</option></select>&nbsp;&nbsp;&nbsp;&nbsp;<span id="count" style="color:red">0</span></td><td><button id="addExample">Train</button></td></tr>
                 <tr><td colspan="3">Probability Limit&nbsp;&nbsp;<select id="probabilityLimit"><option value="0">0</option><option value="0.3">0.3</option><option value="0.6" selected="selected">0.6</option><option value="0.9">0.9</option></select>&nbsp;&nbsp;&nbsp;&nbsp;Start Detection<input type="checkbox" id="startdetection"></td></tr>
                 <tr><td><button id="clearAllClasses">Clear Classes</button></td><td><button onclick="saveModel();">Save Model</button></td><td><input type="file" id="getModel" style="width:100px"></input></td></tr>
+                <tr><td>Servo</td><td colspan="2"><input type="range" id="servo" min="0" max="120" value="30" onchange="try{fetch(document.location.origin+'/control?servo='+this.value);}catch(e){}"></td></tr>
                 <tr><td>SpeedR</td><td colspan="2"><input type="range" id="speedR" min="0" max="255" value="255" onchange="try{fetch(document.location.origin+'/control?speedR='+this.value);}catch(e){}"></td></tr>
                 <tr><td>SpeedL</td><td colspan="2"><input type="range" id="speedL" min="0" max="255" value="255" onchange="try{fetch(document.location.origin+'/control?speedL='+this.value);}catch(e){}"></td></tr>
                 <tr><td><span id="message" style="display:none"></span></td><td></td><td></td></tr> 
