@@ -1,7 +1,7 @@
 /*
 ESP32-CAM MULTI-PERSON POSE Estimation
 Open the page in Chrome.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-12-24 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-11-8 16:00
 https://www.facebook.com/francefu
 
 打開: 拉弓動作.右手腕在肩膀右上，左手腕在左胸，兩手腕連線傾斜角度20~60度
@@ -1312,7 +1312,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                       
           //可以在這區塊做姿態判定控制開關或繼電器
           if (leftShoulderTop>=0&&rightShoulderTop>=0&&rightWristLeft>=0&&rightWristTop>=0&&leftWristLeft>=0&&leftWristTop>=0&&noseLeft>=0&&noseTop) {
-            if (mirrorimage==1) {
+            //當控制的姿勢是左右不對稱時，鏡像與非鏡像判別條件不同
+            
+            if (mirrorimage==1) {  //鏡像時
               if (rightWristLeft>noseLeft&&rightWristTop<noseTop&&(leftWristTop-leftShoulderTop)/(leftShoulderTop-noseTop)>=-0.5&&(leftWristTop-leftShoulderTop)/(leftShoulderTop-noseTop)<=1&&position_angle(rightWristLeft,rightWristTop,leftWristLeft,leftWristTop)<-20&&position_angle(rightWristLeft,rightWristTop,leftWristLeft,leftWristTop)>-60) {
                 if (document.getElementById("state").innerHTML == "OFF") {
                   document.getElementById("state").innerHTML = "ON";
@@ -1322,15 +1324,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
               else if (rightWristTop<noseTop&&leftWristTop<noseTop) {               
                 if (document.getElementById("state").innerHTML == "ON") {
                   document.getElementById("state").innerHTML = "OFF";
-                  document.getElementById("ifr").src = document.location.origin+"/control?flash=0";
+                  document.getElementById("ifr").src = document.location.origin+"/control?flash=0";  //控制閃光燈來代表繼電器
                 }
               }
             } 
-            else if (mirrorimage==0) {
+            else if (mirrorimage==0) {  //非鏡像時
               if (rightWristLeft<noseLeft&&rightWristTop>noseTop&&(rightWristTop-rightShoulderTop)/(rightShoulderTop-noseTop)>=-0.5&&(rightWristTop-rightShoulderTop)/(rightShoulderTop-noseTop)<=1&&position_angle(rightWristLeft,rightWristTop,leftWristLeft,leftWristTop)<-20&&position_angle(rightWristLeft,rightWristTop,leftWristLeft,leftWristTop)>-60) {
                 if (document.getElementById("state").innerHTML == "OFF") {
                   document.getElementById("state").innerHTML = "ON";
-                  document.getElementById("ifr").src = document.location.origin+"/control?flash=10";
+                  document.getElementById("ifr").src = document.location.origin+"/control?flash=10";  //控制閃光燈來代表繼電器
                 }
               }
               else if (rightWristTop<noseTop&&leftWristTop<noseTop) {               
@@ -1340,6 +1342,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 }
               }
             }
+            
           }
         }
         else
