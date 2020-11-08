@@ -40,8 +40,8 @@ http://192.168.xxx.xxx?sendCapturedImageToLineNotify=token  //傳送影像截圖
 */
 
 //輸入WIFI連線帳號密碼
-const char* ssid     = "teacher";   //Wi-Fi帳號
-const char* password = "12345678";   //Wi-Fi密碼
+const char* ssid     = "*****";   //Wi-Fi帳號
+const char* password = "*****";   //Wi-Fi密碼
 
 //輸入AP端連線帳號密碼
 const char* apssid = "ESP32-CAM";   //可自訂名稱於WiFi熱點清單中顯示名稱與區網IP
@@ -645,6 +645,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         //context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
         //context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
 
+        //回傳辨識結果
         $.ajax({url:document.location.origin+'?serial='+rect.color+";"+rect.x+";"+rect.y+";"+rect.width+";"+rect.height+';stop', async: false});
         
         result.innerHTML+= rect.color+","+rect.x+","+rect.y+","+rect.width+","+rect.height+"<br>";
