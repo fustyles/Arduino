@@ -558,6 +558,9 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         int val = P1.toInt();
         ledcWrite(4,val);  
       }
+      else if (cmd=="serial") {  //控制內建閃光燈
+        Serial.println(P1); 
+      }      
       else {
         Feedback="Command is not defined";
       }
@@ -922,7 +925,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
 
         //當可能性最大的表情是happy時
         if (maxEmotion=="happy") {
-          //$.ajax({url: document.location.origin+'?自訂指令', async: false});
+          $.ajax({url: document.location.origin+'/control?serial='+maxEmotion, async: false});
         }
 
         message.innerHTML+= i+",age,"+Math.round(age)+",gender,"+gender+",genderProbability,"+Round(genderProbability)+",emotion,"+maxEmotion+",neutral,"+Round(expressions.neutral)+",happy,"+Round(expressions.happy)+",sad,"+Round(expressions.sad)+",angry,"+Round(expressions.angry)+",fearful,"+Round(expressions.fearful)+",disgusted,"+Round(expressions.disgusted)+",surprised,"+Round(expressions.surprised)+",boxX,"+Round(detection._box._x)+",boxY,"+Round(detection._box._y)+",boxWidth,"+Round(detection._box._width)+",boxHeight,"+Round(detection._box._height)+"<br>";
