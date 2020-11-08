@@ -507,8 +507,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 
         //當可能性最大的表情是happy時
         if (maxEmotion=="happy") {
-          $.ajax({url: document.location.origin+'?telegram_image', async: false});    //傳送影像
-          $.ajax({url: document.location.origin+'?telegram_text='+maxEmotion, async: false});    //傳送文字
+          //$.ajax({url: document.location.origin+'?telegram_image', async: false});    //傳送影像
+          //$.ajax({url: document.location.origin+'?telegram_text='+maxEmotion, async: false});    //傳送文字
         }
 
         message.innerHTML+= i+",age,"+Math.round(age)+",gender,"+gender+",genderProbability,"+Round(genderProbability)+",emotion,"+maxEmotion+",neutral,"+Round(expressions.neutral)+",happy,"+Round(expressions.happy)+",sad,"+Round(expressions.sad)+",angry,"+Round(expressions.angry)+",fearful,"+Round(expressions.fearful)+",disgusted,"+Round(expressions.disgusted)+",surprised,"+Round(expressions.surprised)+",boxX,"+Round(detection._box._x)+",boxY,"+Round(detection._box._y)+",boxWidth,"+Round(detection._box._width)+",boxHeight,"+Round(detection._box._height)+"<br>";
