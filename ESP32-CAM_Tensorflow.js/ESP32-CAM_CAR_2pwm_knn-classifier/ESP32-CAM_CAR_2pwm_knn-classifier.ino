@@ -1,7 +1,7 @@
 /*
 ESP32-CAM Remote Control Car (knn-classifier) 
 Open the page in Chrome.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-11-8 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-11-8 22:00
 https://www.facebook.com/francefu
 
 //If you use Motor Driver IC L9110(s), it can't work well.
@@ -810,9 +810,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <tr><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=2');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=2');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Left</button></td><td align="center"><button onclick="try{stopDetection();fetch(document.location.origin+'/control?car=3');}catch(e){}">Stop</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=4');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=4');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Right</button></td></tr>
                 <tr><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=8');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=8');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">LeftAfter</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=5');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=5');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Back</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=9');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=9');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">RightAfter</button></td></tr>                   
                 <tr><td colspan="2">Turn Decelerate<select onclick="try{fetch(document.location.origin+'/control?decelerate='+this.value);}catch(e){}"><option value="100">100%</option><option value="90">90%</option><option value="80">80%</option><option value="70">70%</option><option value="60" selected="selected">60%</option><option value="50">50%</option><option value="40">40%</option><option value="30">30%</option><option value="10">20%</option><option value="10">10%</option><option value="0">0%</option></select></td><td><input type="checkbox" id="nostop" onclick="noStopControl();">No Stop</td></tr> 
-                <tr><td colspan="2"><select id="Class"><option value="1">Front(1)</option><option value="2">Left(2)</option><option value="3">Stop(3)</option><option value="4">Right(4)</option><option value="5">Back(5)</option><option value="6">FrontLeft(6)</option><option value="7">FrontRight(7)</option><option value="8">LeftAfter(8)</option><option value="9">RightAfter(9)</option></select>&nbsp;&nbsp;&nbsp;&nbsp;<span id="count" style="color:red">0</span></td><td><button id="addExample">Train</button></td></tr>
+                <tr><td align="center"><select id="Class"><option value="1">Front(1)</option><option value="2">Left(2)</option><option value="3">Stop(3)</option><option value="4">Right(4)</option><option value="5">Back(5)</option><option value="6">FrontLeft(6)</option><option value="7">FrontRight(7)</option><option value="8">LeftAfter(8)</option><option value="9">RightAfter(9)</option></select>&nbsp;<span id="count" style="color:red">0</span></td><td><button id="clearAllClasses">Clear</button</td><td><button id="addExample">Train</button></td></tr>
                 <tr><td colspan="3">Probability Limit&nbsp;&nbsp;<select id="probabilityLimit"><option value="0">0</option><option value="0.3">0.3</option><option value="0.6" selected="selected">0.6</option><option value="0.9">0.9</option></select>&nbsp;&nbsp;&nbsp;&nbsp;Start Detection<input type="checkbox" id="startdetection"></td></tr>
-                <tr><td><button id="clearAllClasses">Clear Classes</button></td><td><button onclick="saveModel();">Save Model</button></td><td><input type="file" id="getModel" style="width:100px"></input></td></tr>
+                <tr><td colspan="2"><button onclick="saveModel();">Save Model</button></td><td><input type="file" id="getModel" style="width:100px"></input></td></tr>
                 <tr><td>Servo</td><td colspan="2"><input type="range" id="servo" min="0" max="90" value="30" onchange="try{fetch(document.location.origin+'/control?servo='+this.value);}catch(e){}"></td></tr>
                 <tr><td>SpeedR</td><td colspan="2"><input type="range" id="speedR" min="0" max="255" value="255" onchange="try{fetch(document.location.origin+'/control?speedR='+this.value);}catch(e){}"></td></tr>
                 <tr><td>SpeedL</td><td colspan="2"><input type="range" id="speedL" min="0" max="255" value="255" onchange="try{fetch(document.location.origin+'/control?speedL='+this.value);}catch(e){}"></td></tr>
@@ -1069,6 +1069,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           mobilenet.load().then(Module => {
             mobilenetModule = Module;
             result.innerHTML = '';
+            getStill.click();
           }); 
           
           function addExampleImage(img,index) {
