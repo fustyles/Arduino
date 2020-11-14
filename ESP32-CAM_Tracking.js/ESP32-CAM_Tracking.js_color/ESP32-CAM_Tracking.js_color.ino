@@ -327,21 +327,21 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   </head><body>
   <img id="ShowImage" src="" style="display:none">
   <canvas id="canvas" width="0" height="0"></canvas><canvas id="canvas_custom" style="display:none"></canvas>
-  <table>
-  <tr>
+  <table style="border:0px">
+  <tr style="border:0px">
     <td><input type="button" id="restart" value="Restart"></td> 
     <td colspan="2"><input type="button" id="getStill" value="Start Detection"><input type="checkbox" id="showpix" value="Show Pixel" onclick="if (this.checked) canvas_custom.style.display='block'; else canvas_custom.style.display='none';">Show Pixel</td>
   </tr>
-  <tr>
-    <td style="border:2px red solid;"><a style="color:red;" onclick="changeTab('red');">Rect (Red)</a>
-    <td style="border:2px green solid;"><a style="color:green" onclick="changeTab('green');">Rect (Green)</a></td>
-    <td style="border:2px blue solid;"><a style="color:blue" onclick="changeTab('blue');">Rect (Blue)</a></td>
+  <tr style="border:0px">
+    <td style="text-align:center;background-color:red;"><a style="color:white;" onclick="changeTab('red');">Rect (Red)</a>
+    <td style="text-align:center;background-color:green;"><a style="color:white" onclick="changeTab('green');">Rect (Green)</a></td>
+    <td style="text-align:center;background-color:blue;"><a style="color:white" onclick="changeTab('blue');">Rect (Blue)</a></td>
   </td>
   </tr>
   <tr>
     <td colspan="3">
     <div id="divColor1">
-      <table style="border:2px red solid;">
+      <table style="border:4px red solid;width:100%;">
       <tr>
         <td align="right">R</td>
         <td colspan="2">min<input type="range" id="myColor_r_min1" min="0" max="255" value="0" step="1" onchange="myColor_r_min_v1.innerHTML=this.value;"><span id="myColor_r_min_v1">0</span><br>
@@ -363,7 +363,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       </table>
     </div>
     <div id="divColor2" style="display:none">
-      <table style="border:2px green solid;">
+      <table style="border:4px green solid;width:100%;">
       <tr>
         <td align="right">R</td>
         <td colspan="2">min<input type="range" id="myColor_r_min2" min="0" max="255" value="0" step="1" onchange="myColor_r_min_v2.innerHTML=this.value;"><span id="myColor_r_min_v2">0</span><br>
@@ -385,7 +385,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       </table>
     </div>
     <div id="divColor3" style="display:none">
-      <table style="border:2px blue solid;">
+      <table style="border:4px blue solid;width:100%;">
       <tr>
         <td align="right">R</td>
         <td colspan="2">min<input type="range" id="myColor_r_min3" min="0" max="255" value="0" step="1" onchange="myColor_r_min_v3.innerHTML=this.value;"><span id="myColor_r_min_v3">0</span><br>
