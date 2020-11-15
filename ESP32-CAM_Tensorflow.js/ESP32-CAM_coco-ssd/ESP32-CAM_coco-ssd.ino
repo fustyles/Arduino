@@ -1,5 +1,5 @@
 /*
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-8 18:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-11-15 12:30
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
@@ -23,6 +23,7 @@ http://192.168.xxx.xxx/control?digitalread=pin         //數位讀取
 http://192.168.xxx.xxx/control?analogread=pin          //類比讀取
 http://192.168.xxx.xxx/control?touchread=pin           //觸碰讀取
 http://192.168.xxx.xxx/control?flash=value             //內建閃光燈 value= 0~255
+http://192.168.xxx.xxx/control?serial=String             //Serial.println();
 
 官方指令格式 http://192.168.xxx.xxx/control?var=***&val=***
 http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
@@ -557,6 +558,9 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         int val = P1.toInt();
         ledcWrite(4,val);  
       }
+      else if (cmd=="serial") {
+        Serial.println(P1); 
+      }      
       else {
         Feedback="Command is not defined";
       }
@@ -902,7 +906,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         //https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
         if (Predictions[j].class=="person"&&Predictions[j].score>=0.5) {   
           try{
-          // $.ajax({url: document.location.origin+'/control?flash=10', async: false}); 
+            // $.ajax({url: document.location.origin+'/control?flash=10', async: false});  //Control flash
+            $.ajax({url: document.location.origin+'/control?serial='+Predictions[j].class, async: false});  //Serial.println();
           break;
           }
           catch(e){}
