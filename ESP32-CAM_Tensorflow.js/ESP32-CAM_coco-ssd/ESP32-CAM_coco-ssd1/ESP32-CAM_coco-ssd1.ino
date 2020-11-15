@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (tfjs coco-ssd)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-8 18:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-11-15 13:00
 https://www.facebook.com/francefu
 
 物件類別
@@ -26,8 +26,10 @@ http://192.168.xxx.xxx?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVG
 http://192.168.xxx.xxx?quality=value    // value = 10 to 63
 http://192.168.xxx.xxx?brightness=value    // value = -2 to 2
 http://192.168.xxx.xxx?contrast=value    // value = -2 to 2 
-http://192.168.xxx.xxx/?tcp=domain;port;request;wait
-http://192.168.xxx.xxx/?linenotify=token;request
+http://192.168.xxx.xxx?serial=String             //Serial.println();
+http://192.168.xxx.xxx?detectCount=object;count  //Serial.println();
+http://192.168.xxx.xxx?tcp=domain;port;request;wait
+http://192.168.xxx.xxx?linenotify=token;request
 --> request = message=xxxxx
 --> request = message=xxxxx&stickerPackageId=xxxxx&stickerId=xxxxx
 http://192.168.xxx.xxx?sendCapturedImageToLineNotify=token  //傳送影像截圖至LineNotify，最大解析度是SXGA
@@ -181,6 +183,9 @@ void ExecuteCommand()
     int val = P1.toInt();  
     s->set_brightness(s, val);  
   }
+  else if (cmd=="serial") {
+    Serial.println(P1); 
+  }     
   else if (cmd=="detectCount") {
     Serial.println(P1+" = "+P2); 
   }
@@ -505,7 +510,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     </td>
   </tr>  
   </table>
-  <iframe id="ifr" style="display:none"></iframe>
   <div id="result" style="color:red"><div>
 
   </body>
@@ -522,7 +526,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var count = document.getElementById('count'); 
     var result = document.getElementById('result');
     var flash = document.getElementById('flash'); 
-    var ifr = document.getElementById('ifr');
     var lastValue="";
     var myTimer;
     var restartCount=0;
@@ -540,7 +543,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       if (restartCount<=2) {
         result.innerHTML = "Get still error. <br>Restart ESP32-CAM "+restartCount+" times.";
         myTimer = setInterval(function(){getStill.click();},10000);
-        //ifr.src = document.location.origin+'?restart';
       }
       else
         result.innerHTML = "Get still error. <br>Please close the page and check ESP32-CAM.";
@@ -634,8 +636,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         }
     
       //if (count.innerHTML != lastValue) { 
-        lastValue = count.innerHTML;
-        ifr.src = document.location.origin+'/?detectCount='+object.value+';'+String(objectCount)+';stop';        
+          lastValue = count.innerHTML;
+          if (objectCount>0) {
+            //$.ajax({url: document.location.origin+'/?serial='+object.value+';stop', async: false});
+            $.ajax({url: document.location.origin+'/?detectCount='+object.value+';'+String(objectCount)+';stop', async: false}); 
+          }  
       //}
 
         try { 
