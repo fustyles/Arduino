@@ -970,12 +970,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   }  
                   
                   var nose = posenet_person(0,"nose");
-                  var score =Number(nose[2]);
+                  var score = Number(nose[2]);
                   var midX = Number(nose[3]);
                   var midY = Number(nose[4]);
                   if (hmirror.checked==true) mirrorimage = 1;
 
-                  
                   if (score>=0.5) {
                     if (midX>(40+320/2)) {  //畫面中心自訂水平小區域中即使偏右不轉動
                       if (midX>260) {  //區分距離畫面中點偏右程度
