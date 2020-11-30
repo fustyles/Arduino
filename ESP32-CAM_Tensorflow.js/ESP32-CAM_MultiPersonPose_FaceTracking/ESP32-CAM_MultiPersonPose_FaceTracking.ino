@@ -223,11 +223,11 @@ void setup() {
   //Servo
   ledcAttachPin(2, 3);  
   ledcSetup(3, 50, 16);
-  ledcWrite(3, 4850);
+  ledcWrite(3, 4850);  //90度
 
   ledcAttachPin(13, 5);  
   ledcSetup(5, 50, 16);
-  ledcWrite(5, 4850);  
+  ledcWrite(5, 4850);   //90度 
   
   //閃光燈
   ledcAttachPin(4, 4);  
@@ -907,10 +907,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           var getStill = document.getElementById('get-still');
           var hmirror = document.getElementById('hmirror');
           var lastValue="";
-          var myTimer;  
-          var restartCount=0; 
-          var angle1Value1 = 4850;
-          var angle1Value2 = 4850;
+          var angle1Value1 = 4850;  //90度
+          var angle1Value2 = 4850;  //90度
           var Model; 
           var imageScaleFactor = 0.75;
 
