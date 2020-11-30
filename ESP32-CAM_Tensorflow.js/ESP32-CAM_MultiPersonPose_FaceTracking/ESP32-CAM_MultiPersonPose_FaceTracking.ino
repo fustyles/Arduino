@@ -1023,13 +1023,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               }
            })
            
-            try { 
-              document.createEvent("TouchEvent");
-              setTimeout(function(){getStill.click();},500);
-            }
-            catch(e) { 
-              setTimeout(function(){getStill.click();},500);
-            } 
+            setTimeout(function(){getStill.click();},300);
           }   
 
           function posenet_person(input_person, input_part){
