@@ -906,7 +906,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           var result = document.getElementById('result');
           var getStill = document.getElementById('get-still');
           var hmirror = document.getElementById('hmirror');
-          var lastValue="";
           var angle1Value1 = 4850;  //90度
           var angle1Value2 = 4850;  //90度
           var Model; 
@@ -950,7 +949,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               result.innerHTML = "";
          
               if (pose.length>0) {
-                var k = pose[0].keypoints;
+                var k = pose[0].keypoints;  //只取偵測到的第一人追蹤
                 if (k.length>0) {
                   for (var i=0;i<k.length;i++) {
                     /*
@@ -967,13 +966,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                     result.innerHTML += "0," + k[i].part + "," + Math.round(k[i].score*100)/100 + "," + Math.round(k[i].position.x) + "," + Math.round(k[i].position.y) + "<br>";
                   }  
                   
-                  var nose = posenet_person(0,"nose");
+                  var nose = posenet_person(0,"nose");  //取得鼻子的位置資料
                   var score = Number(nose[2]);
                   var midX = Number(nose[3]);
                   var midY = Number(nose[4]);
-                  if (hmirror.checked==true) mirrorimage = 1;
+                  if (hmirror.checked==true) mirrorimage = 1;  //預設使用鏡像畫面取位置的數值不同
 
-                  if (score>=0.5) {
+                  if (score>=0.5) {  //限定鼻子可信分數要在0.5以上才追蹤
                     if (midX>(40+320/2)) {  //畫面中心自訂水平小區域中即使偏右不轉動
                       if (midX>260) {  //區分距離畫面中點偏右程度
                         if (mirrorimage==1) {angle1Value1-=350;}else{angle1Value1+=350;}
