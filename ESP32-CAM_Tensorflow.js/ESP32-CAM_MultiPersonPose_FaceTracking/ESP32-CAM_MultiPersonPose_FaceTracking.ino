@@ -3,9 +3,8 @@ ESP32-CAM Face Tracking (tfjs posenet)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-11-30 00:00
 https://www.facebook.com/francefu
 
-//If you use Motor Driver IC L9110(s), it can't work well.
-Servo(垂直旋轉) -> gpio2 (伺服馬達與ESP32-CAM共地外接電源)
-Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
+Servo1(水平旋轉) -> gpio2 (伺服馬達與ESP32-CAM共地外接電源)
+Servo2(垂直旋轉) -> gpio13 (伺服馬達與ESP32-CAM共地外接電源)
 
 物件類別
 https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
