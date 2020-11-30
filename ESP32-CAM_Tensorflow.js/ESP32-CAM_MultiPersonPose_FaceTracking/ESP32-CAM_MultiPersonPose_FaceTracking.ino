@@ -6,9 +6,6 @@ https://www.facebook.com/francefu
 Servo1(水平旋轉) -> gpio2 (伺服馬達與ESP32-CAM共地外接電源)
 Servo2(垂直旋轉) -> gpio13 (伺服馬達與ESP32-CAM共地外接電源)
 
-物件類別
-https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
-
 http://192.168.xxx.xxx             //網頁首頁管理介面
 http://192.168.xxx.xxx:81/stream   //取得串流影像       <img src="http://192.168.xxx.xxx:81/stream">
 http://192.168.xxx.xxx/capture     //取得影像          <img src="http://192.168.xxx.xxx/capture">
