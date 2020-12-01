@@ -1,6 +1,6 @@
 /*
 ESP32-CAM People Tracking (tfjs coco-ssd)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-1 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-1 23:00
 https://www.facebook.com/francefu
 
 Servo1(水平旋轉) -> gpio2 (伺服馬達與ESP32-CAM共地外接電源)
@@ -222,13 +222,15 @@ void setup() {
   s->set_hmirror(s, 1);  //鏡像
   
   //Servo
-  ledcAttachPin(2, 3);  
-  ledcSetup(3, 50, 16);
-  ledcWrite(3, angle1Value1);  //90度
-
-  ledcAttachPin(13, 5);  
+  ledcAttachPin(2, 5);  
   ledcSetup(5, 50, 16);
-  ledcWrite(5, angle1Value2);   //90度 
+  ledcWrite(5, angle1Value1);  //90度
+  delay(1000);
+  
+  ledcAttachPin(13, 6);  
+  ledcSetup(6, 50, 16);
+  ledcWrite(6, angle1Value2);   //90度 
+  delay(1000);
   
   //閃光燈
   ledcAttachPin(4, 4);  
@@ -598,19 +600,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       }       
       else if (cmd=="servo1") {
         int val = P1.toInt();
-        ledcAttachPin(2, 3);  
-        ledcSetup(3, 50, 16);      
-        if (val > 8000)
-           val = 8000;
-        else if (val < 1700)
-          val = 1700;   
-        val = 1700 + (8000 - val);   
-        ledcWrite(3, val); 
-        Serial.println("servo1="+String(val));
-      }  
-      else if (cmd=="servo2") {
-        int val = P1.toInt();
-        ledcAttachPin(13, 5);  
+        ledcAttachPin(2, 5);  
         ledcSetup(5, 50, 16);      
         if (val > 8000)
            val = 8000;
@@ -618,6 +608,18 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           val = 1700;   
         val = 1700 + (8000 - val);   
         ledcWrite(5, val); 
+        Serial.println("servo1="+String(val));
+      }  
+      else if (cmd=="servo2") {
+        int val = P1.toInt();
+        ledcAttachPin(13, 6);  
+        ledcSetup(6, 50, 16);      
+        if (val > 8000)
+           val = 8000;
+        else if (val < 1700)
+          val = 1700;   
+        val = 1700 + (8000 - val);   
+        ledcWrite(6, val); 
         Serial.println("servo2="+String(val));
       }      
       else {
@@ -843,7 +845,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                         <div class="input-group" id="framesize-group">
                             <label for="framesize">Resolution</label>
                             <select id="framesize" class="default-action">
-                                <option value="4">QVGA(320x240)</option>
+                              <option value="10">UXGA(1600x1200)</option>
+                              <option value="9">SXGA(1280x1024)</option>
+                              <option value="8">XGA(1024x768)</option>
+                              <option value="7">SVGA(800x600)</option>
+                              <option value="6">VGA(640x480)</option>
+                              <option value="5">CIF(400x296)</option>
+                              <option value="4">QVGA(320x240)</option>
+                              <option value="3">HQVGA(240x176)</option>
+                              <option value="0">QQVGA(160x120)</option>
                             </select>
                         </div>
                         <div class="input-group" id="quality-group">
@@ -1042,14 +1052,14 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               var mirrorimage = 0;
 
               //辨識影像大小
-              var imageWidth = 320;
-              var imageHeight = 240;
+              var imageWidth = ShowImage.width;
+              var imageHeight = ShowImage.height;
               
               //中心區域座標
-              var x_Left = 120;
-              var x_Right = 200;
-              var y_Top = 90;
-              var y_Bottom = 150;
+              var x_Left = ShowImage.width*3/8;
+              var x_Right = ShowImage.width*5/8;
+              var y_Top = ShowImage.height*3/8;
+              var y_Bottom = ShowImage.height*5/8;
               
               //console.log('Predictions: ', Predictions);
               if (Predictions.length>0) {
