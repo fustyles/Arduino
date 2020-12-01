@@ -251,10 +251,12 @@ void setup() {
   ledcAttachPin(2, 3);  
   ledcSetup(3, 50, 16);
   ledcWrite(3, 4850);
+  delay(1000);
 
   ledcAttachPin(13, 5);  
   ledcSetup(5, 50, 16);
   ledcWrite(5, 4850);  
+  delay(1000);
   
   //閃光燈
   ledcAttachPin(4, 4);  
