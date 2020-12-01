@@ -52,8 +52,8 @@ const char* password = "*****";   //your network password
 const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 
-int angle1Value1 = 4850;
-int angle1Value2 = 4850;
+int angle1Value1 = 4850;   //90度，對應網頁初始設定
+int angle1Value2 = 4850;   //90度，對應網頁初始設定
 
 #include <WiFi.h>
 #include <esp32-hal-ledc.h>      //用於控制伺服馬達
@@ -223,11 +223,11 @@ void setup() {
   //Servo
   ledcAttachPin(2, 3);  
   ledcSetup(3, 50, 16);
-  ledcWrite(3, 4850);  //90度
+  ledcWrite(3, angle1Value1);  //90度
 
   ledcAttachPin(13, 5);  
   ledcSetup(5, 50, 16);
-  ledcWrite(5, 4850);   //90度 
+  ledcWrite(5, angle1Valueㄉ);   //90度 
   
   //閃光燈
   ledcAttachPin(4, 4);  
