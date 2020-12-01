@@ -643,7 +643,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if(!strcmp(variable, "brightness")) res = s->set_brightness(s, val);
       else if(!strcmp(variable, "hmirror")) res = s->set_hmirror(s, val);
       else if(!strcmp(variable, "vflip")) res = s->set_vflip(s, val);
-      else if(!strcmp(variable, "flash")) {
+      else if(!strcmp(variable, "flash")) {  //自訂閃光燈指令
         ledcAttachPin(4, 4);  
         ledcSetup(4, 5000, 8);        
         ledcWrite(4,val);
@@ -910,9 +910,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           var imageScaleFactor = 0.75;
 
           window.onload = function () {LoadModel();}
+          
           function LoadModel() {
             posenet.load().then(function(net) {
-              console.log(net);
               Model = net;
               result.innerHTML = "";
               getStill.click();
