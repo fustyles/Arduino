@@ -27,6 +27,7 @@ http://192.168.xxx.xxx/control?digitalread=pin         //數位讀取
 http://192.168.xxx.xxx/control?analogread=pin          //類比讀取
 http://192.168.xxx.xxx/control?touchread=pin           //觸碰讀取
 http://192.168.xxx.xxx/control?flash=value             //內建閃光燈 value= 0~255
+http://192.168.xxx.xxx/control?serial=string           //序列埠監看視窗輸出字串
 http://192.168.xxx.xxx/control?servo1=value            //伺服馬達1 value= 1700~8000
 http://192.168.xxx.xxx/control?servo2=value            //伺服馬達2 value= 1700~8000
 
