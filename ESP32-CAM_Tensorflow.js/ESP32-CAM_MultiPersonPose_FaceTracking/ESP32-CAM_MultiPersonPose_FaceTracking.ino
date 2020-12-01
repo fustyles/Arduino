@@ -216,9 +216,7 @@ void setup() {
   //drop down frame size for higher initial frame rate
   sensor_t * s = esp_camera_sensor_get();
   s->set_framesize(s, FRAMESIZE_QVGA);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA  設定初始化影像解析度
-
-  //鏡像
-  s->set_hmirror(s, 1);
+  s->set_hmirror(s, 1);  //鏡像
   
   //Servo
   ledcAttachPin(2, 3);  
@@ -227,7 +225,7 @@ void setup() {
 
   ledcAttachPin(13, 5);  
   ledcSetup(5, 50, 16);
-  ledcWrite(5, angle1Valueㄉ);   //90度 
+  ledcWrite(5, angle1Value2);   //90度 
   
   //閃光燈
   ledcAttachPin(4, 4);  
