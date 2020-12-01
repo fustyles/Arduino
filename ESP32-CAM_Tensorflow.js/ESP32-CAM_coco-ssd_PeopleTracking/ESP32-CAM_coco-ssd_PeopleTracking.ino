@@ -1,6 +1,6 @@
 /*
 ESP32-CAM People Tracking (tfjs coco-ssd)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-11-30 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-1 22:00
 https://www.facebook.com/francefu
 
 Servo1(水平旋轉) -> gpio2 (伺服馬達與ESP32-CAM共地外接電源)
@@ -30,6 +30,7 @@ http://192.168.xxx.xxx/control?digitalread=pin         //數位讀取
 http://192.168.xxx.xxx/control?analogread=pin          //類比讀取
 http://192.168.xxx.xxx/control?touchread=pin           //觸碰讀取
 http://192.168.xxx.xxx/control?flash=value             //內建閃光燈 value= 0~255
+http://192.168.xxx.xxx/control?serial=string           //序列埠監看視窗輸出字串
 http://192.168.xxx.xxx/control?servo1=value        //value= 1700~8000
 http://192.168.xxx.xxx/control?servo2=value        //value= 1700~8000
 
@@ -44,7 +45,6 @@ http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255
       
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
-重設網路：http://192.168.4.1/?resetwifi=ssid;password
 */
 
 //輸入WIFI連線帳號密碼
@@ -55,8 +55,8 @@ const char* password = "*****";   //your network password
 const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 
-int angle1Value1 = 4850;
-int angle1Value2 = 4850;
+int angle1Value1 = 4850;   //90度，對應網頁初始設定
+int angle1Value2 = 4850;   //90度，對應網頁初始設定
 
 #include <WiFi.h>
 #include <esp32-hal-ledc.h>      //用於控制伺服馬達
@@ -219,18 +219,16 @@ void setup() {
   //drop down frame size for higher initial frame rate
   sensor_t * s = esp_camera_sensor_get();
   s->set_framesize(s, FRAMESIZE_QVGA);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA  設定初始化影像解析度
-
-  //鏡像
-  s->set_hmirror(s, 1);
+  s->set_hmirror(s, 1);  //鏡像
   
   //Servo
   ledcAttachPin(2, 3);  
   ledcSetup(3, 50, 16);
-  ledcWrite(3, 4850);
+  ledcWrite(3, angle1Value1);  //90度
 
   ledcAttachPin(13, 5);  
   ledcSetup(5, 50, 16);
-  ledcWrite(5, 4850);  
+  ledcWrite(5, angle1Value2);   //90度 
   
   //閃光燈
   ledcAttachPin(4, 4);  
@@ -648,7 +646,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if(!strcmp(variable, "brightness")) res = s->set_brightness(s, val);
       else if(!strcmp(variable, "hmirror")) res = s->set_hmirror(s, val);
       else if(!strcmp(variable, "vflip")) res = s->set_vflip(s, val);
-      else if(!strcmp(variable, "flash")) {
+      else if(!strcmp(variable, "flash")) {  //自訂閃光燈指令
         ledcAttachPin(4, 4);  
         ledcSetup(4, 5000, 8);        
         ledcWrite(4,val);
@@ -1006,42 +1004,14 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           var result = document.getElementById('result');
           var count = document.getElementById('count');
           var getStill = document.getElementById('get-still');
-          var hmirror = document.getElementById('hmirror');
-          var lastValue="";
-          var myTimer;  
-          var restartCount=0;     
-          var Model;
-          var angle1Value1 = 4850;
-          var angle1Value2 = 4850;      
+          var hmirror = document.getElementById('hmirror'); 
+          var angle1Value1 = 4850;  //90度
+          var angle1Value2 = 4850;  //90度            
+          var Model;       
 
-          getStill.onclick = function (event) { 
-            clearInterval(myTimer);   
-            myTimer = setInterval(function(){error_handle();},5000);
-            ShowImage.src=location.origin+'/?getstill='+Math.random();
-          }
-      
-          function error_handle() {
-            restartCount++;
-            clearInterval(myTimer);
-            if (restartCount<=2) {
-              result.innerHTML = "Get still error. Restart ESP32-CAM "+restartCount+" times.";
-              myTimer = setInterval(function(){getStill.click();},10000);
-            }
-            else
-              result.innerHTML = "Get still error. Please check ESP32-CAM and reload the page.";
-          }     
-      
-          ShowImage.onload = function (event) {
-            clearInterval(myTimer);
-            restartCount=0;      
-            canvas.setAttribute("width", ShowImage.width);
-            canvas.setAttribute("height", ShowImage.height);
-            context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height);
-            if (Model)
-              DetectImage();      
-          }  
+          window.onload = function () {loadModel();}
+                    
           function loadModel() {
-            result.innerHTML = "Please wait for loading model.";
             cocoSsd.load().then(cocoSsd_Model => {
               Model = cocoSsd_Model;
               result.innerHTML = "";
@@ -1050,22 +1020,47 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             }); 
           }
           
+          ShowImage.onload = function (event) {
+            if (Model) {
+              try { 
+                document.createEvent("TouchEvent");
+                DetectImage();
+              }
+              catch(e) { 
+                DetectImage();
+              }   
+            }     
+          }  
+          
           function DetectImage() {
+            canvas.setAttribute("width", ShowImage.width);
+            canvas.setAttribute("height", ShowImage.height);
+            context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height); 
+                       
             Model.detect(canvas).then(Predictions => {    
-              var s = (canvas.width>canvas.height)?canvas.width:canvas.height;
               var objectCount=0;  //紀錄偵測到物件總數
-              var trackState = 0;  //是否已偵測到物件
-              var x, y, width, height;
               var mirrorimage = 0;
+
+              //辨識影像大小
+              var imageWidth = 320;
+              var imageHeight = 240;
+              
+              //中心區域座標
+              var x_Left = 120;
+              var x_Right = 200;
+              var y_Top = 90;
+              var y_Bottom = 150;
               
               //console.log('Predictions: ', Predictions);
               if (Predictions.length>0) {
                 result.innerHTML = "";
+                var s = (canvas.width>canvas.height)?canvas.width:canvas.height;
                 for (var i=0;i<Predictions.length;i++) {
                   const x = Predictions[i].bbox[0];
                   const y = Predictions[i].bbox[1];
                   const width = Predictions[i].bbox[2];
                   const height = Predictions[i].bbox[3];
+                  
                   context.lineWidth = Math.round(s/200);
                   context.strokeStyle = "#00FFFF";
                   context.beginPath();
@@ -1077,13 +1072,14 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   context.fillText(Predictions[i].class, x, y);
                   //context.fillText(i, x, y);
                   result.innerHTML+= "[ "+i+" ] "+Predictions[i].class+", "+Math.round(Predictions[i].score*100)+"%, "+Math.round(x)+", "+Math.round(y)+", "+Math.round(width)+", "+Math.round(height)+"<br>";
-                  if (Predictions[i].class==object.value&&Predictions[i].score>=score.value&&trackState==0) {   
-                    trackState = 1;  //只偵測第一人
 
+                  //只偵測第一人
+                  if (Predictions[i].class==object.value&&Predictions[i].score>=score.value&&i==0) {   
+                     
                     if (hmirror.checked==true) mirrorimage = 1;
                     var midX = Math.round(x)+Math.round(width)/2;  //取偵測到第一人的區域水平中點X值
-                    if (midX>(40+320/2)) {  //畫面中心自訂水平小區域中即使偏右不轉動
-                      if (midX>260) {  //區分距離畫面中點偏右程度
+                    if (midX > x_Right) {  //畫面中心自訂水平小區域中即使偏右不轉動
+                      if (midX > (x_Right+imageWidth)/2) {  //區分距離畫面中點偏右程度
                         if (mirrorimage==1) {angle1Value1-=350;}else{angle1Value1+=350;}
                       } else {
                         if (mirrorimage==1) {angle1Value1-=175;}else{angle1Value1+=175;}
@@ -1092,8 +1088,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                       if (angle1Value1 < 2050) angle1Value1 = 2050;
                       $.ajax({url: document.location.origin+'/control?servo1='+angle1Value1, async: false}); 
                     }
-                    else if (midX<(320/2)-40) {  //畫面中心自訂水平小區域中即使偏左不轉動
-                      if (midX<60) {  //區分距離畫面中點偏左程度
+                    else if (midX < x_Left) {  //畫面中心自訂水平小區域中即使偏左不轉動
+                      if (midX < x_Left/2) {  //區分距離畫面中點偏左程度
                         if (mirrorimage==1) {angle1Value1+=350;}else{angle1Value1-=350;}
                       } else {
                         if (mirrorimage==1) {angle1Value1+=175;}else{angle1Value1-=175;}
@@ -1104,8 +1100,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                     }
                       
                     var midY = Math.round(y)+Math.round(height)/2;  //取偵測到第一人的區域垂直中點Y值
-                    if (midY>(240/2+30)) {  //畫面中心自訂小區域中即使偏下不轉動
-                      if (midY>195) {  //區分距離畫面中點偏下程度
+                    if (midY > y_Bottom) {  //畫面中心自訂小區域中即使偏下不轉動
+                      if (midY > (y_Bottom+imageHeight)/2) {  //區分距離畫面中點偏下程度
                         angle1Value2-=300;
                       } else {
                         angle1Value2-=150; 
@@ -1114,8 +1110,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                       if (angle1Value2 < 2050) angle1Value2 = 2050;                  
                       $.ajax({url: document.location.origin+'/control?servo2='+angle1Value2, async: false}); 
                     }
-                    else if (midY<(240/2)-30) {  //畫面中心自訂小區域中即使偏上不轉動
-                      if (midY<45) {  //區分距離畫面中點偏上程度
+                    else if (midY < y_Top) {  //畫面中心自訂小區域中即使偏上不轉動
+                      if (midY < y_Top/2) {  //區分距離畫面中點偏上程度
                         angle1Value2+=300;
                       } else {
                         angle1Value2+=150;   
@@ -1166,9 +1162,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 result.innerHTML = 'fail';
               }
             });
-          }     
-      
-          window.onload = function () { loadModel(); }            
+          }      
         </script>
     </body>
 </html>        
