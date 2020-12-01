@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Face Tracking (tfjs posenet)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-11-30 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-1 21:00
 https://www.facebook.com/francefu
 
 Servo1(水平旋轉) -> gpio2 (伺服馬達與ESP32-CAM共地外接電源)
@@ -42,7 +42,6 @@ http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255
       
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
-重設網路：http://192.168.4.1/?resetwifi=ssid;password
 */
 
 //輸入WIFI連線帳號密碼
@@ -556,7 +555,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       }  
       else if (cmd=="restart") {  //重設WIFI連線
         ESP.restart();
-      }  
+      }       
       else if (cmd=="digitalwrite") {
         ledcDetachPin(P1.toInt());
         pinMode(P1.toInt(), OUTPUT);
@@ -909,7 +908,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           var angle1Value2 = 4850;  //90度
           var Model; 
           var imageScaleFactor = 0.75;
-
           window.onload = function () {LoadModel();}
           
           function LoadModel() {
@@ -964,17 +962,29 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                     */
                     result.innerHTML += "0," + k[i].part + "," + Math.round(k[i].score*100)/100 + "," + Math.round(k[i].position.x) + "," + Math.round(k[i].position.y) + "<br>";
                   }  
+
+                  //辨識影像大小
+                  var imageWidth = 320;
+                  var imageHeight = 240;
                   
-                  var nose = posenet_person(0,"nose");  //取得鼻子的位置資料
+                  //中心區域座標
+                  var x_Left = 120;
+                  var x_Right = 200;
+                  var y_Top = 90;
+                  var y_Bottom = 150;
+
+                  var scoreLimit = 0.5;
+                  
+                  var nose = posenet_person(0,"nose");  //取得偵測到的第一人鼻子的位置資料
                   var score = Number(nose[2]);
                   var midX = Number(nose[3]);
                   var midY = Number(nose[4]);
+                  
                   if (hmirror.checked==true) mirrorimage = 1;  //預設使用鏡像畫面
-
-                  if (score>=0.5) {  //限定鼻子可信分數要在0.5以上才追蹤
-                    if (midX>(40+320/2)) {  //畫面中心自訂水平小區域中即使偏右不轉動
-                      if (midX>260) {  //區分距離畫面中點偏右程度
-                        if (mirrorimage==1) {angle1Value1-=350;}else{angle1Value1+=350;}
+                  if (score >= scoreLimit) {  //限定鼻子可信分數要在0.5以上才追蹤
+                    if (midX > x_Right) {  //畫面中心自訂水平小區域中即使偏右不轉動
+                      if (midX > (x_Right+imageWidth)/2) {  //區分距離畫面中點偏右程度
+                        if (mirrorimage==1) {angle1Value1-=350;}else{angle1Value1+=350;}  //轉動1度值約35
                       } else {
                         if (mirrorimage==1) {angle1Value1-=175;}else{angle1Value1+=175;}
                       }
@@ -982,8 +992,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                       if (angle1Value1 < 2050) angle1Value1 = 2050;
                       $.ajax({url: document.location.origin+'/control?servo1='+angle1Value1, async: false}); 
                     }
-                    else if (midX<(320/2)-40) {  //畫面中心自訂水平小區域中即使偏左不轉動
-                      if (midX<60) {  //區分距離畫面中點偏左程度
+                    else if (midX<x_Left) {  //畫面中心自訂水平小區域中即使偏左不轉動
+                      if (midX < x_Left/2) {  //區分距離畫面中點偏左程度
                         if (mirrorimage==1) {angle1Value1+=350;}else{angle1Value1-=350;}
                       } else {
                         if (mirrorimage==1) {angle1Value1+=175;}else{angle1Value1-=175;}
@@ -993,8 +1003,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                       $.ajax({url: document.location.origin+'/control?servo1='+angle1Value1, async: false}); 
                     }
                       
-                    if (midY>(240/2+30)) {  //畫面中心自訂小區域中即使偏下不轉動
-                      if (midY>195) {  //區分距離畫面中點偏下程度
+                    if (midY > y_Bottom) {  //畫面中心自訂小區域中即使偏下不轉動
+                      if (midY > (y_Bottom+imageHeight)/2) {  //區分距離畫面中點偏下程度
                         angle1Value2-=300;
                       } else {
                         angle1Value2-=150; 
@@ -1003,8 +1013,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                       if (angle1Value2 < 2050) angle1Value2 = 2050;                  
                       $.ajax({url: document.location.origin+'/control?servo2='+angle1Value2, async: false}); 
                     }
-                    else if (midY<(240/2)-30) {  //畫面中心自訂小區域中即使偏上不轉動
-                      if (midY<45) {  //區分距離畫面中點偏上程度
+                    else if (midY < y_Top) {  //畫面中心自訂小區域中即使偏上不轉動
+                      if (midY < y_Top/2) {  //區分距離畫面中點偏上程度
                         angle1Value2+=300;
                       } else {
                         angle1Value2+=150;   
@@ -1020,7 +1030,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
            
             setTimeout(function(){getStill.click();},300);
           }   
-
           function posenet_person(input_person, input_part){
             var result = document.getElementById("result").innerHTML.split("<br>");
             if (result.length>0) {
