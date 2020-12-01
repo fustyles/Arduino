@@ -222,11 +222,13 @@ void setup() {
   ledcAttachPin(2, 5);  
   ledcSetup(5, 50, 16);
   ledcWrite(5, angle1Value1);  //90度
+  delay(1000);
 
   ledcAttachPin(13, 6);  
   ledcSetup(6, 50, 16);
   ledcWrite(6, angle1Value2);   //90度 
-  
+  delay(1000);
+      
   //閃光燈
   ledcAttachPin(4, 4);  
   ledcSetup(4, 5000, 8);    
