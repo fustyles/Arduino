@@ -970,7 +970,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   var score = Number(nose[2]);
                   var midX = Number(nose[3]);
                   var midY = Number(nose[4]);
-                  if (hmirror.checked==true) mirrorimage = 1;  //預設使用鏡像畫面取位置的數值不同
+                  if (hmirror.checked==true) mirrorimage = 1;  //預設使用鏡像畫面
 
                   if (score>=0.5) {  //限定鼻子可信分數要在0.5以上才追蹤
                     if (midX>(40+320/2)) {  //畫面中心自訂水平小區域中即使偏右不轉動
@@ -1032,24 +1032,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             }
             }
             return "-1,-1,-1,-1,-1";
-          }                  
-      
-          function getFeedback(target) {
-            var data = $.ajax({
-            type: "get",
-            dataType: "text",
-            url: target,
-            success: function(response)
-              {
-                result.innerHTML = response;
-              },
-              error: function(exception)
-              {
-                result.innerHTML = 'fail';
-              }
-            });
-          }    
-          
+          }         
         </script>
     </body>
 </html>        
