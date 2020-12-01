@@ -251,7 +251,7 @@ void setup() {
   } 
 
   if (WiFi.status() == WL_CONNECTED) {    //若連線成功
-    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP         
+    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定WiFi熱點顯示客戶端IP         
     Serial.println("");
     Serial.println("STAIP address: ");
     Serial.println(WiFi.localIP());  
