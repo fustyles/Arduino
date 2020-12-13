@@ -9,7 +9,7 @@ TFT_MISO --> IO12
 TFT_SCLK --> IO14
 TFT_CS   --> IO15
 TFT_DC   --> IO2
-TFT_RST  --> IO16 (Not IO4)
+TFT_RST  --> IO16 (Don't use IO4)
 TFT_VCC  --> 3.3V
 TFT_LED  --> 3.3V
 TFT_GND  --> GND
