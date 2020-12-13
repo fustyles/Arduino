@@ -184,4 +184,7 @@ void loop() {
   #endif
   
   esp_camera_fb_return(fb); 
+  
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);      
 }
