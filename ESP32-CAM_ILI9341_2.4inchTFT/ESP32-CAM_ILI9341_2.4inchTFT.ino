@@ -13,7 +13,7 @@ https://blog.xuite.net/iamleon/blog/589421027
 Datasheet
 http://tjcfile.iicp.net:885/tft/2.8_spi/2.8-spi-9341.rar
 
-Add the settings in the file.  \Documents\Arduino\libraries\TFT_eSPI-master\User_Setup.h
+Add the settings in the file.  C:\Users\..\Documents\Arduino\libraries\TFT_eSPI-master\User_Setup.h
 #define TFT_MOSI 13
 #define TFT_MISO 12
 #define TFT_SCLK 14
