@@ -10,14 +10,6 @@ https://github.com/Bodmer/TJpg_Decoder
 Datasheet
 http://tjcfile.iicp.net:885/tft/2.8_spi/2.8-spi-9341.rar
 
-Add the settings in the file.  C:\Users\..\Documents\Arduino\libraries\TFT_eSPI-master\User_Setup.h
-#define TFT_MOSI 13
-#define TFT_MISO 12
-#define TFT_SCLK 14
-#define TFT_CS   15  // Chip select control pin
-#define TFT_DC   2   // Data Command control pin
-#define TFT_RST  16   // Reset pin (could connect to RST pin)
-
 TFT_MOSI --> IO13
 TFT_MISO --> IO12
 TFT_SCLK --> IO14
@@ -27,6 +19,14 @@ TFT_RST  --> IO16
 TFT_VCC  --> 3.3V
 TFT_LED  --> 3.3V
 TFT_GND  --> GND
+
+Add the settings in the file.  C:\Users\..\Documents\Arduino\libraries\TFT_eSPI-master\User_Setup.h
+#define TFT_MOSI 13
+#define TFT_MISO 12
+#define TFT_SCLK 14
+#define TFT_CS   15  // Chip select control pin
+#define TFT_DC   2   // Data Command control pin
+#define TFT_RST  16   // Reset pin (could connect to RST pin)
 */
 
 #include "soc/soc.h"
