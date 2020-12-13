@@ -146,7 +146,6 @@ void setup() {
   tft.begin();
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
   tft.fillScreen(TFT_BLACK);
-  tft.setTextColor(TFT_ORANGE, TFT_BLACK);
   tft.setRotation(3);//1:landscape 3:inv. landscape
 
   #ifdef USE_DMA
