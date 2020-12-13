@@ -7,9 +7,6 @@ Libraries：
 https://github.com/Bodmer/TFT_eSPI
 https://github.com/Bodmer/TJpg_Decoder
 
-Tutorial
-https://blog.xuite.net/iamleon/blog/589421027
-
 Datasheet
 http://tjcfile.iicp.net:885/tft/2.8_spi/2.8-spi-9341.rar
 
