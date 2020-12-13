@@ -18,7 +18,9 @@ Add the settings in the file.  C:\Users\..\Documents\Arduino\libraries\TFT_eSPI-
 #define TFT_DC   2   // Data Command control pin
 #define TFT_RST  16   // Reset pin (could connect to RST pin)
 
+// TFT_VCC --> 3.3V
 // TFT_LED --> 3.3V
+// TFT_GND --> GND
 */
 
 #include "soc/soc.h"
