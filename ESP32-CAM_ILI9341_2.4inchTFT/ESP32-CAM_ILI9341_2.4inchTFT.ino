@@ -21,7 +21,7 @@ Add the settings in the file.  \Documents\Arduino\libraries\TFT_eSPI-master\User
 #define TFT_DC   2   // Data Command control pin
 #define TFT_RST  16   // Reset pin (could connect to RST pin)
 
-//#define LED --> 3.3V
+//#define TFT_LED --> 3.3V
 */
 
 #include "soc/soc.h"
