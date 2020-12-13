@@ -178,7 +178,6 @@ void loop() {
   #endif
 
   // Draw the image, top left at 0,0 - DMA request is handled in the call-back tft_output() in this sketch
-  //TJpgDec.drawJpg(0, 0, panda, sizeof(panda));
   TJpgDec.drawJpg(0, 0,  fb->buf, fb->len);
 
   #ifdef USE_DMA
@@ -186,8 +185,5 @@ void loop() {
   tft.endWrite();
   #endif
   
-  esp_camera_fb_return(fb); 
-  
-  pinMode(4, OUTPUT);
-  digitalWrite(4, LOW);      
+  esp_camera_fb_return(fb);      
 }
