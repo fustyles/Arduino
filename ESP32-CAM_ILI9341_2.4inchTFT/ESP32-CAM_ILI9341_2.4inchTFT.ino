@@ -3,10 +3,6 @@ ESP32-CAM 2.4 inch TFT LCD Display Module (ILI9341, SPI, 240x320)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-13 21:00
 https://www.facebook.com/francefu
 
-Libraries：
-https://github.com/Bodmer/TFT_eSPI
-https://github.com/Bodmer/TJpg_Decoder
-
 Datasheet
 http://tjcfile.iicp.net:885/tft/2.8_spi/2.8-spi-9341.rar
 
@@ -19,6 +15,10 @@ TFT_RST  --> IO16
 TFT_VCC  --> 3.3V
 TFT_LED  --> 3.3V
 TFT_GND  --> GND
+
+Libraries：
+https://github.com/Bodmer/TFT_eSPI
+https://github.com/Bodmer/TJpg_Decoder
 
 Add the settings in the file.  C:\Users\..\Documents\Arduino\libraries\TFT_eSPI-master\User_Setup.h
 #define TFT_MOSI 13
