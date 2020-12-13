@@ -149,9 +149,9 @@ void setup() {
   tft.setTextColor(TFT_ORANGE, TFT_BLACK);
   tft.setRotation(3);//1:landscape 3:inv. landscape
 
-#ifdef USE_DMA
-  tft.initDMA(); // To use SPI DMA you must call initDMA() to setup the DMA engine
-#endif
+  #ifdef USE_DMA
+    tft.initDMA(); // To use SPI DMA you must call initDMA() to setup the DMA engine
+  #endif
 
   // The jpeg image can be scaled down by a factor of 1, 2, 4, or 8
   TJpgDec.setJpgScale(1);
