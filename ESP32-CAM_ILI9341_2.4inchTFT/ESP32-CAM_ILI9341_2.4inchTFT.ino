@@ -1,6 +1,6 @@
 /*
 ESP32-CAM 2.4 inch TFT LCD Display Module (ILI9341, SPI, 240x320)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-13 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-13 23:00
 https://www.facebook.com/francefu
 
 TFT_MOSI --> IO13
@@ -21,9 +21,9 @@ Add the settings at the end of the file.  C:\Users\..\Documents\Arduino\librarie
 #define TFT_MOSI 13
 #define TFT_MISO 12
 #define TFT_SCLK 14
-#define TFT_CS   15  // Chip select control pin
-#define TFT_DC   2   // Data Command control pin
-#define TFT_RST  16   // Reset pin (could connect to RST pin)
+#define TFT_CS   15
+#define TFT_DC   2
+#define TFT_RST  16
 */
 
 #include "soc/soc.h"
