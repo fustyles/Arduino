@@ -56,19 +56,16 @@ TFT_eSPI tft = TFT_eSPI();         // Invoke custom library
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
-uint16_t  dmaBuffer1[16*16];
-uint16_t  dmaBuffer2[16*16];
-uint16_t* dmaBufferPtr = dmaBuffer1;
-bool dmaBufferSel = 0;
+uint16_t  dmaBuffer[16*16];
 
 bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap)
 {
-  if ( y >= tft.height() ) return 0;
-  dmaBufferPtr = dmaBuffer2;
-  dmaBufferSel = !dmaBufferSel; // Toggle buffer selection
-  //  pushImageDMA() will clip the image block at screen boundaries before initiating DMA
-  tft.pushImageDMA(x, y, w, h, bitmap, dmaBufferPtr); // Initiate DMA - blocking only if last DMA is not complete
-  return 1;
+  if (y>=tft.height()) 
+    return 0;
+  else {
+    tft.pushImageDMA(x, y, w, h, bitmap, dmaBuffer);
+    return 1;
+  }
 }
 
 void setup() {
