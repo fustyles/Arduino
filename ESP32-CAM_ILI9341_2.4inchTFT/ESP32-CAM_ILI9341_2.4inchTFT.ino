@@ -34,8 +34,8 @@ Add the settings at the end of the file.  C:\Users\..\Documents\Arduino\librarie
 #include "esp_camera.h"
 #include "SPI.h"
 #include <TJpg_Decoder.h>
-#include <TFT_eSPI.h>              // Hardware-specific library
-TFT_eSPI tft = TFT_eSPI();         // Invoke custom library
+#include <TFT_eSPI.h>
+TFT_eSPI tft = TFT_eSPI();
 
 //CAMERA_MODEL_AI_THINKER
 #define PWDN_GPIO_NUM     32
