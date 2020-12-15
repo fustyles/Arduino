@@ -60,17 +60,16 @@ https://www.arduinolibraries.info/libraries/adafruit-ili9341
 #define TFT_DC   2
 #define TFT_RST  16
 
-#define TFT_WHITE   ILI9341_WHITE   /* 255, 255, 255 */
-#define TFT_BLACK   ILI9341_BLACK   /*   0,   0,   0 */
-#define TFT_RED     ILI9341_RED     /* 255,   0,   0 */
-#define TFT_ORANGE  ILI9341_ORANGE  /* 255, 165,   0 */
-#define TFT_YELLOW  ILI9341_YELLOW  /* 255, 255,   0 */
-#define TFT_GREEN   ILI9341_GREEN   /*   0, 255,   0 */
-#define TFT_CYAN    ILI9341_CYAN    /*   0, 255, 255 */
-#define TFT_BLUE    ILI9341_BLUE    /*   0,   0, 255 */
-#define TFT_MAGENTA ILI9341_MAGENTA /* 255,   0, 255 */
+#define TFT_WHITE   ILI9341_WHITE
+#define TFT_BLACK   ILI9341_BLACK
+#define TFT_RED     ILI9341_RED
+#define TFT_ORANGE  ILI9341_ORANGE
+#define TFT_YELLOW  ILI9341_YELLOW
+#define TFT_GREEN   ILI9341_GREEN
+#define TFT_CYAN    ILI9341_CYAN
+#define TFT_BLUE    ILI9341_BLUE
+#define TFT_MAGENTA ILI9341_MAGENTA
 
-// Invoke TFT library with TFT signal pins
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST, TFT_MISO);
 
 void setup() {
@@ -83,7 +82,7 @@ void setup() {
   // Initialise the TFT
   tft.begin();
   tft.fillScreen(TFT_BLACK);
-  tft.setRotation(3);//1:landscape 3:inv. landscape  
+  tft.setRotation(3);
 
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
