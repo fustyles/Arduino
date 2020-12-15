@@ -51,7 +51,6 @@ https://www.arduinolibraries.info/libraries/adafruit-ili9341
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
-// Call up the TFT libraries
 #include <Adafruit_GFX.h>
 #include <Adafruit_ILI9341.h>
 
