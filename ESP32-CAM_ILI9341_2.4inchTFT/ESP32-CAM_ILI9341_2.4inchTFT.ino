@@ -14,7 +14,8 @@ TFT_VCC  --> 3.3V
 TFT_LED  --> 3.3V
 TFT_GND  --> GND
 
-https://www.taiwaniot.com.tw/product/2-8%E5%90%8B-tft-lcd-%E6%B6%B2%E6%99%B6%E8%9E%A2%E5%B9%95-240320-spi-%E9%A1%AF%E7%A4%BA%E5%8F%AA%E9%9C%80-4-io/
+Introduction
+http://www.lcdwiki.com/2.8inch_SPI_Module_ILI9341_SKU:MSP2807
 
 Libraries：
 https://github.com/Bodmer/TFT_eSPI
