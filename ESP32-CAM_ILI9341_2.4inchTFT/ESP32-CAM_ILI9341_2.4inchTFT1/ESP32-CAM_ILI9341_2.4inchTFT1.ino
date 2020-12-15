@@ -51,9 +51,6 @@ https://www.arduinolibraries.info/libraries/adafruit-ili9341
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
-#include <Adafruit_GFX.h>
-#include <Adafruit_ILI9341.h>
-
 #define TFT_WHITE   ILI9341_WHITE
 #define TFT_BLACK   ILI9341_BLACK
 #define TFT_RED     ILI9341_RED
