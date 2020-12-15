@@ -55,13 +55,6 @@ https://www.arduinolibraries.info/libraries/adafruit-ili9341
 #include <Adafruit_GFX.h>
 #include <Adafruit_ILI9341.h>
 
-#define TFT_MOSI 13
-#define TFT_MISO 12
-#define TFT_SCLK 14
-#define TFT_CS   15
-#define TFT_DC   2
-#define TFT_RST  16
-
 #define TFT_WHITE   ILI9341_WHITE
 #define TFT_BLACK   ILI9341_BLACK
 #define TFT_RED     ILI9341_RED
@@ -71,6 +64,13 @@ https://www.arduinolibraries.info/libraries/adafruit-ili9341
 #define TFT_CYAN    ILI9341_CYAN
 #define TFT_BLUE    ILI9341_BLUE
 #define TFT_MAGENTA ILI9341_MAGENTA
+
+#define TFT_MOSI 13
+#define TFT_MISO 12
+#define TFT_SCLK 14
+#define TFT_CS   15
+#define TFT_DC   2
+#define TFT_RST  16
 
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST, TFT_MISO);
 
