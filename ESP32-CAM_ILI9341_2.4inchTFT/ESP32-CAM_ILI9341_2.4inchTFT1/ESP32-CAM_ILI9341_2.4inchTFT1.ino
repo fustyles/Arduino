@@ -106,7 +106,7 @@ void setup() {
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_RGB565;
-  config.frame_size = FRAMESIZE_QQVGA;
+  config.frame_size = FRAMESIZE_QVGA;
   config.jpeg_quality = 12;
   config.fb_count = 1; 
 
@@ -118,8 +118,6 @@ void setup() {
   }
 }
 
-uint8_t buffer[38400];
-
 void loop() {
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();
@@ -128,25 +126,13 @@ void loop() {
     return;
   }
 
-  for( int i = 0; i < 19200; i++)
-  {
-    buffer[i*2] = fb->buf[i*2+1];
-    buffer[i*2+1] = fb->buf[i*2];
+  uint8_t buffer;
+  for( int i = 0; i < 76800; i++) {
+    buffer = fb->buf[i*2];
+    fb->buf[i*2] = fb->buf[i*2+1];
+    fb->buf[i*2+1] = buffer;
   }
-  //tft.drawRGBBitmap(0,0,(uint16_t*)buffer, 160,120);
-
-  tft.startWrite();
-  int16_t x=0;
-  int16_t y=0;
-  int16_t w=160;
-  int16_t h=120;
-  uint16_t *bitmap = (uint16_t*)buffer;
-  for (int16_t j = 0; j < h; j++, y++) {
-    for (int16_t i = 0; i < w; i++) {
-      tft.writePixel(x + 2*i, y + 2*j, bitmap[j * w + i]);  //320*240
-    }
-  }
-  tft.endWrite();
-
+ 
+  tft.drawRGBBitmap(0,0,(uint16_t*)fb->buf, 320,240);
   esp_camera_fb_return(fb);    
 }
