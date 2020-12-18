@@ -1,7 +1,7 @@
 /*
 ESP32-CAM 2.4 inch TFT LCD Display Module (ILI9341, SPI, 240x320)
 Face detect
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-18 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-19 02:00
 https://www.facebook.com/francefu
 
 Circuit
@@ -114,7 +114,7 @@ void setup() {
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_RGB565;
-  config.frame_size = FRAMESIZE_QVGA;
+  config.frame_size = FRAMESIZE_QQVGA;   //160x120
   config.jpeg_quality = 12;
   config.fb_count = 1; 
 
@@ -158,14 +158,14 @@ void loop() {
           box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);  //偵測人臉取得臉框數據
 
           uint8_t buffer;
-          for( int i = 0; i < (320*240); i++) {
+          for( int i = 0; i < (160*120); i++) {   //160x120
             buffer = fb->buf[i*2];
             fb->buf[i*2] = fb->buf[i*2+1];
             fb->buf[i*2+1] = buffer;
           }    
                   
           tft.startWrite();
-          drawRGBBitmap_fb(0,0,(uint16_t*)fb->buf, 320,240);
+          drawRGBBitmap_fb(0,0,(uint16_t*)fb->buf, 160,120);   //160x120
             
           if (net_boxes){
             Serial.println("faces = " + String(net_boxes->len));  //偵測到的人臉數
