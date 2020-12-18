@@ -231,7 +231,7 @@ void loop() {
   digitalWrite(trigPin, LOW);
   distance_cm = pulseIn(echoPin, HIGH)/58;  
   distance_inch = distance_cm*2.54;  
-  //Serial.println(String(distance_cm)+" cm, " + String(distance_inch)+" inch");
+  Serial.println(String(distance_cm)+" cm, " + String(distance_inch)+" inch");
   
   delay(100);
 }
