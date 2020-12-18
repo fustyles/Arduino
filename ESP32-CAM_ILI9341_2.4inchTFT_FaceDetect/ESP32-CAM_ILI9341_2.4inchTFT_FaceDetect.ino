@@ -79,13 +79,6 @@ https://www.arduinolibraries.info/libraries/adafruit-ili9341
 #define TFT_DC   2
 #define TFT_RST  16
 
-#define RGB888_RED 0x00ff0000
-#define RGB888_GREEN 0x0000ff00
-#define RGB888_BLUE 0x000000ff
-#define RGB565_RED 0xf800
-#define RGB565_GREEN 0x07e0
-#define RGB565_BLUE 0x001f
-
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST, TFT_MISO);
 
 void setup() {
@@ -231,6 +224,6 @@ void drawRGBBitmap_rect(int16_t x_, int16_t y_, int16_t w_, int16_t h_) {
     tft.drawFastVLine((int16_t)x_, (int16_t)y_, (int16_t)h_, (int16_t)FACE_COLOR_GREEN);
     tft.drawFastVLine((int16_t)(x_+w_), (int16_t)y_, (int16_t)h_, (int16_t)FACE_COLOR_GREEN);
     tft.drawFastHLine((int16_t)x_, (int16_t)y_, (int16_t)w_, (int16_t)FACE_COLOR_GREEN);
-    tft.  drawFastHLine((int16_t)x_, (int16_t)(y_+h_), (int16_t)w_, (int16_t)FACE_COLOR_GREEN);
+    tft.drawFastHLine((int16_t)x_, (int16_t)(y_+h_), (int16_t)w_, (int16_t)FACE_COLOR_GREEN);
   }
 }
