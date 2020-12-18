@@ -6,7 +6,7 @@ https://www.facebook.com/francefu
 //Ping Ultrasonic Sensor (If you use Ping Ultrasonic Sensor, you can't use SD card library at the same time.)
 Trig -> IO2
 Echo -> IO13
-VCC -> 3.3V (Don't use VCC)
+VCC -> 3.3V or VCC
 GND -> GND
 
 AP IP: 192.168.4.1
