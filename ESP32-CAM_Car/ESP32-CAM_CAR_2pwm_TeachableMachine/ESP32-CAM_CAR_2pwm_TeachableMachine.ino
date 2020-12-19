@@ -1,7 +1,7 @@
 /*
 ESP32-CAM Machine Learning Car (Teachable Machine) 
 Open the page in Chrome.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-19 20:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-19 22:00
 https://www.facebook.com/francefu
 
 Google Teachable Machine
@@ -825,7 +825,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <tr><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=2');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=2');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Left</button></td><td align="center"><button onclick="try{stopDetection();fetch(document.location.origin+'/control?car=3');}catch(e){}">Stop</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=4');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=4');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Right</button></td></tr>
                 <tr><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=8');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=8');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">LeftAfter</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=5');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=5');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Back</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=9');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=9');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">RightAfter</button></td></tr>                   
                 <tr><td colspan="2">Turn Decelerate<select onclick="try{fetch(document.location.origin+'/control?decelerate='+this.value);}catch(e){}"><option value="100">100%</option><option value="90">90%</option><option value="80">80%</option><option value="70">70%</option><option value="60" selected="selected">60%</option><option value="50">50%</option><option value="40">40%</option><option value="30">30%</option><option value="10">20%</option><option value="10">10%</option><option value="0">0%</option></select></td><td><input type="checkbox" id="nostop" onclick="noStopControl();">No Stop</td></tr> 
-                <tr><td colspan="3">Probability Limit&nbsp;&nbsp;<select id="probabilityLimit"><option value="0">0</option><option value="0.3">0.3</option><option value="0.6" selected="selected">0.6</option><option value="0.9">0.9</option></select>&nbsp;&nbsp;&nbsp;&nbsp;Start Detection<input type="checkbox" id="startdetection"></td></tr>
+                <tr><td colspan="3">Probability Limit&nbsp;&nbsp;<select id="probabilityLimit"><option value="0">0</option><option value="0.1">0.1</option><option value="0.2">0.2</option><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6" selected="selected">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option></select>&nbsp;&nbsp;&nbsp;&nbsp;Start Detection<input type="checkbox" id="startdetection"></td></tr>
                 <tr><td>Servo</td><td colspan="2"><input type="range" id="servo" min="0" max="90" value="30" onchange="try{fetch(document.location.origin+'/control?servo='+this.value);}catch(e){}"></td></tr>
                 <tr><td>SpeedR</td><td colspan="2"><input type="range" id="speedR" min="0" max="255" value="255" onchange="try{fetch(document.location.origin+'/control?speedR='+this.value);}catch(e){}"></td></tr>
                 <tr><td>SpeedL</td><td colspan="2"><input type="range" id="speedL" min="0" max="255" value="255" onchange="try{fetch(document.location.origin+'/control?speedL='+this.value);}catch(e){}"></td></tr>
@@ -1057,7 +1057,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           var getStill = document.getElementById('get-still');
           var getModel = document.getElementById('getModel');
           var kind = document.getElementById('kind');
-          var modelPath = document.getElementById('modelPath'); 
+          var modelPath = document.getElementById('modelPath');
+          var probabilityLimit = document.getElementById('probabilityLimit');
           let Model;
           var lastValue = 0;
         </script>
@@ -1122,7 +1123,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 result.innerHTML += "<br>Result: " + maxClassName + ", " + maxProbability; 
                 
                 //影像辨識依predict.label回傳參數至ESP32-CAM改變運動狀態
-                if (lastValue!=maxClassName) {
+                if (lastValue!=maxClassName&&maxProbability>=probabilityLimit.value) {
                   $.ajax({url: document.location.origin+'/control?car='+maxClassName+';stop', async: false});  //網址參數格式 http://192.168.xxx.xxx/control?car=value                            
                   lastValue = maxClassName;
                 }
