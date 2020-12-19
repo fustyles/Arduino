@@ -1,5 +1,5 @@
 /*
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-11-8 16:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-19 22:00
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
@@ -651,7 +651,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         </style>
         <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
         <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
-        <script src="https:\/\/cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>        
+        <script src="https:\/\/cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>  
+        <script src="https:\/\/cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>       
     </head>
     <body>
         <section class="main">
@@ -674,6 +675,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 <div id="sidebar">
                     <input type="checkbox" id="nav-toggle-cb">
                     <nav id="menu">
+                        <div class="input-group">
+                          <label for="kind">Kind</label>
+                          <select id="kind">
+                            <option value="image">image</option>
+                            <option value="pose">pose</option>
+                          </select>
+                        </div>
                         <div class="input-group">
                           <label for="modelPath">Model Path</label>
                           <input type="text" id="modelPath" value="">
@@ -870,6 +878,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         var context = canvas.getContext("2d");  
         var modelPath = document.getElementById('modelPath');
         var result = document.getElementById('result');
+        var kind = document.getElementById('kind');        
         let Model;
         
         async function LoadModel() {
@@ -883,8 +892,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           const URL = modelPath.value;
           const modelURL = URL + "model.json";
           const metadataURL = URL + "metadata.json";
-        
-          Model = await tmImage.load(modelURL, metadataURL);
+          if (kind.value=="image") {
+            Model = await tmImage.load(modelURL, metadataURL);
+          }
+          else if (kind.value=="pose") {
+            Model = await tmPose.load(modelURL, metadataURL);
+          }
           maxPredictions = Model.getTotalClasses();
           result.innerHTML = "";
     
@@ -899,9 +912,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
     
           canvas.setAttribute("width", ShowImage.width);
           canvas.setAttribute("height", ShowImage.height);
-          context.drawImage(ShowImage, 0, 0, ShowImage.width, ShowImage.height);  
+          context.drawImage(ShowImage, 0, 0, ShowImage.width, ShowImage.height); 
+           
+          if (kind.value=="image")
+            var prediction = await Model.predict(canvas);
+          else if (kind.value=="pose") {
+            var { pose, posenetOutput } = await Model.estimatePose(canvas);
+            var prediction = await Model.predict(posenetOutput);
+          }
     
-          const prediction = await Model.predict(canvas);
           if (maxPredictions>0) {
             for (let i = 0; i < maxPredictions; i++) {
               if (i==0) {
