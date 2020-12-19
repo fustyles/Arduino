@@ -187,7 +187,7 @@ void loop() {
                 //Serial.println("height = " + String(h_));
                 //Serial.println();
 
-                drawRGBBitmap_rect(x_, y_, w_, h_);                
+                drawRGBBitmap_rect(x_, y_, w_, h_);  //繪製人臉方框       
             }
 
             free(net_boxes->score);
