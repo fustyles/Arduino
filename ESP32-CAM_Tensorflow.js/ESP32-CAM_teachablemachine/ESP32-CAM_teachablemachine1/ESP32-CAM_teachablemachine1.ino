@@ -1,6 +1,6 @@
 /*
 ESP32-CAM 機械學習 (tfjs teachablemachine)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-11-8 16:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-19 22:00
 https://www.facebook.com/francefu
 
 首頁
@@ -301,12 +301,14 @@ void setup() {
 static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <!DOCTYPE html>
   <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
-  <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
-  <script src="https:\/\/cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>  
-  </head><body>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+    <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https:\/\/cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+    <script src="https:\/\/cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>         
+  </head>
+  <body>
   <div id="container"></div>
   <img id="ShowImage" src="" style="display:none">
   <canvas id="canvas" style="display:none"></canvas>  
@@ -315,6 +317,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     <td><input type="button" id="restart" value="Restart"></td> 
     <td colspan="2"><input type="button" id="getStill" value="Get Still" style="display:none"></td> 
   </tr>
+  <tr>
+    <td>Model kind</td> 
+    <td colspan="2">
+    <select id="kind">
+      <option value="image">image</option>
+      <option value="pose">pose</option>
+    </select>
+    </td> 
+  </tr>   
   <tr>
     <td>Model Path</td> 
     <td colspan="2"><input type="text" id="modelPath" value=""></td> 
@@ -389,6 +400,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     var flash = document.getElementById('flash'); 
     var modelPath = document.getElementById('modelPath');
     var result = document.getElementById('result');
+    var kind = document.getElementById('kind'); 
     var myTimer;
     var restartCount=0; 
 
@@ -404,7 +416,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       const modelURL = URL + "model.json";
       const metadataURL = URL + "metadata.json";
     
-      Model = await tmImage.load(modelURL, metadataURL);
+      if (kind.value=="image") {
+        Model = await tmImage.load(modelURL, metadataURL);
+      }
+      else if (kind.value=="pose") {
+        Model = await tmPose.load(modelURL, metadataURL);
+      }      
       maxPredictions = Model.getTotalClasses();
       result.innerHTML = "";
     
@@ -473,9 +490,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     
       canvas.setAttribute("width", ShowImage.width);
       canvas.setAttribute("height", ShowImage.height);
-      context.drawImage(ShowImage, 0, 0, ShowImage.width, ShowImage.height);  
-    
-      const prediction = await Model.predict(canvas);
+      context.drawImage(ShowImage, 0, 0, ShowImage.width, ShowImage.height); 
+       
+      if (kind.value=="image")
+        var prediction = await Model.predict(canvas);
+      else if (kind.value=="pose") {
+        var { pose, posenetOutput } = await Model.estimatePose(canvas);
+        var prediction = await Model.predict(posenetOutput);
+      }
+      
       if (maxPredictions>0) {
         for (let i = 0; i < maxPredictions; i++) {
           if (i==0) {
