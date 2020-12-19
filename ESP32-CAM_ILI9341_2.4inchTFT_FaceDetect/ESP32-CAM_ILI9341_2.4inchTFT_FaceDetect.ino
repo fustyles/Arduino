@@ -176,16 +176,16 @@ void loop() {
             int16_t w_ = 0;
             int16_t h_ = 0;
             for (int i = 0; i < net_boxes->len; i++){  //列舉人臉位置與大小
-                Serial.println("index = " + String(i));
+                //Serial.println("index = " + String(i));
                 x_ = (int16_t)net_boxes->box[i].box_p[0];
-                Serial.println("x = " + String(x_));
+                //Serial.println("x = " + String(x_));
                 y_ = (int16_t)net_boxes->box[i].box_p[1];
-                Serial.println("y = " + String(y_));
+                //Serial.println("y = " + String(y_));
                 w_ = (int16_t)net_boxes->box[i].box_p[2] - x_ + 1;
-                Serial.println("width = " + String(w_));
+                //Serial.println("width = " + String(w_));
                 h_ = (int16_t)net_boxes->box[i].box_p[3] - y_ + 1;
-                Serial.println("height = " + String(h_));
-                Serial.println();
+                //Serial.println("height = " + String(h_));
+                //Serial.println();
 
                 drawRGBBitmap_rect(x_, y_, w_, h_);                
             }
@@ -208,7 +208,7 @@ void loop() {
       esp_camera_fb_return(fb); 
   }
   
-  delay(1000);  
+  //delay(100);  
 }
 
 void drawRGBBitmap_fb(int16_t x, int16_t y, const uint16_t bitmap[], int16_t w, int16_t h) {
