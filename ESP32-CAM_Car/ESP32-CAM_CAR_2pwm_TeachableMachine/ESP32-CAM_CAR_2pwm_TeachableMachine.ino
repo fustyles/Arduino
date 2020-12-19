@@ -7,6 +7,7 @@ https://www.facebook.com/francefu
 Google Teachable Machine
 https://teachablemachine.withgoogle.com/train
 
+訓練分類名稱設為1~9的數字
 Class: 1  ->  Front     
 Class: 2  ->  Left     
 Class: 3  ->  Stop      
