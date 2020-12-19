@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Remote Control Car (Teachable Machine) 
+ESP32-CAM Machine Learning Car (Teachable Machine) 
 Open the page in Chrome.
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-19 20:00
 https://www.facebook.com/francefu
