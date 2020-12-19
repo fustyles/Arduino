@@ -18,7 +18,6 @@ Class: 7  ->  FrontRight
 Class: 8  ->  LeftAfter     
 Class: 9  ->  RightAfter
 
-
 Motor Driver IC   (If you use Motor Driver IC L9110(s), it can't work well.)
 PWM1 -> gpio12, gpio13
 PWM2 -> gpio14, gpio15
