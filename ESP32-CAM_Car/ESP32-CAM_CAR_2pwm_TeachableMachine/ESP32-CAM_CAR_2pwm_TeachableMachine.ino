@@ -18,8 +18,10 @@ Class: 7  ->  FrontRight
 Class: 8  ->  LeftAfter     
 Class: 9  ->  RightAfter
 
-//If you use Motor Driver IC L9110(s), it can't work well.
-Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
+
+Motor Driver IC   (If you use Motor Driver IC L9110(s), it can't work well.)
+PWM1 -> gpio12, gpio13
+PWM2 -> gpio14, gpio15
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
 http://192.168.xxx.xxx:81/stream   //取得串流影像       <img src="http://192.168.xxx.xxx:81/stream">
