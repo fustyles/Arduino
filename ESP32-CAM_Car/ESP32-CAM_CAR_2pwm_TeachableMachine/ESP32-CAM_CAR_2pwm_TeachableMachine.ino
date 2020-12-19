@@ -840,7 +840,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                     <input type="checkbox" id="nav-toggle-cb">
                     <nav id="menu">
                         <div class="input-group">
-                          <label for="kind">Kind</label>
+                          <label for="kind">Model Kind</label>
                           <select id="kind">
                             <option value="image">image</option>
                             <option value="pose">pose</option>
