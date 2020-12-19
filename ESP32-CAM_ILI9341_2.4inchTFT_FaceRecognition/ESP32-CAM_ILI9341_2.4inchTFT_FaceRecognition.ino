@@ -1630,7 +1630,7 @@ void drawRGBBitmap_fb(int16_t x, int16_t y, const uint16_t bitmap[], int16_t w, 
 }
 
 void drawRGBBitmap_rect(int16_t x_, int16_t y_, int16_t w_, int16_t h_) {
-  if (w_!=0) {
+  if (w_!=0&&h_!=0) {
     tft.drawFastVLine((int16_t)x_, (int16_t)y_, (int16_t)h_, (int16_t)FACE_COLOR_GREEN);
     tft.drawFastVLine((int16_t)(x_+w_), (int16_t)y_, (int16_t)h_, (int16_t)FACE_COLOR_GREEN);
     tft.drawFastHLine((int16_t)x_, (int16_t)y_, (int16_t)w_, (int16_t)FACE_COLOR_GREEN);
