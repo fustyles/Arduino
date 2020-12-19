@@ -1592,18 +1592,18 @@ void loop() {
         int matched_id = run_face_recognition(image_matrix, net_boxes);  //執行人臉辨識取得相符id
 
         for (int i = 0; i < net_boxes->len; i++){  //列舉人臉位置與大小
-              //Serial.println("index = " + String(i));
-              x_ = (int16_t)net_boxes->box[i].box_p[0];
-              //Serial.println("x = " + String(x_));
-              y_ = (int16_t)net_boxes->box[i].box_p[1];
-              //Serial.println("y = " + String(y_));
-              w_ = (int16_t)net_boxes->box[i].box_p[2] - x_ + 1;
-              //Serial.println("width = " + String(w_));
-              h_ = (int16_t)net_boxes->box[i].box_p[3] - y_ + 1;
-              //Serial.println("height = " + String(h_));
-              //Serial.println();
               if (matched_id==i) {  //僅辨識出的人臉才繪製框架
-                drawRGBBitmap_rect(x_, y_, w_, h_);   //繪製人臉框架
+                  //Serial.println("index = " + String(i));
+                  x_ = (int16_t)net_boxes->box[i].box_p[0];
+                  //Serial.println("x = " + String(x_));
+                  y_ = (int16_t)net_boxes->box[i].box_p[1];
+                  //Serial.println("y = " + String(y_));
+                  w_ = (int16_t)net_boxes->box[i].box_p[2] - x_ + 1;
+                  //Serial.println("width = " + String(w_));
+                  h_ = (int16_t)net_boxes->box[i].box_p[3] - y_ + 1;
+                  //Serial.println("height = " + String(h_));
+                  //Serial.println();
+                  drawRGBBitmap_rect(x_, y_, w_, h_);   //繪製人臉框架
               }             
         }
                     
