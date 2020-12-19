@@ -15,7 +15,7 @@ TFT_LED  --> 3.3V
 TFT_GND  --> GND
 
 Refer to
-http://fabacademy.org/2020/labs/waag/students/hyejin-ahn/week13.html
+https://github.com/Bodmer/TFT_eSPI/blob/ef93dbe687b9b429f0b1116a0d4197e00a7fef44/examples/DMA%20test/Flash_Jpg_DMA/Flash_Jpg_DMA.ino
 
 Introduction
 http://www.lcdwiki.com/2.8inch_SPI_Module_ILI9341_SKU:MSP2807
