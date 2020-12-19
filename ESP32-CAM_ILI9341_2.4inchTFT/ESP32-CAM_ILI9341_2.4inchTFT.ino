@@ -3,7 +3,7 @@ ESP32-CAM 2.4 inch TFT LCD Display Module (ILI9341, SPI, 240x320)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-15 00:00
 https://www.facebook.com/francefu
 
-Circuit https://blog.xuite.net/iamleon/blog/589421027
+Circuit
 TFT_MOSI --> IO13
 TFT_MISO --> IO12
 TFT_SCLK --> IO14
@@ -13,6 +13,9 @@ TFT_RST  --> IO16 (Don't use IO4)
 TFT_VCC  --> 3.3V
 TFT_LED  --> 3.3V
 TFT_GND  --> GND
+
+Refer to
+http://fabacademy.org/2020/labs/waag/students/hyejin-ahn/week13.html
 
 Introduction
 http://www.lcdwiki.com/2.8inch_SPI_Module_ILI9341_SKU:MSP2807
