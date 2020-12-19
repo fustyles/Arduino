@@ -911,7 +911,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 </div>
             </div>
         </section>
-        <div id="result" style="color:red">Please input model link.</div>        
+        <div id="result" style="color:red">Please input model path.</div>        
         <script>
           document.addEventListener('DOMContentLoaded', function (event) {
             var baseHost = document.location.origin
