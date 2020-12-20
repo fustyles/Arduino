@@ -1141,7 +1141,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             if (Model) {
               try { 
                 document.createEvent("TouchEvent");
-                setTimeout(function(){predict();},250);
+                setTimeout(function(){predict();},250);  //可將時間間隔250ms改小一點，但效能差的手機有可能因效能不佳而當機。
               }
               catch(e) { 
                 predict();
