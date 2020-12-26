@@ -634,7 +634,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         ledcAttachPin(4, 4);  
         ledcSetup(4, 5000, 8);        
         ledcWrite(4,val);
-      } 
+      }
       else if(!strcmp(variable, "servoH")) {
         int val_h;        
         angle1Value1 = val;     
