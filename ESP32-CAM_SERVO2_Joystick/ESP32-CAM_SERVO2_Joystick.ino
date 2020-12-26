@@ -1,5 +1,6 @@
 /*
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-25 20:00
+ESP32-CAM 2 axis servo pan tilt using Joystick
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-26 18:00
 https://www.facebook.com/francefu
 
 Servo1(水平旋轉) -> gpio2 (伺服馬達與ESP32-CAM共地外接電源)
@@ -25,10 +26,7 @@ http://192.168.xxx.xxx/control?analogwrite=pin;value   //類比輸出
 http://192.168.xxx.xxx/control?digitalread=pin         //數位讀取
 http://192.168.xxx.xxx/control?analogread=pin          //類比讀取
 http://192.168.xxx.xxx/control?touchread=pin           //觸碰讀取
-http://192.168.xxx.xxx/control?servo1=value            //伺服馬達1 value= 1700~8000
-http://192.168.xxx.xxx/control?servo2=value            //伺服馬達2 value= 1700~8000
-http://192.168.xxx.xxx/control?servo=value1;value2     //伺服馬達1&2 value= 1700~8000
-http://192.168.xxx.xxx/control?anglestep=value         //伺服馬達轉動角度
+http://192.168.xxx.xxx/control?servo=direction         //伺服馬達
 
 官方指令格式 http://192.168.xxx.xxx/control?var=***&val=***
 http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
@@ -37,8 +35,11 @@ http://192.168.xxx.xxx/control?var=brightness&val=value   // value = -2 ~ 2
 http://192.168.xxx.xxx/control?var=contrast&val=value     // value = -2 ~ 2
 http://192.168.xxx.xxx/control?var=hmirror&val=value      // value = 0 or 1 
 http://192.168.xxx.xxx/control?var=vflip&val=value        // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255   
-      
+http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255
+http://192.168.xxx.xxx/control?var=servoH&val=value            //伺服馬達1 value= 1700~8000
+http://192.168.xxx.xxx/control?var=servoV&val=value            //伺服馬達2 value= 1700~8000
+http://192.168.xxx.xxx/control?var=anglestep&val=value         //伺服馬達轉動角度，約35為1度
+
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
 重設網路：http://192.168.4.1/?resetwifi=ssid;password
@@ -219,14 +220,14 @@ void setup() {
   s->set_framesize(s, FRAMESIZE_QVGA);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
   //Servo
-  ledcAttachPin(2, 5);  
-  ledcSetup(5, 50, 16);
-  ledcWrite(5, angle1Value1);  //90度
+  ledcAttachPin(2, 7);  
+  ledcSetup(7, 50, 16);
+  ledcWrite(7, angle1Value1);  //90度
   delay(1000);
 
-  ledcAttachPin(13, 6);  
-  ledcSetup(6, 50, 16);
-  ledcWrite(6, angle1Value2);   //90度 
+  ledcAttachPin(13, 8);  
+  ledcSetup(8, 50, 16);
+  ledcWrite(8, angle1Value2);   //90度 
   delay(1000);
   
   //閃光燈(GPIO4)
@@ -290,16 +291,6 @@ void setup() {
 
 void loop() {
 
-}
-
-int transferAngle(int angle, String side) {     
-  if (angle > 180)
-     angle = 180;
-  else if (angle < 0)
-    angle = 0;
-  if (side="right")
-    angle = 180 - angle;     
-  return angle*6300/180+1700;
 }
 
 static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size_t len){
@@ -591,36 +582,6 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         int val = P1.toInt();
         ledcWrite(4,val);  
       }
-      else if (cmd=="servo1") {
-        int val_h;        
-        angle1Value1 = P1.toInt();     
-        if (angle1Value1 > 8000)
-           angle1Value1 = 8000;
-        else if (angle1Value1 < 1700)
-          angle1Value1 = 1700;   
-        val_h = 1700 + (8000 - angle1Value1);
-        ledcAttachPin(2, 5);  
-        ledcSetup(5, 50, 16); 
-        ledcWrite(5, val_h);
-        delay(10);
-        
-        Serial.println("servo1="+String(angle1Value1));
-      }  
-      else if (cmd=="servo2") {
-        int val_v;         
-        angle1Value2 = P1.toInt();
-        if (angle1Value2 > 8000)
-           angle1Value2 = 8000;
-        else if (angle1Value2 < 1700)
-          angle1Value2 = 1700;   
-        val_v = 1700 + (8000 - angle1Value2);
-        ledcAttachPin(13, 6);  
-        ledcSetup(6, 50, 16); 
-        ledcWrite(6, val_v);
-        delay(10);
-                 
-        Serial.println("servo2="+String(angle1Value2));
-      } 
       else if (cmd=="servo") {
         int val_h;
         int val_v; 
@@ -670,20 +631,16 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         else if (angle1Value1 < 1700)
           angle1Value1 = 1700;   
         val_h = 1700 + (8000 - angle1Value1);
-        ledcAttachPin(2, 5);  
-        ledcSetup(5, 50, 16);
-        ledcWrite(5, val_h); 
-        delay(200);
+        ledcWrite(7, val_h); 
+        delay(500);
               
         if (angle1Value2 > 8000)
            angle1Value2 = 8000;
         else if (angle1Value2 < 1700)
           angle1Value2 = 1700;   
         val_v = 1700 + (8000 - angle1Value2);
-        ledcAttachPin(13, 6);  
-        ledcSetup(6, 50, 16);
-        ledcWrite(6, val_v);
-        delay(200);
+        ledcWrite(8, val_v);
+        delay(500);
         
         Serial.println("servo1="+String(val_h));
         Serial.println("servo2="+String(val_v));
@@ -722,6 +679,32 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if(!strcmp(variable, "anglestep")) {
         Serial.println("anglestep="+String(val));
         anglestep = val;
+      }
+      else if(!strcmp(variable, "servoH")) {
+        int val_h;        
+        angle1Value1 = val;     
+        if (angle1Value1 > 8000)
+           angle1Value1 = 8000;
+        else if (angle1Value1 < 1700)
+          angle1Value1 = 1700;   
+        val_h = 1700 + (8000 - angle1Value1);
+        ledcWrite(7, val_h);
+        delay(10);
+        
+        Serial.println("servoH="+String(angle1Value1));
+      }  
+      else if(!strcmp(variable, "servoV")) {
+        int val_v;         
+        angle1Value2 = val;
+        if (angle1Value2 > 8000)
+           angle1Value2 = 8000;
+        else if (angle1Value2 < 1700)
+          angle1Value2 = 1700;   
+        val_v = 1700 + (8000 - angle1Value2);
+        ledcWrite(8, val_v);
+        delay(10);
+              
+        Serial.println("servoV="+String(angle1Value2));
       } 
       else {
           res = -1;
@@ -754,6 +737,8 @@ static esp_err_t status_handler(httpd_req_t *req){
     *p++ = '{';
     p+=sprintf(p, "\"flash\":%d,", 0);
     p+=sprintf(p, "\"anglestep\":%d,", anglestep);
+    p+=sprintf(p, "\"servoH\":%d,", angle1Value1);
+    p+=sprintf(p, "\"servoV\":%d,", angle1Value2);    
     p+=sprintf(p, "\"framesize\":%u,", s->status.framesize);
     p+=sprintf(p, "\"quality\":%u,", s->status.quality);
     p+=sprintf(p, "\"brightness\":%d,", s->status.brightness);
@@ -1079,8 +1064,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         <section id="buttons">
             <table>
               <tr><td><button id="restart" onclick="try{fetch(document.location.origin+'/control?restart');}catch(e){}">Restart</button></td><td><button id="get-still">Get Still</button></td><td><button id="toggle-stream">Start Stream</button></td></tr>
-              <tr><td>ServoH</td><td align="center" colspan="2"><input type="range" id="servo1" min="1700" max="8000" step="35" value="4850" onchange="try{fetch(document.location.origin+'/control?servo1='+this.value);}catch(e){}"></td></tr>
-              <tr><td>ServoV</td><td align="center" colspan="2"><input type="range" id="servo2" min="1700" max="8000" step="35" value="4850" onchange="try{fetch(document.location.origin+'/control?servo2='+this.value);}catch(e){}"></td></tr>
             </table>
         </section>
         <section class="main">      
@@ -1090,18 +1073,30 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             <div id="content">
                 <div id="sidebar">
                     <input type="checkbox" id="nav-toggle-cb">
-                    <nav id="menu">  
+                    <nav id="menu">
+                        <div class="input-group" id="anglestep-group">
+                            <label for="step">Angle Step</label>
+                            <div class="range-min">1</div>
+                            <input type="range" id="anglestep" min="35" max="350" step="35" value="105" class="default-action">
+                            <div class="range-max">10</div>
+                        </div>
+                        <div class="input-group" id="servo-group">
+                            <label for="servoH">Servo H</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="servoH" min="1700" max="8000" value="4850" step="35" class="default-action">
+                            <div class="range-max">180</div>
+                        </div>
+                        <div class="input-group" id="servo-group">
+                            <label for="servoV">Servo V</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="servoV" min="1700" max="8000" value="4850" step="35" class="default-action">
+                            <div class="range-max">180</div>
+                        </div>
                         <div class="input-group" id="flash-group">
                             <label for="flash">Flash</label>
                             <div class="range-min">0</div>
                             <input type="range" id="flash" min="0" max="255" value="0" class="default-action">
                             <div class="range-max">255</div>
-                        </div>
-                        <div class="input-group" id="anglestep-group">
-                            <label for="step">Angle Step</label>
-                            <div class="range-min">35</div>
-                            <input type="range" id="anglestep" min="35" max="350" step="35" value="105" class="default-action">
-                            <div class="range-max">350</div>
                         </div>
                         <div class="input-group" id="framesize-group">
                             <label for="framesize">Resolution</label>
@@ -1303,25 +1298,25 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         <script type="text/javascript">
           var joy3Param = { "title": "joystick3" };
           var Joy3 = new JoyStick('joy3Div', joy3Param);
-          var runState = 0;
-          var anglestep = document.getElementById('anglestep');
+          var cmdState = 0;
 
-          anglestep.onchange = function (event) {  
-            var cmd = document.location.origin+'/control?anglestep='+anglestep.value;
-            $.ajax({url: cmd, async: false});
-          }
-          
           setInterval(function(){
-            if (runState == 1) return;
-            if (Joy3.GetDir() != "C") controlServo(Joy3.GetDir());
+            if (cmdState == 1) 
+              return;
+            else
+              cmdState = 1;
+            controlServo();
           }, 200);
-
-          function controlServo(dir) {
-              runState = 1;
+          
+          function controlServo() {
+            var dir = Joy3.GetDir();
+            if (dir!="C") { 
               var cmd = document.location.origin+'/control?servo='+dir;
-              //console.log(cmd);
               $.ajax({url: cmd, async: false});
-              runState = 0;
+              cmdState = 0;
+            }
+            else
+              cmdState = 0;              
           }
         </script>       
     
