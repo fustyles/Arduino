@@ -1267,7 +1267,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           
           canvas.onclick = function(e){  
             e=e||window.event;
-            console.log(e.pageX + ", "+ e.pageY + ", "+ e.offsetX + ", "+ e.offsetY + ", "+ e.clientX + ", "+ e.clientY + ", "+ e.screenX + ", "+ e.screenY);
+            //console.log(e.pageX + ", "+ e.pageY + ", "+ e.offsetX + ", "+ e.offsetY + ", "+ e.clientX + ", "+ e.clientY + ", "+ e.screenX + ", "+ e.screenY);
 
             if (cmdState==0) {
               cmdState=1;
