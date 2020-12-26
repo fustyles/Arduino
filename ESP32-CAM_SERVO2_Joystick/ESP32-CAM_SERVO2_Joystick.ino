@@ -1,5 +1,5 @@
 /*
-ESP32-CAM 2 axis servo pan tilt using Joystick
+ESP32-CAM 2-Axis servo pan tilt controlled by using Joystick
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-26 19:00
 https://www.facebook.com/francefu
 
