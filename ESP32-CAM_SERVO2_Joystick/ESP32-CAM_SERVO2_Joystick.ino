@@ -642,8 +642,8 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         ledcWrite(8, val_v);
         delay(100);
         
-        //Serial.println("servo1="+String(val_h));
-        //Serial.println("servo2="+String(val_v));
+        //Serial.println("servoH="+String(val_h));
+        //Serial.println("servoV="+String(val_v));
       }                  
       else {
         Feedback="Command is not defined";
