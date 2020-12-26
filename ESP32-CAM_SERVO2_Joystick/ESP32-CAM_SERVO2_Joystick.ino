@@ -1,6 +1,6 @@
 /*
 ESP32-CAM 2-Axis servo pan tilt controlled by using Joystick
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-26 21:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-26 22:00
 https://www.facebook.com/francefu
 
 Servo1(水平旋轉) -> gpio2 (伺服馬達與ESP32-CAM共地外接電源)
@@ -641,6 +641,8 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         val_v = 1700 + (8000 - angle1Value2);
         ledcWrite(8, val_v);
         delay(100);
+
+        Feedback=String(angle1Value1) + "," + String(angle1Value2);
         
         //Serial.println("servoH="+String(val_h));
         //Serial.println("servoV="+String(val_v));
@@ -1322,7 +1324,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             var dir = Joy3.GetDir();
             if (dir!="C") { 
               var cmd = document.location.origin+'/control?servo='+dir;
-              $.ajax({url: cmd, async: false});
+              var response = $.ajax({url: cmd, async: false});
+              console.log(response.responseText);
+              var text = response.responseText.split(",");
+              document.getElementById('servoH').value=text[0];
+              document.getElementById('servoV').value=text[1];
               cmdState = 0;
             }
             else
