@@ -1,6 +1,6 @@
 /*
 ESP32-CAM 2 axis servo pan tilt using Canvas clicked
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-26 20:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-26 21:00
 https://www.facebook.com/francefu
 
 Servo1(水平旋轉) -> gpio2 (伺服馬達與ESP32-CAM共地外接電源)
@@ -1152,6 +1152,19 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
               }
           
               const query = `${baseHost}/control?var=${el.id}&val=${value}`
+
+              if (el.id=="servoH"||el.id=="servoV") {
+                var h = Number(document.getElementById('servoH').value);
+                var v = Number(document.getElementById('servoV').value);
+                if (h!="") {
+                  h = (h-1700)*320/(8000-1700);
+                  v = 320-(v-1700)*320/(8000-1700);     
+                  context.fillStyle = "white";
+                  context.fillRect(0, 0, canvas.width, canvas.height);
+                  canvas_arc(context,2,h,v,30,0,2*Math.PI,true,1,"green",0,1);
+                  canvas_arc(context,2,h,v,35,0,2*Math.PI,true,0,"green",0,1);
+                }         
+              }
           
               fetch(query)
                 .then(response => {
@@ -1254,10 +1267,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           
           canvas.onclick = function(e){  
             e=e||window.event;
-            console.log(e.pageX + ", "+ e.pageY + e.offsetX + ", "+ e.offsetY + e.clientX + ", "+ e.clientY + e.screenX + ", "+ e.screenY);
+            console.log(e.pageX + ", "+ e.pageY + ", "+ e.offsetX + ", "+ e.offsetY + ", "+ e.clientX + ", "+ e.clientY + ", "+ e.screenX + ", "+ e.screenY);
 
             if (cmdState==0) {
               cmdState=1;
+              
               context.fillStyle = "white";
               context.fillRect(0, 0, canvas.width, canvas.height);
               canvas_arc(context,2,e.offsetX,e.offsetY,30,0,2*Math.PI,true,1,"green",0,1);
@@ -1267,6 +1281,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
               var angleV = ((320-e.offsetY)/320)*(8000-1700)+1700;
               var cmd = document.location.origin+'/control?servo='+angleH+';'+angleV;
               $.ajax({url: cmd, async: false});
+              document.getElementById('servoH').value=angleH;
+              document.getElementById('servoV').value=angleV;
+              
               cmdState=0;
             }
           }
