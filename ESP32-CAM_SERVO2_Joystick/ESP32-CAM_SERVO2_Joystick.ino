@@ -1325,7 +1325,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             if (dir!="C") { 
               var cmd = document.location.origin+'/control?servo='+dir;
               var response = $.ajax({url: cmd, async: false});
-              console.log(response.responseText);
+              //console.log(response.responseText);
               var text = response.responseText.split(",");
               document.getElementById('servoH').value=text[0];
               document.getElementById('servoV').value=text[1];
