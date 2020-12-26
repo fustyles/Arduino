@@ -632,7 +632,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           angle1Value1 = 1700;   
         val_h = 1700 + (8000 - angle1Value1);
         ledcWrite(7, val_h); 
-        delay(500);
+        delay(100);
               
         if (angle1Value2 > 8000)
            angle1Value2 = 8000;
@@ -640,7 +640,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           angle1Value2 = 1700;   
         val_v = 1700 + (8000 - angle1Value2);
         ledcWrite(8, val_v);
-        delay(500);
+        delay(100);
         
         Serial.println("servo1="+String(val_h));
         Serial.println("servo2="+String(val_v));
@@ -689,7 +689,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           angle1Value1 = 1700;   
         val_h = 1700 + (8000 - angle1Value1);
         ledcWrite(7, val_h);
-        delay(10);
+        delay(100);
         
         Serial.println("servoH="+String(angle1Value1));
       }  
@@ -702,7 +702,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           angle1Value2 = 1700;   
         val_v = 1700 + (8000 - angle1Value2);
         ledcWrite(8, val_v);
-        delay(10);
+        delay(100);
               
         Serial.println("servoV="+String(angle1Value2));
       } 
