@@ -38,7 +38,6 @@ http://192.168.xxx.xxx/control?var=vflip&val=value        // value = 0 or 1
 http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255
 http://192.168.xxx.xxx/control?var=servoH&val=value            //伺服馬達1 value= 1700~8000
 http://192.168.xxx.xxx/control?var=servoV&val=value            //伺服馬達2 value= 1700~8000
-http://192.168.xxx.xxx/control?var=anglestep&val=value         //伺服馬達轉動角度，約35為1度
 
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
@@ -51,8 +50,6 @@ const char* password = "*****";   //your network password
 
 int angle1Value1 = 4850;   //90度
 int angle1Value2 = 4850;   //90度
-
-int anglestep = 105;  //預設每次移動角度3度，1度約35
 
 //輸入AP端連線帳號密碼
 const char* apssid = "ESP32-CAM";
@@ -638,10 +635,6 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         ledcSetup(4, 5000, 8);        
         ledcWrite(4,val);
       } 
-      else if(!strcmp(variable, "anglestep")) {
-        Serial.println("anglestep="+String(val));
-        anglestep = val;
-      }
       else if(!strcmp(variable, "servoH")) {
         int val_h;        
         angle1Value1 = val;     
