@@ -698,7 +698,6 @@ static esp_err_t status_handler(httpd_req_t *req){
     char * p = json_response;
     *p++ = '{';
     p+=sprintf(p, "\"flash\":%d,", 0);
-    p+=sprintf(p, "\"anglestep\":%d,", anglestep);
     p+=sprintf(p, "\"servoH\":%d,", angle1Value1);
     p+=sprintf(p, "\"servoV\":%d,", angle1Value2);    
     p+=sprintf(p, "\"framesize\":%u,", s->status.framesize);
@@ -1033,12 +1032,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 <div id="sidebar">
                     <input type="checkbox" id="nav-toggle-cb">
                     <nav id="menu">
-                        <div class="input-group" id="anglestep-group">
-                            <label for="step">Angle Step</label>
-                            <div class="range-min">1</div>
-                            <input type="range" id="anglestep" min="35" max="350" step="35" value="105" class="default-action">
-                            <div class="range-max">10</div>
-                        </div>
                         <div class="input-group" id="servo-group">
                             <label for="servoH">Servo H</label>
                             <div class="range-min">0</div>
