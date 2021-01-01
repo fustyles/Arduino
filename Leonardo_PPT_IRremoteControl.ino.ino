@@ -43,6 +43,8 @@ void setup()
 void loop() 
 {
 /*
+  Keyes IR Remote Control
+  
   0xFF629D    FORWARD
   0xFF22DD    LEFT
   0xFF02FD    OK
