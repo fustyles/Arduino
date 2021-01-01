@@ -1,5 +1,5 @@
 /*
-Arduino Leonardo IR Remote Control for PPT
+Arduino Leonardo Keyes IR Remote Control for PPT
 Author    ChungYi Fu (Kaohsiung, Taiwan)  2021-01-01 21:00 
 https://www.facebook.com/francefu
 
