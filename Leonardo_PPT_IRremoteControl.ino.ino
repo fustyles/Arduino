@@ -25,9 +25,9 @@ keyboard press = 216;218;200  "KEY_LEFT_ARROW + KEY_UP_ARROW"
 */
 
 #include <Keyboard.h>
-#include <IRremote.h>      //引用紅外線函式庫
+#include <IRremote.h>        //引用紅外線函式庫
 
-int RECV_PIN =11;          //紅外線腳位
+int RECV_PIN =11;            //紅外線腳位
 IRrecv irrecv(RECV_PIN);     //定義IRrec物件接收紅外線訊號
 decode_results results;      //解碼結果放在decode_results結構的result變數內
 
@@ -63,7 +63,7 @@ void loop()
   0xFFFFFFFF  REPEAT
 */
   
-  if (irrecv.decode(&results)) {         //如果解碼成功
+  if (irrecv.decode(&results)) {            //如果解碼成功
     //Serial.println(results.value, HEX);   //顯示結果轉換成十六進制數值
      
     if (results.value==0xFF22DD) {  //F5
