@@ -6,7 +6,7 @@ https://www.facebook.com/francefu
 Keyboard Modifiers (keyboardpress)
 https://www.arduino.cc/en/Reference/KeyboardModifiers
  
-PPT Remote Control (keyboard press = keycode1;keycode2;presstime)
+Remote Control for PPT (keyboard press = keycode1;keycode2;presstime)
 keyboard write = 198          "F5"
 keyboard write = 211          "PAGE UP"
 keyboard press = 133;198;10  "SHIFT+F5"
@@ -15,7 +15,7 @@ keyboard write = 87           "W"
 keyboard write = 177          "ESC"
 keyboard write = 66           "B"
 
-Game (keyboard press = keycode1;keycode2;presstime)
+Remote Control for Game (keyboard press = keycode1;keycode2;presstime)
 keyboard press = 215;;100     "KEY_RIGHT_ARROW"
 keyboard press = 216;;100     "KEY_LEFT_ARROW"
 keyboard press = 217;;100     "KEY_DOWN_ARROW"
