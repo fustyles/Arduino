@@ -66,34 +66,34 @@ void loop()
   if (irrecv.decode(&results)) {            //如果解碼成功
     //Serial.println(results.value, HEX);   //顯示結果轉換成十六進制數值
      
-    if (results.value==0xFF22DD) {  //F5
+    if (results.value==0xFF22DD) {  //F5 (LEFT)
         Keyboard.write(char(198));
         Serial.println("F5");
     } 
-    else if (results.value==0xFF629D) {  //PAGE UP
+    else if (results.value==0xFF629D) {  //PAGE UP (FORWARD)
         Keyboard.write(char(211));
         Serial.println("PAGE UP");
     }    
-    else if (results.value==0xFFC23D) {  //SHIFT+F5
+    else if (results.value==0xFFC23D) {  //SHIFT+F5 (RIGHT)
         Keyboard.press(char(133));
         Keyboard.press(char(198));
         delay(10);
         Keyboard.releaseAll();
         Serial.println("SHIFT+F5");
     }  
-    else if (results.value==0xFFA857) {  //PAGE DOWN
+    else if (results.value==0xFFA857) {  //PAGE DOWN (REVERSE)
         Keyboard.write(char(214));
         Serial.println("PAGE DOWN");
     }  
-    else if (results.value==0xFF6897) {  //ESC
+    else if (results.value==0xFF6897) {  //ESC (1)
         Keyboard.write(char(177));
         Serial.println("ESC");
     } 
-    else if (results.value==0xFF9867) {  //W
+    else if (results.value==0xFF9867) {  //W (2)
         Keyboard.write(char(87));
         Serial.println("W");
     }   
-    else if (results.value==0xFFB04F) {  //B
+    else if (results.value==0xFFB04F) {  //B (3)
         Keyboard.write(char(66));
         Serial.println("B");
     }
