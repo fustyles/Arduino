@@ -103,6 +103,6 @@ void loop()
         Serial.println("Undefined");
     
     delay(500);    
-    irrecv.resume(); //繼續收下一組紅外線訊號 
+    irrecv.resume(); //繼續接收下一組紅外線訊號 
   }
 }
