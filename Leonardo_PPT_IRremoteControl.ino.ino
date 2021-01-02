@@ -48,8 +48,8 @@ void loop()
   0xFF629D    FORWARD
   0xFFA857    REVERSE  
   0xFF22DD    LEFT
+  0xFFC23D    RIGHT  
   0xFF02FD    OK
-  0xFFC23D    RIGHT
   0xFF6897    1
   0xFF9867    2
   0xFFB04F    3
