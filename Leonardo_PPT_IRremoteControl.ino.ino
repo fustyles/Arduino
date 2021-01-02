@@ -24,7 +24,7 @@ keyboard press = 215;218;200  "KEY_RIGHT_ARROW + KEY_UP_ARROW"
 keyboard press = 216;218;200  "KEY_LEFT_ARROW + KEY_UP_ARROW"
 */
 
-#include <Keyboard.h>
+#include <Keyboard.h>        //引用鍵盤函式庫
 #include <IRremote.h>        //引用紅外線函式庫
 
 int RECV_PIN =11;            //紅外線腳位
@@ -46,10 +46,10 @@ void loop()
   Keyes IR Remote Control
   
   0xFF629D    FORWARD
+  0xFFA857    REVERSE  
   0xFF22DD    LEFT
   0xFF02FD    OK
   0xFFC23D    RIGHT
-  0xFFA857    REVERSE
   0xFF6897    1
   0xFF9867    2
   0xFFB04F    3
@@ -71,18 +71,18 @@ void loop()
     if (results.value==0xFF22DD) {  //F5 (LEFT)
         Keyboard.write(char(198));
         Serial.println("F5");
-    } 
-    else if (results.value==0xFF629D) {  //PAGE UP (FORWARD)
-        Keyboard.write(char(211));
-        Serial.println("PAGE UP");
-    }    
+    }
     else if (results.value==0xFFC23D) {  //SHIFT+F5 (RIGHT)
         Keyboard.press(char(133));
         Keyboard.press(char(198));
         delay(10);
         Keyboard.releaseAll();
         Serial.println("SHIFT+F5");
-    }  
+    }    
+    else if (results.value==0xFF629D) {  //PAGE UP (FORWARD)
+        Keyboard.write(char(211));
+        Serial.println("PAGE UP");
+    }     
     else if (results.value==0xFFA857) {  //PAGE DOWN (REVERSE)
         Keyboard.write(char(214));
         Serial.println("PAGE DOWN");
