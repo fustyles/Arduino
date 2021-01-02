@@ -28,22 +28,20 @@ Uart Command Format :
 
 Keyboard Modifiers (keyboardpress)
 https://www.arduino.cc/en/Reference/KeyboardModifiers
-*/
 
-/*
-PPT Remote Control
+Remote Control for PPT
 
 ?keyboardwrite=198          "F5"
 ?keyboardwrite=211          "PAGE UP"
-?keyboardpress=133;198;;10  "SHIFT+F5"
+?keyboardpress=133;198;;10  "SHIFT+F5"     //Format: ?keyboardpress=keycode1;keycode2;keycode3;presstime
 ?keyboardwrite=214          "PAGE DOWN"
 ?keyboardwrite=87           "W"
 ?keyboardwrite=177          "ESC"
 ?keyboardwrite=66           "B"
-*/
 
-/*
-Game (?keyboardpress=keycode1;keycode2;keycode3;presstime)
+
+Remote Control for Game 
+Format: ?keyboardpress=keycode1;keycode2;keycode3;presstime
 
 ?keyboardpress=215;;;100     "KEY_RIGHT_ARROW"
 ?keyboardpress=216;;;100     "KEY_LEFT_ARROW"
@@ -51,6 +49,7 @@ Game (?keyboardpress=keycode1;keycode2;keycode3;presstime)
 ?keyboardpress=218;;;200     "KEY_UP_ARROW"
 ?keyboardpress=215;218;;200  "KEY_RIGHT_ARROW + KEY_UP_ARROW"
 ?keyboardpress=216;218;;200  "KEY_LEFT_ARROW + KEY_UP_ARROW"
+
 */
 
 #include <SoftwareSerial.h>
