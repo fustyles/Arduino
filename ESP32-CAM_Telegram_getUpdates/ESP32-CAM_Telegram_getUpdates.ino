@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Get your latest message from Telegram Bot
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-21 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-10 01:30
 https://www.facebook.com/francefu
 
 ArduinoJson Library：
@@ -344,7 +344,11 @@ void sendMessage2Telegram(String text) {
   const char* myDomain = "api.telegram.org";
   String getAll="", getBody = "";
   
-  String request = "chat_id="+chat_id+"&text="+text;
+  String request = "parse_mode=HTML&chat_id="+chat_id+"&text="+text;
+  
+  // {"keyboard":[[{"text":"/help"},{"text":"/capture"},{"text":"/on"},{"text":"/off"},{"text":"/restart"}]]}  -->url encode-->  %7B%22keyboard%22%3A%5B%5B%7B%22text%22%3A%22%2Fhelp%22%7D%2C%7B%22text%22%3A%22%2Fcapture%22%7D%2C%7B%22text%22%3A%22%2Fon%22%7D%2C%7B%22text%22%3A%22%2Foff%22%7D%2C%7B%22text%22%3A%22%2Frestart%22%7D%5D%5D%7D
+  request += "&reply_markup=%7B%22keyboard%22%3A%5B%5B%7B%22text%22%3A%22%2Fhelp%22%7D%2C%7B%22text%22%3A%22%2Fcapture%22%7D%2C%7B%22text%22%3A%22%2Fon%22%7D%2C%7B%22text%22%3A%22%2Foff%22%7D%2C%7B%22text%22%3A%22%2Frestart%22%7D%5D%5D%7D";
+  
   client_tcp.println("POST /bot"+token+"/sendMessage HTTP/1.1");
   client_tcp.println("Host: " + String(myDomain));
   client_tcp.println("Content-Length: " + String(request.length()));
@@ -378,4 +382,39 @@ void sendMessage2Telegram(String text) {
   }
   Serial.println(getBody);
   Serial.println();
+}
+
+//https://github.com/zenmanenergy/ESP8266-Arduino-Examples/
+String urlencode(String str)
+{
+    String encodedString="";
+    char c;
+    char code0;
+    char code1;
+    char code2;
+    for (int i =0; i < str.length(); i++){
+      c=str.charAt(i);
+      if (c == ' '){
+        encodedString+= '+';
+      } else if (isalnum(c)){
+        encodedString+=c;
+      } else{
+        code1=(c & 0xf)+'0';
+        if ((c & 0xf) >9){
+            code1=(c & 0xf) - 10 + 'A';
+        }
+        c=(c>>4)&0xf;
+        code0=c+'0';
+        if (c > 9){
+            code0=c - 10 + 'A';
+        }
+        code2='\0';
+        encodedString+='%';
+        encodedString+=code0;
+        encodedString+=code1;
+        //encodedString+=code2;
+      }
+      yield();
+    }
+    return encodedString;
 }
