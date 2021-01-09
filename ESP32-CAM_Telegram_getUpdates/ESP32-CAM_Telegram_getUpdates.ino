@@ -166,11 +166,13 @@ void getTelegramMessage() {
   if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
     
+    /*
     ledcAttachPin(4, 3);
     ledcSetup(3, 5000, 8);
     ledcWrite(3,10);
     delay(2000);
     ledcWrite(3,0);
+    */
       
     while (client_tcp.connected()) {            
       getAll = "";
