@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Get your latest message from Telegram Bot
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-10 01:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-10 02:00
 https://www.facebook.com/francefu
 
 ArduinoJson Library：
@@ -233,7 +233,14 @@ void getTelegramMessage() {
         
         // If client gets new message, do what you want to do.
         if (text=="help"||text=="/help"||text=="/start") {
-          sendMessage2Telegram("/help Command list\n/capture Take a photo\n/on Turn on the flash\n/off Turn off the flash\n/restart Restart the board");
+          /* 
+            {"keyboard":[[{"text":"/help"},{"text":"/capture"},{"text":"/on"},{"text":"/off"},{"text":"/restart"}]]}  
+            --> url encode -->
+            %7B%22keyboard%22%3A%5B%5B%7B%22text%22%3A%22%2Fhelp%22%7D%2C%7B%22text%22%3A%22%2Fcapture%22%7D%2C%7B%22text%22%3A%22%2Fon%22%7D%2C%7B%22text%22%3A%22%2Foff%22%7D%2C%7B%22text%22%3A%22%2Frestart%22%7D%5D%5D%7D
+          */
+          String command = "/help Command list\n/capture Take a photo\n/on Turn on the flash\n/off Turn off the flash\n/restart Restart the board";
+          String keyboard = "%7B%22keyboard%22%3A%5B%5B%7B%22text%22%3A%22%2Fhelp%22%7D%2C%7B%22text%22%3A%22%2Fcapture%22%7D%2C%7B%22text%22%3A%22%2Fon%22%7D%2C%7B%22text%22%3A%22%2Foff%22%7D%2C%7B%22text%22%3A%22%2Frestart%22%7D%5D%5D%7D";
+          sendMessage2Telegram(command, keyboard);
         }        
         else if (text=="/capture") {
           sendCapturedImage2Telegram();
@@ -242,20 +249,20 @@ void getTelegramMessage() {
           ledcAttachPin(4, 3);
           ledcSetup(3, 5000, 8);
           ledcWrite(3,10);
-          sendMessage2Telegram("Turn on the flash");
+          sendMessage2Telegram("Turn on the flash","");
         }
         else if (text=="/off") {
           ledcAttachPin(4, 3);
           ledcSetup(3, 5000, 8);
           ledcWrite(3,0);
-          sendMessage2Telegram("Turn off the flash");
+          sendMessage2Telegram("Turn off the flash","");
         }
         else if (text=="/restart") {
-          sendMessage2Telegram("Restart the board");
+          sendMessage2Telegram("Restart the board","");
           ESP.restart();
         }        
         else
-          sendMessage2Telegram("Command is not defined");
+          sendMessage2Telegram("Command is not defined","");
       }
       
       delay(1000);
@@ -340,14 +347,12 @@ void sendCapturedImage2Telegram() {
   Serial.println();
 }
 
-void sendMessage2Telegram(String text) {
+void sendMessage2Telegram(String text, String keyboard) {
   const char* myDomain = "api.telegram.org";
   String getAll="", getBody = "";
   
   String request = "parse_mode=HTML&chat_id="+chat_id+"&text="+text;
-  
-  // {"keyboard":[[{"text":"/help"},{"text":"/capture"},{"text":"/on"},{"text":"/off"},{"text":"/restart"}]]}  -->url encode-->  %7B%22keyboard%22%3A%5B%5B%7B%22text%22%3A%22%2Fhelp%22%7D%2C%7B%22text%22%3A%22%2Fcapture%22%7D%2C%7B%22text%22%3A%22%2Fon%22%7D%2C%7B%22text%22%3A%22%2Foff%22%7D%2C%7B%22text%22%3A%22%2Frestart%22%7D%5D%5D%7D
-  request += "&reply_markup=%7B%22keyboard%22%3A%5B%5B%7B%22text%22%3A%22%2Fhelp%22%7D%2C%7B%22text%22%3A%22%2Fcapture%22%7D%2C%7B%22text%22%3A%22%2Fon%22%7D%2C%7B%22text%22%3A%22%2Foff%22%7D%2C%7B%22text%22%3A%22%2Frestart%22%7D%5D%5D%7D";
+  if (keyboard!="") request += "&reply_markup="+keyboard;
   
   client_tcp.println("POST /bot"+token+"/sendMessage HTTP/1.1");
   client_tcp.println("Host: " + String(myDomain));
