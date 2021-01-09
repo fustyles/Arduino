@@ -1,6 +1,6 @@
 /*
-ESP32-CAM U Telegram Bot
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-10 02:10
+ESP32-CAM Get your latest message from Telegram Bot
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-10 02:30
 https://www.facebook.com/francefu
 
 ArduinoJson Library：
@@ -166,13 +166,11 @@ void getTelegramMessage() {
   if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
     
-    /*
     ledcAttachPin(4, 3);
     ledcSetup(3, 5000, 8);
     ledcWrite(3,10);
     delay(2000);
     ledcWrite(3,0);
-    */
       
     while (client_tcp.connected()) {            
       getAll = "";
@@ -236,7 +234,8 @@ void getTelegramMessage() {
         // If client gets new message, do what you want to do.
         if (text=="help"||text=="/help"||text=="/start") {
           String command = "/help Command list\n/capture Take a photo\n/on Turn on the flash\n/off Turn off the flash\n/restart Restart the board";
-          String keyboard = "{\"keyboard\":[[{\"text\":\"/help\"},{\"text\":\"/capture\"},{\"text\":\"/on\"},{\"text\":\"/off\"},{\"text\":\"/restart\"}]]}";
+          //String keyboard = "{\"keyboard\":[[{\"text\":\"/help\"},{\"text\":\"/capture\"},{\"text\":\"/on\"},{\"text\":\"/off\"},{\"text\":\"/restart\"}]]}";
+          String keyboard = "{\"keyboard\":[[{\"text\":\"/capture\"},{\"text\":\"/on\"}],[{\"text\":\"/off\"},{\"text\":\"/restart\"}]]}";
           sendMessage2Telegram(command, keyboard);
         }        
         else if (text=="/capture") {
