@@ -238,7 +238,7 @@ void getTelegramMessage() {
             --> url encode -->
             %7B%22keyboard%22%3A%5B%5B%7B%22text%22%3A%22%2Fhelp%22%7D%2C%7B%22text%22%3A%22%2Fcapture%22%7D%2C%7B%22text%22%3A%22%2Fon%22%7D%2C%7B%22text%22%3A%22%2Foff%22%7D%2C%7B%22text%22%3A%22%2Frestart%22%7D%5D%5D%7D
           */
-          String command = "/help Command list\n/capture Take a photo\n/on Turn on the flash\n/off Turn off the flash\n/restart Restart the board";
+          String command = "/help Command list\n/capture Get still\n/on Turn on the flash\n/off Turn off the flash\n/restart Restart the board";
           String keyboard = "%7B%22keyboard%22%3A%5B%5B%7B%22text%22%3A%22%2Fhelp%22%7D%2C%7B%22text%22%3A%22%2Fcapture%22%7D%2C%7B%22text%22%3A%22%2Fon%22%7D%2C%7B%22text%22%3A%22%2Foff%22%7D%2C%7B%22text%22%3A%22%2Frestart%22%7D%5D%5D%7D";
           sendMessage2Telegram(command, keyboard);
         }        
