@@ -235,7 +235,7 @@ void getTelegramMessage() {
         if (text=="help"||text=="/help"||text=="/start") {
           String command = "/help Command list\n/capture Take a photo\n/on Turn on the flash\n/off Turn off the flash\n/restart Restart the board";
           //String keyboard = "{\"keyboard\":[[{\"text\":\"/help\"},{\"text\":\"/capture\"},{\"text\":\"/on\"},{\"text\":\"/off\"},{\"text\":\"/restart\"}]]}";
-          String keyboard = "{\"keyboard\":[[{\"text\":\"/capture\"},{\"text\":\"/on\"}],[{\"text\":\"/off\"},{\"text\":\"/restart\"}]]}";
+          String keyboard = "{\"keyboard\":[[{\"text\":\"/on\"},{\"text\":\"/off\"}],[{\"text\":\"/capture\"},{\"text\":\"/restart\"}]]}";
           sendMessage2Telegram(command, keyboard);
         }        
         else if (text=="/capture") {
