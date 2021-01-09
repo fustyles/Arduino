@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Get your latest message from Telegram Bot
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-10 02:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-10 02:10
 https://www.facebook.com/francefu
 
 ArduinoJson Library：
@@ -233,13 +233,8 @@ void getTelegramMessage() {
         
         // If client gets new message, do what you want to do.
         if (text=="help"||text=="/help"||text=="/start") {
-          /* 
-            {"keyboard":[[{"text":"/help"},{"text":"/capture"},{"text":"/on"},{"text":"/off"},{"text":"/restart"}]]}  
-            --> url encode -->
-            %7B%22keyboard%22%3A%5B%5B%7B%22text%22%3A%22%2Fhelp%22%7D%2C%7B%22text%22%3A%22%2Fcapture%22%7D%2C%7B%22text%22%3A%22%2Fon%22%7D%2C%7B%22text%22%3A%22%2Foff%22%7D%2C%7B%22text%22%3A%22%2Frestart%22%7D%5D%5D%7D
-          */
-          String command = "/help Command list\n/capture Get still\n/on Turn on the flash\n/off Turn off the flash\n/restart Restart the board";
-          String keyboard = "%7B%22keyboard%22%3A%5B%5B%7B%22text%22%3A%22%2Fhelp%22%7D%2C%7B%22text%22%3A%22%2Fcapture%22%7D%2C%7B%22text%22%3A%22%2Fon%22%7D%2C%7B%22text%22%3A%22%2Foff%22%7D%2C%7B%22text%22%3A%22%2Frestart%22%7D%5D%5D%7D";
+          String command = "/help Command list\n/capture Take a photo\n/on Turn on the flash\n/off Turn off the flash\n/restart Restart the board";
+          String keyboard = "{\"keyboard\":[[{\"text\":\"/help\"},{\"text\":\"/capture\"},{\"text\":\"/on\"},{\"text\":\"/off\"},{\"text\":\"/restart\"}]]}";
           sendMessage2Telegram(command, keyboard);
         }        
         else if (text=="/capture") {
