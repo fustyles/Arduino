@@ -276,7 +276,7 @@ void getTelegramMessage() {
     }
   }
   
-  Serial.println("Connected to api.telegram.org failed.");
+  Serial.println("Connected to api.telegram.org failed.");   // Server connection time out after about 3 minutes.
   if (WiFi.status() != WL_CONNECTED)
     ESP.restart();
   else
