@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Using keyboard in Telegram Bot
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-10 02:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-10 11:00
 https://www.facebook.com/francefu
 
 ArduinoJson Library：
@@ -48,6 +48,39 @@ String chat_id = "*****";   // Get chat_id -> https://telegram.me/chatid_echo_bo
 
 WiFiClientSecure client_tcp;
 long message_id_last = 0;
+
+void executeCommand(String text) {
+  // Custom command
+  if (text=="help"||text=="/help"||text=="/start") {
+    String command = "/help Command list\n/capture Take a photo\n/on Turn on the flash\n/off Turn off the flash\n/restart Restart the board";
+    //One row
+    String keyboard = "{\"keyboard\":[[{\"text\":\"/on\"},{\"text\":\"/off\"},{\"text\":\"/capture\"},{\"text\":\"/restart\"}]]}";
+    //Two rows
+    //String keyboard = "{\"keyboard\":[[{\"text\":\"/on\"},{\"text\":\"/off\"}],[{\"text\":\"/capture\"},{\"text\":\"/restart\"}]]}";
+    sendMessage2Telegram(command, keyboard);
+  }        
+  else if (text=="/capture") {
+    sendCapturedImage2Telegram();
+  }
+  else if (text=="/on") {
+    ledcAttachPin(4, 3);
+    ledcSetup(3, 5000, 8);
+    ledcWrite(3,10);
+    sendMessage2Telegram("Turn on the flash","");
+  }
+  else if (text=="/off") {
+    ledcAttachPin(4, 3);
+    ledcSetup(3, 5000, 8);
+    ledcWrite(3,0);
+    sendMessage2Telegram("Turn off the flash","");
+  }
+  else if (text=="/restart") {
+    sendMessage2Telegram("Restart the board","");
+    ESP.restart();
+  }        
+  else
+    sendMessage2Telegram("Command is not defined","");
+}
 
 void setup()
 {
@@ -232,37 +265,8 @@ void getTelegramMessage() {
         }
           
         Serial.println("["+String(message_id)+"] "+text);
-        
-        // If client gets new message, do what you want to do.
-        if (text=="help"||text=="/help"||text=="/start") {
-          String command = "/help Command list\n/capture Take a photo\n/on Turn on the flash\n/off Turn off the flash\n/restart Restart the board";
-          //One row
-          //String keyboard = "{\"keyboard\":[[{\"text\":\"/on\"},{\"text\":\"/off\"},{\"text\":\"/capture\"},{\"text\":\"/restart\"}]]}";
-          //Two rows
-          String keyboard = "{\"keyboard\":[[{\"text\":\"/on\"},{\"text\":\"/off\"}],[{\"text\":\"/capture\"},{\"text\":\"/restart\"}]]}";
-          sendMessage2Telegram(command, keyboard);
-        }        
-        else if (text=="/capture") {
-          sendCapturedImage2Telegram();
-        }
-        else if (text=="/on") {
-          ledcAttachPin(4, 3);
-          ledcSetup(3, 5000, 8);
-          ledcWrite(3,10);
-          sendMessage2Telegram("Turn on the flash","");
-        }
-        else if (text=="/off") {
-          ledcAttachPin(4, 3);
-          ledcSetup(3, 5000, 8);
-          ledcWrite(3,0);
-          sendMessage2Telegram("Turn off the flash","");
-        }
-        else if (text=="/restart") {
-          sendMessage2Telegram("Restart the board","");
-          ESP.restart();
-        }        
-        else
-          sendMessage2Telegram("Command is not defined","");
+
+        executeCommand(text);
       }
       
       delay(1000);
