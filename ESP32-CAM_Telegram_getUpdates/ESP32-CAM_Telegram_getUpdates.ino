@@ -84,9 +84,10 @@ void executeCommand(String text) {
     sendMessage2Telegram("Restart the board", "");
     ESP.restart();
   } 
-  else if (text=="null")  //Server sends this response unexpectedly. Don't delete the code.
+  else if (text=="null") { //Server sends this response unexpectedly. Don't delete the code.
     client_tcp.stop();
     getTelegramMessage();
+  }
   else
     sendMessage2Telegram("Command is not defined", "");
 }
