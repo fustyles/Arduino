@@ -274,7 +274,7 @@ void getTelegramMessage() {
     ESP.restart();
   }
   else
-    getTelegramMessage();   // Server connection time out after about 3 minutes.
+    getTelegramMessage();   // Client's connection time out after about 3 minutes.
 }
 
 void sendCapturedImage2Telegram() {
