@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Get your latest message from Telegram Bot
+ESP32-CAM Using keyboard in Telegram Bot
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-10 02:30
 https://www.facebook.com/francefu
 
@@ -236,9 +236,9 @@ void getTelegramMessage() {
         // If client gets new message, do what you want to do.
         if (text=="help"||text=="/help"||text=="/start") {
           String command = "/help Command list\n/capture Take a photo\n/on Turn on the flash\n/off Turn off the flash\n/restart Restart the board";
-          //One line
+          //One row
           //String keyboard = "{\"keyboard\":[[{\"text\":\"/on\"},{\"text\":\"/off\"},{\"text\":\"/capture\"},{\"text\":\"/restart\"}]]}";
-          //Two lines
+          //Two rows
           String keyboard = "{\"keyboard\":[[{\"text\":\"/on\"},{\"text\":\"/off\"}],[{\"text\":\"/capture\"},{\"text\":\"/restart\"}]]}";
           sendMessage2Telegram(command, keyboard);
         }        
