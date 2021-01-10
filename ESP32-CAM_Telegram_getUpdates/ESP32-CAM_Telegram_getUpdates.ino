@@ -4,7 +4,7 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-10 11:00
 https://www.facebook.com/francefu
 
 ArduinoJson Library：
-https://github.com/bblanchon/ArduinoJson
+https://www.arduinolibraries.info/libraries/arduino-json
 
 Telegram Bot API
 https://core.telegram.org/bots/api
