@@ -61,7 +61,7 @@ void executeCommand(String text) {
     //String keyboard = "{\"keyboard\":[[{\"text\":\"/on\"},{\"text\":\"/off\"},{\"text\":\"/capture\"},{\"text\":\"/restart\"}]],\"one_time_keyboard\":false}";
     
     //Two rows
-    String keyboard = "{\"keyboard\":[[{\"text\":\"/on\"},{\"text\":\"/off\"}],[{\"text\":\"/capture\"},{\"text\":\"/restart\"}]],\"one_time_keyboard\":false}";
+    String keyboard = "{\"keyboard\":[[{\"text\":\"/on\"},{\"text\":\"/off\"}], [{\"text\":\"/capture\"},{\"text\":\"/restart\"}]],\"one_time_keyboard\":false}";
     
     sendMessage2Telegram(command, keyboard);
   }        
