@@ -69,20 +69,20 @@ void executeCommand(String text) {
     ledcAttachPin(4, 3);
     ledcSetup(3, 5000, 8);
     ledcWrite(3,10);
-    sendMessage2Telegram("Turn on the flash","");
+    sendMessage2Telegram("Turn on the flash", "");
   }
   else if (text=="/off") {
     ledcAttachPin(4, 3);
     ledcSetup(3, 5000, 8);
     ledcWrite(3,0);
-    sendMessage2Telegram("Turn off the flash","");
+    sendMessage2Telegram("Turn off the flash", "");
   }
   else if (text=="/restart") {
-    sendMessage2Telegram("Restart the board","");
+    sendMessage2Telegram("Restart the board", "");
     ESP.restart();
   }        
   else
-    sendMessage2Telegram("Command is not defined","");
+    sendMessage2Telegram("Command is not defined", "");
 }
 
 void setup()
