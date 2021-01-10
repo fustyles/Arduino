@@ -1,7 +1,7 @@
 /*
 ESP32-CAM Using keyboard in Telegram Bot
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-10 13:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-10 13:10
 https://www.facebook.com/francefu
 
 ArduinoJson Library：
@@ -85,7 +85,8 @@ void executeCommand(String text) {
     ESP.restart();
   } 
   else if (text=="null")  //Server sent this response. Don't delete the code.
-    ESP.restart();
+    client_tcp.stop();
+    getTelegramMessage();
   else
     sendMessage2Telegram("Command is not defined", "");
 }
