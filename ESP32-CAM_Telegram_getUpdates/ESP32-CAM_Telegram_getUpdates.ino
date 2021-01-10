@@ -81,7 +81,7 @@ void executeCommand(String text) {
     sendMessage2Telegram("Turn off the flash", "");
   }
   else if (text=="/restart") {
-    sendMessage2Telegram("Restart the board","");
+    sendMessage2Telegram("Restart the board", "");
     ESP.restart();
   }        
   else
