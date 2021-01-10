@@ -51,7 +51,7 @@ WiFiClientSecure client_tcp;
 long message_id_last = 0;
 
 void executeCommand(String text) {
-  if (!text||text==""||text=="null") return;
+  if (!text||text=="") return;
   
   // Custom command
   if (text=="help"||text=="/help"||text=="/start") {
