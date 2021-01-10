@@ -1,11 +1,9 @@
 /*
 ESP32-CAM Using keyboard in Telegram Bot
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-10 11:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-10 11:30
 https://www.facebook.com/francefu
-
 ArduinoJson Library：
-https://www.arduinolibraries.info/libraries/arduino-json
-
+https://github.com/bblanchon/ArduinoJson
 Telegram Bot API
 https://core.telegram.org/bots/api
 */
@@ -55,10 +53,10 @@ void executeCommand(String text) {
     String command = "/help Command list\n/capture Get still\n/on Turn on the flash\n/off Turn off the flash\n/restart Restart the board";
     
     //One row
-    //String keyboard = "{\"keyboard\":[[{\"text\":\"/on\"},{\"text\":\"/off\"},{\"text\":\"/capture\"},{\"text\":\"/restart\"}]]}";
+    //String keyboard = "{\"keyboard\":[[{\"text\":\"/on\"},{\"text\":\"/off\"},{\"text\":\"/capture\"},{\"text\":\"/restart\"}]],\"one_time_keyboard\":false}";
     
     //Two rows
-    String keyboard = "{\"keyboard\":[[{\"text\":\"/on\"},{\"text\":\"/off\"}],[{\"text\":\"/capture\"},{\"text\":\"/restart\"}]]}";
+    String keyboard = "{\"keyboard\":[[{\"text\":\"/on\"},{\"text\":\"/off\"}],[{\"text\":\"/capture\"},{\"text\":\"/restart\"}]],\"one_time_keyboard\":false}";
     
     sendMessage2Telegram(command, keyboard);
   }        
@@ -78,7 +76,7 @@ void executeCommand(String text) {
     sendMessage2Telegram("Turn off the flash", "");
   }
   else if (text=="/restart") {
-    sendMessage2Telegram("Restart the board", "");
+    sendMessage2Telegram("Restart the board","");
     ESP.restart();
   }        
   else
@@ -198,18 +196,10 @@ void getTelegramMessage() {
   long message_id;
   String text;  
 
-  Serial.println("Connect to " + String(myDomain));
+  if (message_id_last == 0) Serial.println("Connect to " + String(myDomain));
   if (client_tcp.connect(myDomain, 443)) {
-    Serial.println("Connection successful");
-    
-    /*
-    ledcAttachPin(4, 3);
-    ledcSetup(3, 5000, 8);
-    ledcWrite(3,10);
-    delay(2000);
-    ledcWrite(3,0);
-    */
-    
+    if (message_id_last == 0) Serial.println("Connection successful");
+
     while (client_tcp.connected()) {            
       getAll = "";
       getBody = "";
@@ -266,12 +256,9 @@ void getTelegramMessage() {
           Serial.println(getBody);
           Serial.println();
         }
-          
         Serial.println("["+String(message_id)+"] "+text);
-
         executeCommand(text);
       }
-      
       delay(1000);
     }
   }
