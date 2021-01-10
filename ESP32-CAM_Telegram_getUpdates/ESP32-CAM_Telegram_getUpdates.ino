@@ -51,6 +51,8 @@ WiFiClientSecure client_tcp;
 long message_id_last = 0;
 
 void executeCommand(String text) {
+  if (text=="") return;
+  
   // Custom command
   if (text=="help"||text=="/help"||text=="/start") {
     String command = "/help Command list\n/capture Get still\n/on Turn on the flash\n/off Turn off the flash\n/restart Restart the board";
