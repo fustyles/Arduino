@@ -52,7 +52,7 @@ long message_id_last = 0;
 void executeCommand(String text) {
   // Custom command
   if (text=="help"||text=="/help"||text=="/start") {
-    String command = "/help Command list\n/capture Take a photo\n/on Turn on the flash\n/off Turn off the flash\n/restart Restart the board";
+    String command = "/help Command list\n/capture G\n/on Turn on the flash\n/off Turn off the flash\n/restart Restart the board";
     
     //One row
     //String keyboard = "{\"keyboard\":[[{\"text\":\"/on\"},{\"text\":\"/off\"},{\"text\":\"/capture\"},{\"text\":\"/restart\"}]]}";
