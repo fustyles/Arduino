@@ -18,7 +18,12 @@ const char* password = "*****";   //your network password
 String token = "*****:*****";   // Create your bot and get the token -> https://telegram.me/fatherbot
 String chat_id = "*****";   // Get chat_id -> https://telegram.me/chatid_echo_bot
 
-boolean sendHelp = true;   // Send the message "/help" to Telegram Bot when the board boots.
+/*
+If variable "sendHelp" is equal to "true", it will send the message "/help" to Telegram Bot when the board boots. 
+If you don't want to get the command list when the board restarts every time, you can set the value to "false".
+But you need to input the command "/help" to get the keyboards when the board boots.
+*/
+boolean sendHelp = true;   
 
 #include <ArduinoJson.h>
 #include <WiFi.h>
