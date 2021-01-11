@@ -18,6 +18,8 @@ const char* password = "*****";   //your network password
 String token = "*****:*****";   // Create your bot and get the token -> https://telegram.me/fatherbot
 String chat_id = "*****";   // Get chat_id -> https://telegram.me/chatid_echo_bot
 
+boolean sendHelp = true;   // Send the message "/help" to Telegram Bot when the board boots.
+
 #include <ArduinoJson.h>
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -259,7 +261,10 @@ void getTelegramMessage() {
         message_id_last = message_id;
         if (id_last==0) {
           message_id = 0;
-          text = "/help";      
+          if (sendHelp == true)
+            text = "/help";
+          else
+            text = "";
         }
         else {
           Serial.println(getBody);
