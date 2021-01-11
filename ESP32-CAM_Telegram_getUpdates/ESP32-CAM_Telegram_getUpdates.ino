@@ -270,8 +270,11 @@ void getTelegramMessage() {
           Serial.println(getBody);
           Serial.println();
         }
-        Serial.println("["+String(message_id)+"] "+text);
-        executeCommand(text);
+        
+        if (text!="") {
+          Serial.println("["+String(message_id)+"] "+text);
+          executeCommand(text);
+        }
       }
       delay(1000);
     }
