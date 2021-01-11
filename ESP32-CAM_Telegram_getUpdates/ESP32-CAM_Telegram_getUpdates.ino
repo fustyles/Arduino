@@ -286,7 +286,7 @@ void getTelegramMessage() {
   }
   
   if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("Connected to api.telegram.org failed.");
+    Serial.println("Connected failed.");
     WiFi.begin(ssid, password);  
     long int StartTime=millis();
     while (WiFi.status() != WL_CONNECTED) 
@@ -297,7 +297,7 @@ void getTelegramMessage() {
     if (WiFi.status() != WL_CONNECTED) {
       ESP.restart();
     }
-    Serial.println("Reconnection was successful.");
+    Serial.println("Reconnection is successful.");
   }
  
   getTelegramMessage();   // Client's connection time out after about 3 minutes.
