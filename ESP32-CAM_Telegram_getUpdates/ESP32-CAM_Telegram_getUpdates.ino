@@ -21,7 +21,7 @@ String chat_id = "*****";   // Get chat_id -> https://telegram.me/chatid_echo_bo
 /*
 If "sendHelp" variable is equal to "true", it will send the command list to Telegram Bot when the board boots. 
 If you don't want to get the command list when the board restarts every time, you can set the value to "false".
-But you need to input the command "help: or "/help" to get the keyboards when the board boots.
+But you need to input the command "help" or "/help" to get the keyboards when the board boots.
 */
 boolean sendHelp = true;   
 
