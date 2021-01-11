@@ -42,10 +42,10 @@ void executeCommand(String text) {
     String command = "/help Command list\n/on Turn on the led\n/off Turn off the led\n/restart Restart the board";
     
     //One row
-    //String keyboard = "{\"keyboard\":[[{\"text\":\"/on\"},{\"text\":\"/off\"},{\"text\":\"/restart\"}]],\"one_time_keyboard\":false}";
+    String keyboard = "{\"keyboard\":[[{\"text\":\"/on\"},{\"text\":\"/off\"},{\"text\":\"/restart\"}]],\"one_time_keyboard\":false}";
     
     //Two rows
-    String keyboard = "{\"keyboard\":[[{\"text\":\"/on\"},{\"text\":\"/off\"}], [{\"text\":\"/restart\"}]],\"one_time_keyboard\":false}";
+    //String keyboard = "{\"keyboard\":[[{\"text\":\"/on\"},{\"text\":\"/off\"}], [{\"text\":\"/restart\"}]],\"one_time_keyboard\":false}";
     
     sendMessage2Telegram(command, keyboard);
   }        
