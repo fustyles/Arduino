@@ -266,7 +266,7 @@ void getTelegramMessage() {
         message_id_last = message_id;
         if (id_last==0) {
           message_id = 0;
-          if (sendHelp == true)   // Send the command list to Telegram Bot when the board boots.
+          if (sendHelp == true||text == "/start")   // Send the command list to Telegram Bot when the board boots.
             text = "/help";
           else
             text = "";
