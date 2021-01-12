@@ -16,14 +16,14 @@ LCD
 
 */
 
-const char* ssid     = "";
-const char* password = "";
+const char* ssid     = "";  //WIFI ssid
+const char* password = "";  //WIFI pwd
 
 const char* apssid = "ESP32_PMS5003T";
 const char* appassword = "12345678";
 
-String api_key = "*****";   //ThingSpeak   Fields1: PM2.5, Fields2: PM100, Fields3: Tempearture, Fields4: Humidity 
-String line_token = "*****";.   //Line Notify
+String thingspeak_api_key = "";   //ThingSpeak
+String line_token = "";           //Line Notify
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -60,6 +60,12 @@ void ExecuteCommand()
   if (cmd=="admin") { 
     Feedback="PMS5003T (Fongshan)<br>SSID: <input type=\"text\" id=\"ssid\"><br>PWD: <input type=\"text\" id=\"pwd\"><br><input type=\"button\" value=\"submit\" onclick=\"location.href='?resetwifi='+document.getElementById('ssid').value+';'+document.getElementById('pwd').value;\">";  
   }
+  else if (cmd=="thingspeakapikey") {
+    thingspeak_api_key = P1;
+  }  
+  else if (cmd=="linetoken") {
+    line_token = P1;
+  }   
   else if (cmd=="ip") {
     Feedback="AP IP: "+WiFi.softAPIP().toString();    
     Feedback+=", ";
@@ -214,14 +220,14 @@ void loop() {
     lcd.print("PM10 =" + myPm100 + "  " + myHumid + "%RH");
 
     String domain="api.thingspeak.com";
-    String request = "/update?api_key=" + api_key;
+    String request = "/update?api_key=" + thingspeak_api_key;
     request += "&field1="+String(pmat25)+"&field2="+String(pmat100)+"&field3="+String(Temp)+"&field4="+String(Humid);
-    Serial.println(tcp_https(domain,request,443,0));
+    if (thingspeak_api_key!="") 
+      Serial.println(tcp_https(domain,request,443,0));
     
-    /*
-    String message = "Hello";
-    LineNotify(line_token, "message=" + message, 1);
-    */
+    String message = "PM2.5: "+String(pmat25)+" ug/m3<br>PM100: "+String(pmat100)+" ug/m3<br>Temperature: "+String(Temp)+" *C<br>Humidity: "+String(Humid)+" %RH";
+    if (line_token!="") 
+      LineNotify(line_token, "message=" + message, 1);
     
     delay(30000);
   }
