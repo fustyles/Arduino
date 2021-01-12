@@ -22,7 +22,7 @@ const char* password = "";
 const char* apssid = "ESP32_PMS5003T";
 const char* appassword = "12345678";
 
-String api_key = "*****";   //ThingSpeak
+String api_key = "*****";   //ThingSpeak   Fields1: PM2.5, Fields2: PM100, Fields3: Tempearture, Fields4: Humidity 
 String line_token = "*****";.   //Line Notify
 
 #include <WiFi.h>
