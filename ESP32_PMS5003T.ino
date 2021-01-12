@@ -13,7 +13,6 @@ PMS5003T
 
 LCD
 5V, GND, RX:12, TX:14
-
 */
 
 const char* ssid     = "";  //WIFI ssid
