@@ -217,6 +217,12 @@ void loop() {
     request += "&field1="+String(pmat25)+"&field2="+String(pmat100)+"&field3="+String(Temp)+"&field4="+String(Humid);
     Serial.println(tcp_https(domain,request,443,0));
     
+    /*
+    String token = "*****";
+    String request = "message=Hello";
+    LineNotify(token,request,1);
+    */
+    
     delay(30000);
   }
 }
