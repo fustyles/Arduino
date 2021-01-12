@@ -23,6 +23,7 @@ const char* apssid = "ESP32_PMS5003T";
 const char* appassword = "12345678";
 
 String api_key = "HG3W67OQZG0YDIEZ123";   //ThingSpeak
+String line_token = "*****";
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -218,9 +219,8 @@ void loop() {
     Serial.println(tcp_https(domain,request,443,0));
     
     /*
-    String token = "*****";
-    String request = "message=Hello";
-    LineNotify(token,request,1);
+    String message= "Hello";
+    LineNotify(line_token, "message=" + message, 1);
     */
     
     delay(30000);
