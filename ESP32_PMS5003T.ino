@@ -219,7 +219,7 @@ void loop() {
     Serial.println(tcp_https(domain,request,443,0));
     
     /*
-    String message= "Hello";
+    String message = "Hello";
     LineNotify(line_token, "message=" + message, 1);
     */
     
