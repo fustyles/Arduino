@@ -22,8 +22,8 @@ const char* password = "";
 const char* apssid = "ESP32_PMS5003T";
 const char* appassword = "12345678";
 
-String api_key = "HG3W67OQZG0YDIEZ123";   //ThingSpeak
-String line_token = "*****";
+String api_key = "*****";   //ThingSpeak
+String line_token = "*****";.   //Line Notify
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
