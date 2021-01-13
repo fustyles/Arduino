@@ -1,6 +1,6 @@
 /*
 NODEMCU ESP32 PMS5003T
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-13 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-13 09:00
 https://www.facebook.com/francefu
 
 Set WIFI ssid and pwd
@@ -16,12 +16,11 @@ http://192.168.4.1?admin_token
 LCD Library
 https://github.com/nhatuan84/esp32-lcd
 
-PMS5003T
-3V3, GND, RX:16, TX:17
-
 LCD
 5V, GND, RX:12, TX:14
 
+PMS5003T
+3V3, GND, RX:16, TX:17
 */
 
 const char* ssid     = "*****";  //WIFI ssid
@@ -76,9 +75,11 @@ void ExecuteCommand()
   }     
   else if (cmd=="thingspeakapikey") {
     thingspeak_api_key = P1;
+    Feedback="Set api_key = "+P1+" OK";
   }  
   else if (cmd=="linetoken") {
     line_token = P1;
+    Feedback="Set token = "+P1+" OK";    
   }   
   else if (cmd=="ip") {
     Feedback="AP IP: "+WiFi.softAPIP().toString();    
@@ -239,7 +240,7 @@ void loop() {
     if (thingspeak_api_key!="") 
       Serial.println(tcp_https(domain,request,443,0));
     
-    String message = "PM2.5 "+String(pmat25)+" ug/m3\nPM100 "+String(pmat100)+" ug/m3\nTemperature: "+String(Temp)+" *C\nHumidity "+String(Humid)+" %RH";
+    String message = "\nPM2.5:    "+String(pmat25)+" ug/m3\nPM100:    "+String(pmat100)+" ug/m3\nTemperature:    "+String(Temp)+" *C\nHumidity:    "+String(Humid)+" RH";
     if (line_token!="")
       Serial.println(LineNotify(line_token, "message="+message, 1));
 
@@ -435,7 +436,7 @@ String LineNotify(String token, String request, byte wait)
   request.replace("%3CBR%20/%3E","%0D%0A"); 
   request.replace("%20stickerPackageId","&stickerPackageId");
   request.replace("%20stickerId","&stickerId");    
-  
+  Serial.println(request);
   WiFiClientSecure client_tcp;
   
   if (client_tcp.connect("notify-api.line.me", 443)) 
