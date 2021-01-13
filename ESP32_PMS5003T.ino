@@ -1,6 +1,6 @@
 /*
 NODEMCU ESP32 PMS5003T
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-13 09:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-13 10:00
 https://www.facebook.com/francefu
 
 Set WIFI ssid and pwd
@@ -12,9 +12,8 @@ http://192.168.4.1?admin_key
 Set Line Notify token
 http://192.168.4.1?admin_token
   
-ESP32 LCD Library
+LCD Library
 https://github.com/nhatuan84/esp32-lcd
-
 16x2 LCD
 5V, GND, RX:12, TX:14
 
@@ -28,6 +27,8 @@ const char* password = "*****";  //WIFI pwd
 const char* apssid = "ESP32_PMS5003T";
 const char* appassword = "12345678";
 
+int lcdAddress = 39;    //0x27=39, 0x3F=63 
+
 String thingspeak_api_key = "";   //ThingSpeak
 String line_token = "";           //Line Notify
 
@@ -39,7 +40,7 @@ HardwareSerial mySerial(1);  // RX:gpio16   TX:gpio17
 
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h>
-LiquidCrystal_I2C lcd(39, 16, 2);  //0x27=39, 0x3F=63 
+LiquidCrystal_I2C lcd(lcdAddress, 16, 2);  //0x27=39, 0x3F=63 
 
 int lcdRX = 12;
 int lcdTX = 14;
@@ -50,7 +51,7 @@ long pmat100 = 0;
 long Temp = 0;
 long Humid = 0;
 char buf[50];
-int interval = 0;
+int delaycount = 0;
 
 WiFiServer server(80);
 
@@ -210,11 +211,11 @@ void loop() {
   getRequest();
 
   delay(1000);
-  interval++;
-  if (interval<30)  //delay 30 seconds
+  if (delaycount>0&&delaycount<30)  //delay 30 seconds
     return;
   else
-    interval=0;
+    delaycount=1;
+  delaycount++;    
     
   if (WiFi.status() == WL_CONNECTED) {
     retrievepm25();
