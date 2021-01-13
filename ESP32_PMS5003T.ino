@@ -3,7 +3,15 @@ NODEMCU ESP32 PMS5003T
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-13 01:00
 https://www.facebook.com/francefu
 
-Set WIFI ssid and pwd ->  http://192.168.4.1?admin
+Set WIFI ssid and pwd
+http://192.168.4.1?admin
+
+Set ThingSpeak api_key
+http://192.168.4.1?adminadmin_thingspeakapikey
+
+Set Line Notify token
+http://192.168.4.1?adminadmin_linetoken
+  
 
 LCD Library
 https://github.com/nhatuan84/esp32-lcd
@@ -13,6 +21,7 @@ PMS5003T
 
 LCD
 5V, GND, RX:12, TX:14
+
 */
 
 const char* ssid     = "";  //WIFI ssid
@@ -59,6 +68,12 @@ void ExecuteCommand()
   if (cmd=="admin") { 
     Feedback="PMS5003T (Fongshan)<br>SSID: <input type=\"text\" id=\"ssid\"><br>PWD: <input type=\"text\" id=\"pwd\"><br><input type=\"button\" value=\"submit\" onclick=\"location.href='?resetwifi='+document.getElementById('ssid').value+';'+document.getElementById('pwd').value;\">";  
   }
+  else if (cmd=="admin_thingspeakapikey") { 
+    Feedback="PMS5003T (Fongshan)<br>ThingSpeak API_KEY: <input type=\"text\" id=\"key\"><input type=\"button\" value=\"submit\" onclick=\"location.href='?thingspeakapikey='+document.getElementById('key').value;\">";  
+  }  
+  else if (cmd=="admin_linetoken") { 
+    Feedback="PMS5003T (Fongshan)<br>Line Token: <input type=\"text\" id=\"token\"><input type=\"button\" value=\"submit\" onclick=\"location.href='?linetoken='+document.getElementById('token').value;\">";  
+  }     
   else if (cmd=="thingspeakapikey") {
     thingspeak_api_key = P1;
   }  
