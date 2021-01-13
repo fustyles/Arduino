@@ -213,12 +213,13 @@ void loop() {
   getRequest();
 
   delay(1000);
+  
+  delaycount++;    
   if (delaycount>0&&delaycount<delaytime)
     return;
   else
     delaycount=1;
-  delaycount++;    
-    
+  
   if (WiFi.status() == WL_CONNECTED) {
     retrievepm25();
   
