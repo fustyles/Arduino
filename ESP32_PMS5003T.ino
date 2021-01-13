@@ -32,6 +32,8 @@ int lcdAddress = 39;    //0x27=39, 0x3F=63
 String thingspeak_api_key = "";   //ThingSpeak
 String line_token = "";           //Line Notify
 
+int delaytime = 30;    //delay 30 seconds
+
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 
@@ -211,7 +213,7 @@ void loop() {
   getRequest();
 
   delay(1000);
-  if (delaycount>0&&delaycount<30)  //delay 30 seconds
+  if (delaycount>0&&delaycount<delaytime)
     return;
   else
     delaycount=1;
