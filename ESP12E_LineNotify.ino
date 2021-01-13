@@ -89,6 +89,7 @@ String LineNotify_https_post(String message)
 
 String LineNotify_http_get(String message)
 {
+  message.replace("%","%25");  
   message.replace(" ","%20");
   message.replace("&","%20");
   message.replace("#","%20");
