@@ -450,6 +450,7 @@ String LineNotify(String token, String request, byte wait)
   
   if (client_tcp.connect("notify-api.line.me", 443)) 
   {
+    Serial.println(request);    
     client_tcp.println("POST /api/notify HTTP/1.1");
     client_tcp.println("Connection: close"); 
     client_tcp.println("Host: notify-api.line.me");
