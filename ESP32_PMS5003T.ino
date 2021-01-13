@@ -1,6 +1,6 @@
 /*
 NODEMCU ESP32 PMS5003T
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-13 12:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-13 22:00
 https://www.facebook.com/francefu
 
 Set WIFI ssid and pwd
@@ -258,7 +258,7 @@ void loop() {
     if (thingspeak_api_key!="") 
       Serial.println(tcp_https(domain,request,443,0));
     
-    String message = "\nPM2.5:    "+String(pmat25)+" ug/m3\nPM100:    "+String(pmat100)+" ug/m3\nTemperature:    "+String(Temp)+" *C\nHumidity:    "+String(Humid)+" RH";
+    String message = "\nPM2.5:    "+String(pmat25)+" ug/m3\nPM100:    "+String(pmat100)+" ug/m3\nTemperature:    "+String(Temp)+" *C\nHumidity:    "+String(Humid)+" %RH";
     if (line_token!="")
       Serial.println(LineNotify(line_token, "message="+message, 1));
   }
@@ -438,6 +438,7 @@ String tcp_https(String domain,String request,int port,byte wait)
 
 String LineNotify(String token, String request, byte wait)
 {
+  request.replace("%","%25");   
   request.replace(" ","%20");
   request.replace("&","%20");
   request.replace("#","%20");
