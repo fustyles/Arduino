@@ -15,7 +15,7 @@ Set Line Notify token
 http://192.168.4.1?admin_token
 http://STAIP?admin_token
   
-LCD Library
+ESP32 LCD Library
 https://github.com/nhatuan84/esp32-lcd
 16x2 LCD
 5V, GND, RX:12, TX:14
