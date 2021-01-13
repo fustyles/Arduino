@@ -1,6 +1,6 @@
 /*
 NODEMCU ESP32 PMS5003T
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-13 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-13 22:30
 https://www.facebook.com/francefu
 
 Set WIFI ssid and pwd
@@ -164,6 +164,10 @@ void setup() {
   Serial.begin(9600);
   mySerial.begin(9600, SERIAL_8N1, 16, 17);
 
+  lcd.begin(lcdRX, lcdTX);
+  lcd.backlight();  
+  lcd.clear();
+    
   WiFi.mode(WIFI_AP_STA);
 
   //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
@@ -183,7 +187,7 @@ void setup() {
   } 
 
   if (WiFi.status() == WL_CONNECTED)
-  {
+  {    
     pinMode(2, OUTPUT);
     for (int i=0;i<5;i++)
     {
@@ -192,12 +196,15 @@ void setup() {
       digitalWrite(2,LOW);
       delay(100);
     }
-  }  
+
+    lcd.setCursor(0,0);
+    lcd.print(WiFi.localIP().toString());
+  }
 
   Serial.println("");
   Serial.println("STAIP address: ");
   Serial.println(WiFi.localIP());
-
+  
   if (WiFi.status() == WL_CONNECTED)
     WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
   else
@@ -208,9 +215,6 @@ void setup() {
   Serial.println("APIP address: ");
   Serial.println(WiFi.softAPIP());    
   server.begin();  
-  
-  lcd.begin(lcdRX, lcdTX);
-  lcd.backlight();
   
   delay(3000); 
 }
@@ -258,7 +262,7 @@ void loop() {
     if (thingspeak_api_key!="") 
       Serial.println(tcp_https(domain,request,443,0));
     
-    String message = "\nPM2.5:    "+String(pmat25)+" ug/m3\nPM100:    "+String(pmat100)+" ug/m3\nTemperature:    "+String(Temp)+" *C\nHumidity:    "+String(Humid)+" %RH";
+    String message = "\nPM2.5:    "+String(pmat25)+" ug/m3\nPM100:    "+String(pmat100)+" ug/m3\nTemperature:    "+String(Temp)+" °C\nHumidity:    "+String(Humid)+" %RH";
     if (line_token!="")
       Serial.println(LineNotify(line_token, "message="+message, 1));
   }
@@ -438,7 +442,7 @@ String tcp_https(String domain,String request,int port,byte wait)
 
 String LineNotify(String token, String request, byte wait)
 {
-  request.replace("%","%25");   
+  request.replace("%","%25");
   request.replace(" ","%20");
   request.replace("&","%20");
   request.replace("#","%20");
