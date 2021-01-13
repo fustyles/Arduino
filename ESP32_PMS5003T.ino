@@ -5,12 +5,15 @@ https://www.facebook.com/francefu
 
 Set WIFI ssid and pwd
 http://192.168.4.1?admin
+http://STAIP?admin
 
 Set ThingSpeak api_key
 http://192.168.4.1?admin_key
+http://STAIP?admin_key
 
 Set Line Notify token
 http://192.168.4.1?admin_token
+http://STAIP?admin_token
   
 LCD Library
 https://github.com/nhatuan84/esp32-lcd
