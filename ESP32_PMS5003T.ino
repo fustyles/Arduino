@@ -85,7 +85,7 @@ void ExecuteCommand()
     Feedback="PMS5003T (Fongshan)<br>ThingSpeak API_KEY: <input type=\"text\" id=\"key\"><input type=\"button\" value=\"submit\" onclick=\"location.href='?thingspeakapikey='+document.getElementById('key').value;\">";  
   }  
   else if (cmd=="admin_token") { 
-    Feedback="PMS5003T (Fongshan)<br>Line Token: <input type=\"text\" id=\"token\"><input type=\"button\" value=\"submit\" onclick=\"location.href='?linetoken='+document.getElementById('token').value;\">";  
+    Feedback="PMS5003T (Fongshan)<br>Line Notify Token: <input type=\"text\" id=\"token\"><input type=\"button\" value=\"submit\" onclick=\"location.href='?linetoken='+document.getElementById('token').value;\">";  
   }     
   else if (cmd=="thingspeakapikey") {
     thingspeak_api_key = P1;
@@ -93,7 +93,7 @@ void ExecuteCommand()
   }  
   else if (cmd=="linetoken") {
     line_token = P1;
-    Feedback="Set Line Token = "+P1+" OK";    
+    Feedback="Set Line Notify Token = "+P1+" OK";    
   } 
   else if (cmd=="get") {
     Feedback = "PM2.5:    "+String(pmat25)+" ug/m3<br>PM100:    "+String(pmat100)+" ug/m3<br>Temperature:    "+String(Temp)+" °C<br>Humidity:    "+String(Humid)+" %RH";
