@@ -19,6 +19,10 @@ https://github.com/nhatuan84/esp32-lcd
 
 PMS5003T
 3V3, GND, RX:16, TX:17
+
+Command Format :  
+http://APIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+http://STAIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 */
 
 const char* ssid     = "*****";  //WIFI ssid
