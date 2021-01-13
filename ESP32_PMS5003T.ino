@@ -16,7 +16,7 @@ http://192.168.4.1?admin_token
 LCD Library
 https://github.com/nhatuan84/esp32-lcd
 
-LCD
+16x2 LCD
 5V, GND, RX:12, TX:14
 
 PMS5003T
