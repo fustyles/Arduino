@@ -51,6 +51,7 @@ long pmat100 = 0;
 long Temp = 0;
 long Humid = 0;
 char buf[50];
+int interval = 0;
 
 WiFiServer server(80);
 
@@ -75,11 +76,11 @@ void ExecuteCommand()
   }     
   else if (cmd=="thingspeakapikey") {
     thingspeak_api_key = P1;
-    Feedback="Set api_key = "+P1+" OK";
+    Feedback="Set ThingSpeak API_KEY = "+P1+" OK";
   }  
   else if (cmd=="linetoken") {
     line_token = P1;
-    Feedback="Set token = "+P1+" OK";    
+    Feedback="Set Line Token = "+P1+" OK";    
   }   
   else if (cmd=="ip") {
     Feedback="AP IP: "+WiFi.softAPIP().toString();    
@@ -209,6 +210,13 @@ void loop() {
 
   getRequest();
 
+  delay(1000);
+  interval++;
+  if (interval<30)  //delay 30 seconds
+    return;
+  else
+    interval=0;
+    
   if (WiFi.status() == WL_CONNECTED) {
     retrievepm25();
   
@@ -243,8 +251,6 @@ void loop() {
     String message = "\nPM2.5:    "+String(pmat25)+" ug/m3\nPM100:    "+String(pmat100)+" ug/m3\nTemperature:    "+String(Temp)+" *C\nHumidity:    "+String(Humid)+" RH";
     if (line_token!="")
       Serial.println(LineNotify(line_token, "message="+message, 1));
-
-    delay(30000);
   }
 }
 
