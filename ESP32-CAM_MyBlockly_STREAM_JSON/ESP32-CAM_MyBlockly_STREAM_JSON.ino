@@ -1277,6 +1277,7 @@ String tcp_http(String domain,String request,int port,byte wait)
 
 String LineNotify(String token, String message, byte wait)
 {
+  message.replace("%","%25");     
   message.replace(" ","%20");
   message.replace("&","%20");
   message.replace("#","%20");
