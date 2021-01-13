@@ -239,10 +239,10 @@ void loop() {
     if (thingspeak_api_key!="") 
       Serial.println(tcp_https(domain,request,443,0));
     
-    String message = "PM2.5: "+String(pmat25)+" ug/m3<br>PM100: "+String(pmat100)+" ug/m3<br>Temperature: "+String(Temp)+" *C<br>Humidity: "+String(Humid)+" %RH";
-    if (line_token!="") 
-      LineNotify(line_token, "message=" + message, 1);
-    
+    String message = "PM2.5 "+String(pmat25)+" ug/m3\nPM100 "+String(pmat100)+" ug/m3\nTemperature: "+String(Temp)+" *C\nHumidity "+String(Humid)+" %RH";
+    if (line_token!="")
+      Serial.println(LineNotify(line_token, "message="+message, 1));
+
     delay(30000);
   }
 }
