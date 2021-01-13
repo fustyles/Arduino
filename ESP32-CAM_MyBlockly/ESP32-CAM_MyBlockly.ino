@@ -860,6 +860,7 @@ String LineNotify(String token, String request, byte wait)
 {
   String getAll="", getBody="";
   
+  request.replace("%","%25"); 
   request.replace(" ","%20");
   request.replace("&","%20");
   request.replace("#","%20");
