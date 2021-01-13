@@ -38,10 +38,10 @@ const char* password = "*****";  //WIFI pwd
 const char* apssid = "ESP32_PMS5003T";
 const char* appassword = "12345678";
 
-int lcdAddress = 39;    //0x27=39, 0x3F=63 
-
 String thingspeak_api_key = "";   //ThingSpeak
 String line_token = "";           //Line Notify
+
+int lcdAddress = 39;    //0x27=39, 0x3F=63 
 
 int delaytime = 30;    //delay 30 seconds
 
