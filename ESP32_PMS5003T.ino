@@ -12,16 +12,14 @@ http://192.168.4.1?adminadmin_thingspeakapikey
 Set Line Notify token
 http://192.168.4.1?adminadmin_linetoken
   
-
-LCD Library
+16x2 LCD Library
 https://github.com/nhatuan84/esp32-lcd
-
-PMS5003T
-3V3, GND, RX:16, TX:17
 
 LCD
 5V, GND, RX:12, TX:14
 
+PMS5003T
+3V3, GND, RX:16, TX:17
 */
 
 const char* ssid     = "";  //WIFI ssid
