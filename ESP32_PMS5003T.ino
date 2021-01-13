@@ -243,7 +243,7 @@ void loop() {
     lcd.setCursor(0,0);
     lcd.print("PM2.5=" + myPm25 + "  " + myTemp + " *C");
     lcd.setCursor(0,1);
-    lcd.print("PM10 =" + myPm100 + "  " + myHumid + " %RH");
+    lcd.print("PM10 =" + myPm100 + "  " + myHumid + " RH");
 
     String domain="api.thingspeak.com";
     String request = "/update?api_key=" + thingspeak_api_key;
