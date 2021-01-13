@@ -12,10 +12,8 @@ http://192.168.4.1?admin_key
 Set Line Notify token
 http://192.168.4.1?admin_token
   
-
 LCD Library
 https://github.com/nhatuan84/esp32-lcd
-
 16x2 LCD
 5V, GND, RX:12, TX:14
 
@@ -238,9 +236,9 @@ void loop() {
          
     lcd.clear();
     lcd.setCursor(0,0);
-    lcd.print("PM2.5=" + myPm25 + "  " + myTemp + "*C");
+    lcd.print("PM2.5=" + myPm25 + "  " + myTemp + " *C");
     lcd.setCursor(0,1);
-    lcd.print("PM10 =" + myPm100 + "  " + myHumid + "%RH");
+    lcd.print("PM10 =" + myPm100 + "  " + myHumid + " %RH");
 
     String domain="api.thingspeak.com";
     String request = "/update?api_key=" + thingspeak_api_key;
