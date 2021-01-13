@@ -7,23 +7,25 @@ Set WIFI ssid and pwd
 http://192.168.4.1?admin
 
 Set ThingSpeak api_key
-http://192.168.4.1?adminadmin_thingspeakapikey
+http://192.168.4.1?admin_key
 
 Set Line Notify token
-http://192.168.4.1?adminadmin_linetoken
+http://192.168.4.1?admin_token
   
-16x2 LCD Library
+
+LCD Library
 https://github.com/nhatuan84/esp32-lcd
+
+PMS5003T
+3V3, GND, RX:16, TX:17
 
 LCD
 5V, GND, RX:12, TX:14
 
-PMS5003T
-3V3, GND, RX:16, TX:17
 */
 
-const char* ssid     = "";  //WIFI ssid
-const char* password = "";  //WIFI pwd
+const char* ssid     = "*****";  //WIFI ssid
+const char* password = "*****";  //WIFI pwd
 
 const char* apssid = "ESP32_PMS5003T";
 const char* appassword = "12345678";
@@ -66,10 +68,10 @@ void ExecuteCommand()
   if (cmd=="admin") { 
     Feedback="PMS5003T (Fongshan)<br>SSID: <input type=\"text\" id=\"ssid\"><br>PWD: <input type=\"text\" id=\"pwd\"><br><input type=\"button\" value=\"submit\" onclick=\"location.href='?resetwifi='+document.getElementById('ssid').value+';'+document.getElementById('pwd').value;\">";  
   }
-  else if (cmd=="admin_thingspeakapikey") { 
+  else if (cmd=="admin_key") { 
     Feedback="PMS5003T (Fongshan)<br>ThingSpeak API_KEY: <input type=\"text\" id=\"key\"><input type=\"button\" value=\"submit\" onclick=\"location.href='?thingspeakapikey='+document.getElementById('key').value;\">";  
   }  
-  else if (cmd=="admin_linetoken") { 
+  else if (cmd=="admin_token") { 
     Feedback="PMS5003T (Fongshan)<br>Line Token: <input type=\"text\" id=\"token\"><input type=\"button\" value=\"submit\" onclick=\"location.href='?linetoken='+document.getElementById('token').value;\">";  
   }     
   else if (cmd=="thingspeakapikey") {
