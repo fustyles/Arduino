@@ -126,6 +126,7 @@ String LineNotify(String request, byte wait)
 
 String encodeMessage(String message)
 {
+  message.replace("%","%25");  
   message.replace(" ","%20");
   message.replace("&","%20");
   message.replace("#","%20");
