@@ -1,6 +1,6 @@
 /*
 NODEMCU ESP32 PMS5003T
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-13 22:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-13 23:00
 https://www.facebook.com/francefu
 
 Set WIFI ssid and pwd
@@ -14,6 +14,10 @@ http://STAIP?admin_key
 Set Line Notify token
 http://192.168.4.1?admin_token
 http://STAIP?admin_token
+
+Get sensor value
+http://192.168.4.1?get
+http://STAIP?get
   
 ESP32 LCD Library
 https://github.com/nhatuan84/esp32-lcd
@@ -90,7 +94,10 @@ void ExecuteCommand()
   else if (cmd=="linetoken") {
     line_token = P1;
     Feedback="Set Line Token = "+P1+" OK";    
-  }   
+  } 
+  else if (cmd=="get") {
+    Feedback = "PM2.5:    "+String(pmat25)+" ug/m3<br>PM100:    "+String(pmat100)+" ug/m3<br>Temperature:    "+String(Temp)+" °C<br>Humidity:    "+String(Humid)+" %RH";
+  }
   else if (cmd=="ip") {
     Feedback="AP IP: "+WiFi.softAPIP().toString();    
     Feedback+=", ";
