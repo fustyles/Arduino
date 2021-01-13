@@ -40,7 +40,7 @@ HardwareSerial mySerial(1);  // RX:gpio16   TX:gpio17
 
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h>
-LiquidCrystal_I2C lcd(lcdAddress, 16, 2);  //0x27=39, 0x3F=63 
+LiquidCrystal_I2C lcd(lcdAddress, 16, 2);
 
 int lcdRX = 12;
 int lcdTX = 14;
