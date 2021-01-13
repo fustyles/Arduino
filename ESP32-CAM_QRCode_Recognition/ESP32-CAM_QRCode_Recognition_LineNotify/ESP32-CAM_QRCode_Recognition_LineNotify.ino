@@ -154,6 +154,7 @@ void loop() {
 
 String LineNotify(String token, String message)
 {
+  message.replace("%","%25");  
   message.replace(" ","%20");
   message.replace("&","%20");
   message.replace("#","%20");
