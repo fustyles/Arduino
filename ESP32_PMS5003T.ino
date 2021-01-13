@@ -213,10 +213,10 @@ void loop() {
   getRequest();
 
   delay(1000);
-  
-  delaycount++;    
-  if (delaycount>0&&delaycount<delaytime)
+  if (delaycount>0&&delaycount<delaytime) {
+    delaycount++;
     return;
+  }
   else
     delaycount=1;
   
@@ -445,7 +445,7 @@ String LineNotify(String token, String request, byte wait)
   request.replace("%3CBR%20/%3E","%0D%0A"); 
   request.replace("%20stickerPackageId","&stickerPackageId");
   request.replace("%20stickerId","&stickerId");    
-  Serial.println(request);
+
   WiFiClientSecure client_tcp;
   
   if (client_tcp.connect("notify-api.line.me", 443)) 
