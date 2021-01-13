@@ -987,6 +987,7 @@ String tcp_https(String domain,String request,int port,byte wait)
 
 String LineNotify(String token, String request, byte wait)
 {
+  request.replace("%","%25");  
   request.replace(" ","%20");
   request.replace("&","%20");
   request.replace("#","%20");
