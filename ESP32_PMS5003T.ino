@@ -15,7 +15,7 @@ Set Line Notify token
 http://192.168.4.1?admin_token
 http://STAIP?admin_token
 
-Get sensor value
+Get sensor values
 http://192.168.4.1?get
 http://STAIP?get
   
