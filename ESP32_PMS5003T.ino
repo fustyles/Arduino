@@ -1,6 +1,6 @@
 /*
 NODEMCU ESP32 PMS5003T
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-13 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-14 19:00
 https://www.facebook.com/francefu
 
 Set WIFI ssid and pwd
@@ -32,18 +32,23 @@ http://APIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://STAIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 */
 
-const char* ssid     = "*****";  //WIFI ssid
-const char* password = "*****";  //WIFI pwd
+const char* ssid     = "";  //WIFI ssid
+const char* password = "";  //WIFI pwd
 
 const char* apssid = "ESP32_PMS5003T";
 const char* appassword = "12345678";
 
 String thingspeak_api_key = "";   //ThingSpeak
+int delaytime = 30;               //delay 30 seconds
+
 String line_token = "";           //Line Notify
 
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
 int lcdAddress = 39;    //0x27=39, 0x3F=63 
-
-int delaytime = 30;    //delay 30 seconds
+LiquidCrystal_I2C lcd(lcdAddress, 16, 2);
+int lcdRX = 12;
+int lcdTX = 14;
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -51,13 +56,11 @@ int delaytime = 30;    //delay 30 seconds
 #include <HardwareSerial.h>
 HardwareSerial mySerial(1);  // RX:gpio16   TX:gpio17
 
-#include <Wire.h> 
-#include <LiquidCrystal_I2C.h>
-LiquidCrystal_I2C lcd(lcdAddress, 16, 2);
+#include <ESP.h>
+const uint32_t addressStart = 0x3FA000; 
+const uint32_t addressEnd   = 0x3FAFFF;
+const int len = 64;    // flashWrite, flashRead -> i = 0 to 63
 
-int lcdRX = 12;
-int lcdTX = 14;
-  
 long pmat10 = 0;
 long pmat25 = 0;
 long pmat100 = 0;
@@ -110,6 +113,13 @@ void ExecuteCommand()
     ESP.restart();
   } 
   else if (cmd=="resetwifi") {
+    char buff_ssid[len], buff_password[len]; 
+    strcpy(buff_ssid, P1.c_str());
+    strcpy(buff_password, P2.c_str());
+    flashErase();
+    flashWrite(buff_ssid, 0);  
+    flashWrite(buff_password, 1);   
+
     WiFi.begin(P1.c_str(), P2.c_str());
     Serial.print("Connecting to ");
     Serial.println(P1);
@@ -121,6 +131,11 @@ void ExecuteCommand()
     Serial.println("");
     Serial.println("STAIP: "+WiFi.localIP().toString());
     Feedback="STAIP: "+WiFi.localIP().toString();
+    if (WiFi.status() == WL_CONNECTED) {
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print(WiFi.localIP().toString());
+    }
   }    
   else if (cmd=="inputpullup") {
     pinMode(P1.toInt(), INPUT_PULLUP);
@@ -187,17 +202,14 @@ void setup() {
   Serial.println(ssid);
   
   long int StartTime=millis();
-  while (WiFi.status() != WL_CONNECTED) 
-  {
+  while (WiFi.status() != WL_CONNECTED) {
       delay(500);
       if ((StartTime+10000) < millis()) break;
   } 
 
-  if (WiFi.status() == WL_CONNECTED)
-  {    
+  if (WiFi.status() == WL_CONNECTED) {    
     pinMode(2, OUTPUT);
-    for (int i=0;i<5;i++)
-    {
+    for (int i=0;i<5;i++) {
       digitalWrite(2,HIGH);
       delay(100);
       digitalWrite(2,LOW);
@@ -206,6 +218,31 @@ void setup() {
 
     lcd.setCursor(0,0);
     lcd.print(WiFi.localIP().toString());
+  }
+  else {
+    // Read WIFI SSID and password from SPI FLASH.
+    char buff_ssid[len], buff_password[len];
+    strcpy(buff_ssid, flashRead(0));
+    strcpy(buff_password, flashRead(1));
+    //Serial.printf("\nssid: \"%s\"\n", buff_ssid);
+    //Serial.printf("password: \"%s\"\n", buff_password);
+    
+    if ((buff_ssid[0]>=32)&&(buff_ssid[0]<=126)) {
+      WiFi.begin(buff_ssid, buff_password);
+      Serial.print("\nConnecting to ");
+      Serial.println(buff_ssid);
+      
+      long int StartTime=millis();
+      while(WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");    
+        if ((StartTime+5000) < millis()) break;
+      }       
+    }
+    if (WiFi.status() == WL_CONNECTED) {  
+      lcd.setCursor(0,0);
+      lcd.print(WiFi.localIP().toString());
+    }
   }
 
   Serial.println("");
@@ -220,7 +257,8 @@ void setup() {
   //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
   Serial.println("");
   Serial.println("APIP address: ");
-  Serial.println(WiFi.softAPIP());    
+  Serial.println(WiFi.softAPIP());   
+   
   server.begin();  
   
   delay(3000); 
@@ -510,3 +548,36 @@ String LineNotify(String token, String request, byte wait)
   else
     return "Connection failed";  
 }
+
+void flashWrite(char data[len], int i) {      // i = 0 to 63
+  uint32_t flashAddress = addressStart + i*len;
+  char buff_write[len];
+  strcpy(buff_write, data);
+  if (ESP.flashWrite(flashAddress,(uint32_t*)buff_write, sizeof(buff_write)-1))
+    Serial.printf("address: %p write \"%s\" [ok]\n", flashAddress, buff_write);
+  else 
+    Serial.printf("address: %p write \"%s\" [error]\n", flashAddress, buff_write);
+}
+
+char* flashRead(int i) {      // i = 0 to 63
+  uint32_t flashAddress = addressStart + i*len;
+  static char buff_read[len];
+  if (ESP.flashRead(flashAddress,(uint32_t*)buff_read, sizeof(buff_read)-1)) {
+    //Serial.printf("data: \"%s\"\n", buff_read);
+    return buff_read;
+  } else  
+    return "";  
+}
+
+void flashErase() {
+  if (ESP.flashEraseSector(addressStart / 4096))
+    Serial.println("\nErase [ok]");
+  else
+    Serial.println("\nErase [error]");
+}
+
+/*
+bool flashEraseSector(uint32_t sector);
+bool flashWrite(uint32_t offset, uint32_t *data, size_t size);
+bool flashRead(uint32_t offset, uint32_t *data, size_t size);
+*/
