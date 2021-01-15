@@ -22,6 +22,9 @@ http://STAIP?get
 Erase flash
 http://192.168.4.1?eraseflash
 http://STAIP?eraseflash
+refer to
+https://ruten-proteus.blogspot.com/2016/12/ESP8266ArduinoQA-02.html
+http://wyj-learning.blogspot.com/2018/03/nodemcu-flash.html
   
 ESP32 LCD Library
 https://github.com/nhatuan84/esp32-lcd
