@@ -19,7 +19,7 @@ Get sensor values
 http://192.168.4.1?get
 http://STAIP?get
 
-Erase flash
+Erase SPI Flash
 http://192.168.4.1?eraseflash
 http://STAIP?eraseflash
 refer to
@@ -136,7 +136,7 @@ void ExecuteCommand()
   }
   else if (cmd=="eraseflash") {
     flashErase();
-    Feedback="Erase flash OK. <a href=\"?restart\">Restart the board</a>";
+    Feedback="Erase SPI Flash OK. <a href=\"?restart\">Restart the board</a>";
   }   
   else if (cmd=="resetwifi") {
     char buff_ssid[len], buff_password[len]; 
@@ -262,8 +262,8 @@ void setup() {
     strcpy(buff_password, flashRead(1));
     if ((buff_ssid[0]>=32)&&(buff_ssid[0]<=126)) {
       Serial.println("");
-      Serial.println("EEPROM ssid = "+String(buff_ssid));
-      Serial.println("EEPROM password = "+String(buff_password));      
+      Serial.println("SPI Flash ssid = "+String(buff_ssid));
+      Serial.println("SPI Flash password = "+String(buff_password));      
       WiFi.begin(buff_ssid, buff_password);
       Serial.print("\nConnecting to ");
       Serial.println(buff_ssid);
@@ -345,7 +345,7 @@ void loop() {
       if ((buff_key[0]>=32)&&(buff_key[0]<=126)) {
         thingspeak_api_key = String(buff_key);
         Serial.println("");
-        Serial.println("EEPROM api_key = "+thingspeak_api_key);
+        Serial.println("SPI Flash api_key = "+thingspeak_api_key);
       }
     }
     if (thingspeak_api_key!="") {
@@ -361,7 +361,7 @@ void loop() {
       if ((buff_token[0]>=32)&&(buff_token[0]<=126)) {
         line_token = String(buff_token);
         Serial.println("");
-        Serial.println("EEPROM token = "+line_token);
+        Serial.println("SPI Flash token = "+line_token);
       }
     }
     if (line_token!="") {
@@ -629,9 +629,9 @@ char* flashRead(int i) {      // i = 0 to 63
 
 void flashErase() {
   if (ESP.flashEraseSector(addressStart / 4096))
-    Serial.println("\nErase flash [ok]");
+    Serial.println("\nErase SPI Flash [ok]");
   else
-    Serial.println("\nErase flash [error]");
+    Serial.println("\nErase SPI Flash [error]");
 }
 
 /*
