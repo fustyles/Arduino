@@ -1,9 +1,9 @@
 /*
 NODEMCU ESP32 PMS5003T
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-15 19:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-15 22:30
 https://www.facebook.com/francefu
 
-Set WIFI ssid and pwd
+Set WIFI ssid and password
 http://192.168.4.1?admin
 http://STAIP?admin
 
@@ -113,37 +113,33 @@ void ExecuteCommand()
     Feedback="PMS5003T (Fongshan)<br>Line Notify Token: <input type=\"text\" id=\"token\"><input type=\"button\" value=\"submit\" onclick=\"location.href='?linetoken='+document.getElementById('token').value;\">";  
   }     
   else if (cmd=="thingspeakapikey") {
+    char buff_key[len]; 
+    strcpy(buff_key, P1.c_str());
+    flashWrite(buff_key, 2); 
+
     thingspeak_api_key = P1;
     Feedback="Set ThingSpeak API_KEY = "+P1+" OK";
   }  
   else if (cmd=="linetoken") {
+    char buff_token[len]; 
+    strcpy(buff_token, P1.c_str());
+    flashWrite(buff_token, 3); 
+        
     line_token = P1;
     Feedback="Set Line Notify Token = "+P1+" OK";    
   } 
   else if (cmd=="get") {
     Feedback = "PM2.5:    "+String(pmat25)+" ug/m3<br>PM100:    "+String(pmat100)+" ug/m3<br>Temperature:    "+String(Temp)+" °C<br>Humidity:    "+String(Humid)+" %RH";
   }
-  else if (cmd=="ip") {
-    Feedback="AP IP: "+WiFi.softAPIP().toString();    
-    Feedback+=", ";
-    Feedback+="STA IP: "+WiFi.localIP().toString();
-  }  
-  else if (cmd=="mac") {
-    Feedback="STA MAC: "+WiFi.macAddress();
-  }  
-  else if (cmd=="restart") {
-    ESP.restart();
-  }
   else if (cmd=="eraseflash") {
     flashErase();
-    Feedback="Erase flash OK";
-  }    
+    Feedback="Erase flash OK. <a href=\"?restart\">Restart the board</a>";
+  }   
   else if (cmd=="resetwifi") {
     char buff_ssid[len], buff_password[len]; 
     strcpy(buff_ssid, P1.c_str());
     strcpy(buff_password, P2.c_str());
-    flashErase();
-    flashWrite(buff_ssid, 0);  
+    flashWrite(buff_ssid, 0);
     flashWrite(buff_password, 1);   
 
     WiFi.begin(P1.c_str(), P2.c_str());
@@ -162,7 +158,18 @@ void ExecuteCommand()
       lcd.setCursor(0,0);
       lcd.print(WiFi.localIP().toString());
     }
-  }    
+  }      
+  else if (cmd=="ip") {
+    Feedback="AP IP: "+WiFi.softAPIP().toString();    
+    Feedback+=", ";
+    Feedback+="STA IP: "+WiFi.localIP().toString();
+  }  
+  else if (cmd=="mac") {
+    Feedback="STA MAC: "+WiFi.macAddress();
+  }  
+  else if (cmd=="restart") {
+    ESP.restart();
+  } 
   else if (cmd=="inputpullup") {
     pinMode(P1.toInt(), INPUT_PULLUP);
   }  
@@ -211,7 +218,7 @@ void ExecuteCommand()
 void setup() {
   Serial.begin(9600);
   mySerial.begin(9600, SERIAL_8N1, 16, 17);
-
+  
   lcd.begin(lcdRX, lcdTX);
   lcd.backlight();  
   lcd.clear();
@@ -229,8 +236,9 @@ void setup() {
   
   long int StartTime=millis();
   while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
-      if ((StartTime+10000) < millis()) break;
+    delay(500);
+    Serial.print(".");       
+    if ((StartTime+10000) < millis()) break;
   } 
 
   if (WiFi.status() == WL_CONNECTED) {    
@@ -246,14 +254,13 @@ void setup() {
     lcd.print(WiFi.localIP().toString());
   }
   else {
-    // Read WIFI SSID and password from SPI FLASH.
     char buff_ssid[len], buff_password[len];
     strcpy(buff_ssid, flashRead(0));
     strcpy(buff_password, flashRead(1));
-    //Serial.printf("\nssid: \"%s\"\n", buff_ssid);
-    //Serial.printf("password: \"%s\"\n", buff_password);
-    
     if ((buff_ssid[0]>=32)&&(buff_ssid[0]<=126)) {
+      Serial.println("");
+      Serial.println("EEPROM ssid = "+String(buff_ssid));
+      Serial.println("EEPROM password = "+String(buff_password));      
       WiFi.begin(buff_ssid, buff_password);
       Serial.print("\nConnecting to ");
       Serial.println(buff_ssid);
@@ -327,15 +334,37 @@ void loop() {
     lcd.setCursor(0,1);
     lcd.print("PM10 =" + myPm100 + "  " + myHumid + " %RH");
 
+    //Thingspeak
     String domain="api.thingspeak.com";
-    String request = "/update?api_key=" + thingspeak_api_key;
-    request += "&field1="+String(pmat25)+"&field2="+String(pmat100)+"&field3="+String(Temp)+"&field4="+String(Humid);
-    if (thingspeak_api_key!="") 
+    if (thingspeak_api_key=="") {
+      char buff_key[len];
+      strcpy(buff_key, flashRead(2));
+      if ((buff_key[0]>=32)&&(buff_key[0]<=126)) {
+        thingspeak_api_key = String(buff_key);
+        Serial.println("");
+        Serial.println("EEPROM api_key = "+thingspeak_api_key);
+      }
+    }
+    if (thingspeak_api_key!="") {
+      String request = "/update?api_key=" + thingspeak_api_key;
+      request += "&field1="+String(pmat25)+"&field2="+String(pmat100)+"&field3="+String(Temp)+"&field4="+String(Humid);
       Serial.println(tcp_https(domain,request,443,0));
-    
-    String message = "\nPM2.5:    "+String(pmat25)+" ug/m3\nPM100:    "+String(pmat100)+" ug/m3\nTemperature:    "+String(Temp)+" °C\nHumidity:    "+String(Humid)+" %RH";
-    if (line_token!="")
+    }
+
+    //Line Notify
+    if (line_token=="") {
+      char buff_token[len];
+      strcpy(buff_token, flashRead(3));
+      if ((buff_token[0]>=32)&&(buff_token[0]<=126)) {
+        line_token = String(buff_token);
+        Serial.println("");
+        Serial.println("EEPROM token = "+line_token);
+      }
+    }
+    if (line_token!="") {
+      String message = "\nPM2.5:    "+String(pmat25)+" ug/m3\nPM100:    "+String(pmat100)+" ug/m3\nTemperature:    "+String(Temp)+" °C\nHumidity:    "+String(Humid)+" %RH";
       Serial.println(LineNotify(line_token, "message="+message, 1));
+    }
   }
 }
 
@@ -597,9 +626,9 @@ char* flashRead(int i) {      // i = 0 to 63
 
 void flashErase() {
   if (ESP.flashEraseSector(addressStart / 4096))
-    Serial.println("\nErase [ok]");
+    Serial.println("\nErase flash [ok]");
   else
-    Serial.println("\nErase [error]");
+    Serial.println("\nErase flash [error]");
 }
 
 /*
