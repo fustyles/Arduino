@@ -581,7 +581,7 @@ char* flashRead(int i) {      // i = 0 to 63
   uint32_t flashAddress = addressStart + i*len;
   static char buff_read[len];
   if (ESP.flashRead(flashAddress,(uint32_t*)buff_read, sizeof(buff_read)-1)) {
-    Serial.printf("data: \"%s\"\n", buff_read);
+    //Serial.printf("data: \"%s\"\n", buff_read);
     return buff_read;
   } else  
     return "";  
