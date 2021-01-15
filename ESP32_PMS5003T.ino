@@ -607,7 +607,7 @@ String LineNotify(String token, String request, byte wait)
     return "Connection failed";  
 }
 
-void flashWrite(char data[len], int i) {      // i = 0 to 63
+void flashWrite(char data[len], int i) {      // len = 64 -> i = 0 to 63
   uint32_t flashAddress = addressStart + i*len;
   char buff_write[len];
   strcpy(buff_write, data);
@@ -617,7 +617,7 @@ void flashWrite(char data[len], int i) {      // i = 0 to 63
     Serial.printf("address: %p write \"%s\" [error]\n", flashAddress, buff_write);
 }
 
-char* flashRead(int i) {      // i = 0 to 63
+char* flashRead(int i) {      // len = 64 -> i = 0 to 63
   uint32_t flashAddress = addressStart + i*len;
   static char buff_read[len];
   if (ESP.flashRead(flashAddress,(uint32_t*)buff_read, sizeof(buff_read)-1)) {
