@@ -262,7 +262,8 @@ void setup() {
     if ((buff_ssid[0]>=32)&&(buff_ssid[0]<=126)) {
       Serial.println("");
       Serial.println("SPI Flash ssid = "+String(buff_ssid));
-      Serial.println("SPI Flash password = "+String(buff_password));      
+      Serial.println("SPI Flash password = "+String(buff_password));  
+      
       WiFi.begin(buff_ssid, buff_password);
       Serial.print("\nConnecting to ");
       Serial.println(buff_ssid);
