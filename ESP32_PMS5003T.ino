@@ -83,7 +83,6 @@ HardwareSerial mySerial(1);  // RX:gpio16   TX:gpio17
 
 #include <ESP.h>
 const uint32_t addressStart = 0x3FA000; 
-const uint32_t addressEnd   = 0x3FAFFF;
 const int len = 64;    // flashWrite, flashRead -> i = 0 to 63
 
 long pmat10 = 0;
