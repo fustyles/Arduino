@@ -18,6 +18,10 @@ http://STAIP?admin_token
 Get sensor values
 http://192.168.4.1?get
 http://STAIP?get
+
+Erase flash
+http://192.168.4.1?eraseflash
+http://STAIP?eraseflash
   
 ESP32 LCD Library
 https://github.com/nhatuan84/esp32-lcd
@@ -129,7 +133,11 @@ void ExecuteCommand()
   }  
   else if (cmd=="restart") {
     ESP.restart();
-  } 
+  }
+  else if (cmd=="eraseflash") {
+    flashErase();
+    Feedback="Erase flash OK";
+  }    
   else if (cmd=="resetwifi") {
     char buff_ssid[len], buff_password[len]; 
     strcpy(buff_ssid, P1.c_str());
