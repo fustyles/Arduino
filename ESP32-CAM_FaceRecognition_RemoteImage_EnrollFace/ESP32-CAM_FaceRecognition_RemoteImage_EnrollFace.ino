@@ -20,7 +20,7 @@ const char* password = "*****";   //your network password
 String imageDomain = "fustyles.github.io";
 String imageRequest[5] = {"/webduino/test/1.jpg", "/webduino/test/2.jpg", "/webduino/test/3.jpg", "/webduino/test/4.jpg", "/webduino/test/5.jpg"};
 
-//以官方範例get-Still按鈕取得CIF(400x296)解析度可辨識到人臉照片上傳到github網站空間，若是其他網站空間不確定是否可以或需修改程式才可. 
+//以官方範例get-Still按鈕取得CIF(400x296)解析度可辨識到人臉照片上傳到github網站空間，若是其他網站空間不確定是否可以或需研究差異修改程式才可. 
 int image_width = 400;  
 int image_height = 296;
 //UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768) , SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120)
