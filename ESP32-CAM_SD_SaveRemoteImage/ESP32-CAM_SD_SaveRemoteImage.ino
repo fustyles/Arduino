@@ -53,7 +53,7 @@ void setup()
     return;
   }  
     
-  saveRemoteImage("fustyles.github.io", "/webduino/1.jpg", 443, "/1.jpg");
+  saveRemoteImage("fustyles.github.io", "/webduino/test/1.jpg", 443, "/1.jpg");
 }
 
 void loop()
