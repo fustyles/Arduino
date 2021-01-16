@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Enroll faces by using images from web server and recognize faces automatically.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-17 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-17 01:30
 https://www.facebook.com/francefu
 */
 
@@ -17,7 +17,7 @@ const char* password = "*****";   //your network password
 #define ENROLL_CONFIRM_TIMES 5   //5 images
 
 //圖檔格式: 1.jpg,  2.jpg, 3.jpg, 4.jpg, 5.jpg...35.jpg  ( 5 images * 7 person = 35張 )
-String imageDomain = "fustyles.github.io";
+String imageDomain[5] = {"fustyles.github.io", "fustyles.github.io", "fustyles.github.io", "fustyles.github.io", "fustyles.github.io"};
 String imageRequest[5] = {"/webduino/test/1.jpg", "/webduino/test/2.jpg", "/webduino/test/3.jpg", "/webduino/test/4.jpg", "/webduino/test/5.jpg"};
 
 //以官方範例get-Still按鈕取得CIF(400x296)解析度可辨識到人臉照片上傳到github網站空間，若是其他網站空間不確定是否可以或需研究差異修改程式才可. 
@@ -112,43 +112,40 @@ void setup() {
   Serial.setDebugOutput(true);  //開啟診斷輸出
   Serial.println();
 
-    
-    WiFi.mode(WIFI_STA);
+  WiFi.mode(WIFI_STA);
+
+  //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
+
+  WiFi.begin(ssid, password);
+
+  delay(1000);
+  Serial.println("");
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
   
-    //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
+  long int StartTime=millis();
+  while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      if ((StartTime+10000) < millis()) break;
+  } 
 
-    WiFi.begin(ssid, password);
-
-    delay(1000);
-    Serial.println("");
-    Serial.print("Connecting to ");
-    Serial.println(ssid);
-    
-    long int StartTime=millis();
-    while (WiFi.status() != WL_CONNECTED) 
+  if (WiFi.status() == WL_CONNECTED) {
+    pinMode(2, OUTPUT);
+    for (int i=0;i<5;i++)
     {
-        delay(500);
-        if ((StartTime+10000) < millis()) break;
-    } 
-  
-    if (WiFi.status() == WL_CONNECTED)
-    {
-      pinMode(2, OUTPUT);
-      for (int i=0;i<5;i++)
-      {
-        digitalWrite(2,HIGH);
-        delay(100);
-        digitalWrite(2,LOW);
-        delay(100);
-      }
-    } 
-    else
-    Serial.println("Connection failed.");
+      digitalWrite(2,HIGH);
+      delay(100);
+      digitalWrite(2,LOW);
+      delay(100);
+    }
+  } 
+  else
+  Serial.println("Connection failed.");
 
-    Serial.println("");
-    Serial.println("STAIP address: ");
-    Serial.println(WiFi.localIP());
-      
+  Serial.println("");
+  Serial.println("STAIP address: ");
+  Serial.println(WiFi.localIP());
+  Serial.println("");
 
   //視訊組態設定
   camera_config_t config;
@@ -209,13 +206,7 @@ void setup() {
   mtmn_config.o_threshold.nms = 0.7;
   mtmn_config.o_threshold.candidate_number = 1;
 
-  //閃光燈(GPIO4)
-  ledcAttachPin(4, 4);  
-  ledcSetup(4, 5000, 8);
-  pinMode(4, OUTPUT);
-  digitalWrite(4, LOW);
-
-  face_id_init(&id_list, FACE_ID_SAVE_NUMBER, ENROLL_CONFIRM_TIMES);
+  face_id_init(&id_list, FACE_ID_SAVE_NUMBER, ENROLL_CONFIRM_TIMES);  
 
   if (!SPIFFS.begin(true)) {
     Serial.println("SPIFFS mounted error");
@@ -226,16 +217,19 @@ void setup() {
     Serial.println("SPIFFS mounted successfully");
   }  
       
-  //取得雲端照片註冊人臉，有時會讀取失敗需要重啟電源執行。
-  int len = sizeof(imageRequest)/sizeof(*imageRequest);
+  //取得雲端照片註冊人臉，有時會讀取失敗需要自行加條件判斷重啟電源重新讀取。
+  int len = sizeof(imageDomain)/sizeof(*imageDomain);
   if (len>0) {
     for (int i=0;i<len;i++) {
-      enrollRemoteImage(imageDomain, imageRequest[i], 443);
+      enrollRemoteImage(imageDomain[i], imageRequest[i], 443);
     }
   }
   
+  //閃光燈(GPIO4)
+  ledcAttachPin(4, 4);  
+  ledcSetup(4, 5000, 8);
   pinMode(4, OUTPUT);
-  digitalWrite(4, LOW);   
+  digitalWrite(4, LOW);  
 }
 
 void loop() {
@@ -303,6 +297,8 @@ void FaceNoMatched() {  //辨識為陌生人臉執行指令控制
 
 void enrollRemoteImage(String domain, String request, int port)
 {
+  if (WiFi.status() != WL_CONNECTED) 
+    return;
   WiFiClientSecure client_tcp;
   String filename = "/enrollface.jpg";
   
