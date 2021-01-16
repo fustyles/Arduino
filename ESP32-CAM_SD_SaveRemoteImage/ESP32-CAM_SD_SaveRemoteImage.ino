@@ -53,7 +53,7 @@ void setup()
     return;
   }  
     
-  getRemoteImage("fustyles.github.io", "/webduino/1.jpg", 443);
+  getRemoteImage("fustyles.github.io", "/webduino/1.jpg", 443, "/1.jpg");
 }
 
 void loop()
@@ -61,11 +61,11 @@ void loop()
 
 }
 
-void getRemoteImage(String domain,String request,int port)
+void getRemoteImage(String domain,String request,int port,String filename)
 {
   String getResponse="";
   
-  File file = SD_MMC.open("/1.jpg", FILE_WRITE);
+  File file = SD_MMC.open(filename, FILE_WRITE);
   if(!file){
     Serial.println("Failed to open file for reading");
     SD_MMC.end();
