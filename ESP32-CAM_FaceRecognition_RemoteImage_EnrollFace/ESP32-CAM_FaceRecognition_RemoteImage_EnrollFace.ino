@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Enroll faces by using images from web server and recognize faces automatically.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-17 00:20
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-17 01:00
 https://www.facebook.com/francefu
 */
 
@@ -421,8 +421,8 @@ void enrollRemoteImage(String domain, String request, int port)
           }
           dl_matrix3du_free(image_matrix);
         }
+        free(buf);      
     }
-    
     file.close();
   }  
 }
