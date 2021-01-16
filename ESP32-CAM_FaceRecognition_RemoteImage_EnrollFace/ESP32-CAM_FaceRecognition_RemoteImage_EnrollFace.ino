@@ -227,8 +227,9 @@ void setup() {
   }  
       
   //取得雲端照片註冊人臉
-  if (sizeof(imageRequest)/sizeof(*imageRequest)>0) {
-    for (int i=0;i<sizeof(imageRequest)/sizeof(*imageRequest);i++) {
+  int len = sizeof(imageRequest)/sizeof(*imageRequest);
+  if (len>0) {
+    for (int i=0;i<len;i++) {
       enrollRemoteImage(imageDomain, imageRequest[i], 443);
     }
   }
