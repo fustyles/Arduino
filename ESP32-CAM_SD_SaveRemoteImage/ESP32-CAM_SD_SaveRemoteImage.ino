@@ -88,13 +88,13 @@ void getRemoteImage(String domain,String request,int port)
   
       String getResponse="";
       boolean state = false;
-      long i=0;
       int waitTime = 1000;   // timeout 1 seconds
       long startTime = millis();
       while ((startTime + waitTime) > millis()) {
         while (client_tcp.available()) {
             char c = client_tcp.read();
-              
+            
+            if (state==true) file.print(c);
             if (c == '\n') {
               if (getResponse.length()==0) 
                 state=true;
@@ -104,11 +104,7 @@ void getRemoteImage(String domain,String request,int port)
               getResponse += String(c);
             }
             
-            if (state==true) {
-              if (i!=0)
-                file.print(c);
-              i++;
-            }
+
             startTime = millis();
          }
       }
