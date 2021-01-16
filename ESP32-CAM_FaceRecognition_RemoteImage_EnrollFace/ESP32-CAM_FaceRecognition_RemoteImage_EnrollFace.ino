@@ -226,7 +226,7 @@ void setup() {
     Serial.println("SPIFFS mounted successfully");
   }  
       
-  //取得雲端照片註冊人臉
+  //取得雲端照片註冊人臉，有時會讀取失敗需要重啟電源執行。
   int len = sizeof(imageRequest)/sizeof(*imageRequest);
   if (len>0) {
     for (int i=0;i<len;i++) {
