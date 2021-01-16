@@ -275,7 +275,7 @@ void loop() {
   }
   dl_matrix3du_free(image_matrix);
 
-  delay(100);
+  delay(1000);
 }
 
 void FaceMatched(int faceid) {  //辨識到註冊人臉執行指令控制
