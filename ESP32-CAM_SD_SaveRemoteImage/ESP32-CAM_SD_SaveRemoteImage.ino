@@ -53,7 +53,7 @@ void setup()
     return;
   }  
     
-  saveRemoteImage("fustyles.github.io", "/webduino/test/1.jpg", 443, "/1.jpg");
+  saveRemoteImage2SD("fustyles.github.io", "/webduino/test/1.jpg", 443, "/1.jpg");
 }
 
 void loop()
@@ -61,7 +61,7 @@ void loop()
 
 }
 
-void saveRemoteImage(String domain,String request,int port,String filename)
+void saveRemoteImage2SD(String domain,String request,int port,String filename)
 {
   String getResponse="";
   
