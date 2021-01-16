@@ -305,7 +305,6 @@ void enrollRemoteImage(String domain, String request, int port)
 {
   WiFiClientSecure client_tcp;
   String filename = "/enrollface.jpg";
-  boolean existState = false;
   
   Serial.println("");
   Serial.print("Connecting to ");
@@ -333,7 +332,6 @@ void enrollRemoteImage(String domain, String request, int port)
           }
           else if (state==true) {
             file.print(c);
-            existState = true;
           }
                      
           if (c == '\n') {
