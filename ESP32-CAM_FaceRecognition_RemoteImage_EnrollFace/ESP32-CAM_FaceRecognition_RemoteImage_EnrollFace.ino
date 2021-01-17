@@ -132,7 +132,7 @@ void setup() {
   if (WiFi.status() == WL_CONNECTED) {
     Serial.println("Connection successful.");     
     pinMode(2, OUTPUT);
-    for (int i=0;i<5;i++) {
+    for (int i=0;i<5;i++) {  //若連線成功快速閃爍
       digitalWrite(2,HIGH);
       delay(100);
       digitalWrite(2,LOW);
@@ -142,7 +142,7 @@ void setup() {
   else {
     Serial.println("Connection failed."); 
     pinMode(2, OUTPUT);    
-    for (int i=0;i<3;i++) {
+    for (int i=0;i<3;i++) {  //若連線失敗慢速閃爍
       digitalWrite(2,HIGH);
       delay(500);
       digitalWrite(2,LOW);
