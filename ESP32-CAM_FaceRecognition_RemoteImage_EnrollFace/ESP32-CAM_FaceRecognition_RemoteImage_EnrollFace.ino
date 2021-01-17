@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Enroll faces by getting images from web server and recognize faces automatically.
+ESP32-CAM Enroll faces by getting remote images from web server and recognize faces automatically.
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-17 01:30
 https://www.facebook.com/francefu
 */
