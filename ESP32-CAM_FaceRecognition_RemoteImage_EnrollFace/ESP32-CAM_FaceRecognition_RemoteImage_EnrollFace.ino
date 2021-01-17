@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Enroll faces by getting remote images from web server and recognize faces automatically.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-17 01:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-17 22:30
 https://www.facebook.com/francefu
 */
 
@@ -443,6 +443,11 @@ String tcp_https(String domain, String request, int port, byte wait)
         while (client_tcp.available()) 
         {
             char c = client_tcp.read();
+            if (state==false) {
+              //Serial.print(String(c)); 
+            }
+            else if (state==true) 
+              Feedback += String(c);
             if (c == '\n') 
             {
               if (getResponse.length()==0) state=true; 
@@ -450,7 +455,6 @@ String tcp_https(String domain, String request, int port, byte wait)
             } 
             else if (c != '\r')
               getResponse += String(c);
-            if (state==true) Feedback += String(c);
             if (wait==1)
               startTime = millis();
          }
