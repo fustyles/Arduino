@@ -14,22 +14,22 @@ const char* ssid     = "*****";   //your network SSID
 const char* password = "*****";   //your network password
   
 //人臉辨識同一人人臉註冊影像數
-#define ENROLL_CONFIRM_TIMES 5   //5 images
-
-//圖檔格式: 1.jpg,  2.jpg, 3.jpg, 4.jpg, 5.jpg...35.jpg  ( 5 images * 7 person = 35張 )
-String imageDomain[5] = {"fustyles.github.io", "fustyles.github.io", "fustyles.github.io", "fustyles.github.io", "fustyles.github.io"};
-String imageRequest[5] = {"/webduino/test/1.jpg", "/webduino/test/2.jpg", "/webduino/test/3.jpg", "/webduino/test/4.jpg", "/webduino/test/5.jpg"};
-
-//以官方範例get-Still按鈕取得CIF(400x296)解析度可辨識到人臉照片上傳到github網站空間，若是其他網站空間不確定是否可以或需研究差異修改程式才可. 
-int image_width = 400;  
-int image_height = 296;
-//UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768) , SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120)
+#define ENROLL_CONFIRM_TIMES 5   // 5 images
 
 //人臉辨識註冊人數
 #define FACE_ID_SAVE_NUMBER 7    // 7 persons
 
 //設定人臉辨識顯示的人名
 String recognize_face_matched_name[7] = {"France","Name1","Name2","Name3","Name4","Name5","Name6"};    // 7 persons
+
+//以官方範例get-Still按鈕取得CIF(400x296)解析度可辨識到人臉照片上傳到github網站空間，若是其他網站空間不確定是否可以或需研究差異修改程式才可. 
+int image_width = 400;  
+int image_height = 296;
+//UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768) , SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120)
+
+//圖檔格式: 1.jpg,  2.jpg, 3.jpg, 4.jpg, 5.jpg...35.jpg  ( 5 images * 7 person = 35張 )
+String imageDomain[5] = {"fustyles.github.io", "fustyles.github.io", "fustyles.github.io", "fustyles.github.io", "fustyles.github.io"};
+String imageRequest[5] = {"/webduino/test/1.jpg", "/webduino/test/2.jpg", "/webduino/test/3.jpg", "/webduino/test/4.jpg", "/webduino/test/5.jpg"};
   
 #include "soc/soc.h"             //用於電源不穩不重開機 
 #include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機 
