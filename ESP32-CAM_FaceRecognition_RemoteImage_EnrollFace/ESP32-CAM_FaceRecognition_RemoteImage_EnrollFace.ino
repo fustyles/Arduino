@@ -295,12 +295,11 @@ void FaceNoMatched() {  //辨識為陌生人臉執行指令控制
   
 }
 
-void enrollRemoteImage(String domain, String request, int port)
-{
+void enrollRemoteImage(String domain, String request, int port) {  //取得遠端照片註冊人臉
   if (WiFi.status() != WL_CONNECTED) 
     return;
   WiFiClientSecure client_tcp;
-  String filename = "/enrollface.jpg";
+  String filename = "/enrollface.jpg";  //spiffs暫存檔名
   
   Serial.println("");
   Serial.print("Connecting to ");
