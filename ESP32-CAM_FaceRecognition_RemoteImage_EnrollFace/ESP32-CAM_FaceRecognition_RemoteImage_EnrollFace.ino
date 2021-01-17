@@ -130,17 +130,25 @@ void setup() {
   } 
 
   if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("Connection successful.");     
     pinMode(2, OUTPUT);
-    for (int i=0;i<5;i++)
-    {
+    for (int i=0;i<5;i++) {
       digitalWrite(2,HIGH);
       delay(100);
       digitalWrite(2,LOW);
       delay(100);
     }
   } 
-  else
-  Serial.println("Connection failed.");
+  else {
+    Serial.println("Connection failed."); 
+    pinMode(2, OUTPUT);    
+    for (int i=0;i<3;i++) {
+      digitalWrite(2,HIGH);
+      delay(500);
+      digitalWrite(2,LOW);
+      delay(500);
+    }    
+  }
 
   Serial.println("");
   Serial.println("STAIP address: ");
