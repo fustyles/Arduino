@@ -20,7 +20,7 @@ const char* password = "*****";   //your network password
 #define FACE_ID_SAVE_NUMBER 7    // 7 persons
 
 //設定人臉辨識顯示的人名
-String recognize_face_matched_name[7] = {"France","Name1","Name2","Name3","Name4","Name5","Name6"};    // 7 persons
+String recognize_face_matched_name[7] = {"Name0","Name1","Name2","Name3","Name4","Name5","Name6"};    // 7 persons
 
 //以官方範例get-Still按鈕取得CIF(400x296)解析度可辨識到人臉照片上傳到github網站空間，若是其他網站空間不確定是否可以或需研究差異修改程式才可. 
 int image_width = 400;  
