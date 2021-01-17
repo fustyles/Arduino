@@ -27,7 +27,7 @@ int image_width = 400;
 int image_height = 296;
 //UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768) , SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120)
 
-//註冊影像來源 5 images * 7 person = 35張
+//註冊影像來源 5 images * 7 person = 35 photos
 String imageDomain[5] = {"fustyles.github.io", "fustyles.github.io", "fustyles.github.io", "fustyles.github.io", "fustyles.github.io"};
 String imageRequest[5] = {"/webduino/test/1.jpg", "/webduino/test/2.jpg", "/webduino/test/3.jpg", "/webduino/test/4.jpg", "/webduino/test/5.jpg"};
   
