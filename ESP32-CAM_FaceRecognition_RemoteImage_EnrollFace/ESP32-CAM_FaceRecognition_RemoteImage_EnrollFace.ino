@@ -82,19 +82,19 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
             Serial.printf("Match Face ID: %u\n", matched_id);
             int name_length = sizeof(recognize_face_matched_name) / sizeof(recognize_face_matched_name[0]);
             if (matched_id<name_length) {
-              //視訊畫面中顯示辨識到的人名
+              //顯示辨識到的人名
               Serial.printf("Match Face Name: %s\n", recognize_face_matched_name[matched_id]);
             }
             else {
               Serial.printf("Match Face Name: No name");
             }  
             Serial.println();
-            FaceMatched(matched_id);  //辨識到註冊人臉執行指令控制
+            FaceMatched(matched_id);  //辨識到註冊人臉時執行函式FaceMatched()
         } else {
             Serial.println("No Match Found");  //辨識為陌生人臉
             Serial.println();
             matched_id = -1;
-            FaceNoMatched();  //辨識為陌生人臉執行指令控制
+            FaceNoMatched();  //辨識到陌生人臉時執行函式FaceNoMatched()
         }
     } else {
         Serial.println("Face Not Aligned");
