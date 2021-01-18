@@ -98,8 +98,7 @@ WiFiServer server(80);
 String Feedback="", Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
-void ExecuteCommand()
-{
+void ExecuteCommand() {
   Serial.println("");
   //Serial.println("Command: "+Command);
   Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
@@ -371,46 +370,47 @@ void loop() {
   }
 }
 
-void retrievepm25(){
+void retrievepm25() {
   int count = 0;
   unsigned char c;
   unsigned char high;
   while (mySerial.available()) { 
     c = mySerial.read();
-    if((count==0 && c!=0x42) || (count==1 && c!=0x4d)){
+    if((count==0 && c!=0x42) || (count==1 && c!=0x4d)) {
       break;
     }
-    if(count > 27){ 
+    if(count > 27) { 
       break;
     }
      else if(count == 10 || count == 12 || count == 14 || count == 24 || count == 26) {
       high = c;
     }
-    else if(count == 11){
+    else if(count == 11) {
       pmat10 = 256*high + c;
     }
-    else if(count == 13){
+    else if(count == 13) {
       pmat25 = 256*high + c;
     }
-    else if(count == 15){
+    else if(count == 15) {
       pmat100 = 256*high + c;
     }
-     else if(count == 25){        
+     else if(count == 25) {        
       Temp = (256*high + c)/10;
     }
-    else if(count == 27){            
+    else if(count == 27) {            
       Humid = (256*high + c)/10;
     }   
     count++;
   }
-  while(mySerial.available()) mySerial.read();
+  while(mySerial.available()) 
+    mySerial.read();
 }
 
 void getRequest() {
   Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
   ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
   
-   WiFiClient client = server.available();
+  WiFiClient client = server.available();
 
   if (client) { 
     String currentLine = "";
@@ -467,8 +467,7 @@ void getRequest() {
   }
 }
 
-void getCommand(char c)
-{
+void getCommand(char c) {
   if (c=='?') ReceiveState=1;
   if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
   
@@ -495,8 +494,7 @@ void getCommand(char c)
   }
 }
 
-String tcp_https(String domain,String request,int port,byte wait)
-{
+String tcp_https(String domain,String request,int port,byte wait) {
     WiFiClientSecure client_tcp;
 
     if (client_tcp.connect(domain.c_str(), port)) {
@@ -533,8 +531,7 @@ String tcp_https(String domain,String request,int port,byte wait)
       return "Connection failed";  
 }
 
-String LineNotify(String token, String request, byte wait)
-{
+String LineNotify(String token, String request, byte wait) {
   request.replace("%","%25");
   request.replace(" ","%20");
   request.replace("&","%20");
