@@ -412,14 +412,11 @@ void getRequest() {
   
    WiFiClient client = server.available();
 
-  if (client) 
-  { 
+  if (client) { 
     String currentLine = "";
 
-    while (client.connected()) 
-    {
-      if (client.available()) 
-      {
+    while (client.connected()) {
+      if (client.available()) {
         char c = client.read();             
         
         getCommand(c);
@@ -449,13 +446,11 @@ void getRequest() {
             currentLine = "";
           }
         } 
-        else if (c != '\r') 
-        {
+        else if (c != '\r') {
           currentLine += c;
         }
 
-        if ((currentLine.indexOf("/?")!=-1)&&(currentLine.indexOf(" HTTP")!=-1))
-        {
+        if ((currentLine.indexOf("/?")!=-1)&&(currentLine.indexOf(" HTTP")!=-1)) {
           if (Command.indexOf("stop")!=-1) {
             client.println();
             client.println();
@@ -477,8 +472,7 @@ void getCommand(char c)
   if (c=='?') ReceiveState=1;
   if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
   
-  if (ReceiveState==1)
-  {
+  if (ReceiveState==1) {
     Command=Command+String(c);
     
     if (c=='=') cmdState=0;
@@ -505,8 +499,7 @@ String tcp_https(String domain,String request,int port,byte wait)
 {
     WiFiClientSecure client_tcp;
 
-    if (client_tcp.connect(domain.c_str(), port)) 
-    {
+    if (client_tcp.connect(domain.c_str(), port)) {
       Serial.println("GET " + request);
       client_tcp.println("GET " + request + " HTTP/1.1");
       client_tcp.println("Host: " + domain);
@@ -517,19 +510,16 @@ String tcp_https(String domain,String request,int port,byte wait)
       boolean state = false;
       int waitTime = 3000;   // timeout 3 seconds
       long startTime = millis();
-      while ((startTime + waitTime) > millis())
-      {
-        while (client_tcp.available()) 
-        {
+      while ((startTime + waitTime) > millis()) {
+        while (client_tcp.available()) {
             char c = client_tcp.read();
-            if (c == '\n') 
-            {
+            if (state==true) Feedback += String(c);          
+            if (c == '\n') {
               if (getResponse.length()==0) state=true; 
               getResponse = "";
             } 
             else if (c != '\r')
               getResponse += String(c);
-            if (state==true) Feedback += String(c);
             if (wait==1)
               startTime = millis();
          }
@@ -563,8 +553,7 @@ String LineNotify(String token, String request, byte wait)
 
   WiFiClientSecure client_tcp;
   
-  if (client_tcp.connect("notify-api.line.me", 443)) 
-  {
+  if (client_tcp.connect("notify-api.line.me", 443)) {
     Serial.println(request);    
     client_tcp.println("POST /api/notify HTTP/1.1");
     client_tcp.println("Connection: close"); 
@@ -581,19 +570,16 @@ String LineNotify(String token, String request, byte wait)
     boolean state = false;
     int waitTime = 3000;   // timeout 3 seconds
     long startTime = millis();
-    while ((startTime + waitTime) > millis())
-    {
-      while (client_tcp.available()) 
-      {
+    while ((startTime + waitTime) > millis()) {
+      while (client_tcp.available()) {
           char c = client_tcp.read();
-          if (c == '\n') 
-          {
+          if (state==true) Feedback += String(c);        
+          if (c == '\n') {
             if (getResponse.length()==0) state=true; 
             getResponse = "";
           } 
           else if (c != '\r')
             getResponse += String(c);
-          if (state==true) Feedback += String(c);
           if (wait==1)
             startTime = millis();
        }
