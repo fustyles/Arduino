@@ -280,7 +280,7 @@ void loop() {
   delay(1000);
 }
 
-void FaceMatched(int faceid) {  //辨識到註冊人臉執行指令控制
+void FaceMatched(int faceid) {  //辨識到註冊人臉
   if (faceid==0) {  
   } 
   else if (faceid==1) { 
@@ -299,7 +299,7 @@ void FaceMatched(int faceid) {  //辨識到註冊人臉執行指令控制
   }   
 }
 
-void FaceNoMatched() {  //辨識為陌生人臉執行指令控制
+void FaceNoMatched() {  //辨識到陌生人臉
   
 }
 
