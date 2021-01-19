@@ -342,6 +342,33 @@ void retrievepm25(){
  
  AQI = obj["AQI"].as<String>().toInt();
  pm25 = obj["PM2.5"].as<String>().toInt();
+  
+  /*
+  obj["SiteName"].as<String>();             // "SiteName":"小港"
+  obj["County"].as<String>();               // "County":"高雄市"
+  obj["AQI"].as<String>().toInt();          // "AQI":"86"
+  obj["Pollutant"].as<String>();            // "Pollutant":"細懸浮微粒"
+  obj["Status"].as<String>();               // "Status":"普通"
+  obj["SO2"].as<String>().toInt();          // "SO2":"4.2"
+  obj["CO"].as<String>().toInt();           // "CO":"0.53"
+  obj["CO_8hr"].as<String>().toInt();       // "CO_8hr":"0.5"
+  obj["O3"].as<String>().toInt();           // "O3":"20.4"
+  obj["O3_8hr"].as<String>().toInt();       // "O3_8hr":"43"
+  obj["PM10"].as<String>().toInt();         // "PM10":"63"
+  obj["PM2.5"].as<String>().toInt();        // "PM2.5":"30"
+  obj["NO2"].as<String>().toInt();          // "NO2":"36.6"
+  obj["NOx"].as<String>().toInt();          // "NOx":"37.6"
+  obj["NO"].as<String>().toInt();           // "NO":"0.9"
+  obj["WindSpeed"].as<String>().toInt();    // "WindSpeed":"1.5"
+  obj["WindDirec"].as<String>().toInt();    // "WindDirec":"351"
+  obj["PublishTime"].as<String>();          // "PublishTime":"2021/01/19 23:00:00"
+  obj["PM2.5_AVG"].as<String>().toInt();    // "PM2.5_AVG":"30"
+  obj["PM10_AVG"].as<String>().toInt();     // "PM10_AVG":"63"
+  obj["SO2_AVG"].as<String>().toInt();      // "SO2_AVG":"3"
+  obj["Longitude"].as<String>();            // "Longitude":"120.337736"
+  obj["Latitude"].as<String>();             // "Latitude":"22.565833"
+  obj["SiteId"].as<String>();               // "SiteId":"58"
+  */
 }
 
 void getRequest() {
