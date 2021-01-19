@@ -29,10 +29,10 @@ http://wyj-learning.blogspot.com/2018/03/nodemcu-flash.html
 ESP32 LCD Library
 https://github.com/nhatuan84/esp32-lcd
 16x2 LCD
-5V, GND, RX:12, TX:14
+5V, GND, SDA:gpio12 , SCL:gpio14 
 
 PMS5003T
-3V3, GND, RX:16, TX:17
+3V3, GND, RX:gpio16, TX:gpio17
 
 Command Format :  
 http://APIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
