@@ -1,6 +1,6 @@
 /*
 Webbit(ESP32) AirQuality
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-19 12:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-20 00:30
 https://www.facebook.com/francefu
 
 Set WIFI ssid and password
@@ -60,12 +60,10 @@ const char* apssid = "ESP32_AIRQUALITY";
 const char* appassword = "12345678";
 
 // Site Name (Chinese)  https://opendata.epa.gov.tw/Data/Contents/AQI/
-String Site = "%E5%B0%8F%E6%B8%AF";  //小港 --> URL Encode --> %E5%B0%8F%E6%B8%AF
-String SiteName = "Xiaogang";        //Display in LCD,  Line Notify Message
-
+String Site = "小港";    //Opendata Site (Chinese)
+String SiteName = "Xiaogang";    //Display in LCD,  Line Notify Message
+String line_token = "";  //Line Notify Token
 int delaytime = 600;               //delay 600 seconds
-
-String line_token = "";           //Line Notify Token
 
 #include <ArduinoJson.h>
 #include <Wire.h> 
@@ -84,6 +82,7 @@ const int len = 64;    // flashWrite, flashRead -> i = 0 to 63
 
 long pm25 = 0;
 long AQI = 0;
+String Status = "";
 int delaycount = 0;
 
 WiFiServer server(80);
@@ -129,7 +128,7 @@ void ExecuteCommand()
     flashWrite(buff_sitename, 4);     
   }   
   else if (cmd=="get") {
-    Feedback = "SITE:    " + SiteName + "<br>AQI:    " + String(AQI) + "   [<a href='https://airtw.epa.gov.tw/CHT/Information/Standard/AirQualityIndicator.aspx' target='_blank'>Indicator</a>]<br>PM2.5:    "+String(pm25)+" ug/m3";
+    Feedback = "SITE: "+urldecode(Site)+"<br>SITENAME: "+SiteName+"<br>AQI:    " + String(AQI) + "   [<a href='https://airtw.epa.gov.tw/CHT/Information/Standard/AirQualityIndicator.aspx' target='_blank'>Indicator</a>]<br>PM2.5:    "+String(pm25)+" ug/m3";
   }
   else if (cmd=="eraseflash") {
     flashErase();
@@ -282,6 +281,9 @@ void setup() {
   server.begin();  
   
   delay(3000); 
+
+  if (Site!="")
+    Site = urlencode(Site);
 }
 
 void loop() {
@@ -325,7 +327,7 @@ void loop() {
       }
     }
     if (line_token!="") {
-      String message = "\nSITE: "+SiteName +"\nAQI: "+String(AQI)+"\nPM25: "+String(pm25);
+      String message = "\nSITE: "+urldecode(Site) +"\nSITENAME: "+SiteName +"\nAQI: "+String(AQI)+"\nPM25: "+String(pm25)+"\nStatus: "+String(Status);
       Serial.println(LineNotify(line_token, "message="+message, 1));
     }
   }
@@ -342,6 +344,7 @@ void retrievepm25(){
  
  AQI = obj["AQI"].as<String>().toInt();
  pm25 = obj["PM2.5"].as<String>().toInt();
+ Status = obj["Status"].as<String>();
   
   /*
   obj["SiteName"].as<String>();             // "SiteName":"小港"
@@ -368,7 +371,7 @@ void retrievepm25(){
   obj["Longitude"].as<String>();            // "Longitude":"120.337736"
   obj["Latitude"].as<String>();             // "Latitude":"22.565833"
   obj["SiteId"].as<String>();               // "SiteId":"58"
-  */
+  */ 
 }
 
 void getRequest() {
@@ -476,12 +479,13 @@ String getAirQuality() {
         Site = String(buff_site);
         SiteName = String(buff_sitename); 
       }
-    }  
+      Serial.println("");
+      Serial.println("SPI Flash Site = "+Site);
+      Serial.println("SPI Flash SiteName = "+SiteName);
+      Serial.println("");      
+    }
+      
     Site.replace("_","%");
-    Serial.println("");
-    Serial.println("SPI Flash Site = "+Site);
-    Serial.println("SPI Flash SiteName = "+SiteName);
-    Serial.println("");
 
     WiFiClientSecure client_tcp;
 
@@ -631,3 +635,77 @@ bool flashEraseSector(uint32_t sector);
 bool flashWrite(uint32_t offset, uint32_t *data, size_t size);
 bool flashRead(uint32_t offset, uint32_t *data, size_t size);
 */
+
+//https://github.com/zenmanenergy/ESP8266-Arduino-Examples/
+String urlencode(String str) {
+    String encodedString="";
+    char c;
+    char code0;
+    char code1;
+    char code2;
+    for (int i =0; i < str.length(); i++){
+      c=str.charAt(i);
+      if (c == ' '){
+        encodedString+= '+';
+      } else if (isalnum(c)){
+        encodedString+=c;
+      } else{
+        code1=(c & 0xf)+'0';
+        if ((c & 0xf) >9){
+            code1=(c & 0xf) - 10 + 'A';
+        }
+        c=(c>>4)&0xf;
+        code0=c+'0';
+        if (c > 9){
+            code0=c - 10 + 'A';
+        }
+        code2='\0';
+        encodedString+='%';
+        encodedString+=code0;
+        encodedString+=code1;
+        //encodedString+=code2;
+      }
+      yield();
+    }
+    return encodedString;
+}
+
+String urldecode(String str) {
+    String encodedString="";
+    char c;
+    char code0;
+    char code1;
+    for (int i =0; i < str.length(); i++){
+        c=str.charAt(i);
+      if (c == '+'){
+        encodedString+=' ';  
+      }else if (c == '%') {
+        i++;
+        code0=str.charAt(i);
+        i++;
+        code1=str.charAt(i);
+        c = (h2int(code0) << 4) | h2int(code1);
+        encodedString+=c;
+      } else{
+        
+        encodedString+=c;  
+      }
+      
+      yield();
+    }
+    
+   return encodedString;
+}
+
+unsigned char h2int(char c) {
+    if (c >= '0' && c <='9'){
+        return((unsigned char)c - '0');
+    }
+    if (c >= 'a' && c <='f'){
+        return((unsigned char)c - 'a' + 10);
+    }
+    if (c >= 'A' && c <='F'){
+        return((unsigned char)c - 'A' + 10);
+    }
+    return(0);
+}
