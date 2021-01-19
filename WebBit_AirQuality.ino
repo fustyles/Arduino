@@ -105,7 +105,7 @@ void ExecuteCommand()
     Feedback="Line Notify Token: <input type=\"text\" id=\"token\"><input type=\"button\" value=\"submit\" onclick=\"location.href='?linetoken='+document.getElementById('token').value;\">";  
   }  
   else if (cmd=="admin_site") { 
-    Feedback="Site: <input type=\"text\" id=\"site\">(Chinese)<br>Site Name: <input type=\"text\" id=\"sitename\">(LCD, Line Notify)<br><input type=\"button\" value=\"submit\" onclick=\"location.href='?site='+document.getElementById('site').value+';'+document.getElementById('sitename').value;\">";  
+    Feedback="Site: <input type=\"text\" id=\"site\">(Opendata site)<br>Site Name: <input type=\"text\" id=\"sitename\">(LCD, Line Notify)<br><input type=\"button\" value=\"submit\" onclick=\"location.href='?site='+document.getElementById('site').value+';'+document.getElementById('sitename').value;\">";  
   } 
   else if (cmd=="linetoken") {
     char buff_token[len]; 
