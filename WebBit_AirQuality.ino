@@ -55,6 +55,7 @@ const char* password = "";  //WIFI pwd
 const char* apssid = "ESp32_AIRQUALITY";
 const char* appassword = "12345678";
 
+// Site Name (Chinese)  https://opendata.epa.gov.tw/Data/Contents/AQI/
 String Site = "%E5%B0%8F%E6%B8%AF";  //小港 --> URL Encode --> %E5%B0%8F%E6%B8%AF
 String SiteName = "Xiaogang";        //Display in LCD,  Line Notify
 
