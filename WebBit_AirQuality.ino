@@ -99,10 +99,10 @@ void ExecuteCommand()
   Serial.println("");
 
   if (cmd=="admin") { 
-    Feedback=SiteName + "<br>SSID: <input type=\"text\" id=\"ssid\"><br>PWD: <input type=\"text\" id=\"pwd\"><br><input type=\"button\" value=\"submit\" onclick=\"location.href='?resetwifi='+document.getElementById('ssid').value+';'+document.getElementById('pwd').value;\">";  
+    Feedback="WIFI<br>SSID: <input type=\"text\" id=\"ssid\"><br>PWD: <input type=\"text\" id=\"pwd\"><br><input type=\"button\" value=\"submit\" onclick=\"location.href='?resetwifi='+document.getElementById('ssid').value+';'+document.getElementById('pwd').value;\">";  
   }
   else if (cmd=="admin_token") { 
-    Feedback=SiteName + "<br>Line Notify Token: <input type=\"text\" id=\"token\"><input type=\"button\" value=\"submit\" onclick=\"location.href='?linetoken='+document.getElementById('token').value;\">";  
+    Feedback="Line Notify Token: <input type=\"text\" id=\"token\"><input type=\"button\" value=\"submit\" onclick=\"location.href='?linetoken='+document.getElementById('token').value;\">";  
   }  
   else if (cmd=="admin_site") { 
     Feedback="Site: <input type=\"text\" id=\"site\">(Chinese)<br>Site Name: <input type=\"text\" id=\"sitename\">(LCD, Line Notify)<br><input type=\"button\" value=\"submit\" onclick=\"location.href='?site='+document.getElementById('site').value+';'+document.getElementById('sitename').value;\">";  
