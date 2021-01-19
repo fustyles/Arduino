@@ -126,7 +126,8 @@ void ExecuteCommand()
     strcpy(buff_site, p1.c_str());
     strcpy(buff_sitename, p2.c_str());
     flashWrite(buff_site, 3);
-    flashWrite(buff_sitename, 4);     
+    flashWrite(buff_sitename, 4); 
+    Feedback="Set Site = "+p1+",SiteName = "+p2+" OK";      
   }   
   else if (cmd=="get") {
     Feedback = "SITE: "+urldecode(Site)+"<br>SITENAME: "+SiteName+"<br>AQI:    " + String(AQI) + "   [<a href='https://airtw.epa.gov.tw/CHT/Information/Standard/AirQualityIndicator.aspx' target='_blank'>Indicator</a>]<br>PM2.5:    "+String(pm25)+" ug/m3";
