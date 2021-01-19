@@ -25,7 +25,7 @@ http://wyj-learning.blogspot.com/2018/03/nodemcu-flash.html
 ESP32 LCD Library
 https://github.com/nhatuan84/esp32-lcd
 16x2 LCD
-5V, GND, SDA:12 (P6), SCL:14 (P7)
+5V, GND, SDA:gpio12 (P6), SCL:gpio14 (P7)
 
 Command Format :  
 http://APIP/?cmd=p1;p2;p3;p4;p5;p6;p7;p8;p9
