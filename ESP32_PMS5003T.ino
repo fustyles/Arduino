@@ -312,7 +312,10 @@ void loop() {
     delaycount=1;
   
   if (WiFi.status() == WL_CONNECTED) {
+    pmat25 = 0;
     retrievepm25();
+    if (pmat25 == 0)
+      retrievepm25();
   
     Serial.println("");
     Serial.println("PM2.5 : " + String(pmat25) + " ug/m3");
