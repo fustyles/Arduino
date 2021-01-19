@@ -137,6 +137,8 @@ void ExecuteCommand()
       lcd.clear();
       lcd.setCursor(0,0);
       lcd.print(WiFi.localIP().toString());
+      AQI = 0;
+      retrievepm25();      
     }
   }      
   else if (cmd=="ip") {
