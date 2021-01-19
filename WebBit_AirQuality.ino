@@ -108,7 +108,7 @@ void ExecuteCommand()
     Feedback="Set Line Notify Token = "+p1+" OK";    
   } 
   else if (cmd=="get") {
-    Feedback = "AQI:    "+String(AQI) + "<br>pm2.5:    "+String(pm25)+" ug/m3";
+    Feedback = "SITE:    " + SiteName + "<br>AQI:    " + String(AQI) + "<br>pm2.5:    "+String(pm25)+" ug/m3";
   }
   else if (cmd=="eraseflash") {
     flashErase();
