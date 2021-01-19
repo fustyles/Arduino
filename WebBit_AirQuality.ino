@@ -7,10 +7,6 @@ Set WIFI ssid and password
 http://192.168.4.1?admin
 http://STAIP?admin
 
-Set ThingSpeak api_key
-http://192.168.4.1?admin_key
-http://STAIP?admin_key
-
 Set Line Notify token
 http://192.168.4.1?admin_token
 http://STAIP?admin_token
