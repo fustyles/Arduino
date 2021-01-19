@@ -61,7 +61,8 @@ const char* appassword = "12345678";
 
 // Site Name (Chinese)  https://opendata.epa.gov.tw/Data/Contents/AQI/
 String Site = "小港";    //Opendata Site (Chinese)
-String SiteName = "Xiaogang";    //Display in LCD,  Line Notify Message
+String SiteName = "Xiaogang";    //Display in LCD
+
 String line_token = "";  //Line Notify Token
 int delaytime = 600;               //delay 600 seconds
 
