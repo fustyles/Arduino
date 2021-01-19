@@ -331,7 +331,7 @@ void loop() {
       }
     }
     if (line_token!="") {
-      String message = "\nSITE: "+urldecode(Site) +"\nSITENAME: "+SiteName +"\nAQI: "+String(AQI)+"\nPM25: "+String(pm25)+"\nStatus: "+String(Status);
+      String message = "\nSITE: "+urldecode(Site) +"\nSITENAME: "+SiteName +"\nAQI: "+String(AQI)+"\nPM2.5: "+String(pm25)+"\nStatus: "+String(Status);
       Serial.println(LineNotify(line_token, "message="+message, 1));
     }
   }
