@@ -29,7 +29,7 @@ http://wyj-learning.blogspot.com/2018/03/nodemcu-flash.html
 ESP32 LCD Library
 https://github.com/nhatuan84/esp32-lcd
 16x2 LCD
-5V, GND, SDA:12 (P6), SCL:14 (P7)
+5V, GND, SDA:gpio12 (P6), SCL:gpio14 (P7)
 
 Command Format :  
 http://APIP/?cmd=p1;p2;p3;p4;p5;p6;p7;p8;p9
@@ -61,11 +61,11 @@ const char* appassword = "12345678";
 
 // Site Name (Chinese)  https://opendata.epa.gov.tw/Data/Contents/AQI/
 String Site = "%E5%B0%8F%E6%B8%AF";  //小港 --> URL Encode --> %E5%B0%8F%E6%B8%AF
-String SiteName = "Xiaogang";        //Display in LCD,  Line Notify
+String SiteName = "Xiaogang";        //Display in LCD,  Line Notify Message
 
 int delaytime = 600;               //delay 600 seconds
 
-String line_token = "";           //Line Notify
+String line_token = "";           //Line Notify Token
 
 #include <ArduinoJson.h>
 #include <Wire.h> 
@@ -312,7 +312,7 @@ void loop() {
     lcd.setCursor(0,0);
     lcd.print(SiteName);
     lcd.setCursor(0,1);
-    lcd.print("AQI=" + String(AQI) + "," + "PM2.5=" + String(pm25));
+    lcd.print("AQI=" + String(AQI) + "," + "PM25=" + String(pm25));
 
     //Line Notify
     if (line_token=="") {
