@@ -1,5 +1,5 @@
 /*
-Webbit(ESP32) AirQuality Xiaogang
+Webbit(ESP32) AirQuality
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-19 12:00
 https://www.facebook.com/francefu
 
