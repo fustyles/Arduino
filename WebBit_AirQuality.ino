@@ -1,5 +1,5 @@
 /*
-Webbit(ESP) AirQuality
+Webbit(ESP32) AirQuality
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-19 01:30
 https://www.facebook.com/francefu
 
