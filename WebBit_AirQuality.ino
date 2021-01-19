@@ -1,5 +1,5 @@
 /*
-Webbit AirQuality Xiaogang
+Webbit(ESP32) AirQuality Xiaogang
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-19 11:30
 https://www.facebook.com/francefu
 
@@ -116,6 +116,7 @@ void ExecuteCommand()
     Feedback="Set Line Notify Token = "+p1+" OK";    
   } 
   else if (cmd=="site") {
+    /*   //Error
     Site = p1;
     SiteName = p2;
     delaycount=delaytime;
@@ -124,7 +125,8 @@ void ExecuteCommand()
     strcpy(buff_site, p1.c_str());
     strcpy(buff_sitename, p2.c_str());
     flashWrite(buff_site, 3);
-    flashWrite(buff_sitename, 4);     
+    flashWrite(buff_sitename, 4);  
+    */
   }   
   else if (cmd=="get") {
     Feedback = "SITE:    " + SiteName + "<br>AQI:    " + String(AQI) + "   [<a href='https://airtw.epa.gov.tw/CHT/Information/Standard/AirQualityIndicator.aspx' target='_blank'>Indicator</a>]<br>PM2.5:    "+String(pm25)+" ug/m3";
