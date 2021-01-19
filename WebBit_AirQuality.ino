@@ -1,6 +1,6 @@
 /*
-Webbit(ESP32) AirQuality
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-19 01:30
+Webbit AirQuality Xiaogang
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-19 11:30
 https://www.facebook.com/francefu
 
 Set WIFI ssid and password
@@ -10,6 +10,10 @@ http://STAIP?admin
 Set Line Notify token
 http://192.168.4.1?admin_token
 http://STAIP?admin_token
+
+Set Site
+http://192.168.4.1?admin_site
+http://STAIP?admin_site
 
 Get sensor values
 http://192.168.4.1?get
@@ -25,7 +29,7 @@ http://wyj-learning.blogspot.com/2018/03/nodemcu-flash.html
 ESP32 LCD Library
 https://github.com/nhatuan84/esp32-lcd
 16x2 LCD
-5V, GND, SDA:gpio12 (P6), SCL:gpio14 (P7)
+5V, GND, SDA:12 (P6), SCL:14 (P7)
 
 Command Format :  
 http://APIP/?cmd=p1;p2;p3;p4;p5;p6;p7;p8;p9
@@ -52,7 +56,7 @@ http://192.168.4.1/?linenotify=token;request
 const char* ssid     = "";  //WIFI ssid
 const char* password = "";  //WIFI pwd
 
-const char* apssid = "ESp32_AIRQUALITY";
+const char* apssid = "ESP32_AIRQUALITY";
 const char* appassword = "12345678";
 
 // Site Name (Chinese)  https://opendata.epa.gov.tw/Data/Contents/AQI/
@@ -99,17 +103,31 @@ void ExecuteCommand()
   }
   else if (cmd=="admin_token") { 
     Feedback=SiteName + "<br>Line Notify Token: <input type=\"text\" id=\"token\"><input type=\"button\" value=\"submit\" onclick=\"location.href='?linetoken='+document.getElementById('token').value;\">";  
-  }      
+  }  
+  else if (cmd=="admin_site") { 
+    Feedback="Site: <input type=\"text\" id=\"site\">(URL Encode)<br>Site Name: <input type=\"text\" id=\"sitename\">(LCD, Line Notify)<br><input type=\"button\" value=\"submit\" onclick=\"location.href='?site='+document.getElementById('site').value+';'+document.getElementById('sitename').value;\">";  
+  } 
   else if (cmd=="linetoken") {
     char buff_token[len]; 
     strcpy(buff_token, p1.c_str());
-    flashWrite(buff_token, 3); 
+    flashWrite(buff_token, 2); 
         
     line_token = p1;
     Feedback="Set Line Notify Token = "+p1+" OK";    
   } 
+  else if (cmd=="site") {
+    Site = p1;
+    SiteName = p2;
+    delaycount=delaytime;
+
+    char buff_site[len], buff_sitename[len]; 
+    strcpy(buff_site, p1.c_str());
+    strcpy(buff_sitename, p2.c_str());
+    flashWrite(buff_site, 3);
+    flashWrite(buff_sitename, 4);     
+  }   
   else if (cmd=="get") {
-    Feedback = "SITE:    " + SiteName + "<br>AQI:    " + String(AQI) + "  [<a href='https://airtw.epa.gov.tw/CHT/Information/Standard/AirQualityIndicator.aspx' target='_blank'>Indicator</a>]<br>PM2.5:    "+String(pm25)+" ug/m3";
+    Feedback = "SITE:    " + SiteName + "<br>AQI:    " + String(AQI) + "   [<a href='https://airtw.epa.gov.tw/CHT/Information/Standard/AirQualityIndicator.aspx' target='_blank'>Indicator</a>]<br>PM2.5:    "+String(pm25)+" ug/m3";
   }
   else if (cmd=="eraseflash") {
     flashErase();
@@ -137,8 +155,7 @@ void ExecuteCommand()
       lcd.clear();
       lcd.setCursor(0,0);
       lcd.print(WiFi.localIP().toString());
-      AQI = 0;
-      retrievepm25();      
+      delaycount=delaytime;     
     }
   }      
   else if (cmd=="ip") {
@@ -278,17 +295,29 @@ void loop() {
     delaycount=1;
   
   if (WiFi.status() == WL_CONNECTED) {
+    //Site
+    char buff_site[len], buff_sitename[len];
+    strcpy(buff_site, flashRead(3));
+    strcpy(buff_sitename, flashRead(4));
+    if ((buff_site[0]>=32)&&(buff_site[0]<=126)) {
+      Serial.println("");
+      Serial.println("SPI Flash Site = "+String(buff_site));
+      Serial.println("SPI Flash SiteName = "+String(buff_sitename));  
+      Site = String(buff_site);
+      SiteName = String(buff_sitename); 
+    }
+    
     AQI = 0;
     retrievepm25();
-  
+
+    if (AQI == 0)
+      retrievepm25();
+
     Serial.println("");
     Serial.println("AQI : " + String(AQI));    
     Serial.println("pm2.5 : " + String(pm25) + " ug/m3");
     Serial.println("");
-
-    if (AQI == 0)
-      retrievepm25();
-  
+      
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print(SiteName);
@@ -298,7 +327,7 @@ void loop() {
     //Line Notify
     if (line_token=="") {
       char buff_token[len];
-      strcpy(buff_token, flashRead(3));
+      strcpy(buff_token, flashRead(2));
       if ((buff_token[0]>=32)&&(buff_token[0]<=126)) {
         line_token = String(buff_token);
         Serial.println("");
