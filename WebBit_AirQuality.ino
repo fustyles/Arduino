@@ -108,7 +108,7 @@ void ExecuteCommand()
     Feedback="Set Line Notify Token = "+p1+" OK";    
   } 
   else if (cmd=="get") {
-    Feedback = "SITE:    " + SiteName + "<br>AQI:    " + String(AQI) + "<br>PM2.5:    "+String(pm25)+" ug/m3";
+    Feedback = "SITE:    " + SiteName + "<br>AQI:    " + String(AQI) + "  [<a href='https://airtw.epa.gov.tw/CHT/Information/Standard/AirQualityIndicator.aspx' target='_blank'>Indicator</a>]<br>PM2.5:    "+String(pm25)+" ug/m3";
   }
   else if (cmd=="eraseflash") {
     flashErase();
