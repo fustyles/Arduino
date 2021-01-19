@@ -1,6 +1,6 @@
 /*
 NODEMCU ESP32 PMS5003T
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-15 22:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-19 18:30
 https://www.facebook.com/francefu
 
 Set WIFI ssid and password
@@ -72,8 +72,8 @@ String line_token = "";           //Line Notify
 #include <LiquidCrystal_I2C.h>
 int lcdAddress = 39;    //0x27=39, 0x3F=63 
 LiquidCrystal_I2C lcd(lcdAddress, 16, 2);
-int lcdRX = 12;
-int lcdTX = 14;
+int lcdSDA = 12;
+int lcdSCL = 14;
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -220,7 +220,7 @@ void setup() {
   Serial.begin(9600);
   mySerial.begin(9600, SERIAL_8N1, 16, 17);
   
-  lcd.begin(lcdRX, lcdTX);
+  lcd.begin(lcdSDA, lcdSCL);
   lcd.backlight();  
   lcd.clear();
     
