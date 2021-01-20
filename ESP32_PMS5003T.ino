@@ -30,9 +30,13 @@ ESP32 LCD Library
 https://github.com/nhatuan84/esp32-lcd
 16x2 LCD
 5V, GND, SDA:gpio12 , SCL:gpio14 
+[Web:Bit]
+5V, GND, RX:P6 (gpio12), TX:P7 (gpio14)
 
 PMS5003T
 3V3, GND, RX:gpio16, TX:gpio17
+[Web:Bit]
+3V3, GND, RX:P8 (gpio16), TX:P9 (gpio17)
 
 Command Format :  
 http://APIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
