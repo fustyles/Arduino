@@ -1,23 +1,23 @@
 /*
 ESP32 PMS5003T
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-19 19:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-21 18:00
 https://www.facebook.com/francefu
 
+Get sensor values
+http://192.168.4.1
+http://STAIP
+
 Set WIFI ssid and password
-http://192.168.4.1?admin
-http://STAIP?admin
+http://192.168.4.1?wifi
+http://STAIP?wifi
 
 Set ThingSpeak api_key
-http://192.168.4.1?admin_key
-http://STAIP?admin_key
+http://192.168.4.1?key
+http://STAIP?key
 
 Set Line Notify token
-http://192.168.4.1?admin_token
-http://STAIP?admin_token
-
-Get sensor values
-http://192.168.4.1?get
-http://STAIP?get
+http://192.168.4.1?token
+http://STAIP?token
 
 Erase SPI Flash
 http://192.168.4.1?eraseflash
@@ -64,7 +64,7 @@ http://192.168.4.1/?linenotify=token;request
 const char* ssid     = "";  //WIFI ssid
 const char* password = "";  //WIFI pwd
 
-const char* apssid = "WEBBIT_PMS5003T";
+const char* apssid = "ESP32_PMS5003T";
 const char* appassword = "12345678";
 
 String thingspeak_api_key = "";   //ThingSpeak
@@ -107,15 +107,18 @@ void ExecuteCommand() {
   //Serial.println("Command: "+Command);
   Serial.println("cmd= "+cmd+" ,p1= "+p1+" ,p2= "+p2+" ,p3= "+p3+" ,p4= "+p4+" ,p5= "+p5+" ,p6= "+p6+" ,p7= "+p7+" ,p8= "+p8+" ,p9= "+p9);
   Serial.println("");
-
-  if (cmd=="admin") { 
-    Feedback="PMS5003T (Fongshan)<br>SSID: <input type=\"text\" id=\"ssid\"><br>PWD: <input type=\"text\" id=\"pwd\"><br><input type=\"button\" value=\"submit\" onclick=\"location.href='?resetwifi='+document.getElementById('ssid').value+';'+document.getElementById('pwd').value;\">";  
+  
+  if (cmd=="") {
+    Feedback = "PM2.5:    "+String(pmat25)+" ug/m3<br>PM100:    "+String(pmat100)+" ug/m3<br>Temperature:    "+String(Temp)+" °C<br>Humidity:    "+String(Humid)+" %RH";
   }
-  else if (cmd=="admin_key") { 
-    Feedback="PMS5003T (Fongshan)<br>ThingSpeak API_KEY: <input type=\"text\" id=\"key\"><input type=\"button\" value=\"submit\" onclick=\"location.href='?thingspeakapikey='+document.getElementById('key').value;\">";  
+  else if (cmd=="wifi") { 
+    Feedback="SSID: <input type=\"text\" id=\"ssid\"><br>PWD: <input type=\"text\" id=\"pwd\"><br><input type=\"button\" value=\"submit\" onclick=\"location.href='?resetwifi='+document.getElementById('ssid').value+';'+document.getElementById('pwd').value;\">";  
+  }
+  else if (cmd=="key") { 
+    Feedback="ThingSpeak API_KEY: <input type=\"text\" id=\"key\"><input type=\"button\" value=\"submit\" onclick=\"location.href='?thingspeakapikey='+document.getElementById('key').value;\">";  
   }  
-  else if (cmd=="admin_token") { 
-    Feedback="PMS5003T (Fongshan)<br>Line Notify Token: <input type=\"text\" id=\"token\"><input type=\"button\" value=\"submit\" onclick=\"location.href='?linetoken='+document.getElementById('token').value;\">";  
+  else if (cmd=="token") { 
+    Feedback="Line Notify Token: <input type=\"text\" id=\"token\"><input type=\"button\" value=\"submit\" onclick=\"location.href='?linetoken='+document.getElementById('token').value;\">";  
   }     
   else if (cmd=="thingspeakapikey") {
     char buff_key[len]; 
@@ -133,9 +136,6 @@ void ExecuteCommand() {
     line_token = p1;
     Feedback="Set Line Notify Token = "+p1+" OK";    
   } 
-  else if (cmd=="get") {
-    Feedback = "PM2.5:    "+String(pmat25)+" ug/m3<br>PM100:    "+String(pmat100)+" ug/m3<br>Temperature:    "+String(Temp)+" °C<br>Humidity:    "+String(Humid)+" %RH";
-  }
   else if (cmd=="eraseflash") {
     flashErase();
     Feedback="Erase SPI Flash OK. <a href=\"?restart\">Restart the board</a>";
@@ -459,7 +459,7 @@ void getRequest() {
           currentLine += c;
         }
 
-        if ((currentLine.indexOf("/?")!=-1)&&(currentLine.indexOf(" HTTP")!=-1)) {
+        if (currentLine.indexOf(" HTTP")!=-1) {
           if (Command.indexOf("stop")!=-1) {
             client.println();
             client.println();
