@@ -1,6 +1,6 @@
 /*
 ESP32 PMS5003T
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-21 18:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-21 19:30
 https://www.facebook.com/francefu
 
 Get sensor values
@@ -100,7 +100,7 @@ int delaycount = 0;
 WiFiServer server(80);
 
 String Feedback="", Command="",cmd="",p1="",p2="",p3="",p4="",p5="",p6="",p7="",p8="",p9="";
-byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
+byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0,cmdstate=0;
 
 void ExecuteCommand() {
   Serial.println("");
@@ -417,7 +417,7 @@ void retrievepm25() {
 
 void getRequest() {
   Command="";cmd="";p1="";p2="";p3="";p4="";p5="";p6="";p7="";p8="";p9="";
-  ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
+  ReceiveState=0;cmdState=1;strState=1;questionstate=0;equalstate=0;semicolonstate=0;cmdstate=0;
   
   WiFiClient client = server.available();
 
@@ -459,7 +459,8 @@ void getRequest() {
           currentLine += c;
         }
 
-        if (currentLine.indexOf(" HTTP")!=-1) {
+        if (currentLine.indexOf(" HTTP")!=-1&&currentLine.indexOf("favicon.ico")==-1) {
+          Serial.println(currentLine);
           if (Command.indexOf("stop")!=-1) {
             client.println();
             client.println();
@@ -467,7 +468,10 @@ void getRequest() {
           }
           currentLine="";
           Feedback="";
-          ExecuteCommand();
+          if (cmdstate==0) {
+            cmdstate=1;
+            ExecuteCommand();
+          }
         }
       }
     }
