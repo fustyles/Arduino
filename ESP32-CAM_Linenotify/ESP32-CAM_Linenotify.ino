@@ -142,7 +142,8 @@ void setup()
 void loop()
 {
   Serial.println(sendCapturedImage2LineNotify());
-  Serial.println(sendMessage2LineNotify("\nHello\nWorld"));
+  Serial.println(sendRequest2LineNotify("message=\nHello\nWorld"));
+  Serial.println(sendRequest2LineNotify("message=Hello World&stickerPackageId=1&stickerId=2"));
   delay(72000);  //You could only send up to 50 images to Line Notify in one hour.
 }
 
@@ -163,7 +164,7 @@ String sendCapturedImage2LineNotify() {
   if (client_tcp.connect("notify-api.line.me", 443)) {
     Serial.println("Connection successful");
     
-    String message = "Welcome to Taiwan";
+    String message = "ESP32-CAM";
     String head = "--Taiwan\r\nContent-Disposition: form-data; name=\"message\"; \r\n\r\n" + message + "\r\n--Taiwan\r\nContent-Disposition: form-data; name=\"imageFile\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
     String tail = "\r\n--Taiwan--\r\n";
 
@@ -226,22 +227,22 @@ String sendCapturedImage2LineNotify() {
   }
 }
 
-String sendMessage2LineNotify(String message) {
-  message.replace("%","%25");
-  message.replace(" ","%20");
-  message.replace("&","%20");
-  message.replace("#","%20");
-  //message.replace("\'","%27");
-  message.replace("\"","%22");
-  message.replace("\n","%0D%0A");
-  message.replace("%3Cbr%3E","%0D%0A");
-  message.replace("%3Cbr/%3E","%0D%0A");
-  message.replace("%3Cbr%20/%3E","%0D%0A");
-  message.replace("%3CBR%3E","%0D%0A");
-  message.replace("%3CBR/%3E","%0D%0A");
-  message.replace("%3CBR%20/%3E","%0D%0A"); 
-  message.replace("%20stickerPackageId","&stickerPackageId");
-  message.replace("%20stickerId","&stickerId");    
+String sendRequest2LineNotify(String request) {
+  request.replace("%","%25");
+  request.replace(" ","%20");
+  request.replace("&","%20");
+  request.replace("#","%20");
+  //request.replace("\'","%27");
+  request.replace("\"","%22");
+  request.replace("\n","%0D%0A");
+  request.replace("%3Cbr%3E","%0D%0A");
+  request.replace("%3Cbr/%3E","%0D%0A");
+  request.replace("%3Cbr%20/%3E","%0D%0A");
+  request.replace("%3CBR%3E","%0D%0A");
+  request.replace("%3CBR/%3E","%0D%0A");
+  request.replace("%3CBR%20/%3E","%0D%0A"); 
+  request.replace("%20stickerPackageId","&stickerPackageId");
+  request.replace("%20stickerId","&stickerId");    
 
   WiFiClientSecure client_tcp;
   Serial.println("Connect to notify-api.line.me");  
@@ -249,12 +250,11 @@ String sendMessage2LineNotify(String message) {
   if (client_tcp.connect("notify-api.line.me", 443)) {
     Serial.println("Connection successful");
         
-    String request = "message="+message;
     Serial.println(request);    
     client_tcp.println("POST /api/notify HTTP/1.1");
     client_tcp.println("Connection: close"); 
     client_tcp.println("Host: notify-api.line.me");
-    client_tcp.println("User-Agent: ESp8266/1.0");
+    client_tcp.println("User-Agent: ESP8266/1.0");
     client_tcp.println("Authorization: Bearer " + myLineNotifyToken);
     client_tcp.println("Content-Type: application/x-www-form-urlencoded");
     client_tcp.println("Content-Length: " + String(request.length()));
