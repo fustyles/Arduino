@@ -477,6 +477,7 @@ String tcp_http(String domain,String request,int port,byte wait)
         while (client_tcp.available()) 
         {
             char c = client_tcp.read();
+            if (state==true) Feedback += String(c);          
             if (c == '\n') 
             {
               if (getResponse.length()==0) state=true; 
@@ -484,7 +485,6 @@ String tcp_http(String domain,String request,int port,byte wait)
             } 
             else if (c != '\r')
               getResponse += String(c);
-            if (state==true) Feedback += String(c);
             if (wait==1)
               startTime = millis();
          }
@@ -519,6 +519,7 @@ String tcp_https(String domain,String request,int port,byte wait)
         while (client_tcp.available()) 
         {
             char c = client_tcp.read();
+            if (state==true) Feedback += String(c);          
             if (c == '\n') 
             {
               if (getResponse.length()==0) state=true; 
@@ -526,7 +527,6 @@ String tcp_https(String domain,String request,int port,byte wait)
             } 
             else if (c != '\r')
               getResponse += String(c);
-            if (state==true) Feedback += String(c);
             if (wait==1)
               startTime = millis();
          }
@@ -582,6 +582,7 @@ String LineNotify(String token, String request, byte wait)
       while (client_tcp.available()) 
       {
           char c = client_tcp.read();
+          if (state==true) Feedback += String(c);        
           if (c == '\n') 
           {
             if (getResponse.length()==0) state=true; 
@@ -589,7 +590,6 @@ String LineNotify(String token, String request, byte wait)
           } 
           else if (c != '\r')
             getResponse += String(c);
-          if (state==true) Feedback += String(c);
           if (wait==1)
             startTime = millis();
        }
