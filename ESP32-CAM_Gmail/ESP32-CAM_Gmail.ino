@@ -211,6 +211,7 @@ String SendCapturedImage(String myRecipient, String mySubject) {
       while (client_tcp.available()) 
       {
           char c = client_tcp.read();
+          if (state==true) getBody += String(c);        
           if (c == '\n') 
           {
             if (getAll.length()==0) state=true; 
@@ -218,7 +219,6 @@ String SendCapturedImage(String myRecipient, String mySubject) {
           } 
           else if (c != '\r')
             getAll += String(c);
-          if (state==true) getBody += String(c);
           startTime = millis();
        }
        if (getBody.length()>0) break;
