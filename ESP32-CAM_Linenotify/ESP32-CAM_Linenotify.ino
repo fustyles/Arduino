@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (Save a captured photo to Line Notify)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-18 18:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-26 03:00
 https://www.facebook.com/francefu
 
 You could only send up to 50 images to Line Notify in one hour.
@@ -8,9 +8,9 @@ The maximum size of post-upload image is XGA(1024*768).
 */
 
 // Enter your WiFi ssid and password
-const char* ssid     = "*****";   //your network SSID
-const char* password = "*****";   //your network password
-String myLineNotifyToken = "**********";    //Line Notify Token
+const char* ssid     = "";   //your network SSID
+const char* password = "";   //your network password
+String myLineNotifyToken = "";    //Line Notify Token
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -141,14 +141,12 @@ void setup()
 
 void loop()
 {
-  sendCapturedImage2LineNotify();
+  Serial.println(sendCapturedImage2LineNotify());
+  Serial.println(sendMessage2LineNotify("\nHello\nWorld"));
   delay(72000);  //You could only send up to 50 images to Line Notify in one hour.
 }
 
-String sendCapturedImage2LineNotify()
-{
-  String getAll="", getBody = "";
-  
+String sendCapturedImage2LineNotify() {
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();  
   if(!fb) {
@@ -162,8 +160,7 @@ String sendCapturedImage2LineNotify()
 
   Serial.println("Connect to notify-api.line.me");
   
-  if (client_tcp.connect("notify-api.line.me", 443)) 
-  {
+  if (client_tcp.connect("notify-api.line.me", 443)) {
     Serial.println("Connection successful");
     
     String message = "Welcome to Taiwan";
@@ -198,37 +195,97 @@ String sendCapturedImage2LineNotify()
     
     client_tcp.print(tail);
     esp_camera_fb_return(fb);
-    
+
+    String getResponse="",Feedback="";
     int waitTime = 10000;   // timeout 10 seconds
     long startTime = millis();
     boolean state = false;
     
-    while ((startTime + waitTime) > millis())
-    {
+    while ((startTime + waitTime) > millis()) {
       Serial.print(".");
       delay(100);      
-      while (client_tcp.available()) 
-      {
+      while (client_tcp.available())  {
           char c = client_tcp.read();
-          if (state==true) getBody += String(c);        
-          if (c == '\n') 
-          {
-            if (getAll.length()==0) state=true; 
-            getAll = "";
+          if (state==true) Feedback += String(c);        
+          if (c == '\n') {
+            if (getResponse.length()==0) state=true; 
+            getResponse = "";
           } 
           else if (c != '\r')
-            getAll += String(c);
+            getResponse += String(c);
           startTime = millis();
        }
-       if (getBody.length()>0) break;
+       if (Feedback.length()>0) break;
     }
+    Serial.println();
     client_tcp.stop();
-    Serial.println(getBody);
+    return Feedback;
   }
   else {
-    getBody="Connected to notify-api.line.me failed.";
-    Serial.println("Connected to notify-api.line.me failed.");
+    return "Connected to notify-api.line.me failed.";
   }
+}
+
+String sendMessage2LineNotify(String message) {
+  message.replace("%","%25");
+  message.replace(" ","%20");
+  message.replace("&","%20");
+  message.replace("#","%20");
+  //message.replace("\'","%27");
+  message.replace("\"","%22");
+  message.replace("\n","%0D%0A");
+  message.replace("%3Cbr%3E","%0D%0A");
+  message.replace("%3Cbr/%3E","%0D%0A");
+  message.replace("%3Cbr%20/%3E","%0D%0A");
+  message.replace("%3CBR%3E","%0D%0A");
+  message.replace("%3CBR/%3E","%0D%0A");
+  message.replace("%3CBR%20/%3E","%0D%0A"); 
+  message.replace("%20stickerPackageId","&stickerPackageId");
+  message.replace("%20stickerId","&stickerId");    
+
+  WiFiClientSecure client_tcp;
+  Serial.println("Connect to notify-api.line.me");  
   
-  return getBody;
+  if (client_tcp.connect("notify-api.line.me", 443)) {
+    Serial.println("Connection successful");
+        
+    String request = "message="+message;
+    Serial.println(request);    
+    client_tcp.println("POST /api/notify HTTP/1.1");
+    client_tcp.println("Connection: close"); 
+    client_tcp.println("Host: notify-api.line.me");
+    client_tcp.println("User-Agent: ESp8266/1.0");
+    client_tcp.println("Authorization: Bearer " + myLineNotifyToken);
+    client_tcp.println("Content-Type: application/x-www-form-urlencoded");
+    client_tcp.println("Content-Length: " + String(request.length()));
+    client_tcp.println();
+    client_tcp.println(request);
+    client_tcp.println();
+    
+    String getResponse="",Feedback="";
+    boolean state = false;
+    int waitTime = 3000;   // timeout 3 seconds
+    long startTime = millis();
+    while ((startTime + waitTime) > millis()) {
+      Serial.print(".");
+      delay(100);      
+      while (client_tcp.available()) {
+          char c = client_tcp.read();
+          if (state==true) Feedback += String(c);        
+          if (c == '\n') {
+            if (getResponse.length()==0) state=true; 
+            getResponse = "";
+          } 
+          else if (c != '\r')
+            getResponse += String(c);
+          startTime = millis();
+       }
+       if (getResponse.length()>0) break;
+    }
+    Serial.println();
+    client_tcp.stop();
+    return Feedback;
+  }
+  else
+    return "Connection failed";  
 }
