@@ -93,7 +93,6 @@ void saveRemoteImage2SD(String domain,String request,int port,String filename)
       while ((startTime + waitTime) > millis()) {
         while (client_tcp.available()) {
             char c = client_tcp.read();
-            
             if (state==true) file.print(c);
             if (c == '\n') {
               if (getResponse.length()==0) 
@@ -103,8 +102,6 @@ void saveRemoteImage2SD(String domain,String request,int port,String filename)
             else if (c != '\r') {
               getResponse += String(c);
             }
-            
-
             startTime = millis();
          }
       }
