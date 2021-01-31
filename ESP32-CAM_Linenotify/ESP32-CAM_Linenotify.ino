@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (Save a captured photo to Line Notify)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-26 03:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-31 00:00
 https://www.facebook.com/francefu
 
 You could only send up to 50 images to Line Notify in one hour.
@@ -50,8 +50,6 @@ void setup()
   
   WiFi.mode(WIFI_STA);
 
-  //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
-  
   Serial.println("");
   Serial.print("Connecting to ");
   Serial.println(ssid);
@@ -146,6 +144,11 @@ void loop()
   Serial.println(sendCapturedImage2LineNotify());
   Serial.println(sendRequest2LineNotify("message=\nHello\nWorld"));
   Serial.println(sendRequest2LineNotify("message=Hello World&stickerPackageId=1&stickerId=2"));
+
+  String imageThumbnail = "https://s2.lookerpets.com/imgs/202008/14/11/15973742786521.jpg";
+  String imageFullsize = "https://i.ytimg.com/vi/WLUEXiTAPaI/maxresdefault.jpg";
+  Serial.println(sendRequest2LineNotify("message=Hello World&imageThumbnail="+imageFullsize+"&imageFullsize="+imageThumbnail));
+  
   delay(72000);  //You could only send up to 50 images to Line Notify in one hour.
 }
 
@@ -232,7 +235,7 @@ String sendCapturedImage2LineNotify() {
 String sendRequest2LineNotify(String request) {
   request.replace("%","%25");
   request.replace(" ","%20");
-  request.replace("&","%20");
+  //request.replace("&","%20");
   request.replace("#","%20");
   //request.replace("\'","%27");
   request.replace("\"","%22");
