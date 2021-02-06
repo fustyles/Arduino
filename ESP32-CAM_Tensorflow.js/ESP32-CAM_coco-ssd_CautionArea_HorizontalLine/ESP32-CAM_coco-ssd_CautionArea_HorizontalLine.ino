@@ -1119,11 +1119,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 result.innerHTML = "Unrecognizable";
                 count.innerHTML = "0";
               }
-          
-              //if (count.innerHTML != lastValue) { 
-                lastValue = count.innerHTML;
-                //ifr.src = document.location.origin+'/?detectCount='+object.value+';'+String(objectCount)+';stop';        
-              //}
               
               try { 
                 document.createEvent("TouchEvent");
