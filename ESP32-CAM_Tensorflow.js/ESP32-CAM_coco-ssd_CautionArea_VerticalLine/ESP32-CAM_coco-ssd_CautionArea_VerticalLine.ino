@@ -1081,6 +1081,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                     
                     if (position.innerHTML == "2"&&(alarm.paused||alarm.ended)) {       
                       alarm.play();
+                      $.ajax({url: document.location.origin+'/control?serial='+position.innerHTML, async: false}); 
                     }
                   }
                 }
