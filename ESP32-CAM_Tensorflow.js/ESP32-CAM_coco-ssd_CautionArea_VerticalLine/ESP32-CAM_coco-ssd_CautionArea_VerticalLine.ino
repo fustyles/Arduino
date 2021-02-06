@@ -1084,6 +1084,10 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                       $.ajax({url: document.location.origin+'/control?serial='+position.innerHTML, async: false}); 
                     }
                   }
+                            
+                  if (Predictions[i].class==object.value) {
+                    objectCount++;
+                  }  
                 }
                 count.innerHTML = objectCount;
               }
