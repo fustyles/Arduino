@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Load js filse from SD Card
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-2-7 20:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-2-7 21:00
 https://www.facebook.com/francefu
 
 首頁
@@ -20,7 +20,7 @@ http://192.168.xxx.xxx?analogwrite=pin;value
 http://192.168.xxx.xxx?flash=value        //value= 0~255 閃光燈
 http://192.168.xxx.xxx?getstill               //取得視訊影像
 http://192.168.xxx.xxx?getfile=/filename      //取得SD卡text/html檔
-http://192.168.xxx.xxx?getimage=/filename     //取得SD卡image檔
+http://192.168.xxx.xxx?getimage=/filename     //取得SD卡image/jpeg檔
 http://192.168.xxx.xxx?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA 改變影像解析度
 
 查詢Client端IP：
