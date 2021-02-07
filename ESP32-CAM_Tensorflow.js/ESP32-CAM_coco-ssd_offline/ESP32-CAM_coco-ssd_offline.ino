@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Load js filse from SD Card
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-2-7 19:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-2-7 21:00
 https://www.facebook.com/francefu
 
 首頁
@@ -19,7 +19,8 @@ http://192.168.xxx.xxx?digitalwrite=pin;value
 http://192.168.xxx.xxx?analogwrite=pin;value
 http://192.168.xxx.xxx?flash=value        //value= 0~255 閃光燈
 http://192.168.xxx.xxx?getstill                 //取得視訊影像
-http://192.168.xxx.xxx?getfile=/filename      //取得SD卡JS檔
+http://192.168.xxx.xxx?getfile=/filename      //取得SD卡text/html檔
+http://192.168.xxx.xxx?getimage=/filename     //取得SD卡image/jpeg檔
 http://192.168.xxx.xxx?framesize=size     //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA 改變影像解析度
 
 查詢Client端IP：
@@ -720,6 +721,53 @@ void loop() {
               pinMode(4, OUTPUT);
               digitalWrite(4, LOW);               
             }  
+            else if (cmd=="getimage") {           
+              //回傳SD卡影像檔案
+              if(!SD_MMC.begin()){
+                Serial.println("Card Mount Failed");
+              }  
+              
+              fs::FS &fs = SD_MMC;
+              File file = fs.open(P1);
+              if(!file){
+                Serial.println("Failed to open file for reading");
+                SD_MMC.end();    
+              }
+              else {
+                Serial.println("Read from file: "+P1);
+                Serial.println("file size: "+String(file.size()));            
+
+                client.println("HTTP/1.1 200 OK");
+                client.println("Access-Control-Allow-Origin: *");              
+                client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+                client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
+                client.println("Content-Type: image/jpeg");
+                P1.replace("/","");
+                client.println("Content-Disposition: form-data; name=\"imageFile\"; filename=\""+P1+"\""); 
+                client.println("Content-Length: " + String(file.size()));             
+                client.println("Connection: close");
+                client.println();
+
+                byte buf[1024];
+                int i = -1;
+                while (file.available()) {
+                  i++;
+                  buf[i] = file.read();
+                  if (i==(sizeof(buf)-1)) {
+                    client.write((const uint8_t *)buf, sizeof(buf));
+                    i = -1;
+                  }
+                  else if (!file.available())
+                    client.write((const uint8_t *)buf, (i+1));
+                }
+
+                file.close();
+                SD_MMC.end();
+              }
+            
+              pinMode(4, OUTPUT);
+              digitalWrite(4, LOW);               
+            }              
             else {
               //回傳HTML首頁或Feedback
               client.println("HTTP/1.1 200 OK");
