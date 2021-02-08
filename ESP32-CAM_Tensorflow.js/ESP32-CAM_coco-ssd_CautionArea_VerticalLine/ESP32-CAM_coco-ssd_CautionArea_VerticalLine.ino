@@ -792,7 +792,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                     <span id="count" style="color:red"><span>
                   </td>
                 </tr>
-                <tr><td colspan="3">Audio<input type="text" id="aud" size="25" value="http:\/\/www.fionasplace.net/creepysounds/BONES02.WAV">&nbsp;&nbsp;<input type="button" id="setsource" value="set" onclick="alarm.src=document.getElementById('aud').value;"></td></tr> 
+                <tr><td colspan="3">Audio<input type="text" id="aud" size="25" value="http:\/\/">&nbsp;&nbsp;<input type="button" id="setsource" value="set" onclick="alarm.src=document.getElementById('aud').value;"></td></tr> 
                 <tr><td><span id="message" style="display:none"></span></td><td></td><td></td></tr> 
                 <tr style="display:none"><td colspan="3"></td></tr> 
                 </table>
