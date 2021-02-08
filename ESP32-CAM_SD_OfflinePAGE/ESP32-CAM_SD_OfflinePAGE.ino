@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Load js filse from SD Card
+ESP32-CAM Load js filse and image files from SD Card offline.
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-2-7 21:00
 https://www.facebook.com/francefu
 
