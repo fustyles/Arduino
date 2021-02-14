@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Caution area using horizontal line (tfjs coco-ssd)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-2-6 22:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-2-14 21:30
 https://www.facebook.com/francefu
 
 物件類別
@@ -27,7 +27,7 @@ http://192.168.xxx.xxx/control?digitalread=pin         //數位讀取
 http://192.168.xxx.xxx/control?analogread=pin          //類比讀取
 http://192.168.xxx.xxx/control?touchread=pin           //觸碰讀取
 http://192.168.xxx.xxx/control?flash=value             //內建閃光燈 value= 0~255
-http://192.168.xxx.xxx/control?serial=string           //序列埠監看視窗輸出字串
+http://192.168.xxx.xxx/control?buzzer=area             //序列埠監看視窗輸出字串
 
 官方指令格式 http://192.168.xxx.xxx/control?var=***&val=***
 http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
@@ -45,6 +45,8 @@ http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255
 //輸入WIFI連線帳號密碼
 const char* ssid     = "";   //your network SSID
 const char* password = "";   //your network password
+
+int Buzzer = 2;  //Buzzer -> IO2
 
 //輸入AP端連線帳號密碼
 const char* apssid = "ESP32-CAM";
@@ -574,10 +576,12 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         int val = P1.toInt();
         ledcWrite(4,val);  
       }
-      else if (cmd=="serial") { 
-        if (P1!=""&P1!="stop") Serial.println(P1);
-        if (P2!=""&P2!="stop") Serial.println(P2);
-        Serial.println();
+      else if (cmd=="buzzer") { 
+        Serial.println(P1);
+        if (P1=="2") {
+            pinMode(Buzzer,OUTPUT);
+            tone(Buzzer, 262, 100);
+        }
       }           
       else {
         Feedback="Command is not defined";
@@ -630,6 +634,14 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         return httpd_resp_send(req, NULL, 0);
       }
     }
+}
+
+void tone(int pin, int frequency, int duration) {
+  ledcSetup(9, 2000, 8);
+  ledcAttachPin(pin, 9);
+  ledcWriteTone(9, frequency);
+  delay(duration);
+  ledcWriteTone(9, 0);
 }
 
 //顯示視訊參數狀態(須回傳json格式載入初始設定)
@@ -792,7 +804,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                     <span id="count" style="color:red"><span>
                   </td>
                 </tr>
-                <tr><td colspan="3">Audio<input type="text" id="aud" size="25" value="http:\/\/">&nbsp;&nbsp;<input type="button" id="setsource" value="set" onclick="alarm.src=document.getElementById('aud').value;"></td></tr> 
+                <tr><td colspan="3"><input type="checkbox" id="chkBuzzer">Buzzer (IO2)</td></tr> 
+                <tr><td colspan="3"><input type="checkbox" id="chkAud">Audio<input type="text" id="aud" size="25" value="http:\/\/"></td></tr> 
+                <tr><td colspan="3"><input type="checkbox" id="chkLine">Line Token<input type="text" id="token" size="25" value=""></td></tr> 
                 <tr><td><span id="message" style="display:none"></span></td><td></td><td></td></tr> 
                 <tr style="display:none"><td colspan="3"></td></tr> 
                 </table>
@@ -845,6 +859,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 </div>
             </div>
         </section>
+        <iframe id="ifr" style="display:none;position:absolute"></iframe>
         <div id="position" style="color:blue;font-size:40px"></div>
         <div id="result" style="color:red">Please wait for loading model.</div>        
         <script>
@@ -976,14 +991,19 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           var count = document.getElementById('count');
           var getStill = document.getElementById('get-still');
           var hmirror = document.getElementById('hmirror'); 
+          var ifr = document.getElementById('ifr');
 
           var videoWidth = 320;
           var videoHeight = 240;
           var lefttop = document.getElementById('lefttop');
           var righttop = document.getElementById('righttop');
           var leftbuttom = document.getElementById('leftbottom');
-          var rightbuttom = document.getElementById('rightbottom');          
+          var rightbuttom = document.getElementById('rightbottom');
+          var token = document.getElementById('token');         
           var aud = document.getElementById('aud');
+          var chkAud = document.getElementById('chkAud');
+          var chkLine = document.getElementById('chkLine');
+          var chkBuzzer = document.getElementById('chkBuzzer');
           var alarm = new Audio(aud.value);
           var position = document.getElementById('position'); 
       
@@ -1102,9 +1122,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                         position.innerHTML = "3";
                     }
                     
-                    if (position.innerHTML == "2"&&(alarm.paused||alarm.ended)) {       
-                      alarm.play();
-                      $.ajax({url: document.location.origin+'/control?serial='+position.innerHTML, async: false}); 
+                    if (position.innerHTML == "2"&&(alarm.paused||alarm.ended)) {
+                      if (chkAud.checked) {
+                        alarm.src = aud.value;
+                        alarm.play();
+                      }
+                      if (chkLine.checked)
+                        ifr.src = 'http://linenotify.com/notify.php?token='+token.value+'&message=Alert!';                        
+                      if (chkBuzzer.checked)
+                        $.ajax({url: document.location.origin+'/control?buzzer='+position.innerHTML, async: false}); 
                     } 
                   }
                             
