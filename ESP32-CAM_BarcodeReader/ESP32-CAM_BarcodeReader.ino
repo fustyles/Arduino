@@ -1161,7 +1161,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       
           setInterval(function(){
             stream.style = "border-width:3px;border-style:solid;border-color:red;";
+            setTimeout(function(){ stream.style = ""; }, 1000);
             result.innerHTML = "";
+            
             javascriptBarcodeReader({
               /* Image file Path || {data: Uint8ClampedArray, width, height} || HTML5 Canvas ImageData */
               image: stream,
@@ -1186,13 +1188,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             .then(code => {
               console.log(code);
               result.innerHTML = code;
-              setTimeout(function(){ stream.style = ""; }, 1000);
+              
               $.ajax({url: document.location.origin+'/control?serial='+code, async: false}); 
             })
             .catch(err => {
               console.log(err)
               //result.innerHTML = err;
-              setTimeout(function(){ stream.style = ""; }, 1000);
             })
           }, 5000);      
         </script>
