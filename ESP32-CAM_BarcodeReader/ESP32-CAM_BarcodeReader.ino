@@ -1167,8 +1167,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             javascriptBarcodeReader({
               /* Image file Path || {data: Uint8ClampedArray, width, height} || HTML5 Canvas ImageData */
               image: stream,
-              barcode: code.value,
-              // EAN-13, EAN-8, Code-39, Code-93, Code-2of5, Codabar, Code-128 (UCC/EAN-128)
+              barcode: code.value,  // EAN-13, EAN-8, Code-39, Code-93, Code-2of5, Codabar, Code-128 (UCC/EAN-128)
               // barcodeType: 'industrial',
               options: {
               // useAdaptiveThreshold: true
