@@ -1182,7 +1182,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             })
             .catch(err => {
               console.log(err)
-              //result.innerHTML = err;
+              result.innerHTML = "";
             })
           }, 5000);      
         </script>
