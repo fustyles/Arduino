@@ -8,8 +8,8 @@ http://APIP
 http://STAIP
 
 自訂指令格式 :  
-http://APIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
-http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+http://APIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+http://STAIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 
 預設AP端IP： 192.168.4.1
 http://192.168.xxx.xxx?ip
