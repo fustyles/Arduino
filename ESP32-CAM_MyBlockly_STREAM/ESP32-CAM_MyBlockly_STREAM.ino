@@ -27,7 +27,7 @@ http://192.168.xxx.xxx/control?tcp=domain;port;request;wait
 http://192.168.xxx.xxx/control?ifttt=event;key;value1;value2;value3
 http://192.168.xxx.xxx/control?thingspeakupdate=key;field1;field2;field3;field4;field5;field6;field7;field8
 http://192.168.xxx.xxx/control?thingspeakread=request
---> request = /channels/xxxxx/fields/1.jsoncontrol?results=1
+--> request = /channels/xxxxx/fields/1.json
 http://192.168.xxx.xxx/control?linenotify=token;request
 --> request = message=xxxxx
 http://192.168.xxx.xxx/control?flash=value          //vale= 0~255
