@@ -2,6 +2,9 @@
 ESP32-CAM Face detection (Read images from SD Card)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-5 22:00
 https://www.facebook.com/francefu
+
+Please change the esp32 core of Arduino IDE to version 1.0.4.
+The code can't run on version 1.0.5 .
 */
 
 #include <WiFi.h>
