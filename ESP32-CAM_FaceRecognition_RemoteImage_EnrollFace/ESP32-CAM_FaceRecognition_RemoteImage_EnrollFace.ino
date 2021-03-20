@@ -2,6 +2,9 @@
 ESP32-CAM Enroll faces by getting remote images from web server and recognize faces automatically.
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-17 22:30
 https://www.facebook.com/francefu
+
+Please change the esp32 core of Arduino IDE to version 1.0.4.
+The code can't run on version 1.0.5 .
 */
 
 #include <WiFi.h>
