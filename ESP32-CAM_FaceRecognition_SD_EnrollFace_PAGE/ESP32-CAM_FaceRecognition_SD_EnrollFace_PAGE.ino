@@ -3,6 +3,9 @@ ESP32-CAM Load images from SD card to enroll faces and recognize faces automatic
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-22 19:00
 https://www.facebook.com/francefu
 
+Please change the esp32 core of Arduino IDE to version 1.0.4.
+The code can't run on version 1.0.5 .
+
 http://192.168.xxx.xxx             //網頁首頁管理介面
 http://192.168.xxx.xxx:81/stream   //取得串流影像     <img src="http://192.168.xxx.xxx:81/stream">
 http://192.168.xxx.xxx/capture     //取得影像         <img src="http://192.168.xxx.xxx/capture">
