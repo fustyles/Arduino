@@ -3,6 +3,9 @@ ESP32-CAM Face Recognition
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-24 23:00
 https://www.facebook.com/francefu
 
+Please change the esp32 core of Arduino IDE to version 1.0.4.
+The code can't run on version 1.0.5 .
+
 http://192.168.xxx.xxx             //網頁首頁管理介面
 http://192.168.xxx.xxx:81/stream   //取得串流影像      嵌入網頁語法 <img src="http://192.168.xxx.xxx:81/stream">
 http://192.168.xxx.xxx/capture     //取得影像          嵌入網頁語法 <img src="http://192.168.xxx.xxx/capture">
