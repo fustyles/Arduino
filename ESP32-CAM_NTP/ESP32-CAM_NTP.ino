@@ -3,6 +3,9 @@ ESP32-CAM NTP SERVER
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-4-19 21:30
 https://www.facebook.com/francefu
 
+time.h
+https://www.tutorialspoint.com/c_standard_library/time_h.htm
+
 AP IP: 192.168.4.1
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
