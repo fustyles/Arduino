@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (Save a captured photo to Line Notify)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-1-31 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-4-22 20:30
 https://www.facebook.com/francefu
 
 You could only send up to 50 images to Line Notify in one hour.
