@@ -80,7 +80,7 @@ void loop()
 String LineNotify(String request, byte wait)
 { 
   WiFiClientSecure client_tcp;
-  
+  //client_tcp.setInsecure();   //version 1.0.6
   if (client_tcp.connect("notify-api.line.me", 443)) 
   {
     client_tcp.println("POST /api/notify HTTP/1.1");
