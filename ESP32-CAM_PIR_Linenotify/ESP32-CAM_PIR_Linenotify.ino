@@ -1,6 +1,6 @@
 /*
 ESP32-CAM 人體移動感測器啟動上傳影像到Line Notify
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-21 13:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-4-22 20:30
 https://www.facebook.com/francefu
 
 人體移動感測器 -> GND, gpio13, 3.3V
