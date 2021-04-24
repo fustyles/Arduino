@@ -90,6 +90,7 @@ String getSpreadsheetJson(String range) {
   String getAll="",getHead = "", getBody = "";
   
   client_tcp.setCACert(ca_cert);
+  //client_tcp.setInsecure();   //version 1.0.6
   if (client_tcp.connect("spreadsheets.google.com", 443)) 
   {
     Serial.println("Connection successful");
