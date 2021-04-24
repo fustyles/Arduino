@@ -72,7 +72,7 @@ void saveRemoteImage2SD(String domain,String request,int port,String filename)
     return;    
   } else {
     WiFiClientSecure client_tcp;
-    
+    //client_tcp.setInsecure();   //version 1.0.6
     Serial.println("");
     Serial.print("Connecting to ");
     Serial.println(domain);
