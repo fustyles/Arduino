@@ -217,7 +217,15 @@ void getTelegramMessage() {
   if (client_tcp.connect(myDomain, 443)) {
     if (message_id_last == 0) Serial.println("Connection successful");
 
-    while (client_tcp.connected()) {            
+    while (client_tcp.connected()) { 
+      /*
+        //If you want to add PIR sensor in your project, please put the code here.
+        pinMode(pinPIR, INPUT_PULLUP);
+        if (digitalRead(pinPIR)==1) {
+          sendCapturedImage2Telegram();
+        }        
+      */
+      
       getAll = "";
       getBody = "";
 
