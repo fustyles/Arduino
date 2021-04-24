@@ -163,9 +163,8 @@ String sendCapturedImage2LineNotify() {
   }
    
   WiFiClientSecure client_tcp;
-
-  Serial.println("Connect to notify-api.line.me");
   //client_tcp.setInsecure();   //version 1.0.6
+  Serial.println("Connect to notify-api.line.me");
   if (client_tcp.connect("notify-api.line.me", 443)) {
     Serial.println("Connection successful");
     
@@ -250,6 +249,7 @@ String sendRequest2LineNotify(String request) {
   request.replace("%20stickerId","&stickerId");    
 
   WiFiClientSecure client_tcp;
+  //client_tcp.setInsecure();   //version 1.0.6
   Serial.println("Connect to notify-api.line.me");  
   
   if (client_tcp.connect("notify-api.line.me", 443)) {
