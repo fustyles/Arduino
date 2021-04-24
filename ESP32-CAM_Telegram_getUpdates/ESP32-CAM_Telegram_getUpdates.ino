@@ -23,7 +23,7 @@ If "sendHelp" variable is equal to "true", it will send the command list to Tele
 If you don't want to get the command list when the board restarts every time, you can set the value to "false".
 But you need to input the command "help" or "/help" in Telegram APP to get the command list after the board booting.
 */
-boolean sendHelp = true;   
+boolean sendHelp = false;   
 
 #include <ArduinoJson.h>
 #include <WiFi.h>
