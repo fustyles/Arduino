@@ -494,7 +494,7 @@ String getAirQuality() {
     Site.replace("_","%");
 
     WiFiClientSecure client_tcp;
-
+    //client_tcp.setInsecure();   //version 1.0.6
     String request = "/webapi/api/rest/datastore/355000000I-000259?sort=County&filters=SiteName%20eq%20%27"+Site+"%27";
     if (client_tcp.connect("opendata.epa.gov.tw", 443)) 
     {
@@ -564,7 +564,7 @@ String LineNotify(String token, String request, byte wait)
   request.replace("%20stickerId","&stickerId");    
 
   WiFiClientSecure client_tcp;
-  
+  //client_tcp.setInsecure();   //version 1.0.6
   if (client_tcp.connect("notify-api.line.me", 443)) 
   {
     Serial.println(request);    
