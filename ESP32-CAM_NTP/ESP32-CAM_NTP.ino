@@ -257,7 +257,9 @@ static void rgb_print(dl_matrix3du_t *image_matrix, uint32_t color, const char *
     fb.data = image_matrix->item;
     fb.bytes_per_pixel = 3;
     fb.format = FB_BGR888;
+
     //fb_gfx_print(&fb, (fb.width - (strlen(str) * 14)) / 2, 10, color, str);
+    //畫面設定列印文字 uint32_t fb_gfx_print(fb_data_t *fb, int x, int y, uint32_t color, const char * str)
     fb_gfx_print(&fb, 10, fb.height - 40, color, str);
 }
 
