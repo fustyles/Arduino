@@ -158,7 +158,8 @@ String sendMessage2Telegram(String token, String chat_id, String text) {
   
   Serial.println("Connect to " + String(myDomain));
   WiFiClientSecure client_tcp;
-  //client_tcp.setInsecure();   //version 1.0.6
+  client_tcp.setInsecure();   //run version 1.0.5 or above
+  
   if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
 
