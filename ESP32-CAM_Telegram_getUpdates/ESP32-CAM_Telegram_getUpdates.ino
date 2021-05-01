@@ -212,7 +212,7 @@ void getTelegramMessage() {
   long message_id;
   String text;  
 
-  //client_tcp.setInsecure();   //version 1.0.6
+  client_tcp.setInsecure();   //run version 1.0.5 or above
   if (message_id_last == 0) Serial.println("Connect to " + String(myDomain));
   if (client_tcp.connect(myDomain, 443)) {
     if (message_id_last == 0) Serial.println("Connection successful");
