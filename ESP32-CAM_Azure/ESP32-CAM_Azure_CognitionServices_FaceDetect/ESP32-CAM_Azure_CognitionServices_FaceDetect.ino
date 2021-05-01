@@ -151,7 +151,8 @@ void loop()
 void predictionCapturedPhoto() {
   Serial.println("Connect to " + String(myDomain));
   WiFiClientSecure client;
-  //client.setInsecure();   //version 1.0.6
+  client.setInsecure();   //run version 1.0.5 or above
+  
   if (client.connect(myDomain, 443)) {
     Serial.println("Connection successful");
     
