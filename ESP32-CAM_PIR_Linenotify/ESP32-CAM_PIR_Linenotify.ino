@@ -173,7 +173,8 @@ String sendCapturedImage2LineNotify(String Token)
   }
    
   WiFiClientSecure client_tcp;
-  //client_tcp.setInsecure();   //version 1.0.6
+  client_tcp.setInsecure();   //run version 1.0.5 or above
+  
   Serial.println("Connect to notify-api.line.me");
   
   if (client_tcp.connect("notify-api.line.me", 443)) 
