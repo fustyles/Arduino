@@ -509,7 +509,8 @@ void getCommand(char c) {
 
 String tcp_https(String domain,String request,int port,byte wait) {
     WiFiClientSecure client_tcp;
-    //client_tcp.setInsecure();   //version 1.0.6
+    client_tcp.setInsecure();   //run version 1.0.5 or above
+  
     if (client_tcp.connect(domain.c_str(), port)) {
       Serial.println("GET " + request);
       client_tcp.println("GET " + request + " HTTP/1.1");
@@ -562,7 +563,8 @@ String LineNotify(String token, String request, byte wait) {
   request.replace("%20stickerId","&stickerId");    
 
   WiFiClientSecure client_tcp;
-  //client_tcp.setInsecure();   //version 1.0.6
+  client_tcp.setInsecure();   //run version 1.0.5 or above
+  
   if (client_tcp.connect("notify-api.line.me", 443)) {
     Serial.println(request);    
     client_tcp.println("POST /api/notify HTTP/1.1");
