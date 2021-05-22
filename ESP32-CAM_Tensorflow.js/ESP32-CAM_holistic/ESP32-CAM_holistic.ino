@@ -1,5 +1,5 @@
 /*
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-5-22 15:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-5-22 21:30
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
@@ -873,18 +873,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           result.innerHTML = ""; 
           holistic.send({image: ShowImage}).then(res => {
             result.innerHTML = "";
-            setTimeout(function(){getStill.click();}, 10)
+            getStill.click();
           }); 
         }
         
         ShowImage.onload = function (event) {
-          try { 
-            document.createEvent("TouchEvent");
-            setTimeout(function(){DetectImage();},250);
-          }
-          catch(e) { 
-            DetectImage();
-          } 
+          DetectImage();
         }
         
         function onResults(results) {
@@ -925,7 +919,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           minTrackingConfidence: 0.5
         });
         holistic.onResults(onResults);
-         
+
+        window.onload = function() {getStill.click();}
         </script>
         
         <script>
