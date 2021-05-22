@@ -957,7 +957,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             scoreThreshold = scorelimit.value;
             drawResults(poses);   
             }
-            setTimeout(function(){getStill.click();}, 100);
+            getStill.click();
           });
         }
         
@@ -965,7 +965,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           if (Model) {
           try { 
             document.createEvent("TouchEvent");
-            setTimeout(function(){DetectImage();},150);
+            setTimeout(function(){DetectImage();},250);
           }
           catch(e) { 
             DetectImage();
