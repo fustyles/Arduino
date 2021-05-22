@@ -1,5 +1,5 @@
 /*
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-5-22 21:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-5-22 22:00
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
@@ -686,8 +686,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                                 <option value="8">XGA(1024x768)</option>
                                 <option value="7">SVGA(800x600)</option>
                                 <option value="6">VGA(640x480)</option>
-                                <option value="5" selected="selected">CIF(400x296)</option>
-                                <option value="4">QVGA(320x240)</option>
+                                <option value="5">CIF(400x296)</option>
+                                <option value="4" selected="selected">QVGA(320x240)</option>
                                 <option value="3">HQVGA(240x176)</option>
                                 <option value="0">QQVGA(160x120)</option>
                             </select>
@@ -883,9 +883,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         
         function onResults(results) {
           result.innerHTML = "";
-          canvasCtx.save();
-          canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-          canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
         
           if (pose.checked) {
             drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {color: '#00CCCC', lineWidth: 2});
