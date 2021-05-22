@@ -965,7 +965,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           if (Model) {
           try { 
             document.createEvent("TouchEvent");
-            setTimeout(function(){DetectImage();},250);
+            setTimeout(function(){DetectImage();},150);
           }
           catch(e) { 
             DetectImage();
