@@ -866,10 +866,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         var result = document.getElementById('result');
         
         function DetectImage() {
-          canvasElement.setAttribute("width", ShowImage.width);
-          canvasElement.setAttribute("height", ShowImage.height);
-          canvasCtx.drawImage(ShowImage, 0, 0, ShowImage.width, ShowImage.height);  
-          
           result.innerHTML = ""; 
           holistic.send({image: ShowImage}).then(res => {
             result.innerHTML = "";
@@ -883,7 +879,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         
         function onResults(results) {
           result.innerHTML = "";
-        
+          canvasElement.setAttribute("width", results.image.width);
+          canvasElement.setAttribute("height", results.image.height);
+
+          canvasCtx.save();
+          canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+          canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+  
           if (pose.checked) {
             drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {color: '#00CCCC', lineWidth: 2});
             drawLandmarks(canvasCtx, results.poseLandmarks, {color: '#FFFF00', lineWidth: 2});
