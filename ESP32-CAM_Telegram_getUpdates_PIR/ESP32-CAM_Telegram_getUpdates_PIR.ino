@@ -1,7 +1,7 @@
 /*
 ESP32-CAM Using keyboard in Telegram Bot
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-5-1 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-5-30 16:00
 https://www.facebook.com/francefu
 
 ArduinoJson Library：
@@ -307,11 +307,11 @@ void getTelegramMessage() {
     long int StartTime=millis();
     while (WiFi.status() != WL_CONNECTED) 
     {
-      delay(500);
-      if ((StartTime+10000) < millis()) break;
-    } 
-    if (WiFi.status() != WL_CONNECTED) {
-      ESP.restart();
+      delay(1000);
+      if ((StartTime+10000) < millis())  {
+        StartTime=millis();
+        WiFi.begin(ssid, password);
+      }
     }
     Serial.println("Reconnection is successful.");
   }
