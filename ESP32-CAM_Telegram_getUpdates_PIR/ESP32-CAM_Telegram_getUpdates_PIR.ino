@@ -305,8 +305,7 @@ void getTelegramMessage() {
     Serial.println("Connected failed.");
     WiFi.begin(ssid, password);  
     long int StartTime=millis();
-    while (WiFi.status() != WL_CONNECTED) 
-    {
+    while (WiFi.status() != WL_CONNECTED) {
       delay(1000);
       if ((StartTime+10000) < millis())  {
         StartTime=millis();
