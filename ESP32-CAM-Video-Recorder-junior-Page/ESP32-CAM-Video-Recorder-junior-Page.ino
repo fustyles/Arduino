@@ -1,5 +1,5 @@
 /*
-  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 16:00
+  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 16:10
   https://www.facebook.com/francefu
 */
 
@@ -1792,7 +1792,7 @@ void setup() {
     return;
   }
 
-  devstr.toCharArray(devname, devstr.length());          // name of your camera for mDNS, Router, and filenames
+  devstr.toCharArray(devname, devstr.length()+1);          // name of your camera for mDNS, Router, and filenames
 
   Serial.println("Try to get parameters from config.txt ...");
   read_config_file();
