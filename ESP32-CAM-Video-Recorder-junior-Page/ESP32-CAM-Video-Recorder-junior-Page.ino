@@ -57,7 +57,7 @@
   Sketch uses 1107274 bytes (35%) of program storage space. Maximum is 3145728 bytes.
   Global variables use 59860 bytes (18%) of dynamic memory, leaving 267820 bytes for local variables. Maximum is 327680 bytes.
 
-  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 03:00
+  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 11:00
   https://www.facebook.com/francefu
 */
 
@@ -80,6 +80,12 @@ const char* password = "*****";
 const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
+String Feedback="";   //回傳客戶端訊息
+//指令參數值
+String Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";
+//指令拆解狀態值
+byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
+
 #define Lots_of_Stats 1
 
 int framesize = FRAMESIZE_VGA;
@@ -87,7 +93,7 @@ int quality = 10;
 int framesizeconfig = FRAMESIZE_UXGA;
 int qualityconfig = 5;
 int buffersconfig = 3;
-int avi_length = 60;            // how long a movie in seconds -- 1800 sec = 30 min
+int avi_length = 30;            // how long a movie in seconds -- 1800 sec = 30 min
 int frame_interval = 0;          // record at full speed
 int speed_up_factor = 1;          // play at realtime
 int stream_delay = 500;           // minimum of 500 ms delay between frames
@@ -372,7 +378,7 @@ void major_fail() {
   Serial.println(" ");
   logfile.close();
 
-  for  (int i = 0;  i < 10; i++) {                 // 10 loops or about 100 seconds then reboot
+  for  (int i = 0;  i < 5; i++) {                 // 10 loops or about 100 seconds then reboot
     for (int j = 0; j < 3; j++) {
       digitalWrite(33, LOW);   delay(150);
       digitalWrite(33, HIGH);  delay(150);
@@ -1294,63 +1300,6 @@ static esp_err_t capture_handler(httpd_req_t *req) {
   return res;
 }
 
-//指令參數控制
-static esp_err_t cmd_handler(httpd_req_t *req){
-    char*  buf;
-    size_t buf_len;
-    char variable[32] = {0,};
-    char value[32] = {0,};
-
-    buf_len = httpd_req_get_url_query_len(req) + 1;
-    if (buf_len > 1) {
-        buf = (char*)malloc(buf_len);
-        if(!buf){
-            httpd_resp_send_500(req);
-            return ESP_FAIL;
-        }
-        if (httpd_req_get_url_query_str(req, buf, buf_len) == ESP_OK) {
-            if (httpd_query_key_value(buf, "var", variable, sizeof(variable)) == ESP_OK &&
-                httpd_query_key_value(buf, "val", value, sizeof(value)) == ESP_OK) {
-            } else {
-                free(buf);
-                httpd_resp_send_404(req);
-                return ESP_FAIL;
-            }
-        } else {
-            free(buf);
-            httpd_resp_send_404(req);
-            return ESP_FAIL;
-        }
-        free(buf);
-    } else {
-        httpd_resp_send_404(req);
-        return ESP_FAIL;
-    }
-
-    int val = atoi(value);
-    sensor_t * s = esp_camera_sensor_get();
-    int res = 0;
-    
-    if(!strcmp(variable, "record")) {
-        Serial.println("Start recording");
-        frame_cnt = 0;
-        start_record = 1;
-    }
-    else if(!strcmp(variable, "restart")) {  
-      ESP.restart();
-    }
-    else {
-        res = -1;
-    }
-
-    if(res){
-        return httpd_resp_send_500(req);
-    }
-
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-    return httpd_resp_send(req, NULL, 0);
-}
-
 static esp_err_t index_handler(httpd_req_t *req) {
 
   const char msg[] PROGMEM = R"rawliteral(<!doctype html>
@@ -1361,16 +1310,192 @@ static esp_err_t index_handler(httpd_req_t *req) {
   <title>ESP32-CAM Video Recorder Junior</title>
   </head>
   <body>
-   <button onclick="document.getElementById('stream').src=location.origin+':81/stream';">Start Stream</button><button onclick="document.getElementById('stream').src='';">Stop Stream</button><button onclick="document.getElementById('stream').src=window.location.origin+'/capture?'+Math.floor(Math.random()*1000000);">Get Still</button><br>
-   <button onclick="fetch(window.location.origin+'/control?var=record&val=1');">Start recording</button><button onclick="fetch(window.location.origin+'/control?var=restart&val=0');">Stop recording(Restart)</button>
-  <br>
-  <img id="stream" src="" crossorigin="anonymous">
+  <button onclick="document.getElementById('stream').src=location.origin+':81/stream';">Start Stream</button><button onclick="document.getElementById('stream').src='';">Stop Stream</button><button onclick="document.getElementById('stream').src=window.location.origin+'/capture?'+Math.floor(Math.random()*1000000);">Get Still</button><button onclick="document.getElementById('ifr').src=window.location.origin+'/list';">List Files</button><br>
+  <button onclick="fetch(window.location.origin+'/control?var=record&val=1');">Start recording</button><button onclick="fetch(window.location.origin+'/control?var=restart&val=0');">Stop recording(Restart)</button><br>
+  <img id="stream" src="" crossorigin="anonymous"><br>
+  <iframe id="ifr" width="300" height="300" style="border: 1px solid black" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; geolocation; microphone; camera"></iframe>
   </body>
   </html>)rawliteral";
 
   httpd_resp_set_type(req, "text/html");
   httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
   httpd_resp_send(req, (const char *)msg, strlen(msg));
+
+  return ESP_OK;
+}
+
+String ListFiles() {
+  //SD Card
+  if(!SD_MMC.begin()){
+    Serial.println("Card Mount Failed");
+    return "Card Mount Failed";
+  }  
+  
+  fs::FS &fs = SD_MMC; 
+  File root = fs.open("/");
+  if(!root){
+    Serial.println("Failed to open directory");
+    return "Failed to open directory";
+  }
+
+  String list = "";
+  File file = root.openNextFile();
+  while(file){
+    if(!file.isDirectory()){
+      String filename=String(file.name());
+      list = "<tr><td>"+String(file.name())+"</td><td align='right'>"+String(file.size())+"</td><td><button onclick=\"location.href='/control?delete="+String(file.name())+"\';\">Delete</button></td></tr>"+list;
+    }
+    file = root.openNextFile();
+  }
+  if (list=="") list = "<tr><td>null</td><td>null</td><td></td></tr>";
+  list="<table style='border: 1px solid black'><tr><th align='center'>File Name</th><th align='center'>Size</th><th></th></tr>"+list+"</table>";
+
+  file.close();
+  SD_MMC.end();
+
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);   
+  
+  return list;
+}
+
+String DeleteFile(String filename) {
+  //SD Card
+  if(!SD_MMC.begin()){
+    Serial.println("Card Mount Failed");
+    return "Card Mount Failed";
+  }  
+  
+  fs::FS &fs = SD_MMC;
+  File file = fs.open(filename);
+  String message="";
+  if(fs.remove(filename)){
+      message=filename + " File deleted";
+  } else {
+      message=filename + " Delete failed";
+  }
+  file.close();
+  SD_MMC.end();
+
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);   
+
+  return message;
+}
+
+//指令參數控制
+static esp_err_t cmd_handler(httpd_req_t *req){
+    char*  buf;  //存取網址後帶的參數字串
+    size_t buf_len;
+    char variable[128] = {0,};  //存取參數var值
+    char value[128] = {0,};  //存取參數val值
+    String myCmd = "";
+
+    buf_len = httpd_req_get_url_query_len(req) + 1;
+    if (buf_len > 1) {
+        buf = (char*)malloc(buf_len);
+        
+        if(!buf){
+            httpd_resp_send_500(req);
+            return ESP_FAIL;
+        }
+        if (httpd_req_get_url_query_str(req, buf, buf_len) == ESP_OK) {
+          if (httpd_query_key_value(buf, "var", variable, sizeof(variable)) == ESP_OK &&
+            httpd_query_key_value(buf, "val", value, sizeof(value)) == ESP_OK) {
+          } 
+          else {
+            myCmd = String(buf);
+          }
+        }
+    } else {
+        httpd_resp_send_404(req);
+        return ESP_FAIL;
+    }
+
+    Feedback="";Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
+    ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;     
+    if (myCmd.length()>0) {
+      myCmd = "?"+myCmd;  //網址後帶的參數字串轉換成自訂參數格式
+      for (int i=0;i<myCmd.length();i++) {
+        getCommand(char(myCmd.charAt(i)));  //拆解參數字串
+      }
+    }
+
+    if (cmd.length()>0) {
+      Serial.println("");
+      //Serial.println("Command: "+Command);
+      Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
+      Serial.println(""); 
+
+      //自訂指令區塊  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+      if (cmd=="delete") { 
+        Feedback=DeleteFile(P1)+"<br>"+ListFiles(); 
+      }  
+      else {
+        Feedback="Command is not defined";
+      }
+
+      if (Feedback=="") Feedback=Command;  //若沒有設定回傳資料就回傳Command值
+    
+      const char *resp = Feedback.c_str();
+      httpd_resp_set_type(req, "text/html");  //設定回傳資料格式
+      httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");  //允許跨網域讀取
+      return httpd_resp_send(req, resp, strlen(resp));
+    } 
+    else {
+      int val = atoi(value);
+      sensor_t * s = esp_camera_sensor_get();
+      int res = 0;
+
+      if(!strcmp(variable, "record")) {
+          Serial.println("Start recording");
+          frame_cnt = 0;
+          start_record = 1;
+      }
+      else if(!strcmp(variable, "restart")) {  
+        ESP.restart();
+      }     
+      else {
+          res = -1;
+      }
+  
+      if(res){
+          return httpd_resp_send_500(req);
+      }
+
+      if (buf) {
+        Feedback = String(buf);
+        const char *resp = Feedback.c_str();
+        httpd_resp_set_type(req, "text/html");
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+        return httpd_resp_send(req, resp, strlen(resp));  //回傳參數字串
+      }
+      else {
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+        return httpd_resp_send(req, NULL, 0);
+      }    
+    }
+}
+
+static esp_err_t list_handler(httpd_req_t *req) {
+  String list = ListFiles();
+  //Serial.println(list);
+  const char msg[] PROGMEM = R"rawliteral(<!doctype html>
+  <html>
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  </head>
+  <body>
+  %s
+  </body>
+  </html>)rawliteral";
+
+  sprintf(the_page, msg, list.c_str());
+  
+  httpd_resp_set_type(req, "text/html");
+  httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+  httpd_resp_send(req, the_page, strlen(the_page));
 
   return ESP_OK;
 }
@@ -1526,25 +1651,34 @@ void startCameraServer() {
       .handler   = cmd_handler,
       .user_ctx  = NULL
   };  
-
-  ra_filter_init(&ra_filter, 20);
+  httpd_uri_t list_uri = {
+    .uri       = "/list",
+    .method    = HTTP_GET,
+    .handler   = list_handler,
+    .user_ctx  = NULL
+  };
   
+  ra_filter_init(&ra_filter, 20);
+  Serial.println("");
   Serial.printf("Starting web server on port: '%d'\n", config.server_port);  //Server Port
   if (httpd_start(&camera_httpd, &config) == ESP_OK) {
       //註冊自訂網址路徑對應執行的函式
     httpd_register_uri_handler(camera_httpd, &index_uri);
     httpd_register_uri_handler(camera_httpd, &capture_uri);
     httpd_register_uri_handler(camera_httpd, &stream_uri);
-    httpd_register_uri_handler(camera_httpd, &cmd_uri);    
+    httpd_register_uri_handler(camera_httpd, &cmd_uri);   
+    httpd_register_uri_handler(camera_httpd, &list_uri);       
   }
   
   config.server_port += 1;  //Stream Port
   config.ctrl_port += 1;    //UDP Port
+
   Serial.printf("Starting stream server on port: '%d'\n", config.server_port);
   if (httpd_start(&stream_httpd, &config) == ESP_OK) {
       httpd_register_uri_handler(stream_httpd, &stream_uri);
   }
   Serial.println("Camera http started");
+  Serial.println("");
 }
 
 void stopCameraServer() {
@@ -1599,7 +1733,6 @@ void setup() {
   Serial.println("APIP address: ");
   Serial.println(WiFi.softAPIP());    
   Serial.println("");
-
 
   Serial.println("                                    ");
   Serial.println("-------------------------------------");
@@ -1864,4 +1997,34 @@ void loop() {
   }
     
   delay(200);
+}
+
+//拆解命令字串置入變數
+void getCommand(char c)
+{
+  if (c=='?') ReceiveState=1;
+  if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
+  
+  if (ReceiveState==1)
+  {
+    Command=Command+String(c);
+    
+    if (c=='=') cmdState=0;
+    if (c==';') strState++;
+  
+    if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
+    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) P1=P1+String(c);
+    if ((cmdState==0)&&(strState==2)&&(c!=';')) P2=P2+String(c);
+    if ((cmdState==0)&&(strState==3)&&(c!=';')) P3=P3+String(c);
+    if ((cmdState==0)&&(strState==4)&&(c!=';')) P4=P4+String(c);
+    if ((cmdState==0)&&(strState==5)&&(c!=';')) P5=P5+String(c);
+    if ((cmdState==0)&&(strState==6)&&(c!=';')) P6=P6+String(c);
+    if ((cmdState==0)&&(strState==7)&&(c!=';')) P7=P7+String(c);
+    if ((cmdState==0)&&(strState==8)&&(c!=';')) P8=P8+String(c);
+    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) P9=P9+String(c);
+    
+    if (c=='?') questionstate=1;
+    if (c=='=') equalstate=1;
+    if ((strState>=9)&&(c==';')) semicolonstate=1;
+  }
 }
