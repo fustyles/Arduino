@@ -57,7 +57,7 @@
   Sketch uses 1107274 bytes (35%) of program storage space. Maximum is 3145728 bytes.
   Global variables use 59860 bytes (18%) of dynamic memory, leaving 267820 bytes for local variables. Maximum is 327680 bytes.
 
-  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 14:00
+  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 15:00
   https://www.facebook.com/francefu
 */
 
@@ -79,6 +79,8 @@ const char* password = "*****";
 
 const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
+
+boolean recordOnce = false;  //false: 分段連續錄影  true：錄完一段後即停止並等待
 
 String Feedback="";   //回傳客戶端訊息
 //指令參數值
@@ -1310,8 +1312,9 @@ static esp_err_t index_handler(httpd_req_t *req) {
   <title>ESP32-CAM Video Recorder Junior</title>
   </head>
   <body>
-  <button onclick="document.getElementById('stream').src=location.origin+':81/stream';">Start Stream</button><button onclick="document.getElementById('stream').src='';">Stop Stream</button><button onclick="document.getElementById('stream').src=window.location.origin+'/capture?'+Math.floor(Math.random()*1000000);">Get Still</button><button onclick="document.getElementById('ifr').src=window.location.origin+'/list';">List Files</button><br>
-  <button onclick="fetch(window.location.origin+'/control?var=restart&val=0');">Restart</button><button onclick="fetch(window.location.origin+'/control?var=record&val=1');">Start recording</button><button onclick="fetch(window.location.origin+'/control?var=stop&val=0');">Stop recording</button><br>
+  <button onclick="fetch(window.location.origin+'/control?var=restart&val=0');">Restart</button><button onclick="document.getElementById('stream').src=location.origin+':81/stream';">Start Stream</button><button onclick="document.getElementById('stream').src='';">Stop Stream</button><button onclick="document.getElementById('stream').src=window.location.origin+'/capture?'+Math.floor(Math.random()*1000000);">Get Still</button><br>
+  <button onclick="document.getElementById('ifr').src=window.location.origin+'/list';">List Files</button><button onclick="fetch(window.location.origin+'/control?var=recordonce&val=0');">Record continuously</button><button onclick="fetch(window.location.origin+'/control?var=recordonce&val=1');">Record Once</button><br>
+  <button onclick="fetch(window.location.origin+'/control?var=record&val=1');">Start recording</button><button onclick="fetch(window.location.origin+'/control?var=stop&val=0');">Stop recording</button><br>
   <img id="stream" src="" crossorigin="anonymous"><br>
   <iframe id="ifr" width="300" height="300" style="border: 1px solid black" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; geolocation; microphone; camera"></iframe>
   </body>
@@ -1452,6 +1455,13 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           frame_cnt = 0;
           start_record = 1;
       }
+      if(!strcmp(variable, "recordonce")) {
+          recordOnce = val;        
+          if (val==1)
+            Serial.println("Record once");
+          else
+            Serial.println("Record continuously");
+      }      
       else if(!strcmp(variable, "stop")) { 
         frame_cnt = 1000;
         start_record = 0;
@@ -1931,7 +1941,11 @@ void the_camera_loop (void* pvParameter) {
       Serial.printf("End the avi at %d.  It was %d frames, %d ms at %.2f fps...\n", millis(), frame_cnt, avi_end_time, avi_end_time - avi_start_time, fps);
       logfile.printf("End the avi at %d.  It was %d frames, %d ms at %.2f fps...\n", millis(), frame_cnt, avi_end_time, avi_end_time - avi_start_time, fps);
 
-      frame_cnt = 0;   
+      frame_cnt = 0; 
+
+      if (recordOnce == true) {
+        start_record = 0;
+      }       
       ///////////////////  ANOTHER FRAME  //////////////////
     } else if (frame_cnt > 0 && start_record != 0) {  // another frame of the avi
 
