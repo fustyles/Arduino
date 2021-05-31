@@ -1,5 +1,9 @@
 /*
+  ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 11:00
+  https://www.facebook.com/francefu
+*/
 
+/*
   ESP32-CAM-Video-Recorder-junior  (ESP32 Arduino Core v1.0.6)
 
   This program records an mjpeg avi video to the sd card of an ESP32-CAM.
@@ -56,9 +60,6 @@
 
   Sketch uses 1107274 bytes (35%) of program storage space. Maximum is 3145728 bytes.
   Global variables use 59860 bytes (18%) of dynamic memory, leaving 267820 bytes for local variables. Maximum is 327680 bytes.
-
-  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 11:00
-  https://www.facebook.com/francefu
 */
 
 //#define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
