@@ -1,5 +1,5 @@
 /*
-  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 16:10
+  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 16:40
   https://www.facebook.com/francefu
 */
 
@@ -84,6 +84,7 @@ const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 boolean recordOnce = false;  //false: 分段連續錄影  true：錄完一段後即停止並等待
+boolean resetFileNumber = false;  //true：重設檔名流水號
 
 String Feedback="";   //回傳客戶端訊息
 String Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";  //指令參數值
@@ -393,7 +394,7 @@ void major_fail() {
       digitalWrite(33, HIGH); delay(500);
     }
     delay(1000);
-    Serial.print("Major Fail  "); Serial.print(i); Serial.print(" / "); Serial.println(10);
+    Serial.print("Major Fail  "); Serial.print(i); Serial.print(" / "); Serial.println(5);
   }
 
   ESP.restart();
@@ -889,7 +890,11 @@ void do_eprom_write() {
   eprom_data ed;
   ed.eprom_good = MagicNumber;
   ed.file_group  = file_group;
-  //ed.file_group  = 0;   //reset file_group
+  if (resetFileNumber==true) {
+    file_group = 1;
+    ed.file_group  = 1;   //reset file_group
+    resetFileNumber=false;
+  }
   
   Serial.println("Writing to EPROM ...");
 
@@ -1070,7 +1075,6 @@ static esp_err_t another_save_avi(camera_fb_t * fb ) {
     fb_block_start = fb_block_start + fb_block_length;
     delay(0);
   }
-
 
   movi_size += jpeg_size;
   uVideoLen += jpeg_size;
@@ -1316,7 +1320,7 @@ static esp_err_t index_handler(httpd_req_t *req) {
   <body>
   <button onclick="fetch(window.location.origin+'/control?var=restart&val=0');">Restart</button><button onclick="document.getElementById('stream').src=location.origin+':81/stream';">Start Stream</button><button onclick="document.getElementById('stream').src='';">Stop Stream</button><button onclick="document.getElementById('stream').src=window.location.origin+'/capture?'+Math.floor(Math.random()*1000000);">Get Still</button><br>
   <button onclick="document.getElementById('ifr').src=window.location.origin+'/list';">List Files</button><button onclick="fetch(window.location.origin+'/control?var=recordonce&val=0');">Record continuously</button><button onclick="fetch(window.location.origin+'/control?var=recordonce&val=1');">Record Once</button><br>
-  <button onclick="fetch(window.location.origin+'/control?var=record&val=1');">Start recording</button><button onclick="fetch(window.location.origin+'/control?var=stop&val=0');">Stop recording</button><br>
+  <button onclick="fetch(window.location.origin+'/control?resetfilenumber');">Reset File Number</button><button onclick="fetch(window.location.origin+'/control?record');">Start recording</button><button onclick="fetch(window.location.origin+'/control?stop');">Stop recording</button><br>
   <img id="stream" src="" crossorigin="anonymous"><br>
   <iframe id="ifr" width="300" height="300" style="border: 1px solid black" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; geolocation; microphone; camera"></iframe>
   </body>
@@ -1433,9 +1437,21 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       Serial.println(""); 
 
       //自訂指令區塊  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
-      if (cmd=="delete") { 
+      if (cmd=="record") {
+          Serial.println("Start recording");
+          frame_cnt = 0;
+          start_record = 1;
+      }
+      else if (cmd=="stop") { 
+        start_record = 0;
+      }       
+      else if (cmd=="delete") { 
         Feedback=DeleteFile(P1)+"<br>"+ListFiles(); 
       }  
+      else if (cmd=="resetfilenumber") { 
+        resetFileNumber = true;
+        do_eprom_read(); 
+      } 
       else {
         Feedback="Command is not defined";
       }
@@ -1451,15 +1467,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       int val = atoi(value);
       sensor_t * s = esp_camera_sensor_get();
       int res = 0;
-
-      if(!strcmp(variable, "record")) {
-          Serial.println("Start recording");
-          frame_cnt = 0;
-          start_record = 1;
-      }
-      else if(!strcmp(variable, "stop")) { 
-        start_record = 0;
-      }         
+        
       if(!strcmp(variable, "recordonce")) {
           recordOnce = val;        
           if (val==1)
