@@ -1,6 +1,6 @@
 /*
 
-  ESP32-CAM-Video-Recorder-junior
+  ESP32-CAM-Video-Recorder-junior  (ESP32 Arduino Core v1.0.6)
 
   This program records an mjpeg avi video to the sd card of an ESP32-CAM.
 
