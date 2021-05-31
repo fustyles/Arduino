@@ -84,7 +84,7 @@ const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 boolean recordOnce = false;  //false: 分段連續錄影  true：錄完一段後即停止並等待
-boolean resetFileNumber = false;  //true：重設檔名流水號
+boolean resetFileNumber = false;  //true：重設檔名群組流水號
 
 String Feedback="";   //回傳客戶端訊息
 String Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";  //指令參數值
