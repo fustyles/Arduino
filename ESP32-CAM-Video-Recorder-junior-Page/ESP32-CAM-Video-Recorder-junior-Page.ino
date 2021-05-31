@@ -1,5 +1,5 @@
 /*
-  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 16:40
+  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 16:50
   https://www.facebook.com/francefu
 */
 
@@ -896,7 +896,7 @@ void do_eprom_write() {
     resetFileNumber=false;
   }
   
-  Serial.println("Writing to EPROM ...");
+  Serial.println("Writing to EPROM, File Group : " + String(file_group));
 
   EEPROM.begin(200);
   EEPROM.put(0, ed);
@@ -1320,7 +1320,7 @@ static esp_err_t index_handler(httpd_req_t *req) {
   <body>
   <button onclick="fetch(window.location.origin+'/control?var=restart&val=0');">Restart</button><button onclick="document.getElementById('stream').src=location.origin+':81/stream';">Start Stream</button><button onclick="document.getElementById('stream').src='';">Stop Stream</button><button onclick="document.getElementById('stream').src=window.location.origin+'/capture?'+Math.floor(Math.random()*1000000);">Get Still</button><br>
   <button onclick="document.getElementById('ifr').src=window.location.origin+'/list';">List Files</button><button onclick="fetch(window.location.origin+'/control?var=recordonce&val=0');">Record continuously</button><button onclick="fetch(window.location.origin+'/control?var=recordonce&val=1');">Record Once</button><br>
-  <button onclick="fetch(window.location.origin+'/control?resetfilenumber');">Reset File Number</button><button onclick="fetch(window.location.origin+'/control?record');">Start recording</button><button onclick="fetch(window.location.origin+'/control?stop');">Stop recording</button><br>
+  <button onclick="fetch(window.location.origin+'/control?resetfilenumber');">Reset File Group</button><button onclick="fetch(window.location.origin+'/control?record');">Start recording</button><button onclick="fetch(window.location.origin+'/control?stop');">Stop recording</button><br>
   <img id="stream" src="" crossorigin="anonymous"><br>
   <iframe id="ifr" width="300" height="300" style="border: 1px solid black" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; geolocation; microphone; camera"></iframe>
   </body>
