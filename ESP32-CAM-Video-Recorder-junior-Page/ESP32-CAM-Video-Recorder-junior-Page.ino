@@ -74,8 +74,8 @@ static const char vernum[] = "v50lpmod";
 char devname[30];
 String devstr =  "desklens";
 
-const char* ssid = "3COM";
-const char* password = "godblessyou";
+const char* ssid = "*****";
+const char* password = "*****";
 
 const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
