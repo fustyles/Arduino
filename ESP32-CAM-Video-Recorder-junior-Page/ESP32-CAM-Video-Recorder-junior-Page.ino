@@ -1,5 +1,5 @@
 /*
-  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 16:50
+  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 17:00
   https://www.facebook.com/francefu
 */
 
@@ -1322,7 +1322,7 @@ static esp_err_t index_handler(httpd_req_t *req) {
   <button onclick="document.getElementById('ifr').src=window.location.origin+'/list';">List Files</button><button onclick="fetch(window.location.origin+'/control?var=recordonce&val=0');">Record continuously</button><button onclick="fetch(window.location.origin+'/control?var=recordonce&val=1');">Record Once</button><br>
   <button onclick="fetch(window.location.origin+'/control?resetfilenumber');">Reset File Group</button><button onclick="fetch(window.location.origin+'/control?record');">Start recording</button><button onclick="fetch(window.location.origin+'/control?stop');">Stop recording</button><br>
   <img id="stream" src="" crossorigin="anonymous"><br>
-  <iframe id="ifr" width="300" height="300" style="border: 1px solid black" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; geolocation; microphone; camera"></iframe>
+  <iframe id="ifr" width="300" height="200" style="border: 1px solid black" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; geolocation; microphone; camera"></iframe>
   </body>
   </html>)rawliteral";
 
