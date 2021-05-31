@@ -1,10 +1,6 @@
 /*
-  ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 11:00
-  https://www.facebook.com/francefu
-*/
 
-/*
-  ESP32-CAM-Video-Recorder-junior  (ESP32 Arduino Core v1.0.6)
+  ESP32-CAM-Video-Recorder-junior
 
   This program records an mjpeg avi video to the sd card of an ESP32-CAM.
 
@@ -60,6 +56,9 @@
 
   Sketch uses 1107274 bytes (35%) of program storage space. Maximum is 3145728 bytes.
   Global variables use 59860 bytes (18%) of dynamic memory, leaving 267820 bytes for local variables. Maximum is 327680 bytes.
+
+  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 14:00
+  https://www.facebook.com/francefu
 */
 
 //#define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
@@ -75,8 +74,8 @@ static const char vernum[] = "v50lpmod";
 char devname[30];
 String devstr =  "desklens";
 
-const char* ssid = "*****";
-const char* password = "*****";
+const char* ssid = "3COM";
+const char* password = "godblessyou";
 
 const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
@@ -89,12 +88,12 @@ byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolon
 
 #define Lots_of_Stats 1
 
+int avi_length = 60;            // how long a movie in seconds
 int framesize = FRAMESIZE_VGA;
 int quality = 10;
 int framesizeconfig = FRAMESIZE_UXGA;
 int qualityconfig = 5;
 int buffersconfig = 3;
-int avi_length = 30;            // how long a movie in seconds -- 1800 sec = 30 min
 int frame_interval = 0;          // record at full speed
 int speed_up_factor = 1;          // play at realtime
 int stream_delay = 500;           // minimum of 500 ms delay between frames
@@ -1312,7 +1311,7 @@ static esp_err_t index_handler(httpd_req_t *req) {
   </head>
   <body>
   <button onclick="document.getElementById('stream').src=location.origin+':81/stream';">Start Stream</button><button onclick="document.getElementById('stream').src='';">Stop Stream</button><button onclick="document.getElementById('stream').src=window.location.origin+'/capture?'+Math.floor(Math.random()*1000000);">Get Still</button><button onclick="document.getElementById('ifr').src=window.location.origin+'/list';">List Files</button><br>
-  <button onclick="fetch(window.location.origin+'/control?var=record&val=1');">Start recording</button><button onclick="fetch(window.location.origin+'/control?var=restart&val=0');">Stop recording(Restart)</button><br>
+  <button onclick="fetch(window.location.origin+'/control?var=restart&val=0');">Restart</button><button onclick="fetch(window.location.origin+'/control?var=record&val=1');">Start recording</button><button onclick="fetch(window.location.origin+'/control?var=stop&val=0');">Stop recording</button><br>
   <img id="stream" src="" crossorigin="anonymous"><br>
   <iframe id="ifr" width="300" height="300" style="border: 1px solid black" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; geolocation; microphone; camera"></iframe>
   </body>
@@ -1453,7 +1452,11 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           frame_cnt = 0;
           start_record = 1;
       }
-      else if(!strcmp(variable, "restart")) {  
+      else if(!strcmp(variable, "stop")) { 
+        frame_cnt = 1000;
+        start_record = 0;
+      }       
+      else if(!strcmp(variable, "restart")) { 
         ESP.restart();
       }     
       else {
