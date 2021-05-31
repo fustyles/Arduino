@@ -1,4 +1,9 @@
 /*
+  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 15:00
+  https://www.facebook.com/francefu
+*/
+
+/*
 
   ESP32-CAM-Video-Recorder-junior
 
@@ -57,8 +62,6 @@
   Sketch uses 1107274 bytes (35%) of program storage space. Maximum is 3145728 bytes.
   Global variables use 59860 bytes (18%) of dynamic memory, leaving 267820 bytes for local variables. Maximum is 327680 bytes.
 
-  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 15:00
-  https://www.facebook.com/francefu
 */
 
 //#define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
