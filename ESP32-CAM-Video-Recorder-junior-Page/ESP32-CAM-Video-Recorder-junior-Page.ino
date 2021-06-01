@@ -1,5 +1,5 @@
 /*
-  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 22:00
+  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 23:00
   https://www.facebook.com/francefu
   
   Refer to the code.
@@ -1327,7 +1327,7 @@ static esp_err_t index_handler(httpd_req_t *req) {
   <title>ESP32-CAM Video Recorder Junior</title>
   </head>
   <body>
-  <button onclick="fetch(window.location.origin+'/control?restart');">Restart</button><button onclick="document.getElementById('stream').src=location.origin+':81/stream';">Start Stream</button><button onclick="document.getElementById('stream').src='';">Stop Stream</button><button onclick="document.getElementById('stream').src=window.location.origin+'/capture?'+Math.floor(Math.random()*1000000);">Get Still</button><br>
+  <button onclick="hideIframe();fetch(window.location.origin+'/control?restart');">Restart</button><button onclick="hideIframe();document.getElementById('stream').src=location.origin+':81/stream';">Start Stream</button><button onclick="hideIframe();document.getElementById('stream').src='';">Stop Stream</button><button onclick="hideIframe();document.getElementById('stream').src=window.location.origin+'/capture?'+Math.floor(Math.random()*1000000);">Get Still</button><br>
   <button onclick="document.getElementById('ifr').style.display='block';document.getElementById('ifr').src=window.location.origin+'/list';">List Files</button><button onclick="getMessage(window.location.origin+'/control?var=recordonce&val=0');">Record continuously</button><button onclick="getMessage(window.location.origin+'/control?var=recordonce&val=1');">Record Once</button><br>
   <button onclick="getMessage(window.location.origin+'/control?resetfilegroup');">Reset File Group</button><button onclick="getMessage(window.location.origin+'/control?record');">Start recording</button><button onclick="getMessage(window.location.origin+'/control?stop');">Stop recording</button><br>
   <button onclick="getMessage(window.location.origin+'/control?message');">Get record state</button>
@@ -1336,10 +1336,13 @@ static esp_err_t index_handler(httpd_req_t *req) {
   <iframe id="ifr" width="300" height="200" style="border: 1px solid black;display:none" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; geolocation; microphone; camera"></iframe>
   <script>
     function getMessage(url) {
-      document.getElementById('ifr').style.display='none';
+      hideIframe();
       fetch(url)
       .then(function(response) {return response.text();})
       .then(function(text) {document.getElementById('message').innerHTML=text;});
+    }
+    function hideIframe() {
+      document.getElementById('ifr').style.display='none';
     }
   </script></body>
   </html>)rawliteral";
@@ -1526,7 +1529,12 @@ static esp_err_t cmd_handler(httpd_req_t *req){
 }
 
 static esp_err_t list_handler(httpd_req_t *req) {
-  String list = ListFiles();
+  String list = "";
+  if (recordMessage!="Do nothing")
+    list = "Get error. Recording...";
+  else
+    list = ListFiles();
+    
   //Serial.println(list);
   const char msg[] PROGMEM = R"rawliteral(<!doctype html>
   <html>
