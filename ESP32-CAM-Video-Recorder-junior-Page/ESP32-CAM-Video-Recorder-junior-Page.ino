@@ -400,6 +400,7 @@ void major_fail() {
     }
     delay(1000);
     Serial.print("Major Fail  "); Serial.print(i); Serial.print(" / "); Serial.println(5);
+    recordMessage = "Major Fail "+String(i);
   }
 
   ESP.restart();
@@ -943,6 +944,7 @@ static esp_err_t start_avi() {
     logfile.printf("File open: %s\n", avi_file_name);
   }  else  {
     Serial.println("Could not open file");
+    recordMessage = "Could not open file";
     major_fail();    
   }
 
