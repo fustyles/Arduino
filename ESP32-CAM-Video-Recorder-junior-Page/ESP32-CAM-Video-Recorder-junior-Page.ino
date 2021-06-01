@@ -1464,11 +1464,11 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           Serial.println("Start recording");
           frame_cnt = 0;
           start_record = 1;
-          Feedback="Response: Start recording";
+          Feedback="Start recording - done";
       }
       else if (cmd=="stop") { 
         start_record = 0;
-        Feedback="Response: Stop recording";
+        Feedback="Stop recording - done";
       }       
       else if (cmd=="delete") { 
         Feedback=DeleteFile(P1)+"<br>"+ListFiles(); 
@@ -1476,7 +1476,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if (cmd=="resetfilegroup") { 
         resetfilegroup = true;
         do_eprom_read();
-        Feedback="Response: Reset file group"; 
+        Feedback="Reset file group - done"; 
       }
       else if (cmd=="message") { 
         Feedback=recordMessage;
@@ -1502,11 +1502,11 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           recordOnce = val;        
           if (val==1) {
             Serial.println("Record once");
-            Feedback="Response: Record once";
+            Feedback="Record once - done";
           }
           else {
             Serial.println("Record continuously");
-            Feedback="Response: Record continuously";
+            Feedback="Record continuously - done";
           }
       }         
       else {
