@@ -3,11 +3,12 @@ ESP32-CAM reads out the MLX90615 or MLX90614 infrared thermometer
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-6-1 19:00
 https://www.facebook.com/francefu
 
-SDA: IO2
-SCL: IO13
 
 I2C Library 
 https://github.com/felias-fogg/SlowSoftI2CMaster
+
+SDA: IO2
+SCL: IO13
 
 MLX90615 Datasheet
 https://www.melexis.com/-/media/files/documents/datasheets/mlx90615-datasheet-melexis.pdf
