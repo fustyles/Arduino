@@ -6,7 +6,8 @@ https://www.facebook.com/francefu
 SDA: IO2
 SCL: IO13
 
-Library: https://github.com/felias-fogg/SlowSoftI2CMaster
+I2C Library 
+https://github.com/felias-fogg/SlowSoftI2CMaster
 
 MLX90615 Datasheet
 https://www.melexis.com/-/media/files/documents/datasheets/mlx90615-datasheet-melexis.pdf
