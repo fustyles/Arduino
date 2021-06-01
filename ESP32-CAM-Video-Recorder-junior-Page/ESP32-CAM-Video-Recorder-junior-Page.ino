@@ -1998,7 +1998,7 @@ void the_camera_loop (void* pvParameter) {
     } else if (frame_cnt > 0 && start_record != 0) {  // another frame of the avi
 
       //Serial.println("Another frame");
-      recordMessage = "Another frame";
+      recordMessage = "Recording...";
 
       current_frame_time = millis();
       if (current_frame_time - last_frame_time < frame_interval) {
