@@ -4,6 +4,8 @@
   
   Refer to the code.
   https://github.com/jameszah/ESP32-CAM-Video-Recorder-junior
+
+  ESP32-arduino core version 1.06
 */
 
 /*
@@ -86,8 +88,8 @@ const char* password = "*****";   //Wi-Fi password
 const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
-boolean recordOnce = false;  //false: 分段連續錄影  true：錄完一段後即停止並等待
-boolean resetFileNumber = false;  //true：重設檔名群組流水號
+boolean recordOnce = false;  //false: 分段連續錄影  true：錄完一段後即停止
+boolean resetFileNumber = false;  //重設檔名群組流水號狀態值
 
 String Feedback="";   //回傳客戶端訊息
 String Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";  //指令參數值
@@ -95,9 +97,9 @@ byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolon
 
 #define Lots_of_Stats 1
 
-int avi_length = 60;            // 錄影時間長度(秒) how long a movie in seconds
-int framesize = FRAMESIZE_VGA;  // 影像解析度
-int quality = 10;               // 影像品質
+int avi_length = 60;            // 設定錄影時間長度(秒) how long a movie in seconds
+int framesize = FRAMESIZE_VGA;  // 設定影像解析度
+int quality = 10;               // 設定影像品質
 int framesizeconfig = FRAMESIZE_UXGA;
 int qualityconfig = 5;
 int buffersconfig = 3;
