@@ -3,7 +3,6 @@ ESP32-CAM reads out the MLX90615 or MLX90614 infrared thermometer
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-6-1 19:00
 https://www.facebook.com/francefu
 
-
 I2C Library 
 https://github.com/felias-fogg/SlowSoftI2CMaster
 SDA: IO2
