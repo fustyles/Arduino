@@ -387,7 +387,7 @@ void major_fail() {
   Serial.println(" ");
   logfile.close();
 
-  for  (int i = 0;  i < 5; i++) {                 // 10 loops or about 100 seconds then reboot
+  for  (int i = 0;  i < 3; i++) {                
     for (int j = 0; j < 3; j++) {
       digitalWrite(33, LOW);   delay(150);
       digitalWrite(33, HIGH);  delay(150);
@@ -399,7 +399,7 @@ void major_fail() {
       digitalWrite(33, HIGH); delay(500);
     }
     delay(1000);
-    Serial.print("Major Fail  "); Serial.print(i); Serial.print(" / "); Serial.println(5);
+    Serial.print("Major Fail  "); Serial.print(i); Serial.print(" / "); Serial.println(3);
     recordMessage = "Major Fail "+String(i);
   }
 
