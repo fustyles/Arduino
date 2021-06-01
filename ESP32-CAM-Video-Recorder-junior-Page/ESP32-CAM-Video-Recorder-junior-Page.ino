@@ -1,6 +1,9 @@
 /*
   Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 17:00
   https://www.facebook.com/francefu
+  
+  Refer to the code.
+  https://github.com/jameszah/ESP32-CAM-Video-Recorder-junior
 */
 
 /*
