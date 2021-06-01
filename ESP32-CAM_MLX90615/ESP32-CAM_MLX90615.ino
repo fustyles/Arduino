@@ -6,7 +6,6 @@ https://www.facebook.com/francefu
 
 I2C Library 
 https://github.com/felias-fogg/SlowSoftI2CMaster
-
 SDA: IO2
 SCL: IO13
 
