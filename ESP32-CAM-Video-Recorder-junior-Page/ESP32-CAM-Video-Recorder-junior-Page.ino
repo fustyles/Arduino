@@ -1,5 +1,5 @@
 /*
-  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 23:00
+  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 23:10
   https://www.facebook.com/francefu
   
   Refer to the code.
@@ -935,7 +935,9 @@ static esp_err_t start_avi() {
   sprintf(avi_file_name, "/%s%d.%03d.avi",  devname, file_group, file_number);
 
   file_number++;
-
+  
+  SD_MMC.end();
+  SD_MMC.begin("/sdcard", true);
   avifile = SD_MMC.open(avi_file_name, "w");
   idxfile = SD_MMC.open("/idx.tmp", "w");
 
@@ -1383,8 +1385,8 @@ String ListFiles() {
   file.close();
   SD_MMC.end();
 
-  pinMode(4, OUTPUT);
-  digitalWrite(4, LOW);   
+  //pinMode(4, OUTPUT);
+  //digitalWrite(4, LOW);   
   
   return list;
 }
