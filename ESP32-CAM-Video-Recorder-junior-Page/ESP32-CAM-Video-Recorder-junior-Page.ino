@@ -1,5 +1,5 @@
 /*
-  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 17:00
+  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 22:00
   https://www.facebook.com/francefu
   
   Refer to the code.
@@ -89,9 +89,9 @@ const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 boolean recordOnce = false;  //false: 分段連續錄影  true：錄完一段後即停止
-boolean resetFileNumber = false;  //重設檔名群組流水號狀態值
+boolean resetfilegroup = false;  //重設檔名群組流水號狀態值
 
-String Feedback="";   //回傳客戶端訊息
+String Feedback="",recordMessage="";   //回傳客戶端訊息
 String Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";  //指令參數值
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;  //指令拆解狀態值
 
@@ -439,12 +439,13 @@ static esp_err_t config_camera() {
   config.jpeg_quality = qualityconfig;
   config.fb_count = buffersconfig;
 
-
+  /*
   if (Lots_of_Stats) {
     Serial.printf("Before camera config ...");
     Serial.printf("Internal Total heap %d, internal Free Heap %d, ", ESP.getHeapSize(), ESP.getFreeHeap());
     Serial.printf("SPIRam Total heap   %d, SPIRam Free Heap   %d\n", ESP.getPsramSize(), ESP.getFreePsram());
   }
+  */
   esp_err_t cam_err = ESP_FAIL;
   int attempt = 5;
   while (attempt && cam_err != ESP_OK) {
@@ -488,8 +489,8 @@ static esp_err_t config_camera() {
     if (!fb) {
       Serial.println("Camera Capture Failed");
     } else {
-      Serial.print("Pic, len="); Serial.print(fb->len);
-      Serial.printf(", new fb %X\n", (long)fb->buf);
+      //Serial.print("Pic, len="); Serial.print(fb->len);
+      //Serial.printf(", new fb %X\n", (long)fb->buf);
       esp_camera_fb_return(fb);
       delay(50);
     }
@@ -516,7 +517,7 @@ static esp_err_t init_sdcard()
 
     uint64_t cardSize = SD_MMC.cardSize() / (1024 * 1024);
     Serial.printf("SD_MMC Card Size: %lluMB\n", cardSize);
-
+    Serial.println("");
   } else {
     Serial.printf("Failed to mount SD card VFAT filesystem. \n");
     Serial.println("Do you have an SD Card installed?");
@@ -895,13 +896,14 @@ void do_eprom_write() {
   eprom_data ed;
   ed.eprom_good = MagicNumber;
   ed.file_group  = file_group;
-  if (resetFileNumber==true) {
+  if (resetfilegroup==true) {
     file_group = 1;
     ed.file_group  = 1;   //reset file_group
-    resetFileNumber=false;
+    resetfilegroup=false;
   }
   
   Serial.println("Writing to EPROM, File Group : " + String(file_group));
+  Serial.println("");
 
   EEPROM.begin(200);
   EEPROM.put(0, ed);
@@ -1323,12 +1325,21 @@ static esp_err_t index_handler(httpd_req_t *req) {
   <title>ESP32-CAM Video Recorder Junior</title>
   </head>
   <body>
-  <button onclick="fetch(window.location.origin+'/control?var=restart&val=0');">Restart</button><button onclick="document.getElementById('stream').src=location.origin+':81/stream';">Start Stream</button><button onclick="document.getElementById('stream').src='';">Stop Stream</button><button onclick="document.getElementById('stream').src=window.location.origin+'/capture?'+Math.floor(Math.random()*1000000);">Get Still</button><br>
-  <button onclick="document.getElementById('ifr').src=window.location.origin+'/list';">List Files</button><button onclick="fetch(window.location.origin+'/control?var=recordonce&val=0');">Record continuously</button><button onclick="fetch(window.location.origin+'/control?var=recordonce&val=1');">Record Once</button><br>
-  <button onclick="fetch(window.location.origin+'/control?resetfilenumber');">Reset File Group</button><button onclick="fetch(window.location.origin+'/control?record');">Start recording</button><button onclick="fetch(window.location.origin+'/control?stop');">Stop recording</button><br>
+  <button onclick="fetch(window.location.origin+'/control?restart');">Restart</button><button onclick="document.getElementById('stream').src=location.origin+':81/stream';">Start Stream</button><button onclick="document.getElementById('stream').src='';">Stop Stream</button><button onclick="document.getElementById('stream').src=window.location.origin+'/capture?'+Math.floor(Math.random()*1000000);">Get Still</button><br>
+  <button onclick="document.getElementById('ifr').style.display='block';document.getElementById('ifr').src=window.location.origin+'/list';">List Files</button><button onclick="getMessage(window.location.origin+'/control?var=recordonce&val=0');">Record continuously</button><button onclick="getMessage(window.location.origin+'/control?var=recordonce&val=1');">Record Once</button><br>
+  <button onclick="getMessage(window.location.origin+'/control?resetfilegroup');">Reset File Group</button><button onclick="getMessage(window.location.origin+'/control?record');">Start recording</button><button onclick="getMessage(window.location.origin+'/control?stop');">Stop recording</button><br>
+  <button onclick="getMessage(window.location.origin+'/control?message');">Get record state</button>
+  <div id="message" style="color:red"></div>
   <img id="stream" src="" crossorigin="anonymous"><br>
-  <iframe id="ifr" width="300" height="200" style="border: 1px solid black" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; geolocation; microphone; camera"></iframe>
-  </body>
+  <iframe id="ifr" width="300" height="200" style="border: 1px solid black;display:none" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; geolocation; microphone; camera"></iframe>
+  <script>
+    function getMessage(url) {
+      document.getElementById('ifr').style.display='none';
+      fetch(url)
+      .then(function(response) {return response.text();})
+      .then(function(text) {document.getElementById('message').innerHTML=text;});
+    }
+  </script></body>
   </html>)rawliteral";
 
   httpd_resp_set_type(req, "text/html");
@@ -1436,37 +1447,44 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     }
 
     if (cmd.length()>0) {
-      Serial.println("");
+      //Serial.println("");
       //Serial.println("Command: "+Command);
-      Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
-      Serial.println(""); 
+      //Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
+      //Serial.println(""); 
 
       //自訂指令區塊  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
       if (cmd=="record") {
           Serial.println("Start recording");
           frame_cnt = 0;
           start_record = 1;
+          Feedback="Response: Start recording";
       }
       else if (cmd=="stop") { 
         start_record = 0;
+        Feedback="Response: Stop recording";
       }       
       else if (cmd=="delete") { 
         Feedback=DeleteFile(P1)+"<br>"+ListFiles(); 
       }  
-      else if (cmd=="resetfilenumber") { 
-        resetFileNumber = true;
-        do_eprom_read(); 
-      } 
+      else if (cmd=="resetfilegroup") { 
+        resetfilegroup = true;
+        do_eprom_read();
+        Feedback="Response: Reset file group"; 
+      }
+      else if (cmd=="message") { 
+        Feedback=recordMessage;
+      }
+      else if (cmd=="restart") { 
+        ESP.restart();
+      }  
       else {
         Feedback="Command is not defined";
       }
-
-      if (Feedback=="") Feedback=Command;  //若沒有設定回傳資料就回傳Command值
     
       const char *resp = Feedback.c_str();
       httpd_resp_set_type(req, "text/html");  //設定回傳資料格式
       httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");  //允許跨網域讀取
-      return httpd_resp_send(req, resp, strlen(resp));
+      return httpd_resp_send(req, resp, strlen(resp));    
     } 
     else {
       int val = atoi(value);
@@ -1475,14 +1493,15 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         
       if(!strcmp(variable, "recordonce")) {
           recordOnce = val;        
-          if (val==1)
+          if (val==1) {
             Serial.println("Record once");
-          else
+            Feedback="Response: Record once";
+          }
+          else {
             Serial.println("Record continuously");
-      }      
-      else if(!strcmp(variable, "restart")) { 
-        ESP.restart();
-      }     
+            Feedback="Response: Record continuously";
+          }
+      }         
       else {
           res = -1;
       }
@@ -1491,8 +1510,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           return httpd_resp_send_500(req);
       }
 
-      if (buf) {
-        Feedback = String(buf);
+      if (Feedback!="") {
         const char *resp = Feedback.c_str();
         httpd_resp_set_type(req, "text/html");
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
@@ -1888,6 +1906,8 @@ void the_camera_loop (void* pvParameter) {
     if (frame_cnt == 0 && start_record == 0) {
 
       Serial.println("Do nothing");
+      recordMessage = "Do nothing";
+      
       we_are_already_stopped = 1;
       delay(2000);
 
@@ -1895,7 +1915,8 @@ void the_camera_loop (void* pvParameter) {
     } else if (frame_cnt == 0 && start_record == 1) {
 
       Serial.println("Ready to start");
-
+      recordMessage = "Ready to start";
+      
       we_are_already_stopped = 0;
 
       delete_old_stuff();
@@ -1927,7 +1948,8 @@ void the_camera_loop (void* pvParameter) {
     } else if ( (frame_cnt > 0 && start_record == 0) ||  millis() > (avi_start_time + avi_length * 1000)) { // end the avi
 
       Serial.println("End the Avi");
-
+      recordMessage = "End the Avi";
+      
       xSemaphoreTake( wait_for_sd, portMAX_DELAY );
       esp_camera_fb_return(fb_curr);
 
@@ -1964,6 +1986,7 @@ void the_camera_loop (void* pvParameter) {
     } else if (frame_cnt > 0 && start_record != 0) {  // another frame of the avi
 
       //Serial.println("Another frame");
+      recordMessage = "Another frame";
 
       current_frame_time = millis();
       if (current_frame_time - last_frame_time < frame_interval) {
