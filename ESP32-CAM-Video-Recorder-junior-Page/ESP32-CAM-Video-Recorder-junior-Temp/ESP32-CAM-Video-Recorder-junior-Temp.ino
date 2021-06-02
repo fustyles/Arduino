@@ -2,10 +2,19 @@
   Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-6-2 14:00
   https://www.facebook.com/francefu
   
-  Refer to the code.
+  Refer to the code. (ESP32-arduino core version 1.06)
   https://github.com/jameszah/ESP32-CAM-Video-Recorder-junior
 
-  ESP32-arduino core version 1.06
+  Url Command
+  http://192.168.xxx.xxx/capture                       //Get Still
+  http://192.168.xxx.xxx:81/stream                     //Start Stream
+  http://192.168.xxx.xxx/control?restart               //Restart
+  http://192.168.xxx.xxx/control?record                //Start Record
+  http://192.168.xxx.xxx/control?stop                  //Stop Record
+  http://192.168.xxx.xxx/list                          //List files
+  http://192.168.xxx.xxx/control?var=recordonce&val=1  //Record once
+  http://192.168.xxx.xxx/control?var=recordonce&val=0  //Record continuously
+  http://192.168.xxx.xxx/control?resetfilegroup        //Reset file group
 */
 
 /*
