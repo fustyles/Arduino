@@ -6,6 +6,7 @@
   https://github.com/jameszah/ESP32-CAM-Video-Recorder-junior
 
   Url Command
+  http://192.168.xxx.xxx                               //Main Page
   http://192.168.xxx.xxx/capture                       //Get Still
   http://192.168.xxx.xxx:81/stream                     //Start Stream
   http://192.168.xxx.xxx/control?restart               //Restart
