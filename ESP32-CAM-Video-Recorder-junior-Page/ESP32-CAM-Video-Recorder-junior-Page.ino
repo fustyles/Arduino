@@ -11,9 +11,9 @@
   http://192.168.xxx.xxx/control?restart               //Restart
   http://192.168.xxx.xxx/control?record                //Start Record
   http://192.168.xxx.xxx/control?stop                  //Stop Record
-  http://192.168.xxx.xxx/list                          //List files
-  http://192.168.xxx.xxx/control?var=recordonce&val=1  //Record once
-  http://192.168.xxx.xxx/control?var=recordonce&val=0  //Record continuously
+  http://192.168.xxx.xxx/list                          //List files from SD card
+  http://192.168.xxx.xxx/control?var=recordonce&val=1  //Set Record once
+  http://192.168.xxx.xxx/control?var=recordonce&val=0  //Set Record continuously
   http://192.168.xxx.xxx/control?resetfilegroup        //Reset file group
 */
 
