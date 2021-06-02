@@ -1,5 +1,5 @@
 /*
-  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-6-2 14:00
+  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-6-2 22:00
   https://www.facebook.com/francefu
   
   Refer to the code.
@@ -1330,50 +1330,16 @@ static esp_err_t index_handler(httpd_req_t *req) {
   <title>ESP32-CAM Video Recorder Junior</title>
   </head>
   <body>
-  <button onclick="hideIframe();fetch(window.location.origin+'/control?restart');">Restart</button><button onclick="hideIframe();document.getElementById('stream').src=location.origin+':81/stream';">Start Stream</button><button onclick="hideIframe();document.getElementById('stream').src='';">Stop Stream</button><button onclick="hideIframe();document.getElementById('stream').src=window.location.origin+'/capture?'+Math.floor(Math.random()*1000000);">Get Still</button><br>
-  <button onclick="hideIframe();getMessage(window.location.origin+'/control?message');">Get record state</button><button onclick="hideIframe();getMessage(window.location.origin+'/control?record');">Start recording</button><button onclick="hideIframe();getMessage(window.location.origin+'/control?stop');">Stop recording</button><br>
-  <select onclick="execute(this.value);this.value='';">
-    <option value=""></option>  
-    <option value="1">List files</option>
-    <option value="2">Record once</option>
-    <option value="3">Record continuously</option>
-    <option value="4">Reset file group</option>      
-  </select>
-  <span id="message" style="color:red"></span>
-  <img id="stream" src="" crossorigin="anonymous"><br>
-  <iframe id="ifr" width="300" height="200" style="border: 1px solid black;display:none" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; geolocation; microphone; camera"></iframe>
-  <script>
-      var ifr = document.getElementById("ifr");
-      function execute(val) {
-        if (val=="1") {
-            showIframe();
-            ifr.src=window.location.origin+"/list";
-        }
-        else if (val=="2") {
-            hideIframe();
-            getMessage(window.location.origin+"/control?var=recordonce&val=1");
-        }
-        else if (val=="3") {
-            hideIframe();          
-            getMessage(window.location.origin+"/control?var=recordonce&val=0");
-        }
-        else if (val=="4") {
-            hideIframe();          
-            getMessage(window.location.origin+"/control?resetfilegroup");
-        }
-    }
-    function getMessage(url) {
-      fetch(url)
-      .then(function(response) {return response.text();})
-      .then(function(text) {document.getElementById("message").innerHTML=text;});
-    }
-    function hideIframe() {
-      ifr.style.display="none";
-    }
-    function showIframe() {
-      ifr.style.display="block";
-    }    
-  </script>
+  <button onclick="hideIframe();fetch(host+'/control?restart');">Restart</button>
+  <button onclick="hideIframe();stream.src=host+'/capture?'+Math.floor(Math.random()*1000000);">Get Still</button>
+  <button onclick="hideIframe();stream.src=host+':81/stream';">Start Stream</button>
+  <button onclick="hideIframe();stream.src='';">Stop Stream</button><br>
+  <select id="command" onclick="execute();"><option value=""></option><option value="/list">List files</option><option value="/control?var=recordonce&val=1">Record once</option><option value="/control?var=recordonce&val=0">Record continuously</option><option value="/control?resetfilegroup">Reset file group</option></select>
+  <button onclick="hideIframe();getMessage(host+'/control?record');getRecordState();">Start Record</button>
+  <button onclick="hideIframe();clearTimeout(recordTimer);getMessage(host+'/control?stop');">Stop Record</button><br>
+  <span id="message" style="color:red"></span><img id="stream" src="" crossorigin="anonymous"><br>
+  <iframe id="ifr" width="300" height="200" style="border: 0px solid black;display:none"></iframe>
+  <script>var host=window.location.origin;var stream = document.getElementById("stream");var ifr = document.getElementById("ifr");var message = document.getElementById("message");var command = document.getElementById("command");var recordTimer;function execute() {message.innerHTML="";if (command.value!="") {hideIframe();if (command.value=="/list") {showIframe();ifr.src = host+command.value;}else{getMessage(host+command.value);}command.value="";}}function getMessage(url) {fetch(url).then(function(response) {return response.text();}).then(function(text) {if (text=="Do nothing") clearTimeout(recordTimer);message.innerHTML=text;});}function hideIframe() {ifr.style.display="none";}function showIframe() {ifr.style.display="block";}function getRecordState() {recordTimer = setTimeout(function() {getMessage(host+'/control?message');getRecordState();}, 2000);}</script>
   </body>
   </html>)rawliteral";
 
@@ -1493,11 +1459,11 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           Serial.println("Start recording");
           frame_cnt = 0;
           start_record = 1;
-          Feedback="Start recording - done";
+          Feedback="Start Record - done";
       }
       else if (cmd=="stop") { 
         start_record = 0;
-        Feedback="Stop recording - done";
+        Feedback="Stop Record - done";
       }       
       else if (cmd=="delete") { 
         Feedback=DeleteFile(P1)+"<br>"+ListFiles(); 
@@ -1776,7 +1742,7 @@ void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
   
   Serial.begin(115200);
-  Serial.setDebugOutput(true);  //開啟診斷輸出
+  //Serial.setDebugOutput(true);  //開啟診斷輸出
   Serial.println();
 
   pinMode(33, OUTPUT);             // little red led on back of chip
