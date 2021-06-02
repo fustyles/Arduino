@@ -1,5 +1,5 @@
 /*
-  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-6-2 22:00
+  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-6-2 22:30
   https://www.facebook.com/francefu
   
   Refer to the code.
@@ -1330,13 +1330,13 @@ static esp_err_t index_handler(httpd_req_t *req) {
   <title>ESP32-CAM Video Recorder Junior</title>
   </head>
   <body>
-  <button onclick="hideIframe();fetch(host+'/control?restart');">Restart</button>
   <button onclick="hideIframe();stream.src=host+'/capture?'+Math.floor(Math.random()*1000000);">Get Still</button>
   <button onclick="hideIframe();stream.src=host+':81/stream';">Start Stream</button>
   <button onclick="hideIframe();stream.src='';">Stop Stream</button><br>
-  <select id="command" onclick="execute();"><option value=""></option><option value="/list">List files</option><option value="/control?var=recordonce&val=1">Record once</option><option value="/control?var=recordonce&val=0">Record continuously</option><option value="/control?resetfilegroup">Reset file group</option></select>
+  <button onclick="hideIframe();fetch(host+'/control?restart');">Restart</button>
   <button onclick="hideIframe();getMessage(host+'/control?record');getRecordState();">Start Record</button>
   <button onclick="hideIframe();clearTimeout(recordTimer);getMessage(host+'/control?stop');">Stop Record</button><br>
+  <select id="command" onclick="execute();"><option value=""></option><option value="/list">List files</option><option value="/control?var=recordonce&val=1">Record once</option><option value="/control?var=recordonce&val=0">Record continuously</option><option value="/control?resetfilegroup">Reset file group</option></select>
   <span id="message" style="color:red"></span><img id="stream" src="" crossorigin="anonymous"><br>
   <iframe id="ifr" width="300" height="200" style="border: 0px solid black;display:none"></iframe>
   <script>var host=window.location.origin;var stream = document.getElementById("stream");var ifr = document.getElementById("ifr");var message = document.getElementById("message");var command = document.getElementById("command");var recordTimer;function execute() {message.innerHTML="";if (command.value!="") {hideIframe();if (command.value=="/list") {showIframe();ifr.src = host+command.value;}else{getMessage(host+command.value);}command.value="";}}function getMessage(url) {fetch(url).then(function(response) {return response.text();}).then(function(text) {if (text=="Do nothing") clearTimeout(recordTimer);message.innerHTML=text;});}function hideIframe() {ifr.style.display="none";}function showIframe() {ifr.style.display="block";}function getRecordState() {recordTimer = setTimeout(function() {getMessage(host+'/control?message');getRecordState();}, 2000);}</script>
