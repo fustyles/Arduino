@@ -87,7 +87,7 @@ const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 String devstr =  "Taiwan";  //file name
-boolean recordOnce = false;  //false: 分段連續錄影  true：錄完一段後即停止
+boolean recordOnce = true;  //false: 分段連續錄影  true：錄完一段後即停止
 boolean resetfilegroup = false;  //重設檔名群組流水號狀態值
 
 String Feedback="",recordMessage="";   //回傳客戶端訊息
