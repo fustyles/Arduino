@@ -1,5 +1,5 @@
 /*
-  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-5-31 23:10
+  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-6-2 12:30
   https://www.facebook.com/francefu
   
   Refer to the code.
@@ -1321,7 +1321,7 @@ static esp_err_t capture_handler(httpd_req_t *req) {
 
 static esp_err_t index_handler(httpd_req_t *req) {
 
-  const char msg[] PROGMEM = R"rawliteral(<!doctype html>
+  const char index_html[] PROGMEM = R"rawliteral(<!doctype html>
   <html>
   <head>
   <meta charset="utf-8">
@@ -1330,28 +1330,55 @@ static esp_err_t index_handler(httpd_req_t *req) {
   </head>
   <body>
   <button onclick="hideIframe();fetch(window.location.origin+'/control?restart');">Restart</button><button onclick="hideIframe();document.getElementById('stream').src=location.origin+':81/stream';">Start Stream</button><button onclick="hideIframe();document.getElementById('stream').src='';">Stop Stream</button><button onclick="hideIframe();document.getElementById('stream').src=window.location.origin+'/capture?'+Math.floor(Math.random()*1000000);">Get Still</button><br>
-  <button onclick="document.getElementById('ifr').style.display='block';document.getElementById('ifr').src=window.location.origin+'/list';">List Files</button><button onclick="getMessage(window.location.origin+'/control?var=recordonce&val=0');">Record continuously</button><button onclick="getMessage(window.location.origin+'/control?var=recordonce&val=1');">Record Once</button><br>
-  <button onclick="getMessage(window.location.origin+'/control?resetfilegroup');">Reset File Group</button><button onclick="getMessage(window.location.origin+'/control?record');">Start recording</button><button onclick="getMessage(window.location.origin+'/control?stop');">Stop recording</button><br>
-  <button onclick="getMessage(window.location.origin+'/control?message');">Get record state</button>
-  <div id="message" style="color:red"></div>
+  <button onclick="hideIframe();getMessage(window.location.origin+'/control?message');">Get record state</button><button onclick="hideIframe();getMessage(window.location.origin+'/control?record');">Start recording</button><button onclick="hideIframe();getMessage(window.location.origin+'/control?stop');">Stop recording</button><br>
+  <select onclick="execute(this.value);this.value='';">
+    <option value=""></option>  
+    <option value="1">List files</option>
+    <option value="2">Record once</option>
+    <option value="3">Record continuously</option>
+    <option value="4">Reset file group</option>      
+  </select>
+  <span id="message" style="color:red"></span>
   <img id="stream" src="" crossorigin="anonymous"><br>
   <iframe id="ifr" width="300" height="200" style="border: 1px solid black;display:none" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; geolocation; microphone; camera"></iframe>
   <script>
+      var ifr = document.getElementById("ifr");
+      function execute(val) {
+        if (val=="1") {
+            showIframe();
+            ifr.src=window.location.origin+"/list";
+        }
+        else if (val=="2") {
+            hideIframe();
+            getMessage(window.location.origin+"/control?var=recordonce&val=1");
+        }
+        else if (val=="3") {
+            hideIframe();          
+            getMessage(window.location.origin+"/control?var=recordonce&val=0");
+        }
+        else if (val=="4") {
+            hideIframe();          
+            getMessage(window.location.origin+"/control?resetfilegroup");
+        }
+    }
     function getMessage(url) {
-      hideIframe();
       fetch(url)
       .then(function(response) {return response.text();})
-      .then(function(text) {document.getElementById('message').innerHTML=text;});
+      .then(function(text) {document.getElementById("message").innerHTML=text;});
     }
     function hideIframe() {
-      document.getElementById('ifr').style.display='none';
+      ifr.style.display="none";
     }
-  </script></body>
+    function showIframe() {
+      ifr.style.display="block";
+    }    
+  </script>
+  </body>
   </html>)rawliteral";
 
   httpd_resp_set_type(req, "text/html");
   httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-  httpd_resp_send(req, (const char *)msg, strlen(msg));
+  httpd_resp_send(req, (const char *)index_html, strlen(index_html));
 
   return ESP_OK;
 }
@@ -1586,7 +1613,7 @@ static esp_err_t stream_handler(httpd_req_t *req) {
     delay(1000);
     //Serial.print("z");
   }
-  Serial.println(" streaming done");
+  Serial.println("Streaming done");
 }
 
 void the_streaming_loop (void* pvParameter) {      
@@ -1772,8 +1799,19 @@ void setup() {
   while (WiFi.status() != WL_CONNECTED) 
   {
       delay(500);
-      if ((StartTime+10000) < millis()) break;    //等待10秒連線
-  } 
+      if ((StartTime+5000) < millis()) break;    //等待3秒連線
+  }
+
+  if (WiFi.status() != WL_CONNECTED) {
+    WiFi.begin(ssid, password);    //執行網路連線
+    
+    StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) 
+    {
+        delay(500);
+        if ((StartTime+5000) < millis()) break;    //等待3秒連線
+    } 
+  }   
 
   if (WiFi.status() == WL_CONNECTED) {    //若連線成功
     WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP         
