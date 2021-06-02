@@ -1,5 +1,5 @@
 /*
-  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-6-2 12:30
+  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-6-2 14:00
   https://www.facebook.com/francefu
   
   Refer to the code.
@@ -78,9 +78,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // user edits here:
 
-static const char vernum[] = "v50lpmod";
-char devname[30];
-String devstr =  "Taiwan";
+
 
 const char* ssid = "*****";   //Wi-Fi ssid
 const char* password = "*****";   //Wi-Fi password
@@ -88,6 +86,7 @@ const char* password = "*****";   //Wi-Fi password
 const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
 
+String devstr =  "Taiwan";  //file name
 boolean recordOnce = false;  //false: 分段連續錄影  true：錄完一段後即停止
 boolean resetfilegroup = false;  //重設檔名群組流水號狀態值
 
@@ -95,6 +94,8 @@ String Feedback="",recordMessage="";   //回傳客戶端訊息
 String Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";  //指令參數值
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;  //指令拆解狀態值
 
+static const char vernum[] = "v50lpmod";
+char devname[30];
 #define Lots_of_Stats 1
 
 int avi_length = 60;            // 設定錄影時間長度(秒) how long a movie in seconds
@@ -1412,8 +1413,8 @@ String ListFiles() {
   file.close();
   SD_MMC.end();
 
-  //pinMode(4, OUTPUT);
-  //digitalWrite(4, LOW);   
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);   
   
   return list;
 }
@@ -1488,6 +1489,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
 
       //自訂指令區塊  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
       if (cmd=="record") {
+          Serial.println("");
           Serial.println("Start recording");
           frame_cnt = 0;
           start_record = 1;
