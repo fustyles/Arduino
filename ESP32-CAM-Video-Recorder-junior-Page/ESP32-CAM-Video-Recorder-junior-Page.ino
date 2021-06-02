@@ -9,13 +9,14 @@
   http://192.168.xxx.xxx                               //Main Page
   http://192.168.xxx.xxx/capture                       //Get Still
   http://192.168.xxx.xxx:81/stream                     //Start Stream
+  http://192.168.xxx.xxx/list                          //List files from SD card  
   http://192.168.xxx.xxx/control?restart               //Restart
   http://192.168.xxx.xxx/control?record                //Start Record
   http://192.168.xxx.xxx/control?stop                  //Stop Record
-  http://192.168.xxx.xxx/list                          //List files from SD card
   http://192.168.xxx.xxx/control?var=recordonce&val=1  //Set Record once
   http://192.168.xxx.xxx/control?var=recordonce&val=0  //Set Record continuously
   http://192.168.xxx.xxx/control?resetfilegroup        //Reset file group
+  http://192.168.xxx.xxx/control?message               //Get record state  
 */
 
 /*
