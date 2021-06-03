@@ -5,14 +5,14 @@ https://www.facebook.com/francefu
 
 Libraries: https://github.com/fustyles/Arduino/tree/master/ESP32-CAM_OTTO/OttoDIY/libraries
 
-ESP32-CAM RX - Arduino NANNO TX
-ESP32-CAM TX - Arduino NANNO RX
+ESP32-CAM RX - Arduino NANO TX
+ESP32-CAM TX - Arduino NANO RX
 
-servo 2 : Arduino NANNO pin 2
-servo 3 : Arduino NANNO pin 3
-servo 4 : Arduino NANNO pin 4
-servo 5 : Arduino NANNO pin 5
-Buzzer : Arduino NANNO pin 10
+servo 2 : Arduino NANO pin 2
+servo 3 : Arduino NANO pin 3
+servo 4 : Arduino NANO pin 4
+servo 5 : Arduino NANO pin 5
+Buzzer : Arduino NANO pin 10
 */
 
 //----------------------------------------------------------------
