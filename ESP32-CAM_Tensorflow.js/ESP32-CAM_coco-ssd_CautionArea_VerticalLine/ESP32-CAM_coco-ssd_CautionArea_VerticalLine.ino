@@ -805,7 +805,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   </td>
                 </tr>
                 <tr><td colspan="3"><input type="checkbox" id="chkBuzzer">Buzzer (IO2)</td></tr> 
-                <tr><td colspan="3"><input type="checkbox" id="chkAud">Audio<input type="text" id="aud" size="25" value="http:\/\/"></td></tr> 
+                <tr><td colspan="3"><input type="checkbox" id="chkAud">Audio<input type="text" id="aud" size="25" value="https:\/\/fustyles.github.io/webduino/paino_c.mp3"></td></tr> 
                 <tr><td colspan="3"><input type="checkbox" id="chkLine">Line Token<input type="text" id="token" size="25" value=""></td></tr> 
                 <tr><td><span id="message" style="display:none"></span></td><td></td><td></td></tr> 
                 <tr style="display:none"><td colspan="3"></td></tr> 
