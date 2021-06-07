@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Caution area using vertical line (tfjs coco-ssd)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-2-14 21:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-6 12:00
 https://www.facebook.com/francefu
 
 物件類別
@@ -40,17 +40,28 @@ http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255
       
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
+
+音效下載 (將音效剪輯長度成0.5秒再使用)
+https://taira-komori.jpn.org/freesoundtw.html
+
+線上音效剪輯
+https://mp3cut.net/tw/
+
+若Chrome無法播放音效(可改用Firefox瀏覽器開啟網頁)
+在Chrome網址輸入 chrome://settings/content/sound
+設定允許網站播放音訊
+將 https://fustyles.github.io/ 加入允許清單。
 */
 
-//輸入WIFI連線帳號密碼
-const char* ssid     = "";   //your network SSID
-const char* password = "";   //your network password
-
-int Buzzer = 2;  //Buzzer -> IO2
+//輸入WIFI連線帳號密碼 (使用手機或桌機須與ESP32-CAM位於相同網域中以區網IP開啟首頁)
+const char* ssid     = "teacher";   //生科教室(或手機)網路 SSID
+const char* password = "87654321";   //生科教室(或手機)網路 password
 
 //輸入AP端連線帳號密碼
-const char* apssid = "ESP32-CAM";
+const char* apssid = "Classroom01";
 const char* appassword = "12345678";         //AP密碼至少要8個字元以上
+
+int Buzzer = 2;  //Buzzer -> IO2
 
 #include <WiFi.h>
 #include <esp32-hal-ledc.h>      //用於控制伺服馬達
@@ -267,6 +278,7 @@ void setup() {
   Serial.println("");
   Serial.println("APIP address: ");
   Serial.println(WiFi.softAPIP());    
+  Serial.println("");
   
   startCameraServer(); 
 
@@ -702,117 +714,126 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <section class="main">
             <section id="buttons">
                 <table>
-                <tr><td><button id="restart" onclick="try{fetch(document.location.origin+'/control?restart');}catch(e){}">Restart</button></td><td><button id="toggle-stream" style="display:none"></button></td><td><button id="face_enroll" style="display:none" class="disabled" disabled="disabled"></button><button id="get-still">get-still</button></td></tr>
-                <tr><td>Flash</td><td colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?flash='+this.value);}catch(e){}"></td></tr>
-                <tr>  
+                <tr><td><button id="restart" onclick="try{fetch(document.location.origin+'/control?restart');}catch(e){}">重啟電源</button></td><td><button id="toggle-stream" style="display:none"></button></td><td align="right"><button id="face_enroll" style="display:none" class="disabled" disabled="disabled"></button><button id="get-still">啟動視訊</button></td></tr>
+                <tr>
                   <td colspan="3">
-                      Object<select id="object" onchange="count.innerHTML='';">
-                        <option value="person" selected="selected">person</option>
-                        <option value="bicycle">bicycle</option>
-                        <option value="car">car</option>
-                        <option value="motorcycle">motorcycle</option>
-                        <option value="airplane">airplane</option>
-                        <option value="bus">bus</option>
-                        <option value="train">train</option>
-                        <option value="truck">truck</option>
-                        <option value="boat">boat</option>
-                        <option value="traffic light">traffic light</option>
-                        <option value="fire hydrant">fire hydrant</option>
-                        <option value="stop sign">stop sign</option>
-                        <option value="parking meter">parking meter</option>
-                        <option value="bench">bench</option>
-                        <option value="bird">bird</option>
-                        <option value="cat">cat</option>
-                        <option value="dog">dog</option>
-                        <option value="horse">horse</option>
-                        <option value="sheep">sheep</option>
-                        <option value="cow">cow</option>
-                        <option value="elephant">elephant</option>
-                        <option value="bear">bear</option>
-                        <option value="zebra">zebra</option>
-                        <option value="giraffe">giraffe</option>
-                        <option value="backpack">backpack</option>
-                        <option value="umbrella">umbrella</option>
-                        <option value="handbag">handbag</option>
-                        <option value="tie">tie</option>
-                        <option value="suitcase">suitcase</option>
-                        <option value="frisbee">frisbee</option>
-                        <option value="skis">skis</option>
-                        <option value="snowboard">snowboard</option>
-                        <option value="sports ball">sports ball</option>
-                        <option value="kite">kite</option>
-                        <option value="baseball bat">baseball bat</option>
-                        <option value="baseball glove">baseball glove</option>
-                        <option value="skateboard">skateboard</option>
-                        <option value="surfboard">surfboard</option>
-                        <option value="tennis racket">tennis racket</option>
-                        <option value="bottle">bottle</option>
-                        <option value="wine glass">wine glass</option>
-                        <option value="cup">cup</option>
-                        <option value="fork">fork</option>
-                        <option value="knife">knife</option>
-                        <option value="spoon">spoon</option>
-                        <option value="bowl">bowl</option>
-                        <option value="banana">banana</option>
-                        <option value="apple">apple</option>
-                        <option value="sandwich">sandwich</option>
-                        <option value="orange">orange</option>
-                        <option value="broccoli">broccoli</option>
-                        <option value="carrot">carrot</option>
-                        <option value="hot dog">hot dog</option>
-                        <option value="pizza">pizza</option>
-                        <option value="donut">donut</option>
-                        <option value="cake">cake</option>
-                        <option value="chair">chair</option>
-                        <option value="couch">couch</option>
-                        <option value="potted plant">potted plant</option>
-                        <option value="bed">bed</option>
-                        <option value="dining table">dining table</option>
-                        <option value="toilet">toilet</option>
-                        <option value="tv">tv</option>
-                        <option value="laptop">laptop</option>
-                        <option value="mouse">mouse</option>
-                        <option value="remote">remote</option>
-                        <option value="keyboard">keyboard</option>
-                        <option value="cell phone">cell phone</option>
-                        <option value="microwave">microwave</option>
-                        <option value="oven">oven</option>
-                        <option value="toaster">toaster</option>
-                        <option value="sink">sink</option>
-                        <option value="refrigerator">refrigerator</option>
-                        <option value="book">book</option>
-                        <option value="clock">clock</option>
-                        <option value="vase">vase</option>
-                        <option value="scissors">scissors</option>
-                        <option value="teddy bear">teddy bear</option>
-                        <option value="hair drier">hair drier</option>
-                        <option value="toothbrush">toothbrush</option>
-                      </select>
-                      ScoreLimit<select id="score">
-                      <option value="1.0">1</option>
-                      <option value="0.9">0.9</option>
-                      <option value="0.8">0.8</option>
-                      <option value="0.7">0.7</option>
-                      <option value="0.6">0.6</option>
-                      <option value="0.5">0.5</option>
-                      <option value="0.4">0.4</option>
-                      <option value="0.3">0.3</option>
-                      <option value="0.2">0.2</option>
-                      <option value="0.1">0.1</option>
-                      <option value="0" selected="selected">0</option>
-                    </select>
-                    <span id="count" style="color:red"><span>
+                    <table>
+                      <tr> 
+                        <td>
+                          分數下限
+                          <select id="score">
+                          <option value="1.0">1</option>
+                          <option value="0.9">0.9</option>
+                          <option value="0.8">0.8</option>
+                          <option value="0.7">0.7</option>
+                          <option value="0.6">0.6</option>
+                          <option value="0.5" selected="selected">0.5</option>
+                          <option value="0.4">0.4</option>
+                          <option value="0.3">0.3</option>
+                          <option value="0.2">0.2</option>
+                          <option value="0.1">0.1</option>
+                          <option value="0">0</option>
+                          </select>
+                        </td>
+                        <td>
+                            物件追蹤
+                            <select id="object" onchange="count.innerHTML='';">
+                              <option value="person" selected="selected">person</option>
+                              <option value="bicycle">bicycle</option>
+                              <option value="car">car</option>
+                              <option value="motorcycle">motorcycle</option>
+                              <option value="airplane">airplane</option>
+                              <option value="bus">bus</option>
+                              <option value="train">train</option>
+                              <option value="truck">truck</option>
+                              <option value="boat">boat</option>
+                              <option value="traffic light">traffic light</option>
+                              <option value="fire hydrant">fire hydrant</option>
+                              <option value="stop sign">stop sign</option>
+                              <option value="parking meter">parking meter</option>
+                              <option value="bench">bench</option>
+                              <option value="bird">bird</option>
+                              <option value="cat">cat</option>
+                              <option value="dog">dog</option>
+                              <option value="horse">horse</option>
+                              <option value="sheep">sheep</option>
+                              <option value="cow">cow</option>
+                              <option value="elephant">elephant</option>
+                              <option value="bear">bear</option>
+                              <option value="zebra">zebra</option>
+                              <option value="giraffe">giraffe</option>
+                              <option value="backpack">backpack</option>
+                              <option value="umbrella">umbrella</option>
+                              <option value="handbag">handbag</option>
+                              <option value="tie">tie</option>
+                              <option value="suitcase">suitcase</option>
+                              <option value="frisbee">frisbee</option>
+                              <option value="skis">skis</option>
+                              <option value="snowboard">snowboard</option>
+                              <option value="sports ball">sports ball</option>
+                              <option value="kite">kite</option>
+                              <option value="baseball bat">baseball bat</option>
+                              <option value="baseball glove">baseball glove</option>
+                              <option value="skateboard">skateboard</option>
+                              <option value="surfboard">surfboard</option>
+                              <option value="tennis racket">tennis racket</option>
+                              <option value="bottle">bottle</option>
+                              <option value="wine glass">wine glass</option>
+                              <option value="cup">cup</option>
+                              <option value="fork">fork</option>
+                              <option value="knife">knife</option>
+                              <option value="spoon">spoon</option>
+                              <option value="bowl">bowl</option>
+                              <option value="banana">banana</option>
+                              <option value="apple">apple</option>
+                              <option value="sandwich">sandwich</option>
+                              <option value="orange">orange</option>
+                              <option value="broccoli">broccoli</option>
+                              <option value="carrot">carrot</option>
+                              <option value="hot dog">hot dog</option>
+                              <option value="pizza">pizza</option>
+                              <option value="donut">donut</option>
+                              <option value="cake">cake</option>
+                              <option value="chair">chair</option>
+                              <option value="couch">couch</option>
+                              <option value="potted plant">potted plant</option>
+                              <option value="bed">bed</option>
+                              <option value="dining table">dining table</option>
+                              <option value="toilet">toilet</option>
+                              <option value="tv">tv</option>
+                              <option value="laptop">laptop</option>
+                              <option value="mouse">mouse</option>
+                              <option value="remote">remote</option>
+                              <option value="keyboard">keyboard</option>
+                              <option value="cell phone">cell phone</option>
+                              <option value="microwave">microwave</option>
+                              <option value="oven">oven</option>
+                              <option value="toaster">toaster</option>
+                              <option value="sink">sink</option>
+                              <option value="refrigerator">refrigerator</option>
+                              <option value="book">book</option>
+                              <option value="clock">clock</option>
+                              <option value="vase">vase</option>
+                              <option value="scissors">scissors</option>
+                              <option value="teddy bear">teddy bear</option>
+                              <option value="hair drier">hair drier</option>
+                              <option value="toothbrush">toothbrush</option>
+                            </select>
+                            <span id="count" style="color:red"><span>
+                          </td>
+                      </tr>                    
+                      <tr><td>閃光燈</td><td><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?flash='+this.value);}catch(e){}"></td></tr>
+                      <tr><td><input type="checkbox" id="chkAud">警示音效網址</td><td><input type="text" id="aud" size="20" value="https:\/\/fustyles.github.io/webduino/paino_c.mp3"></td></tr> 
+                      <tr><td><input type="checkbox" id="chkBuzzer">蜂鳴器(IO2)</td><td></td></tr>
+                      <tr><td><input type="checkbox" id="chkLine">Line通知權杖</td><td><input type="text" id="token" size="20" value=""></td></tr> 
+                      <tr><td colspan="2"><span id="message" style="display:none"></span></td><td></td></tr> 
+                    </table> 
                   </td>
-                </tr>
-                <tr><td colspan="3"><input type="checkbox" id="chkBuzzer">Buzzer (IO2)</td></tr> 
-                <tr><td colspan="3"><input type="checkbox" id="chkAud">Audio<input type="text" id="aud" size="25" value="https:\/\/fustyles.github.io/webduino/paino_c.mp3"></td></tr> 
-                <tr><td colspan="3"><input type="checkbox" id="chkLine">Line Token<input type="text" id="token" size="25" value=""></td></tr> 
-                <tr><td><span id="message" style="display:none"></span></td><td></td><td></td></tr> 
-                <tr style="display:none"><td colspan="3"></td></tr> 
+                </tr>                
                 </table>
             </section>         
             <div id="logo">
-                <label for="nav-toggle-cb" id="nav-toggle">&#9776;&nbsp;&nbsp;Toggle settings</label>
+                <label for="nav-toggle-cb" id="nav-toggle">&#9776;&nbsp;&nbsp;視訊設定</label>
             </div>
             <div id="content">
                 <div id="sidebar">
@@ -860,7 +881,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             </div>
         </section>
         <iframe id="ifr" style="display:none;position:absolute"></iframe>
-        <div id="position" style="color:blue;font-size:40px"></div>
+        <div id="position" style="display:none;color:blue;font-size:40px"></div>
         <div id="result" style="color:red">Please wait for loading model.</div>        
         <script>
           document.addEventListener('DOMContentLoaded', function (event) {
