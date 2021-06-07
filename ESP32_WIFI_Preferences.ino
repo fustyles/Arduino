@@ -8,17 +8,35 @@ String wifi_password;
 void setup() {
   Serial.begin(115200);
   Serial.println();
-  Preferences_write("test", "12345678");
-  
-  Preferences_read();
+  Preferences_wifi_write("myssid", "12345678");
+  Preferences_wifi_read();
   Serial.println();
   Serial.printf("wifi_ssid = %s\n", wifi_ssid);
-  Serial.printf("wifi_password = %s\n", wifi_password);      
+  Serial.printf("wifi_password = %s\n\n", wifi_password);
+  
+  Preferences_write("hello", "world", "peace");
+  Serial.printf("\nmyData = %s", Preferences_read("hello", "world"));
 }
 
 void loop() {}
 
-void Preferences_write(const char* myssid, const char* mypassword) {
+void Preferences_write(const char * name, const char* key, const char* value) {
+  preferences.clear();
+  preferences.begin(name, false);
+  Serial.printf("Put %s = %s\n", key, value);
+  preferences.putString(key, value);
+  preferences.end();
+}
+
+String Preferences_read(const char * name, const char* key) {
+  preferences.begin(name, false);
+  String myData = preferences.getString(key, "");
+  Serial.printf("Get %s = %s\n", key, myData);
+  preferences.end();
+  return myData;
+}
+
+void Preferences_wifi_write(const char* myssid, const char* mypassword) {
   preferences.clear();
   preferences.begin("wifi", false);
   Serial.printf("Put ssid = %s\n", myssid);
@@ -28,7 +46,7 @@ void Preferences_write(const char* myssid, const char* mypassword) {
   preferences.end();
 }
 
-void Preferences_read() {
+void Preferences_wifi_read() {
   preferences.begin("wifi", false);
   wifi_ssid = preferences.getString("ssid", "");
   Serial.printf("Get ssid = %s\n", wifi_ssid);
