@@ -13,8 +13,8 @@ void setup() {
   Preferences_write("wifi", "password", "12345678");
 
   wifi_ssid = Preferences_read("wifi", "ssid");
-  Serial.printf("ssid = %s\n", wifi_ssid);
   wifi_password = Preferences_read("wifi", "password");
+  Serial.printf("ssid = %s\n", wifi_ssid);  
   Serial.printf("password = %s\n", wifi_password);  
 }
 
