@@ -146,7 +146,7 @@ void setup() {
   ledcSetup(4, 5000, 8); 
 
 
-  //read a sd file and upload to Google drive
+  //read a image file from sd card and upload it to Google drive.
   sendSDImageToGoogleDrive("/test.jpg");
 }
 
