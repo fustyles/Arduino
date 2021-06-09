@@ -45,7 +45,7 @@ const char* ssid     = "*****";   //Wi-Fi帳號
 const char* password = "*****";   //Wi-Fi密碼
 
 const char* myDomain = "script.google.com";
-String myScript = "/macros/s/***************************/exec";    //設定Google Script路徑
+String myScript = "/macros/s/AKfycbw2LUvXgVhZqYkl9eKRcW3CMZQW8kE7_fQuWVFlq7pCkxlTRnE/exec";    //設定Google Script路徑
 String myFoldername = "&myFoldername=ESP32-CAM";    //設定Google drive存放影像資料夾名
 String myFilename = "&myFilename=ESP32-CAM.jpg";    //設定Google drive存放影像檔名
 String myImage = "&myFile=";
@@ -174,12 +174,11 @@ String sendSDImageToGoogleDrive(String filepath)
   Serial.println("");
 
   uint8_t *fileinput;
-  unsigned int fileSize = file.size();
-  fileinput = (uint8_t*)malloc(fileSize + 1);
-  file.read(fileinput, fileSize);
-  fileinput[fileSize] = '\0';
-  file.close();
-  SD_MMC.end();
+  unsigned int fileSize = file.size();  // Get the file size.
+  fileinput = (uint8_t*)malloc(fileSize + 1);  // Allocate memory for the file and a terminating null char.
+  file.read(fileinput, fileSize);         // Read the file into the buffer.
+  fileinput[fileSize] = '\0';               // Add the terminating null char.
+  file.close();                         // Close the file.
   
   char *input = (char *)fileinput;
   String imageFile = "data:image/jpeg;base64,";
