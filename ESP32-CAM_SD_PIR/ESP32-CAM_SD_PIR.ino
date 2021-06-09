@@ -91,7 +91,7 @@ void setup() {
   //SD Card
   if(!SD_MMC.begin()){
     Serial.println("Card Mount Failed");
-    return;
+    ESP.restart();
   }
 
   uint8_t cardType = SD_MMC.cardType();
@@ -99,7 +99,7 @@ void setup() {
   if(cardType == CARD_NONE){
     Serial.println("No SD_MMC card attached");
     SD_MMC.end();
-    return;
+    ESP.restart();
   }
 
   Serial.print("SD_MMC Card Type: ");
@@ -119,6 +119,13 @@ void setup() {
   Serial.println();
   
   SD_MMC.end();  
+  
+  //Reset file name
+  /*
+  EEPROM.begin(sizeof(int)*4);
+  EEPROM.write(0, 0);
+  EEPROM.commit();
+  */  
 }
 
 void loop() {
