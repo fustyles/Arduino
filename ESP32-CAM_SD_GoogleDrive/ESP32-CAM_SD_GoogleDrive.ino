@@ -174,11 +174,12 @@ String sendSDImageToGoogleDrive(String filepath)
   Serial.println("");
 
   uint8_t *fileinput;
-  unsigned int fileSize = file.size();  // Get the file size.
-  fileinput = (uint8_t*)malloc(fileSize + 1);  // Allocate memory for the file and a terminating null char.
-  file.read(fileinput, fileSize);         // Read the file into the buffer.
-  fileinput[fileSize] = '\0';               // Add the terminating null char.
-  file.close();                         // Close the file.
+  unsigned int fileSize = file.size();
+  fileinput = (uint8_t*)malloc(fileSize + 1);
+  file.read(fileinput, fileSize);
+  fileinput[fileSize] = '\0';
+  file.close();
+  SD_MMC.end();
   
   char *input = (char *)fileinput;
   String imageFile = "data:image/jpeg;base64,";
