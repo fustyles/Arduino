@@ -45,7 +45,7 @@ const char* ssid     = "*****";   //Wi-Fi帳號
 const char* password = "*****";   //Wi-Fi密碼
 
 const char* myDomain = "script.google.com";
-String myScript = "/macros/s/AKfycbw2LUvXgVhZqYkl9eKRcW3CMZQW8kE7_fQuWVFlq7pCkxlTRnE/exec";    //設定Google Script路徑
+String myScript = "/macros/s/***************************/exec";    //設定Google Script路徑
 String myFoldername = "&myFoldername=ESP32-CAM";    //設定Google drive存放影像資料夾名
 String myFilename = "&myFilename=ESP32-CAM.jpg";    //設定Google drive存放影像檔名
 String myImage = "&myFile=";
