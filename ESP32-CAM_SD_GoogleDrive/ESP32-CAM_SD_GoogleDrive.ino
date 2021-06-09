@@ -1,5 +1,5 @@
 /*
-ESP32-CAM (Read the image from SD card and upload it to Google Drive)
+ESP32-CAM (Read the image file from SD card and upload it to Google Drive)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-9 21:30
 https://www.facebook.com/francefu
 
