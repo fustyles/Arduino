@@ -714,21 +714,21 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <section class="main">
             <section id="buttons">
                 <table>
-                <tr><td><button id="restart" onclick="try{fetch(document.location.origin+'/control?restart');}catch(e){}">重啟電源</button></td><td><button id="toggle-stream" style="display:none"></button></td><td align="right"><button id="face_enroll" style="display:none" class="disabled" disabled="disabled"></button><button id="get-still">啟動視訊</button></td></tr>
+                <tr><td><button id="restart" onclick="try{fetch(document.location.origin+'/control?restart');}catch(e){}">Restart</button></td><td><button id="toggle-stream" style="display:none"></button></td><td align="right"><button id="face_enroll" style="display:none" class="disabled" disabled="disabled"></button><button id="get-still">Get Still</button></td></tr>
                 <tr>
                   <td colspan="3">
                     <table>
                       <tr> 
                         <td colspan="2">
-                          物件定位
+                          Mark
                           <select id="mark">
-                          <option value="center">中</option>                
-                          <option value="upper">上</option>
-                          <option value="lower" selected="selected">下</option>
-                          <option value="left">左</option>
-                          <option value="right">右</option>
+                          <option value="center">center</option>                
+                          <option value="upper">upper</option>
+                          <option value="lower" selected="selected">lower</option>
+                          <option value="left">left</option>
+                          <option value="right">right</option>
                           </select>
-                            物件追蹤
+                            Object
                             <select id="object" onchange="count.innerHTML='';">
                               <option value="person" selected="selected">person</option>
                               <option value="bicycle">bicycle</option>
@@ -832,10 +832,10 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                           </select>
                         </td>
                       </tr>             
-                      <tr><td>閃光燈</td><td><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?flash='+this.value);}catch(e){}"></td></tr>
-                      <tr><td><input type="checkbox" id="chkAud">警示音效網址</td><td><input type="text" id="aud" size="20" value="https:\/\/fustyles.github.io/webduino/paino_c.mp3"></td></tr> 
-                      <tr><td><input type="checkbox" id="chkBuzzer">蜂鳴器(IO2)</td><td></td></tr>
-                      <tr><td colspan="2"><input type="checkbox" id="chkLine">Line通知權杖<input type="text" id="token" size="10" value=""><input type="button" value="傳送影像" onclick="SendCapturedImage();"></td></tr> 
+                      <tr><td>Flash</td><td><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?flash='+this.value);}catch(e){}"></td></tr>
+                      <tr><td><input type="checkbox" id="chkAud">Audio URL</td><td><input type="text" id="aud" size="20" value="https:\/\/fustyles.github.io/webduino/paino_c.mp3"></td></tr> 
+                      <tr><td><input type="checkbox" id="chkBuzzer">Buzzer(IO2)</td><td></td></tr>
+                      <tr><td colspan="2"><input type="checkbox" id="chkLine">Line Token<input type="text" id="token" size="10" value=""><input type="button" value="Send still" onclick="SendCapturedImage();"></td></tr> 
                       <tr><td colspan="2"><span id="message" style="display:none"></span></td><td></td></tr> 
                     </table> 
                   </td>
@@ -843,44 +843,44 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 </table>
             </section>         
             <div id="logo">
-                <label for="nav-toggle-cb" id="nav-toggle">&#9776;&nbsp;&nbsp;視訊設定</label>
+                <label for="nav-toggle-cb" id="nav-toggle">&#9776;&nbsp;&nbsp;Toggle settings</label>
             </div>
             <div id="content">
                 <div id="sidebar">
                     <input type="checkbox" id="nav-toggle-cb">
                     <nav id="menu">
                         <div class="input-group" id="flash-group">
-                            <label for="flash">閃光燈</label>
+                            <label for="flash">Flash</label>
                             <div class="range-min">0</div>
                             <input type="range" id="flash" min="0" max="255" value="0" class="default-action">
                             <div class="range-max">255</div>
                         </div>
                         <div class="input-group" id="framesize-group">
-                            <label for="framesize">解析度</label>
+                            <label for="framesize">Resolution</label>
                             <select id="framesize" class="default-action">
                               <option value="4">QVGA(320x240)</option>
                             </select>
                         </div>
                         <div class="input-group" id="quality-group">
-                            <label for="quality">畫質</label>
+                            <label for="quality">Quality</label>
                             <div class="range-min">10</div>
                             <input type="range" id="quality" min="10" max="63" value="10" class="default-action">
                             <div class="range-max">63</div>
                         </div>
                         <div class="input-group" id="brightness-group">
-                            <label for="brightness">亮度</label>
+                            <label for="brightness">Brightness</label>
                             <div class="range-min">-2</div>
                             <input type="range" id="brightness" min="-2" max="2" value="0" class="default-action">
                             <div class="range-max">2</div>
                         </div>
                         <div class="input-group" id="contrast-group">
-                            <label for="contrast">對比</label>
+                            <label for="contrast">Contrast</label>
                             <div class="range-min">-2</div>
                             <input type="range" id="contrast" min="-2" max="2" value="0" class="default-action">
                             <div class="range-max">2</div>
                         </div>
                         <div class="input-group" id="hmirror-group">
-                            <label for="hmirror">鏡像</label>
+                            <label for="hmirror">H-Mirror</label>
                             <div class="switch">
                                 <input id="hmirror" type="checkbox" class="default-action">
                                 <label class="slider" for="hmirror"></label>
@@ -892,7 +892,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         </section>
         <div style="display:none">
         <form id="myForm" action="https:\/\/script.google.com/macros/s/AKfycbyp1xvWg-UCSrLsL8zt-ba_0n96uNTpAFyRry9ifCnRbtK-vgg/exec" method="post" target="sendcapturedimage">
-        <input type="text" id="myFilename" name="myFilename" value="警示區" style="display:none">
+        <input type="text" id="myFilename" name="myFilename" value="Caution Area" style="display:none">
         <input type="text" id="myToken" name="myToken" value="" style="display:none">
         <textarea id="myFile" name="myFile" rows="10" cols="50" style="display:none"></textarea><br>
         </form>
@@ -1192,7 +1192,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                         alarm.play();
                       }
                       if (chkLine.checked)
-                        ifr.src = 'http://linenotify.com/notify.php?token='+token.value+'&message=警示區內有人員';                        
+                        ifr.src = 'http://linenotify.com/notify.php?token='+token.value+'&message=Alert';                        
                       if (chkBuzzer.checked)
                         $.ajax({url: document.location.origin+'/control?buzzer='+position.innerHTML, async: false}); 
                     } 
