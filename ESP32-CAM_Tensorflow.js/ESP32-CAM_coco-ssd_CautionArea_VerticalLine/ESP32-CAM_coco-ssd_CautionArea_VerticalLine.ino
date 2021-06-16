@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Caution area using vertical line (tfjs coco-ssd)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-6 12:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-16 22:00
 https://www.facebook.com/francefu
 
 物件類別
@@ -719,23 +719,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   <td colspan="3">
                     <table>
                       <tr> 
-                        <td>
-                          分數下限
-                          <select id="score">
-                          <option value="1.0">1</option>
-                          <option value="0.9">0.9</option>
-                          <option value="0.8">0.8</option>
-                          <option value="0.7">0.7</option>
-                          <option value="0.6">0.6</option>
-                          <option value="0.5" selected="selected">0.5</option>
-                          <option value="0.4">0.4</option>
-                          <option value="0.3">0.3</option>
-                          <option value="0.2">0.2</option>
-                          <option value="0.1">0.1</option>
-                          <option value="0">0</option>
+                        <td colspan="2">
+                          物件定位
+                          <select id="mark">
+                          <option value="center">中</option>                
+                          <option value="upper">上</option>
+                          <option value="lower" selected="selected">下</option>
+                          <option value="left">左</option>
+                          <option value="right">右</option>
                           </select>
-                        </td>
-                        <td>
                             物件追蹤
                             <select id="object" onchange="count.innerHTML='';">
                               <option value="person" selected="selected">person</option>
@@ -819,15 +811,33 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                               <option value="hair drier">hair drier</option>
                               <option value="toothbrush">toothbrush</option>
                             </select>
-                            <span id="count" style="color:red"><span>
-                          </td>
-                      </tr>                    
+                            <span id="count" style="color:red">0</span>
+            </td>             
+                      </tr>
+            <tr> 
+                        <td colspan="2">
+                          分數下限
+                          <select id="score">
+                          <option value="1.0">1</option>
+                          <option value="0.9">0.9</option>
+                          <option value="0.8">0.8</option>
+                          <option value="0.7">0.7</option>
+                          <option value="0.6">0.6</option>
+                          <option value="0.5" selected="selected">0.5</option>
+                          <option value="0.4">0.4</option>
+                          <option value="0.3">0.3</option>
+                          <option value="0.2">0.2</option>
+                          <option value="0.1">0.1</option>
+                          <option value="0">0</option>
+                          </select>
+                        </td>
+                      </tr>                         
                       <tr><td>閃光燈</td><td><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?flash='+this.value);}catch(e){}"></td></tr>
                       <tr><td><input type="checkbox" id="chkAud">警示音效網址</td><td><input type="text" id="aud" size="20" value="https:\/\/fustyles.github.io/webduino/paino_c.mp3"></td></tr> 
                       <tr><td><input type="checkbox" id="chkBuzzer">蜂鳴器(IO2)</td><td></td></tr>
-                      <tr><td><input type="checkbox" id="chkLine">Line通知權杖</td><td><input type="text" id="token" size="20" value=""></td></tr> 
+                      <tr><td colspan="2"><input type="checkbox" id="chkLine">Line通知權杖<input type="text" id="token" size="10" value=""><input type="button" value="傳送影像" onclick="SendCapturedImage();"></td></tr> 
                       <tr><td colspan="2"><span id="message" style="display:none"></span></td><td></td></tr> 
-                    </table> 
+                    </table>
                   </td>
                 </tr>                
                 </table>
@@ -840,39 +850,39 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                     <input type="checkbox" id="nav-toggle-cb">
                     <nav id="menu">
                         <div class="input-group" id="flash-group">
-                            <label for="flash">Flash</label>
+                            <label for="flash">閃光燈</label>
                             <div class="range-min">0</div>
                             <input type="range" id="flash" min="0" max="255" value="0" class="default-action">
                             <div class="range-max">255</div>
                         </div>
                         <div class="input-group" id="framesize-group">
-                            <label for="framesize">Resolution</label>
+                            <label for="framesize">解析度</label>
                             <select id="framesize" class="default-action">
                               <option value="4">QVGA(320x240)</option>
                             </select>
                         </div>
                         <div class="input-group" id="quality-group">
-                            <label for="quality">Quality</label>
+                            <label for="quality">畫質</label>
                             <div class="range-min">10</div>
                             <input type="range" id="quality" min="10" max="63" value="10" class="default-action">
                             <div class="range-max">63</div>
                         </div>
                         <div class="input-group" id="brightness-group">
-                            <label for="brightness">Brightness</label>
+                            <label for="brightness">亮度</label>
                             <div class="range-min">-2</div>
                             <input type="range" id="brightness" min="-2" max="2" value="0" class="default-action">
                             <div class="range-max">2</div>
                         </div>
                         <div class="input-group" id="contrast-group">
-                            <label for="contrast">Contrast</label>
+                            <label for="contrast">對比</label>
                             <div class="range-min">-2</div>
                             <input type="range" id="contrast" min="-2" max="2" value="0" class="default-action">
                             <div class="range-max">2</div>
                         </div>
                         <div class="input-group" id="hmirror-group">
-                            <label for="hmirror">H-Mirror</label>
+                            <label for="hmirror">鏡像</label>
                             <div class="switch">
-                                <input id="hmirror" type="checkbox" class="default-action" checked="checked">
+                                <input id="hmirror" type="checkbox" class="default-action">
                                 <label class="slider" for="hmirror"></label>
                             </div>
                         </div>
@@ -880,6 +890,14 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 </div>
             </div>
         </section>
+        <form id="myForm" action="https:\/\/script.google.com/macros/s/AKfycbyp1xvWg-UCSrLsL8zt-ba_0n96uNTpAFyRry9ifCnRbtK-vgg/exec" method="post" target="sendcapturedimage">
+        <input type="text" id="myFilename" name="myFilename" value="警示區" style="display:none">
+        <input type="text" id="myToken" name="myToken" value="" style="display:none">
+        <textarea id="myFile" name="myFile" rows="10" cols="50" style="display:none"></textarea><br>
+        </form>
+        <iframe id="sendcapturedimage" name="sendcapturedimage" style="display:none"></iframe>
+        </div>
+                
         <iframe id="ifr" style="display:none;position:absolute"></iframe>
         <div id="position" style="display:none;color:blue;font-size:40px"></div>
         <div id="result" style="color:red">Please wait for loading model.</div>        
@@ -1010,6 +1028,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           var example = document.getElementById('example');
           var result = document.getElementById('result');
           var count = document.getElementById('count');
+          var score = document.getElementById('score');
           var getStill = document.getElementById('get-still');
           var hmirror = document.getElementById('hmirror');
           var ifr = document.getElementById('ifr');
@@ -1024,7 +1043,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           var chkLine = document.getElementById('chkLine');
           var chkBuzzer = document.getElementById('chkBuzzer');
           var alarm = new Audio(aud.value);
-          var position = document.getElementById('position'); 
+          var position = document.getElementById('position');
+          var mark = document.getElementById('mark'); 
       
           var Model;       
 
@@ -1079,13 +1099,35 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   const y = Predictions[i].bbox[1];
                   const width = Predictions[i].bbox[2];
                   const height = Predictions[i].bbox[3];
+                  var mark_x = 0;
+                  var mark_y = 0;
+                  if (mark.value=="upper") {
+                    mark_x = x + width/2;
+                    mark_y = y;
+                  } 
+                  else if (mark.value=="lower") {
+                    mark_x = x + width/2;
+                    mark_y = y + height;
+                  }
+                  else if (mark.value=="left") {
+                    mark_x = x;
+                    mark_y = y + height/2;
+                  }
+                  else if (mark.value=="right") {
+                    mark_x = x + width;
+                    mark_y = y + height/2;
+                  }
+                  else if (mark.value=="center") {
+                    mark_x = x + width/2;
+                    mark_y = y + height/2;
+                  }
                   
                   result.innerHTML+= "[ "+i+" ] "+Predictions[i].class+", "+Math.round(Predictions[i].score*100)+"%, "+Math.round(x)+", "+Math.round(y)+", "+Math.round(width)+", "+Math.round(height)+"<br>";
 
                   if (Predictions[i].class==object.value&&Predictions[i].score>=score.value) {   
                     context.fillStyle="#00FFFF";        
                     context.beginPath();
-                    context.arc(x+width/2,y+height,5,0,Math.PI*2,true);
+                    context.arc(mark_x,mark_y,5,0,Math.PI*2,true);
                     context.fill();
                     context.closePath();
                     
@@ -1095,16 +1137,16 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                     var rb = Number(rightbottom.value);
                     
                     var p1,p2;
-                    var tx1 =  (lt - lb) / (0 - videoHeight) * ((y+height) - videoHeight) + lb;
-                    if (tx1>(x+width/2)) {
+                    var tx1 =  (lt - lb) / (0 - videoHeight) * (mark_y - videoHeight) + lb;
+                    if (tx1>mark_x) {
                       p1 = 1;
                     }
                     else {
                       p1 = 0;
                     }
                     
-                    var tx2 =  (rt - rb) / (0 - videoHeight) * ((y+height) - videoHeight) + rb;
-                    if (tx2>(x+width/2)) {
+                    var tx2 =  (rt - rb) / (0 - videoHeight) * (mark_y - videoHeight) + rb;
+                    if (tx2>mark_x) {
                       p2 = 1;
                     }
                     else {
@@ -1124,7 +1166,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                         alarm.play();
                       }
                       if (chkLine.checked)
-                        ifr.src = 'http://linenotify.com/notify.php?token='+token.value+'&message=Alert!';                        
+                        ifr.src = 'http://linenotify.com/notify.php?token='+token.value+'&message=警示區內有人員';                        
                       if (chkBuzzer.checked)
                         $.ajax({url: document.location.origin+'/control?buzzer='+position.innerHTML, async: false}); 
                     }
@@ -1166,7 +1208,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 result.innerHTML = 'fail';
               }
             });
-          }      
+          }   
+
+          function SendCapturedImage() {
+            //var date = new Date();
+            //myFilename.value = date.getFullYear()+"_"+(date.getMonth()+1)+"_"+date.getDate()+"_"+date.getHours()+"_"+date.getMinutes()+"_"+date.getSeconds()+".png";
+            myFile.value = canvas.toDataURL();
+            myToken.value = token.value;
+            myForm.submit();
+          }              
         </script>
     </body>
 </html>        
