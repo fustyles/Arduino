@@ -6,7 +6,7 @@
   https://github.com/jameszah/ESP32-CAM-Video-Recorder-junior
 
   Try it (Page)
-  https://fustyles.github.io/webduino/CautionArea/ESP32-CAM-Video-Recorder-junior-Page/ESP32-CAM-Video-Recorder-junior-Page.html
+  https://fustyles.github.io/webduino/CautionArea/ESP32-CAM-Video-Recorder-junior-Page.html
 
   Url Command
   http://192.168.xxx.xxx                               //Main Page
