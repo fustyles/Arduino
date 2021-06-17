@@ -1,9 +1,12 @@
 /*
-  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-6-2 23:00
+  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-6-19 00:00
   https://www.facebook.com/francefu
   
   Refer to the code. (ESP32-arduino core version 1.06)
   https://github.com/jameszah/ESP32-CAM-Video-Recorder-junior
+
+  Try it (Page)
+  https://github.com/fustyles/Arduino/blob/master/ESP32-CAM-Video-Recorder-junior-Page/ESP32-CAM-Video-Recorder-junior-Page.html
 
   Url Command
   http://192.168.xxx.xxx                               //Main Page
@@ -89,17 +92,19 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // user edits here:
 
+const char* ssid = "*****";          //Wi-Fi ssid
+const char* password = "*****";     //Wi-Fi password
 
+const char* apssid = "Recorder";
+const char* appassword = "12345678";   //AP password require at least 8 characters.
 
-const char* ssid = "*****";   //Wi-Fi ssid
-const char* password = "*****";   //Wi-Fi password
+String devstr =  "Taiwan_";            //檔名
+boolean recordOnce = false;            //false: 分段連續錄影  true：錄完一段後即停止
+boolean resetfilegroup = false;        //重設檔名群組流水號狀態值
 
-const char* apssid = "ESP32-CAM";
-const char* appassword = "12345678";         //AP password require at least 8 characters.
-
-String devstr =  "Taiwan";  //file name
-boolean recordOnce = true;  //false: 分段連續錄影  true：錄完一段後即停止
-boolean resetfilegroup = false;  //重設檔名群組流水號狀態值
+int avi_length = 180;                  // 設定錄影時間長度(秒) how long a movie in seconds
+int framesize = FRAMESIZE_CIF;        // 設定影像解析度 UXGA(1600x1200)|SXGA(1280x1024)|XGA(1024x768)|SVGA(800x600)|VGA(640x480)|CIF(400x296)|QVGA(320x240)|HQVGA(240x176)|QQVGA(160x120)  
+int quality = 10;                      // 設定影像品質，值越小品質越高 10 ~ 63 
 
 String Feedback="",recordMessage="";   //回傳客戶端訊息
 String Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";  //指令參數值
@@ -109,16 +114,13 @@ static const char vernum[] = "v50lpmod";
 char devname[30];
 #define Lots_of_Stats 1
 
-int avi_length = 60;            // 設定錄影時間長度(秒) how long a movie in seconds
-int framesize = FRAMESIZE_VGA;  // 設定影像解析度
-int quality = 10;               // 設定影像品質
-int framesizeconfig = FRAMESIZE_UXGA;
-int qualityconfig = 5;
-int buffersconfig = 3;
-int frame_interval = 0;          // record at full speed
-int speed_up_factor = 1;          // play at realtime
-int stream_delay = 500;           // minimum of 500 ms delay between frames
-int MagicNumber = 12;                // change this number to reset the eprom in your esp32 for file numbers
+int framesizeconfig = FRAMESIZE_UXGA;  // default framesize
+int qualityconfig = 5;                 // default quality
+int buffersconfig = 3;                 // default buffers
+int frame_interval = 0;                // record at full speed
+int speed_up_factor = 1;               // play at realtime
+int stream_delay = 500;                // minimum of 500 ms delay between frames
+int MagicNumber = 12;                  // change this number to reset the eprom in your esp32 for file numbers
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1504,7 +1506,21 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       sensor_t * s = esp_camera_sensor_get();
       int res = 0;
         
-      if(!strcmp(variable, "recordonce")) {
+      if(!strcmp(variable, "framesize")) {
+        if(s->pixformat == PIXFORMAT_JPEG) 
+          res = s->set_framesize(s, (framesize_t)val);
+      }
+      else if(!strcmp(variable, "quality")) res = s->set_quality(s, val);
+      else if(!strcmp(variable, "contrast")) res = s->set_contrast(s, val);
+      else if(!strcmp(variable, "brightness")) res = s->set_brightness(s, val);
+      else if(!strcmp(variable, "hmirror")) res = s->set_hmirror(s, val);
+      else if(!strcmp(variable, "vflip")) res = s->set_vflip(s, val);
+      else if(!strcmp(variable, "flash")) {
+        ledcAttachPin(4, 4);  
+        ledcSetup(4, 5000, 8);        
+        ledcWrite(4,val);
+      }
+      else if(!strcmp(variable, "recordonce")) {
           recordOnce = val;        
           if (val==1) {
             Serial.println("Record once");
@@ -1514,7 +1530,12 @@ static esp_err_t cmd_handler(httpd_req_t *req){
             Serial.println("Record continuously");
             Feedback="Record continuously - done";
           }
-      }         
+      }    
+      else if(!strcmp(variable, "avilength")) {
+        avi_length = val;
+        Serial.println("avi_length = " + String(val));
+        Feedback="avi_length = " + String(val);        
+      }
       else {
           res = -1;
       }
