@@ -1,86 +1,54 @@
 /*
-  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-6-19 12:00
+  Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-6-21 20:30
   https://www.facebook.com/francefu
   
   Refer to the code. (ESP32-arduino core version 1.06)
-  https://github.com/jameszah/ESP32-CAM-Video-Recorder-junior
+  https://github.com/jameszah/ESP32-CAM-Video-Recorder-junior/blob/master/ESP32-CAM-Video-Recorder-junior-50x-lpmod.ino
 
   Try it (Page)
   https://fustyles.github.io/webduino/CautionArea/ESP32-CAM-Video-Recorder-junior-Page.html
 
-  Url Command
-  http://192.168.xxx.xxx                               //Main Page
-  http://192.168.xxx.xxx/capture                       //Get Still
-  http://192.168.xxx.xxx:81/stream                     //Start Stream
-  http://192.168.xxx.xxx/list                          //List files from SD card  
-  http://192.168.xxx.xxx/control?restart               //Restart
-  http://192.168.xxx.xxx/control?record                //Start Record
-  http://192.168.xxx.xxx/control?stop                  //Stop Record
-  http://192.168.xxx.xxx/control?var=recordonce&val=1  //Set Record once
-  http://192.168.xxx.xxx/control?var=recordonce&val=0  //Set Record continuously
-  http://192.168.xxx.xxx/control?resetfilegroup        //Reset file group
-  http://192.168.xxx.xxx/control?message               //Get record state  
+  http://192.168.xxx.xxx             //網頁首頁管理介面
+  http://192.168.xxx.xxx:81/stream   //取得串流影像       <img src="http://192.168.xxx.xxx:81/stream">
+  http://192.168.xxx.xxx/capture     //取得影像          <img src="http://192.168.xxx.xxx/capture">
+  http://192.168.xxx.xxx/status      //取得視訊參數值
+  http://192.168.xxx.xxx/list        //取得TF卡檔案清單
+
+  預設AP端IP： 192.168.4.1
+    
+  自訂指令格式 :  
+  http://APIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+  http://STAIP/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+  
+  http://192.168.xxx.xxx/control?restart                    //Restart
+  http://192.168.xxx.xxx/control?record                     //Start Record
+  http://192.168.xxx.xxx/control?stop                       //Stop Record
+  http://192.168.xxx.xxx/control?var=recordonce&val=1       //Set Record once
+  http://192.168.xxx.xxx/control?var=recordonce&val=0       //Set Record continuously
+  http://192.168.xxx.xxx/control?resetfilegroup             //Reset file group
+  http://192.168.xxx.xxx/control?message                    //Get record state   
+
+  官方指令格式 
+  http://192.168.xxx.xxx/control?var=***&val=***
+  http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
+  http://192.168.xxx.xxx/control?var=quality&val=value      // value = 10 ~ 63
+  http://192.168.xxx.xxx/control?var=brightness&val=value   // value = -2 ~ 2
+  http://192.168.xxx.xxx/control?var=contrast&val=value     // value = -2 ~ 2
+  http://192.168.xxx.xxx/control?var=hmirror&val=value      // value = 0 or 1 
+  http://192.168.xxx.xxx/control?var=vflip&val=value        // value = 0 or 1 
+  http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255 
+
+  查詢Client端IP：
+  查詢IP：http://192.168.4.1/?ip  
 */
 
 /*
-
-  ESP32-CAM-Video-Recorder-junior
-
   This program records an mjpeg avi video to the sd card of an ESP32-CAM.
-
-
-  It is the junior version of   https://github.com/jameszah/ESP32-CAM-Video-Recorder
-  which has 100 other features of wifi, streaming video, http control, telegram updates, pir control,
-  touch control, ftp downloads, .... and other things that make it very big and complex.
-
-  Just set a few parameters, compile and download, and it will record on power-on, until sd is full, or power-off.
-  Then pull out the sd and move it to your computer, and you will see all but the last file avi which died during the unplug.
-
-  The files will have the name such as:
-
-    desklens10.003.avi
-
-    "desklens" is your devname
-    10 - is a number stored in eprom that will increase everytime your device boots
-    3 - is the 3rd file created during the current boot
-
-  Small red led on the back blinks with every frame.
-
-
   by James Zahary Sep 12, 2020
      jamzah.plc@gmail.com
-
    - v50 apr 13, 2021 - tidy
    - v50lpmod apr 28, 2021 - shut off low power modem
-   
   https://github.com/jameszah/ESP32-CAM-Video-Recorder-junior
-
-    jameszah/ESP32-CAM-Video-Recorder-junior is licensed under the
-    GNU General Public License v3.0
-
-  The is Arduino code, with standard setup for ESP32-CAM
-    - Board ESP32 Wrover Module
-    - Partition Scheme Huge APP (3MB No OTA)
-    - or with AI Thinker ESP32-CAM
-
-  Compiled with Arduino 1.8.13, and esp32-arduino core version 1.06, which is the current version as of Apr 13, 2021.
-
-  ... and then it will compile the Arduuino esp32-core with ov5640 support, and use the following other libraries.
-
-  Using library FS at version 1.0 in folder: C:\ArduinoPortable\arduino-1.8.13\portable\packages\esp32\hardware\esp32\1.0.6\libraries\FS
-  Using library SD_MMC at version 1.0 in folder: C:\ArduinoPortable\arduino-1.8.13\portable\packages\esp32\hardware\esp32\1.0.6\libraries\SD_MMC
-  Using library EEPROM at version 1.0.3 in folder: C:\ArduinoPortable\arduino-1.8.13\portable\packages\esp32\hardware\esp32\1.0.6\libraries\EEPROM
-  Using library WiFi at version 1.0 in folder: C:\ArduinoPortable\arduino-1.8.13\portable\packages\esp32\hardware\esp32\1.0.6\libraries\WiFi
-  Using library WiFiManager at version 2.0.3-alpha in folder: C:\ArduinoPortable\arduino-1.8.13\portable\sketchbook\libraries\WiFiManager
-  Using library WebServer at version 1.0 in folder: C:\ArduinoPortable\arduino-1.8.13\portable\packages\esp32\hardware\esp32\1.0.6\libraries\WebServer
-  Using library DNSServer at version 1.1.0 in folder: C:\ArduinoPortable\arduino-1.8.13\portable\packages\esp32\hardware\esp32\1.0.6\libraries\DNSServer
-  Using library ESPmDNS at version 1.0 in folder: C:\ArduinoPortable\arduino-1.8.13\portable\packages\esp32\hardware\esp32\1.0.6\libraries\ESPmDNS
-  Using library HTTPClient at version 1.2 in folder: C:\ArduinoPortable\arduino-1.8.13\portable\packages\esp32\hardware\esp32\1.0.6\libraries\HTTPClient
-  Using library WiFiClientSecure at version 1.0 in folder: C:\ArduinoPortable\arduino-1.8.13\portable\packages\esp32\hardware\esp32\1.0.6\libraries\WiFiClientSecure
-
-  Sketch uses 1107274 bytes (35%) of program storage space. Maximum is 3145728 bytes.
-  Global variables use 59860 bytes (18%) of dynamic memory, leaving 267820 bytes for local variables. Maximum is 327680 bytes.
-
 */
 
 //#define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
@@ -92,15 +60,14 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // user edits here:
 
-const char* ssid = "*****";          //Wi-Fi ssid
-const char* password = "*****";     //Wi-Fi password
-
 const char* apssid = "Recorder";
 const char* appassword = "12345678";   //AP password require at least 8 characters.
 
-String devstr =  "Taiwan_";            //檔名
-boolean recordOnce = true;            //false: 分段連續錄影  true：錄完一段後即停止
-boolean resetfilegroup = false;        //重設檔名群組流水號狀態值
+String LineToken = "";  //傳送區域網路IP至Line通知(用不到可不填)
+
+String devstr =  "classroom1_";            //檔名
+boolean recordOnce = false;            //false: 分段連續錄影  true：錄完一段後即停止
+boolean resetfilegroup = false;        //重設檔名群組流水號狀態值為1
 
 int avi_length = 180;                  // 設定錄影時間長度(秒) how long a movie in seconds
 int framesize = FRAMESIZE_CIF;        // 設定影像解析度 UXGA(1600x1200)|SXGA(1280x1024)|XGA(1024x768)|SVGA(800x600)|VGA(640x480)|CIF(400x296)|QVGA(320x240)|HQVGA(240x176)|QQVGA(160x120)  
@@ -109,6 +76,13 @@ int quality = 10;                      // 設定影像品質，值越小品質�
 String Feedback="",recordMessage="";   //回傳客戶端訊息
 String Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";  //指令參數值
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;  //指令拆解狀態值
+
+//https://github.com/espressif/arduino-esp32/blob/master/libraries/Preferences/src/Preferences.h
+#include <Preferences.h>
+Preferences preferences;
+
+String wifi_ssid ="";
+String wifi_password ="";
 
 static const char vernum[] = "v50lpmod";
 char devname[30];
@@ -1343,10 +1317,11 @@ static esp_err_t index_handler(httpd_req_t *req) {
   <title>ESP32-CAM Video Recorder Junior</title>
   </head>
   <body>
+  <button onclick="hideIframe();fetch(host+'/control?restart');">Restart</button>
   <button onclick="hideIframe();stream.src=host+'/capture?'+Math.floor(Math.random()*1000000);">Get Still</button>
   <button onclick="hideIframe();stream.src=host+':81/stream';">Start Stream</button>
   <button onclick="hideIframe();stream.src='';">Stop Stream</button><br>
-  <button onclick="hideIframe();fetch(host+'/control?restart');">Restart</button>
+  <button onclick="location.href=host+'/wifi';">Set Wi-Fi</button>
   <button onclick="hideIframe();getMessage(host+'/control?record');getRecordState();">Start Record</button>
   <button onclick="hideIframe();clearTimeout(recordTimer);getMessage(host+'/control?stop');">Stop Record</button><br>
   <select id="command" onclick="execute();"><option value=""></option><option value="/list">List files</option><option value="/control?var=recordonce&val=1">Record once</option><option value="/control?var=recordonce&val=0">Record continuously</option><option value="/control?resetfilegroup">Reset file group</option></select>
@@ -1359,7 +1334,30 @@ static esp_err_t index_handler(httpd_req_t *req) {
   httpd_resp_set_type(req, "text/html");
   httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
   httpd_resp_send(req, (const char *)index_html, strlen(index_html));
+  return ESP_OK;
+}
 
+static esp_err_t index_wifi_handler(httpd_req_t *req) {
+  
+  const char index_wifi_html[] PROGMEM = R"rawliteral(
+  <!doctype html>
+  <html>
+      <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width,initial-scale=1">
+          <title>ESP32-CAM Caution Area</title>  
+      </head>
+      <body>
+      WIFI SSID: <input type="text" id="ssid"><br>
+      WIFI  PWD: <input type="text" id="pwd"><br>
+      <input type="button" value="設定" onclick="location.href='/control?resetwifi='+document.getElementById('ssid').value+';'+document.getElementById('pwd').value;">
+      </body>
+  </html>        
+  )rawliteral";
+
+  httpd_resp_set_type(req, "text/html");
+  httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+  httpd_resp_send(req, (const char *)index_wifi_html, strlen(index_wifi_html));
   return ESP_OK;
 }
 
@@ -1467,7 +1465,33 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       //Serial.println(""); 
 
       //自訂指令區塊  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
-      if (cmd=="record") {
+      if (cmd=="resetwifi") {
+        Preferences_write("wifi", "ssid", P1.c_str());
+        Preferences_write("wifi", "password", P2.c_str());
+
+        for (int i=0;i<2;i++) {
+          WiFi.begin(P1.c_str(), P2.c_str());
+          Serial.print("Connecting to ");
+          Serial.println(P1);
+          long int StartTime=millis();
+          while (WiFi.status() != WL_CONNECTED) {
+              delay(500);
+              if ((StartTime+5000) < millis()) break;
+          } 
+          Serial.println("");
+          Serial.println("STAIP: "+WiFi.localIP().toString());
+          Feedback="STAIP: "+WiFi.localIP().toString();
+  
+          if (WiFi.status() == WL_CONNECTED) {
+            Feedback="<script>setTimeout(function(){ location.href='http:\/\/"+WiFi.localIP().toString()+"'; }, 3000);</script>";
+            WiFi.softAP((WiFi.localIP().toString()+"_"+P1).c_str(), P2.c_str());
+
+            LineNotify_http_get(LineToken, WiFi.localIP().toString());
+            break;
+          }
+        }
+      }                 
+      else if (cmd=="record") {
           Serial.println("");
           Serial.println("Start recording");
           frame_cnt = 0;
@@ -1742,6 +1766,12 @@ void startCameraServer() {
     .handler   = list_handler,
     .user_ctx  = NULL
   };
+  httpd_uri_t wifi_uri = {
+    .uri       = "/wifi",
+    .method    = HTTP_GET,
+    .handler   = index_wifi_handler,
+    .user_ctx  = NULL
+  };  
   
   ra_filter_init(&ra_filter, 20);
   Serial.println("");
@@ -1752,7 +1782,8 @@ void startCameraServer() {
     httpd_register_uri_handler(camera_httpd, &capture_uri);
     httpd_register_uri_handler(camera_httpd, &stream_uri);
     httpd_register_uri_handler(camera_httpd, &cmd_uri);   
-    httpd_register_uri_handler(camera_httpd, &list_uri);       
+    httpd_register_uri_handler(camera_httpd, &list_uri);  
+    httpd_register_uri_handler(camera_httpd, &wifi_uri);         
   }
   
   config.server_port += 1;  //Stream Port
@@ -1785,51 +1816,52 @@ void setup() {
 
   WiFi.mode(WIFI_AP_STA);
 
-  //指定Client端靜態IP
-  //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
+  Serial.println();
+  //清除Wi-Fi設定
+  //Preferences_write("wifi", "ssid", "");
+  //Preferences_write("wifi", "password", "");
+        
+  wifi_ssid = Preferences_read("wifi", "ssid");
+  wifi_password = Preferences_read("wifi", "password");
 
-  WiFi.begin(ssid, password);    //執行網路連線
-
-  delay(1000);
-  Serial.println("");
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-  
-  long int StartTime=millis();
-  while (WiFi.status() != WL_CONNECTED) 
-  {
-      delay(500);
-      if ((StartTime+5000) < millis()) break;    //等待3秒連線
-  }
-
-  if (WiFi.status() != WL_CONNECTED) {
-    WiFi.begin(ssid, password);    //執行網路連線
+  if (wifi_ssid!="") {
+    for (int i=0;i<2;i++) {
+      WiFi.begin(wifi_ssid.c_str(), wifi_password.c_str());    //執行網路連線
     
-    StartTime=millis();
-    while (WiFi.status() != WL_CONNECTED) 
-    {
-        delay(500);
-        if ((StartTime+5000) < millis()) break;    //等待3秒連線
+      delay(1000);
+      Serial.println("");
+      Serial.print("Connecting to ");
+      Serial.println(wifi_ssid);
+      
+      long int StartTime=millis();
+      while (WiFi.status() != WL_CONNECTED) {
+          delay(500);
+          if ((StartTime+5000) < millis()) break;    //等待10秒連線
+      } 
+    
+      if (WiFi.status() == WL_CONNECTED) {    //若連線成功
+        WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP         
+        Serial.println("");
+        Serial.println("STAIP address: ");
+        Serial.println(WiFi.localIP());
+        Serial.println("");
+  
+        if (LineToken != "") 
+          LineNotify_http_get(LineToken, WiFi.localIP().toString());
+        break;
+      }
     } 
-  }   
-
-  if (WiFi.status() == WL_CONNECTED) {    //若連線成功
-    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP         
-    Serial.println("");
-    Serial.println("STAIP address: ");
-    Serial.println(WiFi.localIP());   
   }
-  else {
-    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);   
-  }     
 
-  //指定AP端IP
-  //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
-  Serial.println("");
+  if (WiFi.status() != WL_CONNECTED) {    //若連線失敗
+    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);         
+  }  
+  
+  Serial.println();
   Serial.println("APIP address: ");
-  Serial.println(WiFi.softAPIP());    
+  Serial.println(WiFi.softAPIP()); 
   Serial.println("");
-
+  
   Serial.println("                                    ");
   Serial.println("-------------------------------------");
   Serial.printf("ESP32-CAM-Video-Recorder-junior %s\n", vernum);
@@ -1920,7 +1952,13 @@ void setup() {
   boot_time = millis();
 
   const char *strdate = ctime(&now);
-  logfile.println(strdate);   
+  logfile.println(strdate); 
+
+  startCameraServer(); 
+
+  //設定閃光燈為低電位
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);    
 }
 
 void the_sd_loop (void* pvParameter) {
@@ -2132,4 +2170,40 @@ void getCommand(char c)
     if (c=='=') equalstate=1;
     if ((strState>=9)&&(c==';')) semicolonstate=1;
   }
+}
+
+void Preferences_write(const char * name, const char* key, const char* value) {
+  preferences.clear();
+  preferences.begin(name, false);
+  Serial.printf("Put %s = %s\n", key, value);
+  preferences.putString(key, value);
+  preferences.end();
+}
+
+String Preferences_read(const char * name, const char* key) {
+  preferences.begin(name, false);
+  String myData = preferences.getString(key, "");
+  Serial.printf("Get %s = %s\n", key, myData);
+  preferences.end();
+  return myData;
+}
+
+String LineNotify_http_get(String token, String message) {
+  message.replace("%","%25");  
+  message.replace(" ","%20");
+  message.replace("&","%20");
+  message.replace("#","%20");
+  //message.replace("\'","%27");
+  message.replace("\"","%22");
+  message.replace("\n","%0D%0A");
+  
+  http.begin("http://linenotify.com/notify.php?token="+token+"&message="+message);
+  int httpCode = http.GET();
+  /*
+  if(httpCode > 0) {
+      if(httpCode == 200) 
+        Serial.println(http.getString());
+  } else 
+      Serial.println("Connection Error!");
+  */
 }
