@@ -13,6 +13,7 @@
   http://192.168.xxx.xxx/capture     //取得影像          <img src="http://192.168.xxx.xxx/capture">
   http://192.168.xxx.xxx/status      //取得視訊參數值
   http://192.168.xxx.xxx/list        //取得TF卡檔案清單
+  http://192.168.xxx.xxx/wifi        //設定區域網路Wi-Fi帳號密碼  
 
   預設AP端IP： 192.168.4.1
     
