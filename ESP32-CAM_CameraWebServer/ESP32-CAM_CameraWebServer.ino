@@ -658,7 +658,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         return ESP_FAIL;
     }
 
-    int val = atoi(value);  //將val值轉換為整數，原為字串格式
+    int val = atoi(value);  //將val值轉換為整數，原為char格式
     sensor_t * s = esp_camera_sensor_get();
     int res = 0;
 
