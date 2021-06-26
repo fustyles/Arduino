@@ -217,7 +217,6 @@ void loop() {
   delay(10000);
 }
 
-//配置記憶體
 static ra_filter_t * ra_filter_init(ra_filter_t * filter, size_t sample_size){
     memset(filter, 0, sizeof(ra_filter_t));
 
