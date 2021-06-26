@@ -30,7 +30,7 @@ http://192.168.xxx.xxx/control?var=awb_gain&val=value       //自動白平衡增
 http://192.168.xxx.xxx/control?var=agc_gain&val=value       //自動增益控制 value = 0 ~ 30
 http://192.168.xxx.xxx/control?var=aec_value&val=value      //曝光值 value = 0 ~ 1200
 http://192.168.xxx.xxx/control?var=aec2&val=value           //自動曝光控制 value = 0 or 1 
-http://192.168.xxx.xxx/control?var=dcw&val=value            //縮小En value = 0 or 1 
+http://192.168.xxx.xxx/control?var=dcw&val=value            //縮小EN value = 0 or 1 
 http://192.168.xxx.xxx/control?var=bpc&val=value            //黑色像素校正 value = 0 or 1 
 http://192.168.xxx.xxx/control?var=wpc&val=value            //白色像素校正 value = 0 or 1 
 http://192.168.xxx.xxx/control?var=raw_gma&val=value        //原始伽馬 value = 0 or 1 
