@@ -256,6 +256,7 @@ static void rgb_print(dl_matrix3du_t *image_matrix, uint32_t color, const char *
     fb_gfx_print(&fb, (fb.width - (strlen(str) * 14)) / 2, 10, color, str);
 }
 
+//影像輸出人臉辨識文字定位處理
 static int rgb_printf(dl_matrix3du_t *image_matrix, uint32_t color, const char *format, ...){
     char loc_buf[64];
     char * temp = loc_buf;
