@@ -44,12 +44,6 @@ http://192.168.xxx.xxx/control?var=ae_level&val=value       //自動曝光層級
 https://heyrick.eu/blog/index.php?diary=20210418
 */
 
-//
-// WARNING!!! PSRAM IC required for UXGA resolution and high JPEG quality
-//            Ensure ESP32 Wrover Module or other board with PSRAM is selected
-//            Partial images will be transmitted if image exceeds buffer size
-//
-
 const char* ssid = "teacher";        //WIFI連線帳號
 const char* password = "87654321";   //WIFI連線密碼 (至少8碼)
 
@@ -167,6 +161,11 @@ void setup() {
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
   
+  //
+  // WARNING!!! PSRAM IC required for UXGA resolution and high JPEG quality
+  //            Ensure ESP32 Wrover Module or other board with PSRAM is selected
+  //            Partial images will be transmitted if image exceeds buffer size
+  //        
   // if PSRAM IC present, init with UXGA resolution and higher JPEG quality
   //                      for larger pre-allocated frame buffer.
   if(psramFound()){  //是否有PSRAM(Psuedo SRAM)記憶體IC
