@@ -142,7 +142,7 @@ void setup() {
   Serial.setDebugOutput(true);  //開啟診斷輸出
   Serial.println();
 
-  //視訊組態設定
+  //視訊組態設定  https://github.com/espressif/esp32-camera/blob/master/driver/include/esp_camera.h
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
