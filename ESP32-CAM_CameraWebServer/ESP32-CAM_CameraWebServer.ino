@@ -700,8 +700,8 @@ static esp_err_t cmd_handler(httpd_req_t *req){
             recognition_enabled = 0;
         }
     }
-    else if(!strcmp(variable, "face_enroll")) is_enrolling = val;//人臉註冊
-    else if(!strcmp(variable, "face_recognize")) {//人臉辨識
+    else if(!strcmp(variable, "face_enroll")) is_enrolling = val;  //人臉註冊
+    else if(!strcmp(variable, "face_recognize")) {  //人臉辨識
         recognition_enabled = val;
         if(recognition_enabled){
             detection_enabled = val;
