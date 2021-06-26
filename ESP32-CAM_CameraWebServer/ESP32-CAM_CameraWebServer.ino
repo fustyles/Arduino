@@ -101,6 +101,7 @@ const char* password = "87654321";   //WIFI連線密碼 (至少8碼)
 #define FACE_COLOR_CYAN   (FACE_COLOR_BLUE | FACE_COLOR_GREEN)
 #define FACE_COLOR_PURPLE (FACE_COLOR_BLUE | FACE_COLOR_RED)
 
+//用於計算平均每幀的生成時間
 typedef struct {
         size_t size; //number of values used for filtering
         size_t index; //current value index
@@ -217,6 +218,7 @@ void loop() {
   delay(10000);
 }
 
+//計算平均每幀的生成時間
 static ra_filter_t * ra_filter_init(ra_filter_t * filter, size_t sample_size){
     memset(filter, 0, sizeof(ra_filter_t));
 
