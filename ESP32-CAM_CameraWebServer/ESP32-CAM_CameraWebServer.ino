@@ -40,6 +40,7 @@ http://192.168.xxx.xxx/control?var=special_effect&val=value //特效 value = 0 ~
 http://192.168.xxx.xxx/control?var=wb_mode&val=value        //白平衡模式 value = 0 ~ 4
 http://192.168.xxx.xxx/control?var=ae_level&val=value       //自動曝光層級 value = -2 ~ 2 
 
+視訊參數說明
 https://heyrick.eu/blog/index.php?diary=20210418
 */
 
