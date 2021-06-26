@@ -1,6 +1,6 @@
 /*
 ESP32-CAM CameraWebServer
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-26 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-27 00:00
 https://www.facebook.com/francefu
 
 Face recognition works well in v1.0.4, v1.0.5, v1.0.6 or above.
@@ -160,12 +160,12 @@ void setup() {
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  
+
   //
   // WARNING!!! PSRAM IC required for UXGA resolution and high JPEG quality
   //            Ensure ESP32 Wrover Module or other board with PSRAM is selected
   //            Partial images will be transmitted if image exceeds buffer size
-  //        
+  //   
   // if PSRAM IC present, init with UXGA resolution and higher JPEG quality
   //                      for larger pre-allocated frame buffer.
   if(psramFound()){  //是否有PSRAM(Psuedo SRAM)記憶體IC
@@ -195,6 +195,11 @@ void setup() {
   }
   // drop down frame size for higher initial frame rate
   s->set_framesize(s, FRAMESIZE_QVGA);    //解析度 UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768), SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120)
+
+  #if defined(CAMERA_MODEL_M5STACK_WIDE) || defined(CAMERA_MODEL_M5STACK_ESP32CAM)
+    s->set_vflip(s, 1);
+    s->set_hmirror(s, 1);
+  #endif
 
   WiFi.begin(ssid, password);    //執行網路連線
 
@@ -663,33 +668,33 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     sensor_t * s = esp_camera_sensor_get();
     int res = 0;
 
-    if(!strcmp(variable, "framesize")) {//解析度
+    if(!strcmp(variable, "framesize")) {  //解析度
         if(s->pixformat == PIXFORMAT_JPEG) res = s->set_framesize(s, (framesize_t)val);
     }
-    else if(!strcmp(variable, "quality")) res = s->set_quality(s, val);//畫質
-    else if(!strcmp(variable, "contrast")) res = s->set_contrast(s, val);//對比
-    else if(!strcmp(variable, "brightness")) res = s->set_brightness(s, val);//亮度
-    else if(!strcmp(variable, "saturation")) res = s->set_saturation(s, val);//飽和度
-    else if(!strcmp(variable, "gainceiling")) res = s->set_gainceiling(s, (gainceiling_t)val);//自動增益上限(開啟時)
-    else if(!strcmp(variable, "colorbar")) res = s->set_colorbar(s, val);//顏色條畫面
-    else if(!strcmp(variable, "awb")) res = s->set_whitebal(s, val);//白平衡
-    else if(!strcmp(variable, "agc")) res = s->set_gain_ctrl(s, val);//自動增益控制
-    else if(!strcmp(variable, "aec")) res = s->set_exposure_ctrl(s, val);//自動曝光感測器
-    else if(!strcmp(variable, "hmirror")) res = s->set_hmirror(s, val);//水平鏡像
-    else if(!strcmp(variable, "vflip")) res = s->set_vflip(s, val);//垂直翻轉
-    else if(!strcmp(variable, "awb_gain")) res = s->set_awb_gain(s, val);//自動白平衡增益
-    else if(!strcmp(variable, "agc_gain")) res = s->set_agc_gain(s, val);//自動增益(關閉時)
-    else if(!strcmp(variable, "aec_value")) res = s->set_aec_value(s, val);//曝光值
-    else if(!strcmp(variable, "aec2")) res = s->set_aec2(s, val);//自動曝光控制
-    else if(!strcmp(variable, "dcw")) res = s->set_dcw(s, val);//使用自訂影像尺寸
-    else if(!strcmp(variable, "bpc")) res = s->set_bpc(s, val);//黑色像素校正
-    else if(!strcmp(variable, "wpc")) res = s->set_wpc(s, val);//白色像素校正
-    else if(!strcmp(variable, "raw_gma")) res = s->set_raw_gma(s, val);//原始伽瑪
-    else if(!strcmp(variable, "lenc")) res = s->set_lenc(s, val);//鏡頭校正
-    else if(!strcmp(variable, "special_effect")) res = s->set_special_effect(s, val);//特效
-    else if(!strcmp(variable, "wb_mode")) res = s->set_wb_mode(s, val);//白平衡模式
-    else if(!strcmp(variable, "ae_level")) res = s->set_ae_level(s, val);//自動曝光層級
-    else if(!strcmp(variable, "face_detect")) {//人臉偵測
+    else if(!strcmp(variable, "quality")) res = s->set_quality(s, val);  //畫質
+    else if(!strcmp(variable, "contrast")) res = s->set_contrast(s, val);  //對比
+    else if(!strcmp(variable, "brightness")) res = s->set_brightness(s, val);  //亮度
+    else if(!strcmp(variable, "saturation")) res = s->set_saturation(s, val);  //飽和度
+    else if(!strcmp(variable, "gainceiling")) res = s->set_gainceiling(s, (gainceiling_t)val);  //自動增益上限(開啟時)
+    else if(!strcmp(variable, "colorbar")) res = s->set_colorbar(s, val);  //顏色條畫面
+    else if(!strcmp(variable, "awb")) res = s->set_whitebal(s, val);  //白平衡
+    else if(!strcmp(variable, "agc")) res = s->set_gain_ctrl(s, val);  //自動增益控制
+    else if(!strcmp(variable, "aec")) res = s->set_exposure_ctrl(s, val);  //自動曝光感測器
+    else if(!strcmp(variable, "hmirror")) res = s->set_hmirror(s, val);  //水平鏡像
+    else if(!strcmp(variable, "vflip")) res = s->set_vflip(s, val);  //垂直翻轉
+    else if(!strcmp(variable, "awb_gain")) res = s->set_awb_gain(s, val);  //自動白平衡增益
+    else if(!strcmp(variable, "agc_gain")) res = s->set_agc_gain(s, val);  //自動增益(關閉時)
+    else if(!strcmp(variable, "aec_value")) res = s->set_aec_value(s, val);  //曝光值
+    else if(!strcmp(variable, "aec2")) res = s->set_aec2(s, val);  //自動曝光控制
+    else if(!strcmp(variable, "dcw")) res = s->set_dcw(s, val);  //使用自訂影像尺寸
+    else if(!strcmp(variable, "bpc")) res = s->set_bpc(s, val);  //黑色像素校正
+    else if(!strcmp(variable, "wpc")) res = s->set_wpc(s, val);  //白色像素校正
+    else if(!strcmp(variable, "raw_gma")) res = s->set_raw_gma(s, val);  //原始伽瑪
+    else if(!strcmp(variable, "lenc")) res = s->set_lenc(s, val);  //鏡頭校正
+    else if(!strcmp(variable, "special_effect")) res = s->set_special_effect(s, val);  //特效
+    else if(!strcmp(variable, "wb_mode")) res = s->set_wb_mode(s, val);  //白平衡模式
+    else if(!strcmp(variable, "ae_level")) res = s->set_ae_level(s, val);  //自動曝光層級
+    else if(!strcmp(variable, "face_detect")) {  //人臉偵測
         detection_enabled = val;
         if(!detection_enabled) {
             recognition_enabled = 0;
