@@ -5,6 +5,7 @@ https://www.facebook.com/francefu
 
 Face recognition works well in v1.0.4, v1.0.5, v1.0.6 or above.
 
+
 AP IP: 192.168.4.1
 http://192.168.xxx.xxx             //網頁首頁管理介面
 http://192.168.xxx.xxx:81/stream   //取得串流影像
@@ -39,7 +40,6 @@ http://192.168.xxx.xxx/control?var=special_effect&val=value //特效 value = 0 ~
 http://192.168.xxx.xxx/control?var=wb_mode&val=value        //白平衡模式 value = 0 ~ 4
 http://192.168.xxx.xxx/control?var=ae_level&val=value       //自動曝光層級 value = -2 ~ 2 
 
-Refer to the introduction
 https://heyrick.eu/blog/index.php?diary=20210418
 */
 
@@ -125,6 +125,8 @@ static int8_t detection_enabled = 0;
 static int8_t recognition_enabled = 0;
 static int8_t is_enrolling = 0;
 static face_id_list id_list = {0};
+
+box_array_t *net_boxes = NULL;
 
 void startCameraServer();
 
@@ -432,7 +434,7 @@ static esp_err_t capture_handler(httpd_req_t *req){
         return ESP_FAIL;
     }
 
-    box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);
+    net_boxes = face_detect(image_matrix, &mtmn_config);
 
     if (net_boxes){
         detected = true;
@@ -528,7 +530,7 @@ static esp_err_t stream_handler(httpd_req_t *req){
                         res = ESP_FAIL;
                     } else {
                         fr_ready = esp_timer_get_time();
-                        box_array_t *net_boxes = NULL;
+                        net_boxes = NULL;
                         if(detection_enabled){
                             net_boxes = face_detect(image_matrix, &mtmn_config);
                         }
