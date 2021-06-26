@@ -3,7 +3,7 @@ ESP32-CAM CameraWebServer
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-26 16:00
 https://www.facebook.com/francefu
 
-Face recognition works well in v1.0.4, v1.0., v1.0.6 or above.
+Face recognition works well in v1.0.4, v1.0.5, v1.0.6 or above.
 */
 
 //
