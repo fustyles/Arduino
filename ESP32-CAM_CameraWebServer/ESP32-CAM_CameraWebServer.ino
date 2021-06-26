@@ -19,7 +19,7 @@ http://192.168.xxx.xxx/control?var=quality&val=value        //畫質 value = 10 
 http://192.168.xxx.xxx/control?var=brightness&val=value     //亮度 value = -2 ~ 2
 http://192.168.xxx.xxx/control?var=contrast&val=value       //對比 value = -2 ~ 2
 http://192.168.xxx.xxx/control?var=saturation&val=value     //飽和度 value = -2 ~ 2 
-http://192.168.xxx.xxx/control?var=gainceiling&val=value    //自動增益控制上限 value = 0 ~ 6
+http://192.168.xxx.xxx/control?var=gainceiling&val=value    //自動增益上限(開啟時) value = 0 ~ 6
 http://192.168.xxx.xxx/control?var=colorbar&val=value       //顏色條畫面 value = 0 or 1
 http://192.168.xxx.xxx/control?var=awb&val=value            //白平衡 value = 0 or 1 
 http://192.168.xxx.xxx/control?var=agc&val=value            //自動增益控制 value = 0 or 1 
@@ -27,10 +27,10 @@ http://192.168.xxx.xxx/control?var=aec&val=value            //自動曝光感測
 http://192.168.xxx.xxx/control?var=hmirror&val=value        //水平鏡像 value = 0 or 1 
 http://192.168.xxx.xxx/control?var=vflip&val=value          //垂直翻轉 value = 0 or 1 
 http://192.168.xxx.xxx/control?var=awb_gain&val=value       //自動白平衡增益 value = 0 or 1 
-http://192.168.xxx.xxx/control?var=agc_gain&val=value       //自動增益控制 value = 0 ~ 30
+http://192.168.xxx.xxx/control?var=agc_gain&val=value       //自動增益(關閉時) value = 0 ~ 30
 http://192.168.xxx.xxx/control?var=aec_value&val=value      //曝光值 value = 0 ~ 1200
 http://192.168.xxx.xxx/control?var=aec2&val=value           //自動曝光控制 value = 0 or 1 
-http://192.168.xxx.xxx/control?var=dcw&val=value            //縮小EN value = 0 or 1 
+http://192.168.xxx.xxx/control?var=dcw&val=value            //縮小En value = 0 or 1 
 http://192.168.xxx.xxx/control?var=bpc&val=value            //黑色像素校正 value = 0 or 1 
 http://192.168.xxx.xxx/control?var=wpc&val=value            //白色像素校正 value = 0 or 1 
 http://192.168.xxx.xxx/control?var=raw_gma&val=value        //原始伽馬 value = 0 or 1 
@@ -38,6 +38,9 @@ http://192.168.xxx.xxx/control?var=lenc&val=value           //鏡頭校正 value
 http://192.168.xxx.xxx/control?var=special_effect&val=value //特效 value = 0 ~ 6
 http://192.168.xxx.xxx/control?var=wb_mode&val=value        //白平衡模式 value = 0 ~ 4
 http://192.168.xxx.xxx/control?var=ae_level&val=value       //自動曝光層級 value = -2 ~ 2 
+
+Refer to the introduction
+https://heyrick.eu/blog/index.php?diary=20210418
 */
 
 //
