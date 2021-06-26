@@ -33,7 +33,7 @@ http://192.168.xxx.xxx/control?var=aec2&val=value           //自動曝光控制
 http://192.168.xxx.xxx/control?var=dcw&val=value            //自訂影像尺寸 value = 0 or 1 
 http://192.168.xxx.xxx/control?var=bpc&val=value            //黑色像素校正 value = 0 or 1 
 http://192.168.xxx.xxx/control?var=wpc&val=value            //白色像素校正 value = 0 or 1 
-http://192.168.xxx.xxx/control?var=raw_gma&val=value        //原始伽馬 value = 0 or 1 
+http://192.168.xxx.xxx/control?var=raw_gma&val=value        //原始伽瑪 value = 0 or 1 
 http://192.168.xxx.xxx/control?var=lenc&val=value           //鏡頭校正 value = 0 or 1 
 http://192.168.xxx.xxx/control?var=special_effect&val=value //特效 value = 0 ~ 6
 http://192.168.xxx.xxx/control?var=wb_mode&val=value        //白平衡模式 value = 0 ~ 4
