@@ -1,10 +1,7 @@
 /*
 ESP32-CAM Face detection (offline)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-5 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-27 12:00
 https://www.facebook.com/francefu
-
-Please change the esp32 core of Arduino IDE to version 1.0.4.
-The code can't run on version 1.0.5 .
 */
 
 #include <WiFi.h>
@@ -14,12 +11,7 @@ The code can't run on version 1.0.5 .
 #include "esp_camera.h"          //視訊函式
 #include "fd_forward.h"          //人臉偵測函式
 
-//
-// WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
-//            or another board which has PSRAM enabled
-//
-
-//安可信ESP32-CAM模組腳位設定
+//ESP32-CAM 安信可模組腳位設定
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -38,6 +30,9 @@ The code can't run on version 1.0.5 .
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
+//https://github.com/espressif/esp-dl/blob/master/face_detection/README.md
+box_array_t *net_boxes = NULL;
+
 void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
     
@@ -45,7 +40,7 @@ void setup() {
   Serial.setDebugOutput(true);  //開啟診斷輸出
   Serial.println();
 
-  //視訊組態設定
+  //視訊組態設定  https://github.com/espressif/esp32-camera/blob/master/driver/include/esp_camera.h
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
@@ -67,6 +62,11 @@ void setup() {
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
+  
+  //
+  // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
+  //            or another board which has PSRAM enabled
+  //  
   //init with high specs to pre-allocate larger buffers
   if(psramFound()){
     config.frame_size = FRAMESIZE_UXGA;
@@ -85,15 +85,19 @@ void setup() {
     return;
   }
 
-  //可動態改變視訊框架大小(解析度大小)
+  //可自訂視訊框架預設大小(解析度大小)
   sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_QVGA);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+  // initial sensors are flipped vertically and colors are a bit saturated
+  if (s->id.PID == OV3660_PID) {
+    s->set_vflip(s, 1); // flip it back
+    s->set_brightness(s, 1); // up the brightness just a bit
+    s->set_saturation(s, -2); // lower the saturation
+  }
+  // drop down frame size for higher initial frame rate
+  s->set_framesize(s, FRAMESIZE_QVGA);    //解析度 UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768), SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120), QXGA(2048x1564 for OV3660)
 
-  //閃光燈(GPIO4)
-  ledcAttachPin(4, 4);  
-  ledcSetup(4, 5000, 8);
-  pinMode(4, OUTPUT);
-  digitalWrite(4, LOW);          
+  //s->set_vflip(s, 1);  //垂直翻轉
+  //s->set_hmirror(s, 1);  //水平鏡像         
 }
 
 void loop() {
@@ -124,7 +128,7 @@ void loop() {
           mtmn_config.o_threshold.candidate_number = 1;
           
           fmt2rgb888(fb->buf, fb->len, fb->format, image_matrix->item);  //影像格式轉換RGB格式
-          box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);  //偵測人臉取得臉框數據
+          net_boxes = face_detect(image_matrix, &mtmn_config);  //執行人臉偵測取得臉框數據
           if (net_boxes){
             Serial.println("faces = " + String(net_boxes->len));  //偵測到的人臉數
             Serial.println();
@@ -140,10 +144,14 @@ void loop() {
                 Serial.println("height = " + String(h));
                 Serial.println();
             } 
+            /*
+            //釋放net_boxes記憶體，v1.0.5以上版本會產生記憶體錯誤重啟
             free(net_boxes->score);
             free(net_boxes->box);
             free(net_boxes->landmark);
             free(net_boxes);
+            */
+            net_boxes = NULL;  //若沒有執行free釋放記憶體，可能產生問題。
           }
           else {
             Serial.println("No Face");    //未偵測到的人臉

@@ -1,40 +1,39 @@
 /*
 ESP32-CAM Face Recognition
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-24 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-27 13:00
 https://www.facebook.com/francefu
 
-Please change the esp32 core of Arduino IDE to version 1.0.4.
-The code can't run on version 1.0.5 .
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
 http://192.168.xxx.xxx:81/stream   //取得串流影像      嵌入網頁語法 <img src="http://192.168.xxx.xxx:81/stream">
-http://192.168.xxx.xxx/capture     //取得影像          嵌入網頁語法 <img src="http://192.168.xxx.xxx/capture">
+http://192.168.xxx.xxx/capture     //取得影像         嵌入網頁語法 <img src="http://192.168.xxx.xxx/capture">
 http://192.168.xxx.xxx/status      //取得影像狀態值
 
-//自訂指令格式  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+自訂指令格式  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://192.168.xxx.xxx/control?facename=matched_id;name  //設定姓名
-http://192.168.xxx.xxx/control?constrolstate=state       //state=0 or 1 設定是否執行函式 void FaceMatched(), void FaceNoMatched
+http://192.168.xxx.xxx/control?constrolstate=state       //state=0 or 1 設定是否執行函式 void FaceMatched(), void FaceNoMatched()
 
-//官方指令格式  http://192.168.xxx.xxx/control?var=xxx&val=xxx
-http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
-http://192.168.xxx.xxx/control?var=quality&val=value    // value = 10 to 63
-http://192.168.xxx.xxx/control?var=brightness&val=value    // value = -2 to 2
-http://192.168.xxx.xxx/control?var=contrast&val=value    // value = -2 to 2 
-http://192.168.xxx.xxx/control?var=flash&val=value    // value = 0 to 255
+官方指令格式  http://192.168.xxx.xxx/control?var=xxx&val=xxx
+http://192.168.xxx.xxx/control?var=flash&val=value          //閃光燈 value= 0~255
+http://192.168.xxx.xxx/control?var=framesize&val=value      //解析度 value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120), 11->QXGA(2048x1564 for OV3660)
+http://192.168.xxx.xxx/control?var=quality&val=value        //畫質 value = 10 ~ 63
+http://192.168.xxx.xxx/control?var=brightness&val=value     //亮度 value = -2 ~ 2
+http://192.168.xxx.xxx/control?var=contrast&val=value       //對比 value = -2 ~ 2
 */
 
 //輸入WIFI連線帳號密碼
-const char* ssid = "*****";
-const char* password = "*****";
+const char* ssid = "teacher";
+const char* password = "87654321";
+
+String LineToken = "";  //傳送區域網路IP至Line通知(用不到可不填)
 
 //輸入AP端連線帳號密碼  http://192.168.4.1
 const char* apssid = "esp32-cam";
 const char* appassword = "12345678";         //AP密碼至少要8個字元以上  
 
-//人臉辨識註冊人臉畫面捕捉張數
+//人臉辨識同一人人臉註冊影像數
 #define ENROLL_CONFIRM_TIMES 5
-
-//人臉辨識最大註冊人數
+//人臉辨識註冊人數
 #define FACE_ID_SAVE_NUMBER 7
 
 //設定人臉辨識顯示的人名
@@ -43,6 +42,8 @@ String recognize_face_matched_name[7] = {"Name0","Name1","Name2","Name3","Name4"
 boolean controlState = false;  //是否執行函式 void FaceMatched(), void FaceNoMatched
 
 #include <WiFi.h>
+#include <HTTPClient.h>
+HTTPClient http;
 #include "soc/soc.h"             //用於電源不穩不重開機 
 #include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機 
 #include "esp_camera.h"          //視訊函式
@@ -50,20 +51,18 @@ boolean controlState = false;  //是否執行函式 void FaceMatched(), void Fac
 #include "fb_gfx.h"              //影像繪圖函式
 #include "fd_forward.h"          //人臉偵測函式
 #include "fr_forward.h"          //人臉辨識函式
-#include "esp_http_server.h"
-#include "esp_timer.h"
+#include "esp_http_server.h"     //HTTP Server函式
+#include "esp_timer.h"           //計時器函式
 
 String Feedback="";   //回傳客戶端訊息
-
 //指令參數值
 String Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";
-
 //指令拆解狀態值
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
 //Arduino IDE開發版選擇 ESP32 Wrover Module
 
-//安可信ESP32-CAM模組腳位設定
+//ESP32-CAM 安信可模組腳位設定
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -82,6 +81,7 @@ byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolon
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
+//設定人臉偵測、辨識框線、文字顏色變數
 #define FACE_COLOR_WHITE  0x00FFFFFF
 #define FACE_COLOR_BLACK  0x00000000
 #define FACE_COLOR_RED    0x000000FF
@@ -91,28 +91,16 @@ byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolon
 #define FACE_COLOR_CYAN   (FACE_COLOR_BLUE | FACE_COLOR_GREEN)
 #define FACE_COLOR_PURPLE (FACE_COLOR_BLUE | FACE_COLOR_RED)
 
-typedef struct {
-        size_t size; //number of values used for filtering
-        size_t index; //current value index
-        size_t count; //value count
-        int sum;
-        int * values; //array to be filled with values
-} ra_filter_t;
-
-typedef struct {
-        httpd_req_t *req;
-        size_t len;
-} jpg_chunking_t;
-
+//影像傳輸網頁標頭設定
 #define PART_BOUNDARY "123456789000000000000987654321"
 static const char* _STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
 static const char* _STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
 static const char* _STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n";
 
-static ra_filter_t ra_filter;
 httpd_handle_t stream_httpd = NULL;
 httpd_handle_t camera_httpd = NULL;
 
+//初始值
 static mtmn_config_t mtmn_config = {0};
 static int8_t detection_enabled = 0;     //人臉偵測狀態 0 or 1
 static int8_t recognition_enabled = 0;   //人臉辨識狀態 0 or 1
@@ -120,6 +108,13 @@ static int8_t is_enrolling = 0;
 static face_id_list id_list = {0};
 static int8_t flash_value = 0;
 
+typedef struct {
+        httpd_req_t *req;
+        size_t len;
+} jpg_chunking_t;
+
+//https://github.com/espressif/esp-dl/blob/master/face_detection/README.md
+box_array_t *net_boxes = NULL;
 
 void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
@@ -128,7 +123,7 @@ void setup() {
   Serial.setDebugOutput(true);  //開啟診斷輸出
   Serial.println();
 
-  //視訊組態設定
+  //視訊組態設定  https://github.com/espressif/esp32-camera/blob/master/driver/include/esp_camera.h
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
@@ -150,8 +145,15 @@ void setup() {
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  //init with high specs to pre-allocate larger buffers
-  if(psramFound()){
+
+  //
+  // WARNING!!! PSRAM IC required for UXGA resolution and high JPEG quality
+  //            Ensure ESP32 Wrover Module or other board with PSRAM is selected
+  //            Partial images will be transmitted if image exceeds buffer size
+  //   
+  // if PSRAM IC present, init with UXGA resolution and higher JPEG quality
+  //                      for larger pre-allocated frame buffer.
+  if(psramFound()){  //是否有PSRAM(Psuedo SRAM)記憶體IC
     config.frame_size = FRAMESIZE_UXGA;
     config.jpeg_quality = 10;
     config.fb_count = 2;
@@ -168,9 +170,19 @@ void setup() {
     return;
   }
 
-  //可動態改變視訊框架大小(解析度大小)
+  //可自訂視訊框架預設大小(解析度大小)
   sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_QVGA);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+  // initial sensors are flipped vertically and colors are a bit saturated
+  if (s->id.PID == OV3660_PID) {
+    s->set_vflip(s, 1); // flip it back
+    s->set_brightness(s, 1); // up the brightness just a bit
+    s->set_saturation(s, -2); // lower the saturation
+  }
+  // drop down frame size for higher initial frame rate
+  s->set_framesize(s, FRAMESIZE_CIF);    //解析度 UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768), SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120), QXGA(2048x1564 for OV3660)
+
+  //s->set_vflip(s, 1);  //垂直翻轉
+  //s->set_hmirror(s, 1);  //水平鏡像
 
   //閃光燈(GPIO4)
   ledcAttachPin(4, 4);  
@@ -181,43 +193,51 @@ void setup() {
   //指定Client端靜態IP
   //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
 
-  WiFi.begin(ssid, password);    //執行網路連線
-
-  delay(1000);
-  Serial.println("");
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
+  for (int i=0;i<2;i++) {
+    WiFi.begin(ssid, password);    //執行網路連線
   
-  long int StartTime=millis();
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    if ((StartTime+10000) < millis()) break;    //等待10秒連線
+    delay(1000);
+    Serial.println("");
+    Serial.print("Connecting to ");
+    Serial.println(ssid);
+    
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        if ((StartTime+5000) < millis()) break;    //等待10秒連線
+    } 
+  
+    if (WiFi.status() == WL_CONNECTED) {    //若連線成功
+      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP         
+      Serial.println("");
+      Serial.println("STAIP address: ");
+      Serial.println(WiFi.localIP());
+      Serial.println("");
+  
+      for (int i=0;i<5;i++) {   //若連上WIFI設定閃光燈快速閃爍
+        ledcWrite(4,10);
+        delay(200);
+        ledcWrite(4,0);
+        delay(200);    
+      }
+  
+      if (LineToken != "") 
+        LineNotify_http_get(LineToken, WiFi.localIP().toString());
+      break;
+    }
   } 
 
-  if (WiFi.status() == WL_CONNECTED) {    //若連線成功
-    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP         
-    Serial.println("");
-    Serial.println("STAIP address: ");
-    Serial.println(WiFi.localIP()); 
-
-    for (int i=0;i<5;i++) {   //若連上WIFI設定閃光燈快速閃爍
-      ledcWrite(4,10);
-      delay(200);
-      ledcWrite(4,0);
-      delay(200);    
-    }    
-  }
-  else {
-    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);    
+  if (WiFi.status() != WL_CONNECTED) {    //若連線失敗
+    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);         
 
     for (int i=0;i<2;i++) {    //若連不上WIFI設定閃光燈慢速閃爍
       ledcWrite(4,10);
       delay(1000);
       ledcWrite(4,0);
       delay(1000);    
-    }      
-  }     
-
+    }
+  } 
+  
   //指定AP端IP
   //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
   Serial.println("");
@@ -225,7 +245,7 @@ void setup() {
   Serial.println(WiFi.softAPIP());  
   Serial.println("");
   
-  startCameraServer(); 
+  startCameraServer();    //啟動視訊服務器 
 
   //設定閃光燈為低電位
   pinMode(4, OUTPUT);
@@ -271,52 +291,47 @@ void FaceNoMatched() {  //辨識為陌生人臉執行指令控制
 }
 
 void startCameraServer(){
+    //https://github.com/espressif/esp-idf/blob/master/components/esp_http_server/include/esp_http_server.h
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();  //可在HTTPD_DEFAULT_CONFIG()中設定Server Port
 
     //可自訂網址路徑對應執行的函式
-    //http://192.168.xxx.xxx/
     httpd_uri_t index_uri = {
-        .uri       = "/",
+        .uri       = "/",             //http://192.168.xxx.xxx/
         .method    = HTTP_GET,
         .handler   = index_handler,
         .user_ctx  = NULL
     };
 
-    //http://192.168.xxx.xxx/status
     httpd_uri_t status_uri = {
-        .uri       = "/status",
+        .uri       = "/status",       //http://192.168.xxx.xxx/status
         .method    = HTTP_GET,
         .handler   = status_handler,
         .user_ctx  = NULL
     };
 
-    //http://192.168.xxx.xxx/control
     httpd_uri_t cmd_uri = {
-        .uri       = "/control",
+        .uri       = "/control",      //http://192.168.xxx.xxx/control
         .method    = HTTP_GET,
         .handler   = cmd_handler,
         .user_ctx  = NULL
     };
 
-    //http://192.168.xxx.xxx/capture
     httpd_uri_t capture_uri = {
-        .uri       = "/capture",
+        .uri       = "/capture",      //http://192.168.xxx.xxx/capture
         .method    = HTTP_GET,
         .handler   = capture_handler,
         .user_ctx  = NULL
     };
 
-   //http://192.168.xxx.xxx:81/stream
    httpd_uri_t stream_uri = {
-        .uri       = "/stream",
+        .uri       = "/stream",       //http://192.168.xxx.xxx:81/stream
         .method    = HTTP_GET,
         .handler   = stream_handler,
         .user_ctx  = NULL
     };
-
-
-    ra_filter_init(&ra_filter, 20);
     
+    //人臉偵測參數設定
+    //https://github.com/espressif/esp-dl/blob/master/face_detection/README.md
     mtmn_config.type = FAST;
     mtmn_config.min_face = 80;
     mtmn_config.pyramid = 0.707;
@@ -360,7 +375,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         <style> 
           body { font-family: Arial,Helvetica,sans-serif; background: #181818; color: #EFEFEF; font-size: 16px } h2 { font-size: 18px } section.main { display: flex } #menu,section.main { flex-direction: column } #menu { display: none; flex-wrap: nowrap; min-width: 340px; background: #363636; padding: 8px; border-radius: 4px; margin-top: -10px; margin-right: 10px; } #content { display: flex; flex-wrap: wrap; align-items: stretch } figure { padding: 0px; margin: 0; -webkit-margin-before: 0; margin-block-start: 0; -webkit-margin-after: 0; margin-block-end: 0; -webkit-margin-start: 0; margin-inline-start: 0; -webkit-margin-end: 0; margin-inline-end: 0 } figure img { display: block; width: 100%; height: auto; border-radius: 4px; margin-top: 8px; } @media (min-width: 800px) and (orientation:landscape) { #content { display:flex; flex-wrap: nowrap; align-items: stretch } figure img { display: block; max-width: 100%; max-height: calc(100vh - 40px); width: auto; height: auto } figure { padding: 0 0 0 0px; margin: 0; -webkit-margin-before: 0; margin-block-start: 0; -webkit-margin-after: 0; margin-block-end: 0; -webkit-margin-start: 0; margin-inline-start: 0; -webkit-margin-end: 0; margin-inline-end: 0 } } section#buttons { display: flex; flex-wrap: nowrap; justify-content: space-between } #nav-toggle { cursor: pointer; display: block } #nav-toggle-cb { outline: 0; opacity: 0; width: 0; height: 0 } #nav-toggle-cb:checked+#menu { display: block } .input-group { display: flex; flex-wrap: nowrap; line-height: 22px; margin: 5px 0 } .input-group>label { display: inline-block; padding-right: 10px; min-width: 47% } .input-group input,.input-group select { flex-grow: 1 } .range-max,.range-min { display: inline-block; padding: 0 5px } button { display: block; margin: 5px; padding: 0 12px; border: 0; line-height: 28px; cursor: pointer; color: #fff; background: #ff3034; border-radius: 5px; font-size: 16px; outline: 0 } button:hover { background: #ff494d } button:active { background: #f21c21 } button.disabled { cursor: default; background: #a0a0a0 } input[type=range] { -webkit-appearance: none; width: 100%; height: 22px; background: #363636; cursor: pointer; margin: 0 } input[type=range]:focus { outline: 0 } input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 2px; cursor: pointer; background: #EFEFEF; border-radius: 0; border: 0 solid #EFEFEF } input[type=range]::-webkit-slider-thumb { border: 1px solid rgba(0,0,30,0); height: 22px; width: 22px; border-radius: 50px; background: #ff3034; cursor: pointer; -webkit-appearance: none; margin-top: -11.5px } input[type=range]:focus::-webkit-slider-runnable-track { background: #EFEFEF } input[type=range]::-moz-range-track { width: 100%; height: 2px; cursor: pointer; background: #EFEFEF; border-radius: 0; border: 0 solid #EFEFEF } input[type=range]::-moz-range-thumb { border: 1px solid rgba(0,0,30,0); height: 22px; width: 22px; border-radius: 50px; background: #ff3034; cursor: pointer } input[type=range]::-ms-track { width: 100%; height: 2px; cursor: pointer; background: 0 0; border-color: transparent; color: transparent } input[type=range]::-ms-fill-lower { background: #EFEFEF; border: 0 solid #EFEFEF; border-radius: 0 } input[type=range]::-ms-fill-upper { background: #EFEFEF; border: 0 solid #EFEFEF; border-radius: 0 } input[type=range]::-ms-thumb { border: 1px solid rgba(0,0,30,0); height: 22px; width: 22px; border-radius: 50px; background: #ff3034; cursor: pointer; height: 2px } input[type=range]:focus::-ms-fill-lower { background: #EFEFEF } input[type=range]:focus::-ms-fill-upper { background: #363636 } .switch { display: block; position: relative; line-height: 22px; font-size: 16px; height: 22px } .switch input { outline: 0; opacity: 0; width: 0; height: 0 } .slider { width: 50px; height: 22px; border-radius: 22px; cursor: pointer; background-color: grey } .slider,.slider:before { display: inline-block; transition: .4s } .slider:before { position: relative; content: ""; border-radius: 50%; height: 16px; width: 16px; left: 4px; top: 3px; background-color: #fff } input:checked+.slider { background-color: #ff3034 } input:checked+.slider:before { -webkit-transform: translateX(26px); transform: translateX(26px) } select { border: 1px solid #363636; font-size: 14px; height: 22px; outline: 0; border-radius: 5px } .image-container { position: relative; min-width: 160px } .close { position: absolute; right: 5px; top: 5px; background: #ff3034; width: 16px; height: 16px; border-radius: 100px; color: #fff; text-align: center; line-height: 18px; cursor: pointer } .hidden { display: none } 
         </style>
-        <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
     </head>
     <body>
         <figure>
@@ -667,9 +681,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
 
             controlstate.onchange = () => {
               if (controlstate.checked) {
-                $.ajax({url: document.location.origin+'/control?controlstate=1', async: false});
+                fetch(document.location.origin+'/control?controlstate=1');
               } else {
-                $.ajax({url: document.location.origin+'/control?controlstate=0', async: false});
+                fetch(document.location.origin+'/control?controlstate=0');
               }  
             }            
           })
@@ -680,6 +694,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
 //網頁首頁  http://192.168.xxx.xxx
 static esp_err_t index_handler(httpd_req_t *req){
     httpd_resp_set_type(req, "text/html");
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");    
     return httpd_resp_send(req, (const char *)INDEX_HTML, strlen(INDEX_HTML));
 }
 
@@ -723,7 +738,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
             httpd_resp_send_500(req);
             return ESP_FAIL;
         }
-        if (httpd_req_get_url_query_str(req, buf, buf_len) == ESP_OK) {
+        if (httpd_req_get_url_query_str(req, buf, buf_len) == ESP_OK) {  //拆解網址後帶的參數字串
           if (httpd_query_key_value(buf, "var", variable, sizeof(variable)) == ESP_OK &&
             httpd_query_key_value(buf, "val", value, sizeof(value)) == ESP_OK) {
           } 
@@ -792,31 +807,31 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       return httpd_resp_send(req, resp, strlen(resp));
     } 
     else {
-      int val = atoi(value); 
+      int val = atoi(value);  //將參數val值轉換為整數，原為char格式
       sensor_t * s = esp_camera_sensor_get();
       int res = 0;
   
-      //官方指令區塊，也可在此自訂指令  http://192.168.xxx.xxx/control?var=xxx&val=xxx
-      if(!strcmp(variable, "framesize")) {
+      //官方指令區塊  http://192.168.xxx.xxx/control?var=xxx&val=xxx
+      if(!strcmp(variable, "framesize")) {  //解析度
           if(s->pixformat == PIXFORMAT_JPEG) res = s->set_framesize(s, (framesize_t)val);
       }
-      else if(!strcmp(variable, "quality")) res = s->set_quality(s, val);
-      else if(!strcmp(variable, "contrast")) res = s->set_contrast(s, val);
-      else if(!strcmp(variable, "brightness")) res = s->set_brightness(s, val);
-      else if(!strcmp(variable, "face_detect")) {
+      else if(!strcmp(variable, "quality")) res = s->set_quality(s, val);  //畫質
+      else if(!strcmp(variable, "contrast")) res = s->set_contrast(s, val);  //對比
+      else if(!strcmp(variable, "brightness")) res = s->set_brightness(s, val);  //亮度
+      else if(!strcmp(variable, "face_detect")) {  //人臉偵測
           detection_enabled = val;
           if(!detection_enabled) {
               recognition_enabled = 0;
           }
       }
-      else if(!strcmp(variable, "face_enroll")) is_enrolling = val;
-      else if(!strcmp(variable, "face_recognize")) {
+      else if(!strcmp(variable, "face_enroll")) is_enrolling = val;  //人臉註冊
+      else if(!strcmp(variable, "face_recognize")) {  //人臉辨識
           recognition_enabled = val;
           if(recognition_enabled){
               detection_enabled = val;
           }
       }
-      else if(!strcmp(variable, "flash")) {  //Control flash
+      else if(!strcmp(variable, "flash")) {  //閃光燈
         ledcWrite(4,val);
         flash_value = val;
       }    
@@ -903,7 +918,7 @@ static esp_err_t capture_handler(httpd_req_t *req){
         return ESP_FAIL;
     }
 
-    box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);  //偵測人臉取得臉框數據
+    box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);  //執行人臉偵測取得臉框數據
 
     if (net_boxes){
         //Serial.println("faces = " + String(net_boxes->len));  //偵測到的人臉數
@@ -911,11 +926,15 @@ static esp_err_t capture_handler(httpd_req_t *req){
         if(recognition_enabled){
             face_id = run_face_recognition(image_matrix, net_boxes);  //執行人臉辨識
         }
-        draw_face_boxes(image_matrix, net_boxes, face_id);
+        draw_face_boxes(image_matrix, net_boxes, face_id);  //繪製人臉方框
+        /*
+        //釋放net_boxes記憶體，v1.0.5以上版本會產生記憶體錯誤重啟
         free(net_boxes->score);
         free(net_boxes->box);
         free(net_boxes->landmark);
         free(net_boxes);
+        */
+        net_boxes = NULL;  //若沒有執行free釋放記憶體，可能產生問題。
     }
 
     jpg_chunking_t jchunk = {req, 0};
@@ -999,22 +1018,27 @@ static esp_err_t stream_handler(httpd_req_t *req){
                         fr_ready = esp_timer_get_time();
                         box_array_t *net_boxes = NULL;
                         if(detection_enabled){
-                            net_boxes = face_detect(image_matrix, &mtmn_config);
+                            net_boxes = face_detect(image_matrix, &mtmn_config);  //執行人臉偵測取得臉框數據
                         }
                         fr_face = esp_timer_get_time();
                         fr_recognize = fr_face;
                         if (net_boxes || fb->format != PIXFORMAT_JPEG){
                             if(net_boxes){
+                                //Serial.println("faces = " + String(net_boxes->len));  //偵測到的人臉數
                                 detected = true;
                                 if(recognition_enabled){
-                                    face_id = run_face_recognition(image_matrix, net_boxes);
+                                    face_id = run_face_recognition(image_matrix, net_boxes);  //執行人臉辨識
                                 }
                                 fr_recognize = esp_timer_get_time();
-                                draw_face_boxes(image_matrix, net_boxes, face_id);
+                                draw_face_boxes(image_matrix, net_boxes, face_id);  //繪製人臉方框
+                                /*
+                                //釋放net_boxes記憶體，v1.0.5以上版本會產生記憶體錯誤重啟
                                 free(net_boxes->score);
                                 free(net_boxes->box);
                                 free(net_boxes->landmark);
                                 free(net_boxes);
+                                */
+                                net_boxes = NULL;  //若沒有執行free釋放記憶體，可能產生問題。
                             }
                             if(!fmt2jpg(image_matrix->item, fb->width*fb->height*3, fb->width, fb->height, PIXFORMAT_RGB888, 90, &_jpg_buf, &_jpg_buf_len)){
                                 Serial.println("fmt2jpg failed");
@@ -1053,6 +1077,7 @@ static esp_err_t stream_handler(httpd_req_t *req){
         if(res != ESP_OK){
             break;
         }
+        
         int64_t fr_end = esp_timer_get_time();
 
         int64_t ready_time = (fr_ready - fr_start)/1000;
@@ -1064,11 +1089,9 @@ static esp_err_t stream_handler(httpd_req_t *req){
         int64_t frame_time = fr_end - last_frame;
         last_frame = fr_end;
         frame_time /= 1000;
-        uint32_t avg_frame_time = ra_filter_run(&ra_filter, frame_time);
-        Serial.printf("MJPG: %uB %ums (%.1ffps), AVG: %ums (%.1ffps), %u+%u+%u+%u=%u %s%d\n",
+        Serial.printf("MJPG: %uB %ums (%.1ffps), %u+%u+%u+%u=%u %s%d\n",
             (uint32_t)(_jpg_buf_len),
             (uint32_t)frame_time, 1000.0 / (uint32_t)frame_time,
-            avg_frame_time, 1000.0 / avg_frame_time,
             (uint32_t)ready_time, (uint32_t)face_time, (uint32_t)recognize_time, (uint32_t)encode_time, (uint32_t)process_time,
             (detected)?"DETECTED ":"", face_id
         );
@@ -1202,35 +1225,6 @@ static void draw_face_boxes(dl_matrix3du_t *image_matrix, box_array_t *boxes, in
     }
 }
 
-static ra_filter_t * ra_filter_init(ra_filter_t * filter, size_t sample_size){
-    memset(filter, 0, sizeof(ra_filter_t));
-
-    filter->values = (int *)malloc(sample_size * sizeof(int));
-    if(!filter->values){
-        return NULL;
-    }
-    memset(filter->values, 0, sample_size * sizeof(int));
-
-    filter->size = sample_size;
-    return filter;
-}
-
-static int ra_filter_run(ra_filter_t * filter, int value){
-    if(!filter->values){
-        return value;
-    }
-    filter->sum -= filter->values[filter->index];
-    filter->values[filter->index] = value;
-    filter->sum += filter->values[filter->index];
-    filter->index++;
-    filter->index = filter->index % filter->size;
-    if (filter->count < filter->size) {
-        filter->count++;
-    }
-    return filter->sum / filter->count;
-}
-
-
 static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size_t len){
     jpg_chunking_t *j = (jpg_chunking_t *)arg;
     if(!index){
@@ -1271,4 +1265,24 @@ void getCommand(char c)
     if (c=='=') equalstate=1;
     if ((strState>=9)&&(c==';')) semicolonstate=1;
   }
+}
+
+String LineNotify_http_get(String token, String message) {
+  message.replace("%","%25");  
+  message.replace(" ","%20");
+  message.replace("&","%20");
+  message.replace("#","%20");
+  //message.replace("\'","%27");
+  message.replace("\"","%22");
+  message.replace("\n","%0D%0A");
+  
+  http.begin("http://linenotify.com/notify.php?token="+token+"&message="+message);
+  int httpCode = http.GET();
+  /*
+  if(httpCode > 0) {
+      if(httpCode == 200) 
+        Serial.println(http.getString());
+  } else 
+      Serial.println("Connection Error!");
+  */
 }
