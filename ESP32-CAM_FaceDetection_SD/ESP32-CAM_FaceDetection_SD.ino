@@ -1,10 +1,7 @@
 /*
 ESP32-CAM Face detection (Read images from SD Card)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-5 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-27 12:00
 https://www.facebook.com/francefu
-
-Please change the esp32 core of Arduino IDE to version 1.0.4.
-The code can't run on version 1.0.5 .
 */
 
 #include <WiFi.h>
@@ -16,12 +13,7 @@ The code can't run on version 1.0.5 .
 #include "FS.h"                  //檔案系統函式
 #include "SD_MMC.h"              //SD卡存取函式
 
-//
-// WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
-//            or another board which has PSRAM enabled
-//
-
-//安可信ESP32-CAM模組腳位設定
+//ESP32-CAM 安信可模組腳位設定
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -40,6 +32,9 @@ The code can't run on version 1.0.5 .
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
+//https://github.com/espressif/esp-dl/blob/master/face_detection/README.md
+box_array_t *net_boxes = NULL;
+
 void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
     
@@ -47,7 +42,7 @@ void setup() {
   Serial.setDebugOutput(true);  //開啟診斷輸出
   Serial.println();
 
-  //視訊組態設定
+  //視訊組態設定  https://github.com/espressif/esp32-camera/blob/master/driver/include/esp_camera.h
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
@@ -69,8 +64,15 @@ void setup() {
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  //init with high specs to pre-allocate larger buffers
-  if(psramFound()){
+  
+  //
+  // WARNING!!! PSRAM IC required for UXGA resolution and high JPEG quality
+  //            Ensure ESP32 Wrover Module or other board with PSRAM is selected
+  //            Partial images will be transmitted if image exceeds buffer size
+  //   
+  // if PSRAM IC present, init with UXGA resolution and higher JPEG quality
+  //                      for larger pre-allocated frame buffer.
+  if(psramFound()){  //是否有PSRAM(Psuedo SRAM)記憶體IC
     config.frame_size = FRAMESIZE_UXGA;
     config.jpeg_quality = 10;
     config.fb_count = 2;
@@ -87,30 +89,36 @@ void setup() {
     return;
   }
 
-  //可動態改變視訊框架大小(解析度大小)
+  //可自訂視訊框架預設大小(解析度大小)
   sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_CIF);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+  // initial sensors are flipped vertically and colors are a bit saturated
+  if (s->id.PID == OV3660_PID) {
+    s->set_vflip(s, 1); // flip it back
+    s->set_brightness(s, 1); // up the brightness just a bit
+    s->set_saturation(s, -2); // lower the saturation
+  }
+  // drop down frame size for higher initial frame rate
+  s->set_framesize(s, FRAMESIZE_CIF);    //解析度 UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768), SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120), QXGA(2048x1564 for OV3660)
 
-  pinMode(4, OUTPUT);
-  digitalWrite(4, LOW); 
+  //s->set_vflip(s, 1);  //垂直翻轉
+  //s->set_hmirror(s, 1);  //水平鏡像
 
-
-  //讀取SD卡辨識人臉
+  //SD卡初始化
   if(!SD_MMC.begin()){
     Serial.println("Card Mount Failed");
   }  
   
   fs::FS &fs = SD_MMC;
-  
-  //Save the captured Images with your face to SD card:  http://192.168.xxx.xxx/capture  (FRAMESIZE_CIF)
-  String filename[2] = {"/1.jpg", "/2.jpg"};   //FRAMESIZE_CIF (width:400, height:296)
+   
+  //可由網頁get-still按鈕取得解析度CIF影像另存於SD卡 http://192.168.xxx.xxx/capture  (FRAMESIZE_CIF)
+  String filepath[2] = {"/1.jpg", "/2.jpg"};   //FRAMESIZE_CIF (width:400, height:296)
   int image_width = 400;
   int image_height = 296;
   
-  for (int j=0;j<sizeof(filename)/sizeof(*filename);j++) {
-    //讀取照片
-    File file = fs.open(filename[j]);
-    Serial.println("detect file: "+filename[j]);
+  //讀取SD卡內照片
+  for (int j=0;j<sizeof(filepath)/sizeof(*filepath);j++) {
+    File file = fs.open(filepath[j]);
+    Serial.println("detect file: "+filepath[j]);
     if(!file){
       Serial.println("Failed to open file for reading");
       SD_MMC.end();    
@@ -124,7 +132,6 @@ void setup() {
         i++;  
       }
   
-      //偵測是否有人臉
       dl_matrix3du_t *image_matrix = NULL;
       image_matrix = dl_matrix3du_alloc(1, image_width, image_height, 3);  //分配內部記憶體
       if (!image_matrix) {
@@ -147,7 +154,8 @@ void setup() {
           mtmn_config.o_threshold.candidate_number = 1;
           
           fmt2rgb888((uint8_t*)buf, file.size(), PIXFORMAT_JPEG, image_matrix->item);  //影像格式轉換RGB格式
-          box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);  //偵測人臉取得臉框數據
+          net_boxes = face_detect(image_matrix, &mtmn_config);  //執行人臉偵測取得臉框數據
+          
           if (net_boxes){
             Serial.println("faces = " + String(net_boxes->len));  //偵測到的人臉數
             Serial.println();
@@ -163,10 +171,14 @@ void setup() {
                 Serial.println("height = " + String(h));
                 Serial.println();
             } 
+            /*
+            //釋放net_boxes記憶體，v1.0.5以上版本會產生記憶體錯誤重啟
             free(net_boxes->score);
             free(net_boxes->box);
             free(net_boxes->landmark);
             free(net_boxes);
+            */
+            net_boxes = NULL;  //若沒有執行free釋放記憶體，可能產生問題。
           }
           else {
             Serial.println("No Face");    //未偵測到的人臉
