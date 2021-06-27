@@ -3,51 +3,56 @@ ESP32-CAM Load images from SD card to enroll faces and recognize faces automatic
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-5-22 19:00
 https://www.facebook.com/francefu
 
-Please change the esp32 core of Arduino IDE to version 1.0.4.
-The code can't run on version 1.0.5 .
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
-http://192.168.xxx.xxx:81/stream   //取得串流影像     <img src="http://192.168.xxx.xxx:81/stream">
-http://192.168.xxx.xxx/capture     //取得影像         <img src="http://192.168.xxx.xxx/capture">
-http://192.168.xxx.xxx/status      //取得視訊參數值
+http://192.168.xxx.xxx:81/stream   //取得串流影像      嵌入網頁語法 <img src="http://192.168.xxx.xxx:81/stream">
+http://192.168.xxx.xxx/capture     //取得影像         嵌入網頁語法 <img src="http://192.168.xxx.xxx/capture">
+http://192.168.xxx.xxx/status      //取得影像狀態值
 
-//自訂指令格式  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+自訂指令格式  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://192.168.xxx.xxx/control?facename=matched_id;name  //設定姓名
-http://192.168.xxx.xxx/control?clearface  //清除人臉註冊
-
-//官方指令格式  http://192.168.xxx.xxx/control?var=xxx&val=xxx
-http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) , 7->SVGA(800x600), 6->VGA(640x480), 5->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
-http://192.168.xxx.xxx/control?var=quality&val=value    // value = 10 to 63
-http://192.168.xxx.xxx/control?var=brightness&val=value    // value = -2 to 2
-http://192.168.xxx.xxx/control?var=contrast&val=value    // value = -2 to 2 
-http://192.168.xxx.xxx/control?var=flash&val=value    // value = 0 to 255
+http://192.168.xxx.xxx/control?constrolstate=state       //state=0 or 1 設定是否執行函式 void FaceMatched(), void FaceNoMatched()
+官方指令格式  http://192.168.xxx.xxx/control?var=xxx&val=xxx
+http://192.168.xxx.xxx/control?var=flash&val=value          //閃光燈 value= 0~255
+http://192.168.xxx.xxx/control?var=framesize&val=value      //解析度 value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120), 11->QXGA(2048x1564 for OV3660)
+http://192.168.xxx.xxx/control?var=quality&val=value        //畫質 value = 10 ~ 63
+http://192.168.xxx.xxx/control?var=brightness&val=value     //亮度 value = -2 ~ 2
+http://192.168.xxx.xxx/control?var=contrast&val=value       //對比 value = -2 ~ 2
 */
 
 //輸入WIFI連線帳號密碼
-const char* ssid = "xxxxx";
-const char* password = "xxxxx";
+const char* ssid = "teacher";
+const char* password = "87654321";
 
-//輸入AP端連線帳號密碼
-const char* apssid = "ESP32-CAM";
-const char* appassword = "12345678";         //AP密碼至少要8個字元以上
+String LineToken = "";  //傳送區域網路IP至Line通知(用不到可不填)
+
+//輸入AP端連線帳號密碼  http://192.168.4.1
+const char* apssid = "esp32-cam";
+const char* appassword = "12345678";         //AP密碼至少要8個字元以上  
 
 boolean streamState = false;
 
 //人臉辨識同一人人臉註冊影像數
 #define ENROLL_CONFIRM_TIMES 5
-//Save the captured still (FRAMESIZE_CIF) with your face to the SD card. 
-//Filename: 1.jpg,  2.jpg, 3.jpg, 4.jpg, 5.jpg
-String filename[5] = {"/1.jpg", "/2.jpg", "/3.jpg", "/4.jpg", "/5.jpg"};  //1.jpg, 2.jpg, ...., 35.jpg
+
+//可由網頁get-still按鈕取得解析度CIF影像另存於SD卡 http://192.168.xxx.xxx/capture  (FRAMESIZE_CIF)
+String filepath[5] = {"/1.jpg", "/2.jpg", "/3.jpg", "/4.jpg", "/5.jpg"};  //1.jpg, 2.jpg, ...., 35.jpg
 int image_width = 400;  
 int image_height = 296;
-//UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768) , SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120)
 
+//人臉辨識同一人人臉註冊影像數
+#define ENROLL_CONFIRM_TIMES 5
 //人臉辨識註冊人數
 #define FACE_ID_SAVE_NUMBER 7
+
 //設定人臉辨識顯示的人名
 String recognize_face_matched_name[7] = {"Name0","Name1","Name2","Name3","Name4","Name5","Name6"};
-  
+
+boolean controlState = false;  //是否執行函式 void FaceMatched(), void FaceNoMatched
+
 #include <WiFi.h>
+#include <HTTPClient.h>
+HTTPClient http;
 #include "soc/soc.h"             //用於電源不穩不重開機 
 #include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機 
 #include "esp_camera.h"          //視訊函式
@@ -57,8 +62,8 @@ String recognize_face_matched_name[7] = {"Name0","Name1","Name2","Name3","Name4"
 #include "fr_forward.h"          //人臉辨識函式
 #include "FS.h"                  //檔案系統函式
 #include "SD_MMC.h"              //SD卡存取函式
-#include "esp_http_server.h"
-#include "esp_timer.h"
+#include "esp_http_server.h"     //HTTP Server函式
+#include "esp_timer.h"           //計時器函式
 
 String Feedback="";   //回傳客戶端訊息
 //指令參數值
@@ -66,12 +71,9 @@ String Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";
 //指令拆解狀態值
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
-//
-// WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
-//            or another board which has PSRAM enabled
-//
+//Arduino IDE開發版選擇 ESP32 Wrover Module
 
-//安可信ESP32-CAM模組腳位設定
+//ESP32-CAM 安信可模組腳位設定
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -90,6 +92,7 @@ byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolon
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
+//設定人臉偵測、辨識框線、文字顏色變數
 #define FACE_COLOR_WHITE  0x00FFFFFF
 #define FACE_COLOR_BLACK  0x00000000
 #define FACE_COLOR_RED    0x000000FF
@@ -100,62 +103,319 @@ byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolon
 #define FACE_COLOR_PURPLE (FACE_COLOR_BLUE | FACE_COLOR_RED)
 
 typedef struct {
-        size_t size; //number of values used for filtering
-        size_t index; //current value index
-        size_t count; //value count
-        int sum;
-        int * values; //array to be filled with values
-} ra_filter_t;
-
-typedef struct {
         httpd_req_t *req;
         size_t len;
 } jpg_chunking_t;
 
+//影像傳輸網頁標頭設定
 #define PART_BOUNDARY "123456789000000000000987654321"
 static const char* _STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
 static const char* _STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
 static const char* _STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n";
 
-static ra_filter_t ra_filter;
 httpd_handle_t stream_httpd = NULL;
 httpd_handle_t camera_httpd = NULL;
 
+//初始值
 static mtmn_config_t mtmn_config = {0};
-static int8_t detection_enabled = 1;
-static int8_t recognition_enabled = 1;
+static int8_t detection_enabled = 1;     //人臉偵測狀態 0 or 1
+static int8_t recognition_enabled = 1;   //人臉辨識狀態 0 or 1
 static int8_t is_enrolling = 0;
 static face_id_list id_list = {0};
 static int8_t flash_value = 0;
+int8_t enroll_id = 0;
 
-static ra_filter_t * ra_filter_init(ra_filter_t * filter, size_t sample_size){
-    memset(filter, 0, sizeof(ra_filter_t));
+//https://github.com/espressif/esp-dl/blob/master/face_detection/README.md
+box_array_t *net_boxes = NULL;
 
-    filter->values = (int *)malloc(sample_size * sizeof(int));
-    if(!filter->values){
-        return NULL;
+void setup() {
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
+    
+  Serial.begin(115200);
+  Serial.setDebugOutput(true);  //開啟診斷輸出
+  Serial.println();
+
+  //視訊組態設定  https://github.com/espressif/esp32-camera/blob/master/driver/include/esp_camera.h
+  camera_config_t config;
+  config.ledc_channel = LEDC_CHANNEL_0;
+  config.ledc_timer = LEDC_TIMER_0;
+  config.pin_d0 = Y2_GPIO_NUM;
+  config.pin_d1 = Y3_GPIO_NUM;
+  config.pin_d2 = Y4_GPIO_NUM;
+  config.pin_d3 = Y5_GPIO_NUM;
+  config.pin_d4 = Y6_GPIO_NUM;
+  config.pin_d5 = Y7_GPIO_NUM;
+  config.pin_d6 = Y8_GPIO_NUM;
+  config.pin_d7 = Y9_GPIO_NUM;
+  config.pin_xclk = XCLK_GPIO_NUM;
+  config.pin_pclk = PCLK_GPIO_NUM;
+  config.pin_vsync = VSYNC_GPIO_NUM;
+  config.pin_href = HREF_GPIO_NUM;
+  config.pin_sscb_sda = SIOD_GPIO_NUM;
+  config.pin_sscb_scl = SIOC_GPIO_NUM;
+  config.pin_pwdn = PWDN_GPIO_NUM;
+  config.pin_reset = RESET_GPIO_NUM;
+  config.xclk_freq_hz = 20000000;
+  config.pixel_format = PIXFORMAT_JPEG;
+  
+  //
+  // WARNING!!! PSRAM IC required for UXGA resolution and high JPEG quality
+  //            Ensure ESP32 Wrover Module or other board with PSRAM is selected
+  //            Partial images will be transmitted if image exceeds buffer size
+  //   
+  // if PSRAM IC present, init with UXGA resolution and higher JPEG quality
+  //                      for larger pre-allocated frame buffer.
+  if(psramFound()){  //是否有PSRAM(Psuedo SRAM)記憶體IC
+    config.frame_size = FRAMESIZE_UXGA;
+    config.jpeg_quality = 10;
+    config.fb_count = 2;
+  } else {
+    config.frame_size = FRAMESIZE_SVGA;
+    config.jpeg_quality = 12;
+    config.fb_count = 1;
+  }
+
+  //視訊初始化
+  esp_err_t err = esp_camera_init(&config);
+  if (err != ESP_OK) {
+    Serial.printf("Camera init failed with error 0x%x", err);
+    ESP.restart();
+  }
+
+  //可自訂視訊框架預設大小(解析度大小)
+  sensor_t * s = esp_camera_sensor_get();
+  // initial sensors are flipped vertically and colors are a bit saturated
+  if (s->id.PID == OV3660_PID) {
+    s->set_vflip(s, 1); // flip it back
+    s->set_brightness(s, 1); // up the brightness just a bit
+    s->set_saturation(s, -2); // lower the saturation
+  }
+  // drop down frame size for higher initial frame rate
+  s->set_framesize(s, FRAMESIZE_CIF);    //解析度 UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768), SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120), QXGA(2048x1564 for OV3660)
+
+  //s->set_vflip(s, 1);  //垂直翻轉
+  //s->set_hmirror(s, 1);  //水平鏡像
+          
+  //閃光燈(GPIO4)
+  ledcAttachPin(4, 4);  
+  ledcSetup(4, 5000, 8);
+
+  encrollImageSD();  //讀取SD卡圖檔註冊人臉   
+  
+  WiFi.mode(WIFI_AP_STA);  //其他模式 WiFi.mode(WIFI_AP); WiFi.mode(WIFI_STA);
+
+  //指定Client端靜態IP
+  //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
+
+  for (int i=0;i<2;i++) {
+    WiFi.begin(ssid, password);    //執行網路連線
+  
+    delay(1000);
+    Serial.println("");
+    Serial.print("Connecting to ");
+    Serial.println(ssid);
+    
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        if ((StartTime+5000) < millis()) break;    //等待10秒連線
+    } 
+  
+    if (WiFi.status() == WL_CONNECTED) {    //若連線成功
+      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP         
+      Serial.println("");
+      Serial.println("STAIP address: ");
+      Serial.println(WiFi.localIP());
+      Serial.println("");
+  
+      for (int i=0;i<5;i++) {   //若連上WIFI設定閃光燈快速閃爍
+        ledcWrite(4,10);
+        delay(200);
+        ledcWrite(4,0);
+        delay(200);    
+      }
+  
+      if (LineToken != "") 
+        LineNotify_http_get(LineToken, WiFi.localIP().toString());
+      break;
     }
-    memset(filter->values, 0, sample_size * sizeof(int));
+  } 
 
-    filter->size = sample_size;
-    return filter;
+  if (WiFi.status() != WL_CONNECTED) {    //若連線失敗
+    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);         
+
+    for (int i=0;i<2;i++) {    //若連不上WIFI設定閃光燈慢速閃爍
+      ledcWrite(4,10);
+      delay(1000);
+      ledcWrite(4,0);
+      delay(1000);    
+    }
+  } 
+  
+  //指定AP端IP
+  //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
+  Serial.println("");
+  Serial.println("APIP address: ");
+  Serial.println(WiFi.softAPIP());  
+  Serial.println("");
+  
+  startCameraServer();    //啟動視訊服務器 
+
+  //設定閃光燈為低電位
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);              
 }
 
-static int ra_filter_run(ra_filter_t * filter, int value){
-    if(!filter->values){
-        return value;
-    }
-    filter->sum -= filter->values[filter->index];
-    filter->values[filter->index] = value;
-    filter->sum += filter->values[filter->index];
-    filter->index++;
-    filter->index = filter->index % filter->size;
-    if (filter->count < filter->size) {
-        filter->count++;
-    }
-    return filter->sum / filter->count;
+void loop() {
+  if (streamState == false&&recognition_enabled==1) {
+    faceRecognition();
+  }
+  delay(100);
 }
 
+
+void FaceMatched(int faceid) {  //辨識到註冊人臉執行指令控制
+  if (faceid==0) {  
+  } 
+  else if (faceid==1) { 
+  } 
+  else if (faceid==2) { 
+  } 
+  else if (faceid==3) { 
+  } 
+  else if (faceid==4) { 
+  } 
+  else if (faceid==5) { 
+  } 
+  else if (faceid==6) {
+  } 
+  else {
+  }   
+}
+
+void FaceNoMatched() {  //辨識為陌生人臉執行指令控制
+  
+}
+
+void encrollImageSD() {
+  //臉部偵測參數設定  https://github.com/espressif/esp-face/blob/master/face_detection/README.md
+  mtmn_config.type = FAST;  //FAST or NORMAL
+  mtmn_config.min_face = 80;
+  mtmn_config.pyramid = 0.707;
+  mtmn_config.pyramid_times = 4;
+  mtmn_config.p_threshold.score = 0.6;
+  mtmn_config.p_threshold.nms = 0.7;
+  mtmn_config.p_threshold.candidate_number = 20;
+  mtmn_config.r_threshold.score = 0.7;
+  mtmn_config.r_threshold.nms = 0.7;
+  mtmn_config.r_threshold.candidate_number = 10;
+  mtmn_config.o_threshold.score = 0.7;
+  mtmn_config.o_threshold.nms = 0.7;
+  mtmn_config.o_threshold.candidate_number = 1;
+    
+  //SD卡初始化
+  if(!SD_MMC.begin()){
+    Serial.println("Card Mount Failed");
+    ESP.restart();
+  }  
+  
+  fs::FS &fs = SD_MMC;
+  
+  face_id_init(&id_list, FACE_ID_SAVE_NUMBER, ENROLL_CONFIRM_TIMES);
+  dl_matrix3du_t *aligned_face = NULL;
+  int8_t left_sample_face = NULL;
+  dl_matrix3du_t *image_matrix = NULL;
+  
+  for (int j=0;j<sizeof(filepath)/sizeof(*filepath);j++) {
+    File file = fs.open(filepath[j]);
+    Serial.println("detect file: "+filepath[j]);
+    if(!file){
+      Serial.println("Failed to open file for reading");
+      SD_MMC.end();    
+    } else {
+      Serial.println("file size: "+String(file.size())); 
+      char *buf;
+      buf = (char*) malloc (sizeof(char)*file.size());
+      long i = 0;
+      while (file.available()) {
+        buf[i] = file.read(); 
+        i++;  
+      }
+  
+      image_matrix = dl_matrix3du_alloc(1, image_width, image_height, 3);  //分配內部記憶體
+      if (!image_matrix) {
+          Serial.println("dl_matrix3du_alloc failed");
+      } else {          
+          fmt2rgb888((uint8_t*)buf, file.size(), PIXFORMAT_JPEG, image_matrix->item);  //影像格式轉換RGB格式
+          box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);  //執行人臉偵測取得臉框數據
+          if (net_boxes){
+            Serial.println("faces = " + String(net_boxes->len));  //偵測到的人臉數
+            Serial.println();
+            for (int i = 0; i < net_boxes->len; i++){  //列舉人臉位置與大小
+                Serial.println("index = " + String(i));
+                int x = (int)net_boxes->box[i].box_p[0];
+                Serial.println("x = " + String(x));
+                int y = (int)net_boxes->box[i].box_p[1];
+                Serial.println("y = " + String(y));
+                int w = (int)net_boxes->box[i].box_p[2] - x + 1;
+                Serial.println("width = " + String(w));
+                int h = (int)net_boxes->box[i].box_p[3] - y + 1;
+                Serial.println("height = " + String(h));
+                Serial.println();
+
+                //註冊人臉
+                if (i==0) {
+                  aligned_face = dl_matrix3du_alloc(1, FACE_WIDTH, FACE_HEIGHT, 3);
+                  if (align_face(net_boxes, image_matrix, aligned_face) == ESP_OK){
+                    if(!aligned_face){
+                        Serial.println("Could not allocate face recognition buffer");
+                    } 
+                    else {
+                      int8_t left_sample_face = enroll_face(&id_list, aligned_face);
+          
+                      if(left_sample_face == (ENROLL_CONFIRM_TIMES - 1)){
+                          enroll_id = id_list.tail;
+                          Serial.printf("Enrolling Face ID: %d\n", enroll_id);
+                      }
+                      Serial.printf("Enrolling Face ID: %d sample %d\n", enroll_id, ENROLL_CONFIRM_TIMES - left_sample_face);
+                      if (left_sample_face == 0){
+                          enroll_id = id_list.tail;
+                          //Serial.printf("Enrolled Face ID: %d\n", enroll_id);
+                      }
+                      Serial.println();
+                    }
+                    dl_matrix3du_free(aligned_face);
+                  }
+                }
+            } 
+            /*
+            //釋放net_boxes記憶體，v1.0.5以上版本會產生記憶體錯誤重啟
+            free(net_boxes->score);
+            free(net_boxes->box);
+            free(net_boxes->landmark);
+            free(net_boxes);
+            */
+            net_boxes = NULL;  //若沒有執行free釋放記憶體，可能產生問題。
+          }
+          else {
+            Serial.println("No Face");    //未偵測到人臉
+            Serial.println();
+          }
+          dl_matrix3du_free(image_matrix);
+      }
+      free(buf);
+    }
+    file.close();
+  } 
+  
+  SD_MMC.end();
+  Serial.println();
+
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);   
+}
+
+//影像輸出人臉辨識文字
 static void rgb_print(dl_matrix3du_t *image_matrix, uint32_t color, const char * str){
     fb_data_t fb;
     fb.width = image_matrix->w;
@@ -166,6 +426,7 @@ static void rgb_print(dl_matrix3du_t *image_matrix, uint32_t color, const char *
     fb_gfx_print(&fb, (fb.width - (strlen(str) * 14)) / 2, 10, color, str);
 }
 
+//影像輸出人臉辨識文字定位處理
 static int rgb_printf(dl_matrix3du_t *image_matrix, uint32_t color, const char *format, ...){
     char loc_buf[64];
     char * temp = loc_buf;
@@ -228,7 +489,49 @@ static void draw_face_boxes(dl_matrix3du_t *image_matrix, box_array_t *boxes, in
     }
 }
 
-//臉部辨識函式
+void faceRecognition() {
+  camera_fb_t * fb = NULL;
+  fb = esp_camera_fb_get();
+  if (!fb) {
+      Serial.println("Camera capture failed");
+      ESP.restart();
+  }
+  size_t out_len, out_width, out_height;
+  uint8_t * out_buf;
+  bool s;
+  dl_matrix3du_t *image_matrix = dl_matrix3du_alloc(1, fb->width, fb->height, 3);
+  if (!image_matrix) {
+      esp_camera_fb_return(fb);
+      Serial.println("dl_matrix3du_alloc failed");
+      return;
+  }
+  out_buf = image_matrix->item;
+  out_len = fb->width * fb->height * 3;
+  out_width = fb->width;
+  out_height = fb->height;
+  s = fmt2rgb888(fb->buf, fb->len, fb->format, out_buf);
+  esp_camera_fb_return(fb);
+  if(!s){
+      dl_matrix3du_free(image_matrix);
+      Serial.println("to rgb888 failed");
+      return;
+  }
+  box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);  //執行人臉偵測
+  if (net_boxes){
+      run_face_recognition(image_matrix, net_boxes);  //執行人臉辨識
+      /*
+      //釋放net_boxes記憶體，v1.0.5以上版本會產生記憶體錯誤重啟
+      free(net_boxes->score);
+      free(net_boxes->box);
+      free(net_boxes->landmark);
+      free(net_boxes);
+      */
+      net_boxes = NULL;  //若沒有執行free釋放記憶體，可能產生問題。
+  }
+  dl_matrix3du_free(image_matrix);
+}
+
+//人臉辨識函式
 static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_boxes){
     dl_matrix3du_t *aligned_face = NULL;
     int matched_id = 0;
@@ -239,46 +542,42 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
         return matched_id;
     }
     if (align_face(net_boxes, image_matrix, aligned_face) == ESP_OK){
-        if (is_enrolling == 1){
+        if (is_enrolling == 1){  //註冊人臉
             int8_t left_sample_face = enroll_face(&id_list, aligned_face);
 
             if(left_sample_face == (ENROLL_CONFIRM_TIMES - 1)){
-                Serial.printf("Enrolling Face ID: %d\n", id_list.tail);
+                enroll_id = id_list.tail;
+                Serial.printf("Enrolling Face ID: %d\n", enroll_id);
             }
-            Serial.printf("Enrolling Face ID: %d sample %d\n", id_list.tail, ENROLL_CONFIRM_TIMES - left_sample_face);
+            Serial.printf("Enrolling Face ID: %d sample %d\n", enroll_id, ENROLL_CONFIRM_TIMES - left_sample_face);
             rgb_printf(image_matrix, FACE_COLOR_CYAN, "ID[%u] Sample[%u]", id_list.tail, ENROLL_CONFIRM_TIMES - left_sample_face);
             if (left_sample_face == 0){
                 is_enrolling = 0;
-                Serial.printf("Enrolled Face ID: %d\n", id_list.tail);
+                enroll_id = id_list.tail;
+                //Serial.printf("Enrolled Face ID: %d\n", enroll_id);
             }
-        } else {
+        } else {  //人臉辨識
             matched_id = recognize_face(&id_list, aligned_face);
-            if (matched_id >= 0) {
-                //如果偵測到有註冊的人臉可在此區塊自訂顯示人名與開門控制。
+            if (matched_id >= 0) {  //若辨識為已註冊之人臉
                 Serial.printf("Match Face ID: %u\n", matched_id);
-                Serial.printf("Match Face Name: %s\n", recognize_face_matched_name[matched_id]);
-                Serial.println();
                 int name_length = sizeof(recognize_face_matched_name) / sizeof(recognize_face_matched_name[0]);
-                //Serial.println(name_length);
                 if (matched_id<name_length) {
-                  //視訊畫面中顯示辨識到的人名
+                  Serial.printf("Match Face Name: %s\n", recognize_face_matched_name[matched_id]);
                   rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] %s", matched_id, recognize_face_matched_name[matched_id]);
-                }
-                else {
+                } else {
+                  Serial.printf("Match Face Name: No name");
                   rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] No Name", matched_id);
                 }
                 FaceMatched(matched_id);  //辨識到註冊人臉執行指令控制
-            } else {
+            } else {  //若辨識為未註冊之人臉
                 Serial.println("No Match Found");
-                Serial.println();
                 rgb_print(image_matrix, FACE_COLOR_RED, "Intruder Alert!");
                 matched_id = -1;
                 FaceNoMatched();  //辨識為陌生人臉執行指令控制
             }
         }
-    } else {
+    } else {  //若偵測出人臉，但無法進行識別
         Serial.println("Face Not Aligned");
-        Serial.println();
         rgb_print(image_matrix, FACE_COLOR_YELLOW, "Human Detected");
     }
 
@@ -359,18 +658,23 @@ static esp_err_t capture_handler(httpd_req_t *req){
         return ESP_FAIL;
     }
 
-    box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);
+    box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);  //執行人臉偵測取得臉框數據
 
     if (net_boxes){
+        //Serial.println("faces = " + String(net_boxes->len));  //偵測到的人臉數
         detected = true;
         if(recognition_enabled){
-            face_id = run_face_recognition(image_matrix, net_boxes);
+            face_id = run_face_recognition(image_matrix, net_boxes);  //執行人臉辨識
         }
-        draw_face_boxes(image_matrix, net_boxes, face_id);
+        draw_face_boxes(image_matrix, net_boxes, face_id);  //繪製人臉方框
+        /*
+        //釋放net_boxes記憶體，v1.0.5以上版本會產生記憶體錯誤重啟
         free(net_boxes->score);
         free(net_boxes->box);
         free(net_boxes->landmark);
         free(net_boxes);
+        */
+        net_boxes = NULL;  //若沒有執行free釋放記憶體，可能產生問題。
     }
 
     jpg_chunking_t jchunk = {req, 0};
@@ -382,7 +686,7 @@ static esp_err_t capture_handler(httpd_req_t *req){
     }
 
     int64_t fr_end = esp_timer_get_time();
-    //Serial.printf("FACE: %uB %ums %s%d\n", (uint32_t)(jchunk.len), (uint32_t)((fr_end - fr_start)/1000), detected?"DETECTED ":"", face_id);
+    Serial.printf("FACE: %uB %ums %s%d\n", (uint32_t)(jchunk.len), (uint32_t)((fr_end - fr_start)/1000), detected?"DETECTED ":"", face_id);
     return res;
 }
 
@@ -457,22 +761,27 @@ static esp_err_t stream_handler(httpd_req_t *req){
                         fr_ready = esp_timer_get_time();
                         box_array_t *net_boxes = NULL;
                         if(detection_enabled){
-                            net_boxes = face_detect(image_matrix, &mtmn_config);
+                            net_boxes = face_detect(image_matrix, &mtmn_config);  //執行人臉偵測取得臉框數據
                         }
                         fr_face = esp_timer_get_time();
                         fr_recognize = fr_face;
                         if (net_boxes || fb->format != PIXFORMAT_JPEG){
                             if(net_boxes){
+                                //Serial.println("faces = " + String(net_boxes->len));  //偵測到的人臉數
                                 detected = true;
                                 if(recognition_enabled){
-                                    face_id = run_face_recognition(image_matrix, net_boxes);
+                                    face_id = run_face_recognition(image_matrix, net_boxes);  //執行人臉辨識
                                 }
                                 fr_recognize = esp_timer_get_time();
-                                draw_face_boxes(image_matrix, net_boxes, face_id);
+                                draw_face_boxes(image_matrix, net_boxes, face_id);  //繪製人臉方框
+                                /*
+                                //釋放net_boxes記憶體，v1.0.5以上版本會產生記憶體錯誤重啟
                                 free(net_boxes->score);
                                 free(net_boxes->box);
                                 free(net_boxes->landmark);
                                 free(net_boxes);
+                                */
+                                net_boxes = NULL;  //若沒有執行free釋放記憶體，可能產生問題。
                             }
                             if(!fmt2jpg(image_matrix->item, fb->width*fb->height*3, fb->width, fb->height, PIXFORMAT_RGB888, 90, &_jpg_buf, &_jpg_buf_len)){
                                 Serial.println("fmt2jpg failed");
@@ -523,12 +832,10 @@ static esp_err_t stream_handler(httpd_req_t *req){
         int64_t frame_time = fr_end - last_frame;
         last_frame = fr_end;
         frame_time /= 1000;
-        uint32_t avg_frame_time = ra_filter_run(&ra_filter, frame_time);
         /*
-        Serial.printf("MJPG: %uB %ums (%.1ffps), AVG: %ums (%.1ffps), %u+%u+%u+%u=%u %s%d\n",
+        Serial.printf("MJPG: %uB %ums (%.1ffps), %u+%u+%u+%u=%u %s%d\n",
             (uint32_t)(_jpg_buf_len),
             (uint32_t)frame_time, 1000.0 / (uint32_t)frame_time,
-            avg_frame_time, 1000.0 / avg_frame_time,
             (uint32_t)ready_time, (uint32_t)face_time, (uint32_t)recognize_time, (uint32_t)encode_time, (uint32_t)process_time,
             (detected)?"DETECTED ":"", face_id
         );
@@ -538,36 +845,6 @@ static esp_err_t stream_handler(httpd_req_t *req){
     last_frame = 0;
     streamState = false;
     return res;
-}
-
-//拆解命令字串置入變數
-void getCommand(char c)
-{
-  if (c=='?') ReceiveState=1;
-  if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
-  
-  if (ReceiveState==1)
-  {
-    Command=Command+String(c);
-    
-    if (c=='=') cmdState=0;
-    if (c==';') strState++;
-  
-    if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
-    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) P1=P1+String(c);
-    if ((cmdState==0)&&(strState==2)&&(c!=';')) P2=P2+String(c);
-    if ((cmdState==0)&&(strState==3)&&(c!=';')) P3=P3+String(c);
-    if ((cmdState==0)&&(strState==4)&&(c!=';')) P4=P4+String(c);
-    if ((cmdState==0)&&(strState==5)&&(c!=';')) P5=P5+String(c);
-    if ((cmdState==0)&&(strState==6)&&(c!=';')) P6=P6+String(c);
-    if ((cmdState==0)&&(strState==7)&&(c!=';')) P7=P7+String(c);
-    if ((cmdState==0)&&(strState==8)&&(c!=';')) P8=P8+String(c);
-    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) P9=P9+String(c);
-    
-    if (c=='?') questionstate=1;
-    if (c=='=') equalstate=1;
-    if ((strState>=9)&&(c==';')) semicolonstate=1;
-  }
 }
 
 //指令參數控制
@@ -586,7 +863,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
             httpd_resp_send_500(req);
             return ESP_FAIL;
         }
-        if (httpd_req_get_url_query_str(req, buf, buf_len) == ESP_OK) {
+        if (httpd_req_get_url_query_str(req, buf, buf_len) == ESP_OK) {  //拆解網址後帶的參數字串
           if (httpd_query_key_value(buf, "var", variable, sizeof(variable)) == ESP_OK &&
             httpd_query_key_value(buf, "val", value, sizeof(value)) == ESP_OK) {
           } 
@@ -652,31 +929,31 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       return httpd_resp_send(req, resp, strlen(resp));
     } 
     else {
-      int val = atoi(value);
+      int val = atoi(value);  //將參數val值轉換為整數，原為char格式
       sensor_t * s = esp_camera_sensor_get();
       int res = 0;
   
       //官方指令區塊，也可在此自訂指令  http://192.168.xxx.xxx/control?var=xxx&val=xxx
-      if(!strcmp(variable, "framesize")) {
+      if(!strcmp(variable, "framesize")) {  //解析度
           if(s->pixformat == PIXFORMAT_JPEG) res = s->set_framesize(s, (framesize_t)val);
       }
-      else if(!strcmp(variable, "quality")) res = s->set_quality(s, val);
-      else if(!strcmp(variable, "contrast")) res = s->set_contrast(s, val);
-      else if(!strcmp(variable, "brightness")) res = s->set_brightness(s, val);
-      else if(!strcmp(variable, "face_detect")) {
+      else if(!strcmp(variable, "quality")) res = s->set_quality(s, val);  //畫質
+      else if(!strcmp(variable, "contrast")) res = s->set_contrast(s, val);  //對比
+      else if(!strcmp(variable, "brightness")) res = s->set_brightness(s, val);  //亮度
+      else if(!strcmp(variable, "face_detect")) {  //人臉偵測
           detection_enabled = val;
           if(!detection_enabled) {
               recognition_enabled = 0;
           }
       }
-      else if(!strcmp(variable, "face_enroll")) is_enrolling = val;
-      else if(!strcmp(variable, "face_recognize")) {
+      else if(!strcmp(variable, "face_enroll")) is_enrolling = val;  //人臉註冊
+      else if(!strcmp(variable, "face_recognize")) {  //人臉辨識
           recognition_enabled = val;
           if(recognition_enabled){
               detection_enabled = val;
           }
       }
-      else if(!strcmp(variable, "flash")) {  //Control flash
+      else if(!strcmp(variable, "flash")) {  //閃光燈
         ledcWrite(4,val);
         flash_value = val;
       }    
@@ -1319,69 +1596,49 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
 //網頁首頁  http://192.168.xxx.xxx
 static esp_err_t index_handler(httpd_req_t *req){
     httpd_resp_set_type(req, "text/html");
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");     
     return httpd_resp_send(req, (const char *)INDEX_HTML, strlen(INDEX_HTML));
 }
 
 void startCameraServer(){
+    //https://github.com/espressif/esp-idf/blob/master/components/esp_http_server/include/esp_http_server.h
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();  //可在HTTPD_DEFAULT_CONFIG()中設定Server Port
 
     //可自訂網址路徑對應執行的函式
-    //http://192.168.xxx.xxx/
     httpd_uri_t index_uri = {
-        .uri       = "/",
+        .uri       = "/",             //http://192.168.xxx.xxx/
         .method    = HTTP_GET,
         .handler   = index_handler,
         .user_ctx  = NULL
     };
 
-    //http://192.168.xxx.xxx/status
     httpd_uri_t status_uri = {
-        .uri       = "/status",
+        .uri       = "/status",       //http://192.168.xxx.xxx/status
         .method    = HTTP_GET,
         .handler   = status_handler,
         .user_ctx  = NULL
     };
 
-    //http://192.168.xxx.xxx/control
     httpd_uri_t cmd_uri = {
-        .uri       = "/control",
+        .uri       = "/control",      //http://192.168.xxx.xxx/control
         .method    = HTTP_GET,
         .handler   = cmd_handler,
         .user_ctx  = NULL
     };
 
-    //http://192.168.xxx.xxx/capture
     httpd_uri_t capture_uri = {
-        .uri       = "/capture",
+        .uri       = "/capture",      //http://192.168.xxx.xxx/capture
         .method    = HTTP_GET,
         .handler   = capture_handler,
         .user_ctx  = NULL
     };
 
-   //http://192.168.xxx.xxx:81/stream
    httpd_uri_t stream_uri = {
-        .uri       = "/stream",
+        .uri       = "/stream",       //http://192.168.xxx.xxx:81/stream
         .method    = HTTP_GET,
         .handler   = stream_handler,
         .user_ctx  = NULL
     };
-
-    ra_filter_init(&ra_filter, 20);
-    
-    //臉部偵測參數設定  https://github.com/espressif/esp-face/blob/master/face_detection/README.md
-    mtmn_config.type = FAST;
-    mtmn_config.min_face = 80;
-    mtmn_config.pyramid = 0.707;
-    mtmn_config.pyramid_times = 4;
-    mtmn_config.p_threshold.score = 0.6;
-    mtmn_config.p_threshold.nms = 0.7;
-    mtmn_config.p_threshold.candidate_number = 20;
-    mtmn_config.r_threshold.score = 0.7;
-    mtmn_config.r_threshold.nms = 0.7;
-    mtmn_config.r_threshold.candidate_number = 10;
-    mtmn_config.o_threshold.score = 0.7;
-    mtmn_config.o_threshold.nms = 0.7;
-    mtmn_config.o_threshold.candidate_number = 1;
     
     Serial.printf("Starting web server on port: '%d'\n", config.server_port);  //TCP Port
     if (httpd_start(&camera_httpd, &config) == ESP_OK) {
@@ -1400,289 +1657,52 @@ void startCameraServer(){
     }
 }
 
-void setup() {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
+//拆解命令字串置入變數
+void getCommand(char c)
+{
+  if (c=='?') ReceiveState=1;
+  if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
+  
+  if (ReceiveState==1)
+  {
+    Command=Command+String(c);
     
-  Serial.begin(115200);
-  Serial.setDebugOutput(true);  //開啟診斷輸出
-  Serial.println();
-
-  //視訊組態設定
-  camera_config_t config;
-  config.ledc_channel = LEDC_CHANNEL_0;
-  config.ledc_timer = LEDC_TIMER_0;
-  config.pin_d0 = Y2_GPIO_NUM;
-  config.pin_d1 = Y3_GPIO_NUM;
-  config.pin_d2 = Y4_GPIO_NUM;
-  config.pin_d3 = Y5_GPIO_NUM;
-  config.pin_d4 = Y6_GPIO_NUM;
-  config.pin_d5 = Y7_GPIO_NUM;
-  config.pin_d6 = Y8_GPIO_NUM;
-  config.pin_d7 = Y9_GPIO_NUM;
-  config.pin_xclk = XCLK_GPIO_NUM;
-  config.pin_pclk = PCLK_GPIO_NUM;
-  config.pin_vsync = VSYNC_GPIO_NUM;
-  config.pin_href = HREF_GPIO_NUM;
-  config.pin_sscb_sda = SIOD_GPIO_NUM;
-  config.pin_sscb_scl = SIOC_GPIO_NUM;
-  config.pin_pwdn = PWDN_GPIO_NUM;
-  config.pin_reset = RESET_GPIO_NUM;
-  config.xclk_freq_hz = 20000000;
-  config.pixel_format = PIXFORMAT_JPEG;
-  //init with high specs to pre-allocate larger buffers
-  if(psramFound()){
-    config.frame_size = FRAMESIZE_UXGA;
-    config.jpeg_quality = 10;
-    config.fb_count = 2;
-  } else {
-    config.frame_size = FRAMESIZE_SVGA;
-    config.jpeg_quality = 12;
-    config.fb_count = 1;
-  }
-
-  //視訊初始化
-  esp_err_t err = esp_camera_init(&config);
-  if (err != ESP_OK) {
-    Serial.printf("Camera init failed with error 0x%x", err);
-    return;
-  }
-
-  //可動態改變視訊框架大小(解析度大小)
-  sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_CIF);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
-
-  //臉部偵測參數設定  https://github.com/espressif/esp-face/blob/master/face_detection/README.md
-  mtmn_config.type = FAST;  //FAST or NORMAL
-  mtmn_config.min_face = 80;
-  mtmn_config.pyramid = 0.707;
-  mtmn_config.pyramid_times = 4;
-  mtmn_config.p_threshold.score = 0.6;
-  mtmn_config.p_threshold.nms = 0.7;
-  mtmn_config.p_threshold.candidate_number = 20;
-  mtmn_config.r_threshold.score = 0.7;
-  mtmn_config.r_threshold.nms = 0.7;
-  mtmn_config.r_threshold.candidate_number = 10;
-  mtmn_config.o_threshold.score = 0.7;
-  mtmn_config.o_threshold.nms = 0.7;
-  mtmn_config.o_threshold.candidate_number = 1;
-          
-  //閃光燈(GPIO4)
-  ledcAttachPin(4, 4);  
-  ledcSetup(4, 5000, 8);
+    if (c=='=') cmdState=0;
+    if (c==';') strState++;
   
-  WiFi.mode(WIFI_AP_STA);  //其他模式 WiFi.mode(WIFI_AP); WiFi.mode(WIFI_STA);
-
-  //指定Client端靜態IP
-  //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
-
-  WiFi.begin(ssid, password);    //執行網路連線
-
-  delay(1000);
-  Serial.println("");
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-  
-  long int StartTime=millis();
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    if ((StartTime+10000) < millis()) break;    //等待10秒連線
-  } 
-
-  if (WiFi.status() == WL_CONNECTED) {    //若連線成功
-    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP         
-    Serial.println("");
-    Serial.println("STAIP address: ");
-    Serial.println(WiFi.localIP()); 
-
-    for (int i=0;i<5;i++) {   //若連上WIFI設定閃光燈快速閃爍
-      ledcWrite(4,10);
-      delay(200);
-      ledcWrite(4,0);
-      delay(200);    
-    }    
-  }
-  else {
-    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);    
-
-    for (int i=0;i<2;i++) {    //若連不上WIFI設定閃光燈慢速閃爍
-      ledcWrite(4,10);
-      delay(1000);
-      ledcWrite(4,0);
-      delay(1000);    
-    }      
-  }     
-
-  //指定AP端IP
-  //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
-  Serial.println("");
-  Serial.println("APIP address: ");
-  Serial.println(WiFi.softAPIP());  
-  Serial.println("");
-  
-
-  //設定閃光燈為低電位
-  pinMode(4, OUTPUT);
-  digitalWrite(4, LOW);
-
-  //讀取SD中的影像，若偵測得到人臉則註冊人臉
-  if(!SD_MMC.begin()){
-    Serial.println("Card Mount Failed");
-  }  
-  
-  fs::FS &fs = SD_MMC;
-  
-  face_id_init(&id_list, FACE_ID_SAVE_NUMBER, ENROLL_CONFIRM_TIMES);
-  dl_matrix3du_t *aligned_face = NULL;
-  int8_t left_sample_face = NULL;
-  dl_matrix3du_t *image_matrix = NULL;
-  
-  for (int j=0;j<sizeof(filename)/sizeof(*filename);j++) {
-    File file = fs.open(filename[j]);
-    Serial.println("detect file: "+filename[j]);
-    if(!file){
-      Serial.println("Failed to open file for reading");
-      SD_MMC.end();    
-    } else {
-      Serial.println("file size: "+String(file.size())); 
-      char *buf;
-      buf = (char*) malloc (sizeof(char)*file.size());
-      long i = 0;
-      while (file.available()) {
-        buf[i] = file.read(); 
-        i++;  
-      }
-  
-      image_matrix = dl_matrix3du_alloc(1, image_width, image_height, 3);  //分配內部記憶體
-      if (!image_matrix) {
-          Serial.println("dl_matrix3du_alloc failed");
-      } else {
-          fmt2rgb888((uint8_t*)buf, file.size(), PIXFORMAT_JPEG, image_matrix->item);  //影像格式轉換RGB格式
-          box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);  //偵測人臉取得臉框數據
-          if (net_boxes){
-            Serial.println("faces = " + String(net_boxes->len));  //偵測到的人臉數
-            Serial.println();
-            for (int i = 0; i < net_boxes->len; i++){  //列舉人臉位置與大小
-                Serial.println("index = " + String(i));
-                int x = (int)net_boxes->box[i].box_p[0];
-                Serial.println("x = " + String(x));
-                int y = (int)net_boxes->box[i].box_p[1];
-                Serial.println("y = " + String(y));
-                int w = (int)net_boxes->box[i].box_p[2] - x + 1;
-                Serial.println("width = " + String(w));
-                int h = (int)net_boxes->box[i].box_p[3] - y + 1;
-                Serial.println("height = " + String(h));
-                Serial.println();
-
-                //註冊人臉
-                if (i==0) {
-                  aligned_face = dl_matrix3du_alloc(1, FACE_WIDTH, FACE_HEIGHT, 3);
-                  if (align_face(net_boxes, image_matrix, aligned_face) == ESP_OK){
-                    if(!aligned_face){
-                        Serial.println("Could not allocate face recognition buffer");
-                    } 
-                    else {
-                      left_sample_face = enroll_face(&id_list, aligned_face);
-          
-                      if(left_sample_face == (ENROLL_CONFIRM_TIMES - 1)){
-                          Serial.printf("Enrolling Face ID: %d\n", id_list.tail);
-                      }
-                      Serial.printf("Enrolling Face ID: %d sample %d\n", id_list.tail, ENROLL_CONFIRM_TIMES - left_sample_face);
-                      if (left_sample_face == 0){
-                          Serial.printf("Enrolled Face ID: %d\n", id_list.tail);
-                      }
-                      Serial.println();
-                    }
-                    dl_matrix3du_free(aligned_face);
-                  }
-                }
-            } 
-            free(net_boxes->score);
-            free(net_boxes->box);
-            free(net_boxes->landmark);
-            free(net_boxes);
-          }
-          else {
-            Serial.println("No Face");    //未偵測到人臉
-            Serial.println();
-          }
-          dl_matrix3du_free(image_matrix);
-      }
-      free(buf);
-    }
-    file.close();
-  } 
-  
-  SD_MMC.end();
-  Serial.println();
-  
-  pinMode(4, OUTPUT);
-  digitalWrite(4, LOW); 
-
-  startCameraServer();     
-}
-
-void loop() {
-  if (streamState == false&&recognition_enabled==1) {
+    if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
+    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) P1=P1+String(c);
+    if ((cmdState==0)&&(strState==2)&&(c!=';')) P2=P2+String(c);
+    if ((cmdState==0)&&(strState==3)&&(c!=';')) P3=P3+String(c);
+    if ((cmdState==0)&&(strState==4)&&(c!=';')) P4=P4+String(c);
+    if ((cmdState==0)&&(strState==5)&&(c!=';')) P5=P5+String(c);
+    if ((cmdState==0)&&(strState==6)&&(c!=';')) P6=P6+String(c);
+    if ((cmdState==0)&&(strState==7)&&(c!=';')) P7=P7+String(c);
+    if ((cmdState==0)&&(strState==8)&&(c!=';')) P8=P8+String(c);
+    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) P9=P9+String(c);
     
-    camera_fb_t * fb = NULL;
-    fb = esp_camera_fb_get();  //取得鏡頭畫面
-    if (!fb) {
-        Serial.println("Camera capture failed");
-        return;
-    }
-    size_t out_len, out_width, out_height;
-    uint8_t * out_buf;
-    bool s;
-    dl_matrix3du_t *image_matrix = dl_matrix3du_alloc(1, fb->width, fb->height, 3);
-    if (!image_matrix) {
-        esp_camera_fb_return(fb);
-        Serial.println("dl_matrix3du_alloc failed");
-        return;
-    }
-    out_buf = image_matrix->item;
-    out_len = fb->width * fb->height * 3;
-    out_width = fb->width;
-    out_height = fb->height;
-    s = fmt2rgb888(fb->buf, fb->len, fb->format, out_buf);
-    esp_camera_fb_return(fb);
-    if(!s){
-        dl_matrix3du_free(image_matrix);
-        Serial.println("to rgb888 failed");
-        return;
-    }
-    box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);  //執行人臉偵測
-    if (net_boxes){
-        run_face_recognition(image_matrix, net_boxes);  //執行人臉辨識
-        free(net_boxes->score);
-        free(net_boxes->box);
-        free(net_boxes->landmark);
-        free(net_boxes);
-    }
-    dl_matrix3du_free(image_matrix);
+    if (c=='?') questionstate=1;
+    if (c=='=') equalstate=1;
+    if ((strState>=9)&&(c==';')) semicolonstate=1;
   }
-
-  delay(100);
 }
 
-void FaceMatched(int faceid) {  //辨識到註冊人臉執行指令控制
-  if (faceid==0) {  
-  } 
-  else if (faceid==1) { 
-  } 
-  else if (faceid==2) { 
-  } 
-  else if (faceid==3) { 
-  } 
-  else if (faceid==4) { 
-  } 
-  else if (faceid==5) { 
-  } 
-  else if (faceid==6) {
-  } 
-  else {
-  }   
-}
-
-void FaceNoMatched() {  //辨識為陌生人臉執行指令控制
+String LineNotify_http_get(String token, String message) {
+  message.replace("%","%25");  
+  message.replace(" ","%20");
+  message.replace("&","%20");
+  message.replace("#","%20");
+  //message.replace("\'","%27");
+  message.replace("\"","%22");
+  message.replace("\n","%0D%0A");
   
+  http.begin("http://linenotify.com/notify.php?token="+token+"&message="+message);
+  int httpCode = http.GET();
+  /*
+  if(httpCode > 0) {
+      if(httpCode == 200) 
+        Serial.println(http.getString());
+  } else 
+      Serial.println("Connection Error!");
+  */
 }

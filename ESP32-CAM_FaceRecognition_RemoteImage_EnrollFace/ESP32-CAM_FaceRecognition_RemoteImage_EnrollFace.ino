@@ -2,9 +2,6 @@
 ESP32-CAM Enroll faces by getting remote images from web server and recognize faces automatically.
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-17 22:30
 https://www.facebook.com/francefu
-
-Please change the esp32 core of Arduino IDE to version 1.0.4.
-The code can't run on version 1.0.5 .
 */
 
 //輸入WIFI連線帳號密碼
@@ -65,6 +62,7 @@ int image_height = 296;
 //初始值
 static mtmn_config_t mtmn_config = {0};
 static face_id_list id_list = {0};
+int8_t enroll_id = 0;
 
 void FaceMatched(int faceid) {  //辨識到註冊人臉
   if (faceid==0) {  
@@ -140,7 +138,7 @@ void setup() {
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
-    return;
+    ESP.restart();
   }
 
   //可自訂視訊框架預設大小(解析度大小)
@@ -348,14 +346,16 @@ void enrollImageRemote() {  //取得遠端照片註冊人臉
                             Serial.println("Could not allocate face recognition buffer");
                         } 
                         else {
-                          left_sample_face = enroll_face(&id_list, aligned_face);
+                          int8_t left_sample_face = enroll_face(&id_list, aligned_face);
               
                           if(left_sample_face == (ENROLL_CONFIRM_TIMES - 1)){
-                              Serial.printf("Enrolling Face ID: %d\n", id_list.tail);
+                              enroll_id = id_list.tail;
+                              Serial.printf("Enrolling Face ID: %d\n", enroll_id);
                           }
-                          Serial.printf("Enrolling Face ID: %d sample %d\n", id_list.tail, ENROLL_CONFIRM_TIMES - left_sample_face);
+                          Serial.printf("Enrolling Face ID: %d sample %d\n", enroll_id, ENROLL_CONFIRM_TIMES - left_sample_face);
                           if (left_sample_face == 0){
-                              Serial.printf("Enrolled Face ID: %d\n", id_list.tail);
+                              enroll_id = id_list.tail;
+                              //Serial.printf("Enrolled Face ID: %d\n", enroll_id);
                           }
                           Serial.println();
                         }

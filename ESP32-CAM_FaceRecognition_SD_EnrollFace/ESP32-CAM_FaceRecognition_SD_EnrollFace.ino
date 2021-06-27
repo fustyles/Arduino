@@ -52,6 +52,7 @@ String recognize_face_matched_name[7] = {"Name0","Name1","Name2","Name3","Name4"
 //初始值
 static mtmn_config_t mtmn_config = {0};
 static face_id_list id_list = {0};
+int8_t enroll_id = 0;
 
 //https://github.com/espressif/esp-dl/blob/master/face_detection/README.md
 box_array_t *net_boxes = NULL;
@@ -130,7 +131,7 @@ void setup() {
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
-    return;
+    ESP.restart();
   }
 
   //可自訂視訊框架預設大小(解析度大小)
@@ -238,11 +239,13 @@ void encrollImageSD() {
                       left_sample_face = enroll_face(&id_list, aligned_face);
           
                       if(left_sample_face == (ENROLL_CONFIRM_TIMES - 1)){
-                          Serial.printf("Enrolling Face ID: %d\n", id_list.tail);
+                          enroll_id = id_list.tail;
+                          Serial.printf("Enrolling Face ID: %d\n", enroll_id);
                       }
-                      Serial.printf("Enrolling Face ID: %d sample %d\n", id_list.tail, ENROLL_CONFIRM_TIMES - left_sample_face);
+                      Serial.printf("Enrolling Face ID: %d sample %d\n", enroll_id, ENROLL_CONFIRM_TIMES - left_sample_face);
                       if (left_sample_face == 0){
-                          Serial.printf("Enrolled Face ID: %d\n", id_list.tail);
+                          enroll_id = id_list.tail;
+                          //Serial.printf("Enrolled Face ID: %d\n", enroll_id);
                       }
                       Serial.println();
                     }

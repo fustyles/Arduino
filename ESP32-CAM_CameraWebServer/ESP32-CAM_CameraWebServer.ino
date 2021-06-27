@@ -9,7 +9,7 @@ Face recognition works well in v1.0.4, v1.0.5, v1.0.6 or above.
 AP IP: 192.168.4.1
 http://192.168.xxx.xxx             //網頁首頁管理介面
 http://192.168.xxx.xxx:81/stream   //取得串流影像        網頁語法 <img src="http://192.168.xxx.xxx:81/stream">
-http://192.168.xxx.xxx/capture     //取得影像            網頁語法 <img src="http://192.168.xxx.xxx/capture">
+http://192.168.xxx.xxx/capture     //取得影像           網頁語法 <img src="http://192.168.xxx.xxx/capture">
 http://192.168.xxx.xxx/status      //取得視訊參數值
 
 設定視訊參數(官方指令格式)  http://192.168.xxx.xxx/control?var=*****&val=*****
@@ -125,6 +125,7 @@ static int8_t detection_enabled = 0;
 static int8_t recognition_enabled = 0;
 static int8_t is_enrolling = 0;
 static face_id_list id_list = {0};
+int8_t enroll_id = 0;
 
 //https://github.com/espressif/esp-dl/blob/master/face_detection/README.md
 box_array_t *net_boxes = NULL;
@@ -196,8 +197,8 @@ void setup() {
   // drop down frame size for higher initial frame rate
   s->set_framesize(s, FRAMESIZE_QVGA);    //解析度 UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768), SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120), QXGA(2048x1564 for OV3660)
 
-  //s->set_vflip(s, 1);  //垂直翻轉
-  //s->set_hmirror(s, 1);  //水平鏡像
+  //s->set_vflip(s, 1);    //設定垂直翻轉
+  //s->set_hmirror(s, 1);  //設定水平鏡像
 
   WiFi.begin(ssid, password);    //執行網路連線
 
@@ -340,14 +341,16 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
             int8_t left_sample_face = enroll_face(&id_list, aligned_face);
 
             if(left_sample_face == (ENROLL_CONFIRM_TIMES - 1)){
-                Serial.printf("Enrolling Face ID: %d\n", id_list.tail);
+                enroll_id = id_list.tail;
+                Serial.printf("Enrolling Face ID: %d\n", enroll_id);
             }
-            Serial.printf("Enrolling Face ID: %d sample %d\n", id_list.tail, ENROLL_CONFIRM_TIMES - left_sample_face);
-            rgb_printf(image_matrix, FACE_COLOR_CYAN, "ID[%u] Sample[%u]", id_list.tail, ENROLL_CONFIRM_TIMES - left_sample_face);
+            Serial.printf("Enrolling Face ID: %d sample %d\n", enroll_id, ENROLL_CONFIRM_TIMES - left_sample_face);
             if (left_sample_face == 0){
                 is_enrolling = 0;
-                Serial.printf("Enrolled Face ID: %d\n", id_list.tail);
+                enroll_id = id_list.tail;
+                //Serial.printf("Enrolled Face ID: %d\n", enroll_id);
             }
+            Serial.println();
         } else {  //人臉辨識
             matched_id = recognize_face(&id_list, aligned_face);
             if (matched_id >= 0) {  //若辨識為已註冊之人臉

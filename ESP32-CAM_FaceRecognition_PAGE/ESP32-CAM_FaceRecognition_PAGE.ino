@@ -107,6 +107,7 @@ static int8_t recognition_enabled = 0;   //人臉辨識狀態 0 or 1
 static int8_t is_enrolling = 0;
 static face_id_list id_list = {0};
 static int8_t flash_value = 0;
+int8_t enroll_id = 0;
 
 typedef struct {
         httpd_req_t *req;
@@ -167,7 +168,7 @@ void setup() {
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
-    return;
+    ESP.restart();
   }
 
   //可自訂視訊框架預設大小(解析度大小)
@@ -1089,12 +1090,14 @@ static esp_err_t stream_handler(httpd_req_t *req){
         int64_t frame_time = fr_end - last_frame;
         last_frame = fr_end;
         frame_time /= 1000;
+        /*
         Serial.printf("MJPG: %uB %ums (%.1ffps), %u+%u+%u+%u=%u %s%d\n",
             (uint32_t)(_jpg_buf_len),
             (uint32_t)frame_time, 1000.0 / (uint32_t)frame_time,
             (uint32_t)ready_time, (uint32_t)face_time, (uint32_t)recognize_time, (uint32_t)encode_time, (uint32_t)process_time,
             (detected)?"DETECTED ":"", face_id
         );
+        */
     }
 
     last_frame = 0;
@@ -1116,14 +1119,16 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
             int8_t left_sample_face = enroll_face(&id_list, aligned_face);
 
             if(left_sample_face == (ENROLL_CONFIRM_TIMES - 1)){
-                Serial.printf("Enrolling Face ID: %d\n", id_list.tail);
+                enroll_id = id_list.tail;
+                Serial.printf("Enrolling Face ID: %d\n", enroll_id);
             }
-            Serial.printf("Enrolling Face ID: %d sample %d\n", id_list.tail, ENROLL_CONFIRM_TIMES - left_sample_face);
-            rgb_printf(image_matrix, FACE_COLOR_CYAN, "ID[%u] Sample[%u]", id_list.tail, ENROLL_CONFIRM_TIMES - left_sample_face);
+            Serial.printf("Enrolling Face ID: %d sample %d\n", enroll_id, ENROLL_CONFIRM_TIMES - left_sample_face);
             if (left_sample_face == 0){
                 is_enrolling = 0;
-                Serial.printf("Enrolled Face ID: %d\n", id_list.tail);
+                enroll_id = id_list.tail;
+                //Serial.printf("Enrolled Face ID: %d\n", enroll_id);
             }
+            Serial.println();
         } else {  //人臉辨識
             matched_id = recognize_face(&id_list, aligned_face);
             if (matched_id >= 0) {  //若辨識為已註冊之人臉
@@ -1161,6 +1166,7 @@ static void rgb_print(dl_matrix3du_t *image_matrix, uint32_t color, const char *
     fb_gfx_print(&fb, (fb.width - (strlen(str) * 14)) / 2, 10, color, str);
 }
 
+//影像輸出人臉辨識文字定位處理
 static int rgb_printf(dl_matrix3du_t *image_matrix, uint32_t color, const char *format, ...){
     char loc_buf[64];
     char * temp = loc_buf;
