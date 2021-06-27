@@ -8,8 +8,8 @@ Face recognition works well in v1.0.4, v1.0.5, v1.0.6 or above.
 
 AP IP: 192.168.4.1
 http://192.168.xxx.xxx             //網頁首頁管理介面
-http://192.168.xxx.xxx:81/stream   //取得串流影像
-http://192.168.xxx.xxx/capture     //取得影像
+http://192.168.xxx.xxx:81/stream   //取得串流影像        網頁語法 <img src="http://192.168.xxx.xxx:81/stream">
+http://192.168.xxx.xxx/capture     //取得影像            網頁語法 <img src="http://192.168.xxx.xxx/capture">
 http://192.168.xxx.xxx/status      //取得視訊參數值
 
 設定視訊參數(官方指令格式)  http://192.168.xxx.xxx/control?var=*****&val=*****
