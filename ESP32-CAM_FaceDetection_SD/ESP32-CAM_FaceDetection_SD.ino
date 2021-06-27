@@ -4,6 +4,12 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-27 12:00
 https://www.facebook.com/francefu
 */
 
+   
+//可由網頁get-still按鈕取得解析度CIF影像另存於SD卡 http://192.168.xxx.xxx/capture  (FRAMESIZE_CIF)
+String filepath[2] = {"/1.jpg", "/2.jpg"};   //FRAMESIZE_CIF (width:400, height:296)
+int image_width = 400;
+int image_height = 296;
+
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include "soc/soc.h"             //用於電源不穩不重開機 
@@ -109,11 +115,6 @@ void setup() {
   }  
   
   fs::FS &fs = SD_MMC;
-   
-  //可由網頁get-still按鈕取得解析度CIF影像另存於SD卡 http://192.168.xxx.xxx/capture  (FRAMESIZE_CIF)
-  String filepath[2] = {"/1.jpg", "/2.jpg"};   //FRAMESIZE_CIF (width:400, height:296)
-  int image_width = 400;
-  int image_height = 296;
   
   //讀取SD卡內照片
   for (int j=0;j<sizeof(filepath)/sizeof(*filepath);j++) {
