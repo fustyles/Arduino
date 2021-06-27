@@ -1112,8 +1112,8 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
         return matched_id;
     }
     if (align_face(net_boxes, image_matrix, aligned_face) == ESP_OK){
-        if (is_enrolling == 1){
-            int8_t left_sample_face = enroll_face(&id_list, aligned_face);  //人臉辨識
+        if (is_enrolling == 1){  //註冊人臉
+            int8_t left_sample_face = enroll_face(&id_list, aligned_face);
 
             if(left_sample_face == (ENROLL_CONFIRM_TIMES - 1)){
                 Serial.printf("Enrolling Face ID: %d\n", id_list.tail);
@@ -1124,26 +1124,24 @@ static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_b
                 is_enrolling = 0;
                 Serial.printf("Enrolled Face ID: %d\n", id_list.tail);
             }
-        } else {
+        } else {  //人臉辨識
             matched_id = recognize_face(&id_list, aligned_face);
-            if (matched_id >= 0) {
+            if (matched_id >= 0) {  //若辨識為已註冊之人臉
                 Serial.printf("Match Face ID: %u\n", matched_id);
                 int name_length = sizeof(recognize_face_matched_name) / sizeof(recognize_face_matched_name[0]);
-                //視訊畫面中顯示辨識到的人名
                 if (matched_id<name_length)
                   rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] %s", matched_id, recognize_face_matched_name[matched_id]);
                 else
                   rgb_printf(image_matrix, FACE_COLOR_GREEN, "[%u] No Name", matched_id);
                 FaceMatched(matched_id);  //辨識到註冊人臉執行指令控制
-            } else {
-                //視訊畫面中顯示為陌生人
+            } else {  //若辨識為未註冊之人臉
                 Serial.println("No Match Found");
                 rgb_print(image_matrix, FACE_COLOR_RED, "Intruder Alert!");
                 matched_id = -1;
                 FaceNoMatched();  //辨識為陌生人臉執行指令控制
             }
         }
-    } else {
+    } else {  //若偵測出人臉，但無法進行識別
         Serial.println("Face Not Aligned");
         rgb_print(image_matrix, FACE_COLOR_YELLOW, "Human Detected");
     }
