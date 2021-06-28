@@ -460,6 +460,11 @@ static esp_err_t capture_handler(httpd_req_t *req){
         free(net_boxes->landmark);
         free(net_boxes);
         */
+        /*
+        printf("net_boxes pointer address : %p\n", &net_boxes);
+        printf("net_boxes pointer value : %p\n",net_boxes);
+        printf("net_boxes pointer point to a content: %s\n", net_boxes);
+        */              
         net_boxes = NULL;  //若沒有執行free釋放記憶體，可能產生問題。
     }
 
@@ -565,6 +570,11 @@ static esp_err_t stream_handler(httpd_req_t *req){
                                 free(net_boxes->landmark);
                                 free(net_boxes);
                                 */
+                                /*
+                                printf("net_boxes pointer address : %p\n", &net_boxes);
+                                printf("net_boxes pointer value : %p\n",net_boxes);
+                                printf("net_boxes pointer point to a content: %s\n", net_boxes);
+                                */                                      
                                 net_boxes = NULL;  //若沒有執行free釋放記憶體，可能產生問題。
                             }
                             if(!fmt2jpg(image_matrix->item, fb->width*fb->height*3, fb->width, fb->height, PIXFORMAT_RGB888, 90, &_jpg_buf, &_jpg_buf_len)){
