@@ -253,10 +253,14 @@ void encrollImageSD() {
                   }
                 }
             } 
+            /*
+            //釋放net_boxes記憶體，v1.0.5以上版本會產生記憶體錯誤重啟
             free(net_boxes->score);
             free(net_boxes->box);
             free(net_boxes->landmark);
             free(net_boxes);
+            */
+            net_boxes = NULL;  //若沒有執行free釋放記憶體，可能產生問題。
           }
           else {
             Serial.println("No Face");    //未偵測到人臉
