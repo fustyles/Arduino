@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Enroll faces by getting remote images from web server and recognize faces automatically.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-28 13:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-1-17 22:30
 https://www.facebook.com/francefu
 */
 
@@ -363,12 +363,14 @@ void enrollImageRemote() {  //取得遠端照片註冊人臉
                       }
                     }
                 } 
-        
-                if (net_boxes->score) free(net_boxes->score);
-                if (net_boxes->box) free(net_boxes->box);
-                if (net_boxes->landmark) free(net_boxes->landmark);
-                if (net_boxes) free(net_boxes);
-                net_boxes = NULL;
+                /*
+                //釋放net_boxes記憶體，v1.0.5以上版本會產生記憶體錯誤重啟
+                free(net_boxes->score);
+                free(net_boxes->box);
+                free(net_boxes->landmark);
+                free(net_boxes);
+                */
+                net_boxes = NULL;  //若沒有執行free釋放記憶體，可能產生問題。
               }
               else {
                 Serial.println("No Face");    //未偵測到人臉
@@ -414,12 +416,14 @@ void faceRecognition() {
   box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);  //執行人臉偵測
   if (net_boxes){
       run_face_recognition(image_matrix, net_boxes);  //執行人臉辨識
-        
-      if (net_boxes->score) free(net_boxes->score);
-      if (net_boxes->box) free(net_boxes->box);
-      if (net_boxes->landmark) free(net_boxes->landmark);
-      if (net_boxes) free(net_boxes);
-      net_boxes = NULL;
+      /*
+      //釋放net_boxes記憶體，v1.0.5以上版本會產生記憶體錯誤重啟
+      free(net_boxes->score);
+      free(net_boxes->box);
+      free(net_boxes->landmark);
+      free(net_boxes);
+      */
+      net_boxes = NULL;  //若沒有執行free釋放記憶體，可能產生問題。
   }
   dl_matrix3du_free(image_matrix);
 }
