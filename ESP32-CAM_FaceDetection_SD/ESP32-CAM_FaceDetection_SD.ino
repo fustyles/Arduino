@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Face detection (Read images from SD Card)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-27 12:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-29 21:30
 https://www.facebook.com/francefu
 */
 
@@ -172,14 +172,11 @@ void setup() {
                 Serial.println("height = " + String(h));
                 Serial.println();
             } 
-            /*
-            //釋放net_boxes記憶體，v1.0.5以上版本會產生記憶體錯誤重啟
-            free(net_boxes->score);
-            free(net_boxes->box);
-            free(net_boxes->landmark);
-            free(net_boxes);
-            */
-            net_boxes = NULL;  //若沒有執行free釋放記憶體，可能產生問題。
+            dl_lib_free(net_boxes->score);
+            dl_lib_free(net_boxes->box);
+            dl_lib_free(net_boxes->landmark);
+            dl_lib_free(net_boxes);                                
+            net_boxes = NULL;
           }
           else {
             Serial.println("No Face");    //未偵測到的人臉

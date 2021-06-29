@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Face Recognition
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-27 13:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-29 21:30
 https://www.facebook.com/francefu
 
 
@@ -928,14 +928,11 @@ static esp_err_t capture_handler(httpd_req_t *req){
             face_id = run_face_recognition(image_matrix, net_boxes);  //執行人臉辨識
         }
         draw_face_boxes(image_matrix, net_boxes, face_id);  //繪製人臉方框
-        /*
-        //釋放net_boxes記憶體，v1.0.5以上版本會產生記憶體錯誤重啟
-        free(net_boxes->score);
-        free(net_boxes->box);
-        free(net_boxes->landmark);
-        free(net_boxes);
-        */
-        net_boxes = NULL;  //若沒有執行free釋放記憶體，可能產生問題。
+        dl_lib_free(net_boxes->score);
+        dl_lib_free(net_boxes->box);
+        dl_lib_free(net_boxes->landmark);
+        dl_lib_free(net_boxes);                                
+        net_boxes = NULL;
     }
 
     jpg_chunking_t jchunk = {req, 0};
@@ -1032,14 +1029,11 @@ static esp_err_t stream_handler(httpd_req_t *req){
                                 }
                                 fr_recognize = esp_timer_get_time();
                                 draw_face_boxes(image_matrix, net_boxes, face_id);  //繪製人臉方框
-                                /*
-                                //釋放net_boxes記憶體，v1.0.5以上版本會產生記憶體錯誤重啟
-                                free(net_boxes->score);
-                                free(net_boxes->box);
-                                free(net_boxes->landmark);
-                                free(net_boxes);
-                                */
-                                net_boxes = NULL;  //若沒有執行free釋放記憶體，可能產生問題。
+                                dl_lib_free(net_boxes->score);
+                                dl_lib_free(net_boxes->box);
+                                dl_lib_free(net_boxes->landmark);
+                                dl_lib_free(net_boxes);                                
+                                net_boxes = NULL;
                             }
                             if(!fmt2jpg(image_matrix->item, fb->width*fb->height*3, fb->width, fb->height, PIXFORMAT_RGB888, 90, &_jpg_buf, &_jpg_buf_len)){
                                 Serial.println("fmt2jpg failed");
