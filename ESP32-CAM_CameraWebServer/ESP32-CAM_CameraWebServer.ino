@@ -1,6 +1,6 @@
 /*
 ESP32-CAM CameraWebServer
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-27 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-29 21:30
 https://www.facebook.com/francefu
 
 Face recognition works well in v1.0.4, v1.0.5, v1.0.6 or above.
@@ -183,7 +183,7 @@ void setup() {
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
-    return;
+    ESP.restart();
   }
 
   //可自訂視訊框架預設大小(解析度大小)
@@ -453,19 +453,12 @@ static esp_err_t capture_handler(httpd_req_t *req){
             face_id = run_face_recognition(image_matrix, net_boxes);  //執行人臉辨識
         }
         draw_face_boxes(image_matrix, net_boxes, face_id);  //繪製人臉方框
-        /*
-        //釋放net_boxes記憶體，v1.0.5以上版本會產生記憶體錯誤重啟
-        free(net_boxes->score);
-        free(net_boxes->box);
-        free(net_boxes->landmark);
-        free(net_boxes);
-        */
-        /*
-        printf("net_boxes pointer address : %p\n", &net_boxes);
-        printf("net_boxes pointer value : %p\n",net_boxes);
-        printf("net_boxes pointer point to a content: %s\n", net_boxes);
-        */              
-        net_boxes = NULL;  //若沒有執行free釋放記憶體，可能產生問題。
+        
+        dl_lib_free(net_boxes->score);
+        dl_lib_free(net_boxes->box);
+        dl_lib_free(net_boxes->landmark);
+        dl_lib_free(net_boxes);                                
+        net_boxes = NULL;
     }
 
     jpg_chunking_t jchunk = {req, 0};
@@ -563,19 +556,12 @@ static esp_err_t stream_handler(httpd_req_t *req){
                                 }
                                 fr_recognize = esp_timer_get_time();
                                 draw_face_boxes(image_matrix, net_boxes, face_id);  //繪製人臉方框
-                                /*
-                                //釋放net_boxes記憶體，v1.0.5以上版本會產生記憶體錯誤重啟
-                                free(net_boxes->score);
-                                free(net_boxes->box);
-                                free(net_boxes->landmark);
-                                free(net_boxes);
-                                */
-                                /*
-                                printf("net_boxes pointer address : %p\n", &net_boxes);
-                                printf("net_boxes pointer value : %p\n",net_boxes);
-                                printf("net_boxes pointer point to a content: %s\n", net_boxes);
-                                */                                      
-                                net_boxes = NULL;  //若沒有執行free釋放記憶體，可能產生問題。
+
+                                dl_lib_free(net_boxes->score);
+                                dl_lib_free(net_boxes->box);
+                                dl_lib_free(net_boxes->landmark);
+                                dl_lib_free(net_boxes);                                
+                                net_boxes = NULL;
                             }
                             if(!fmt2jpg(image_matrix->item, fb->width*fb->height*3, fb->width, fb->height, PIXFORMAT_RGB888, 90, &_jpg_buf, &_jpg_buf_len)){
                                 Serial.println("fmt2jpg failed");
@@ -774,7 +760,7 @@ static esp_err_t status_handler(httpd_req_t *req){
 }
 
 //網頁首頁程式碼變數 (ov3660)
-static const char PROGMEM index_ov3660_html_gz[] = R"rawliteral(<!doctype html>
+static const char PROGMEM index_ov3660_html[] = R"rawliteral(<!doctype html>
 <html>
     <head>
         <meta charset="utf-8">
@@ -1582,7 +1568,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
         
 
 //網頁首頁程式碼變數 (ov2640)
-static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(<!doctype html>
+static const char PROGMEM index_ov2640_html[] = R"rawliteral(<!doctype html>
 <html>
     <head>
         <meta charset="utf-8">
@@ -2370,9 +2356,9 @@ static esp_err_t index_handler(httpd_req_t *req){
     sensor_t * s = esp_camera_sensor_get();
 
     if (s->id.PID == OV3660_PID) {
-        return httpd_resp_send(req, (const char *)index_ov3660_html_gz, strlen(index_ov3660_html_gz));
+        return httpd_resp_send(req, (const char *)index_ov3660_html, strlen(index_ov3660_html));
     } else {
-        return httpd_resp_send(req, (const char *)index_ov2640_html_gz, strlen(index_ov2640_html_gz));
+        return httpd_resp_send(req, (const char *)index_ov2640_html, strlen(index_ov2640_html));
     }
 }
 
