@@ -1,19 +1,20 @@
 /*
 ESP32-CAM 人體移動感測器啟動上傳影像到Line Notify
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-4-22 20:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-30 00:00
 https://www.facebook.com/francefu
 
-人體移動感測器 -> GND, gpio13, 3.3V
+PIR人體移動感測器 -> GND, IO13, 3.3V
 
-一小時最多能上傳50張影像，最高解析度為XGA(1024*768).
+Line Notify免費申請權杖
+https://notify-bot.line.me/zh_TW/
+Line Notify每小時最多能上傳50張影像，最高解析度為SVGA(800x600).
 */
 
 //輸入Wi-Fi帳密
-const char* ssid     = "*****";   //Wi-Fi帳號
-const char* password = "*****";   //Wi-Fi密碼
-
-String myToken = "********************";    //Line Notify Token
-int pinPIR = 13;      //人體移動感測器腳位
+const char* ssid     = "teacher";    //Wi-Fi帳號
+const char* password = "87654321";   //Wi-Fi密碼
+int pinPIR = 13;   //PIR人體移動感測器腳位
+String myToken = "Z7MsY5zqp1hALsBcTMO6fFlwX8KbfRbQC3jJDWqUb3C";    //Line Notify權杖
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -23,7 +24,7 @@ int pinPIR = 13;      //人體移動感測器腳位
 
 //Arduino IDE開發版選擇 ESP32 Wrover Module
 
-//CAMERA_MODEL_AI_THINKER
+//ESP32-CAM 安信可模組腳位設定
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -44,56 +45,12 @@ int pinPIR = 13;      //人體移動感測器腳位
 
 void setup()
 {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電壓不穩時重啟電源設定
-  
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
+    
   Serial.begin(115200);
-  delay(10);
-  
-  WiFi.mode(WIFI_STA);
+  Serial.setDebugOutput(true);  //開啟診斷輸出
+  Serial.println();
 
-  Serial.println("");
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-  WiFi.begin(ssid, password);  
-  
-  long int StartTime=millis();
-  while (WiFi.status() != WL_CONNECTED) 
-  {
-    delay(500);
-    if ((StartTime+10000) < millis()) break;
-  } 
-
-  Serial.println("");
-  Serial.println("STAIP address: ");
-  Serial.println(WiFi.localIP());
-    
-  Serial.println("");
-
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("Reset");
-    
-    ledcAttachPin(4, 3);
-    ledcSetup(3, 5000, 8);
-    ledcWrite(3,10);
-    delay(200);
-    ledcWrite(3,0);
-    delay(200);    
-    ledcDetachPin(3);
-        
-    delay(1000);
-    ESP.restart();  //若未連上Wi-Fi閃燈兩次後重啟
-  }
-  else {
-    ledcAttachPin(4, 3);
-    ledcSetup(3, 5000, 8);
-    for (int i=0;i<5;i++) {  //若連上Wi-Fi閃燈五次
-      ledcWrite(3,10);
-      delay(200);
-      ledcWrite(3,0);
-      delay(200);    
-    }
-    ledcDetachPin(3);      
-  }
 
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
@@ -116,30 +73,90 @@ void setup()
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  //init with high specs to pre-allocate larger buffers
-  if(psramFound()){
+  
+  //
+  // WARNING!!! PSRAM IC required for UXGA resolution and high JPEG quality
+  //            Ensure ESP32 Wrover Module or other board with PSRAM is selected
+  //            Partial images will be transmitted if image exceeds buffer size
+  //   
+  // if PSRAM IC present, init with UXGA resolution and higher JPEG quality
+  //                      for larger pre-allocated frame buffer.
+  if(psramFound()){  //是否有PSRAM(Psuedo SRAM)記憶體IC
     config.frame_size = FRAMESIZE_UXGA;
-    config.jpeg_quality = 10;  //0-63 lower number means higher quality
+    config.jpeg_quality = 10;
     config.fb_count = 2;
   } else {
     config.frame_size = FRAMESIZE_SVGA;
-    config.jpeg_quality = 12;  //0-63 lower number means higher quality
+    config.jpeg_quality = 12;
     config.fb_count = 1;
   }
-  
-  // camera init
+
+  //視訊初始化
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
-    delay(1000);
     ESP.restart();
   }
 
-  //drop down frame size for higher initial frame rate
+  //可自訂視訊框架預設大小(解析度大小)
   sensor_t * s = esp_camera_sensor_get();
-  //可自訂解析度
-  s->set_framesize(s, FRAMESIZE_VGA);  // XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+  // initial sensors are flipped vertically and colors are a bit saturated
+  if (s->id.PID == OV3660_PID) {
+    s->set_vflip(s, 1); // flip it back
+    s->set_brightness(s, 1); // up the brightness just a bit
+    s->set_saturation(s, -2); // lower the saturation
+  }
+  // drop down frame size for higher initial frame rate
+  s->set_framesize(s, FRAMESIZE_SVGA);    //解析度 SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120), QXGA(2048x1564 for OV3660)
 
+  //s->set_vflip(s, 1);  //垂直翻轉
+  //s->set_hmirror(s, 1);  //水平鏡像
+
+  //閃光燈(GPIO4)
+  ledcAttachPin(4, 4);  
+  ledcSetup(4, 5000, 8);
+  
+  WiFi.mode(WIFI_STA);
+  
+  for (int i=0;i<2;i++) {
+    WiFi.begin(ssid, password);    //執行網路連線
+  
+    delay(1000);
+    Serial.println("");
+    Serial.print("Connecting to ");
+    Serial.println(ssid);
+    
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        if ((StartTime+5000) < millis()) break;    //等待10秒連線
+    } 
+  
+    if (WiFi.status() == WL_CONNECTED) {    //若連線成功
+      Serial.println("");
+      Serial.println("STAIP address: ");
+      Serial.println(WiFi.localIP());
+      Serial.println("");
+  
+      for (int i=0;i<5;i++) {   //若連上WIFI設定閃光燈快速閃爍
+        ledcWrite(4,10);
+        delay(200);
+        ledcWrite(4,0);
+        delay(200);    
+      }
+  
+      break;
+    }
+  } 
+
+  if (WiFi.status() != WL_CONNECTED) {  //若連線失敗
+    ESP.restart();  //重啟電源
+  } 
+          
+  //閃光燈(GPIO4)
+  ledcAttachPin(4, 4);  
+  ledcSetup(4, 5000, 8);
+  
   //測試傳送影像至Line Notify，一小時最多上傳50張照片。
   sendCapturedImage2LineNotify(myToken);
   Serial.println();
@@ -152,15 +169,15 @@ void loop()
   int v = digitalRead(pinPIR);
   Serial.println(v);
   if (v==1) {
-    sendCapturedImage2LineNotify(myToken);  //不顯示傳送結果
-    //Serial.println(sendCapturedImage2LineNotify(myToken));  //顯示傳送結果
-    delay(10000);
+    sendCapturedImage2LineNotify(myToken);
+    //Serial.println(sendCapturedImage2LineNotify(myToken));  //取回傳送結果輸出序列埠
+    delay(5000);  //是延遲時間設定，最小為5秒
   }
   delay(1000);  
 }
 
-String sendCapturedImage2LineNotify(String Token)
-{
+String sendCapturedImage2LineNotify(String Token) {
+  const char* myDomain = "notify-api.line.me";
   String getAll="", getBody = "";
   
   camera_fb_t * fb = NULL;
@@ -169,16 +186,13 @@ String sendCapturedImage2LineNotify(String Token)
     Serial.println("Camera capture failed");
     delay(1000);
     ESP.restart();
-    return "Camera capture failed";
   }
    
+  Serial.println("Connect to " + String(myDomain));
   WiFiClientSecure client_tcp;
   client_tcp.setInsecure();   //run version 1.0.5 or above
   
-  Serial.println("Connect to notify-api.line.me");
-  
-  if (client_tcp.connect("notify-api.line.me", 443)) 
-  {
+  if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
     
     String message = "Welcome to Taiwan";
@@ -222,16 +236,13 @@ String sendCapturedImage2LineNotify(String Token)
     {
       Serial.print(".");
       delay(100);      
-      while (client_tcp.available()) 
-      {
+      while (client_tcp.available()) {
           char c = client_tcp.read();
           if (state==true) getBody += String(c);        
-          if (c == '\n') 
-          {
+          if (c == '\n') {
             if (getAll.length()==0) state=true; 
             getAll = "";
-          } 
-          else if (c != '\r')
+          } else if (c != '\r')
             getAll += String(c);
           startTime = millis();
        }
@@ -241,8 +252,8 @@ String sendCapturedImage2LineNotify(String Token)
     Serial.println(getBody);
   }
   else {
-    getBody="Connected to notify-api.line.me failed.";
-    Serial.println("Connected to notify-api.line.me failed.");
+    getBody="Connected to " + String(myDomain) + " failed.";
+    Serial.println("Connected to " + String(myDomain) + " failed.");
   }
   return getBody;
 }
