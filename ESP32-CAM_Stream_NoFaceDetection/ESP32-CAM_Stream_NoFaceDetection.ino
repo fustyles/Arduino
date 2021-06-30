@@ -1,9 +1,13 @@
 /*
 ESP32-CAM http
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-30 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-30 21:00
 https://www.facebook.com/francefu
 
-http://192.168.xxx.xxx/            //首頁
+AP IP: 192.168.4.1
+http://192.168.xxx.xxx             //網頁首頁管理介面
+http://192.168.xxx.xxx:81/stream   //取得串流影像        網頁語法 <img src="http://192.168.xxx.xxx:81/stream">
+http://192.168.xxx.xxx/capture     //取得影像           網頁語法 <img src="http://192.168.xxx.xxx/capture">
+http://192.168.xxx.xxx/status      //取得視訊參數值
 http://192.168.xxx.xxx/wifi        //自訂Wi-Fi設定網頁
 http://192.168.xxx.xxx/info        //自訂查詢網路資訊網頁
 
@@ -16,8 +20,10 @@ http://192.168.xxx.xxx/control?analogwrite=pin;value   //類比輸出
 http://192.168.xxx.xxx/control?digitalread=pin         //數位讀取
 http://192.168.xxx.xxx/control?analogread=pin          //類比讀取
 http://192.168.xxx.xxx/control?touchread=pin           //觸碰讀取
-http://192.168.xxx.xxx/control?flash=value             //閃光燈 value= 0~255
 http://192.168.xxx.xxx/control?restart                 //重啟電源
+http://192.168.xxx.xxx/control?flash=value             //閃光燈 value= 0~255
+http://192.168.xxx.xxx/control?servo=value             //伺服馬達 value= 0~180
+http://192.168.xxx.xxx/control?relay=value             //繼電器 value = 0, 1
 
 設定視訊參數(官方指令格式)  http://192.168.xxx.xxx/control?var=*****&val=*****
 
@@ -58,7 +64,7 @@ const char* password = "87654321";   //WIFI連線密碼 (至少8碼)
 const char* apssid = "ESP32-CAM";          //不同台可設不同流水號區別
 const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 
-char return_html[4000];
+char return_html[1024];
 
 #include "soc/soc.h"             //用於電源不穩不重開機 
 #include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機 
@@ -103,8 +109,6 @@ static const char* _STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %
 
 httpd_handle_t stream_httpd = NULL;
 httpd_handle_t camera_httpd = NULL;
-
-
 
 void startCameraServer();
 
@@ -354,16 +358,16 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if (cmd=="touchread") {  //觸碰讀取
         Feedback=String(touchRead(P1.toInt()));
       }   
+     else if (cmd=="restart") {  //重啟電源
+        ESP.restart();
+      }         
       else if (cmd=="flash") {  //閃光燈
         ledcAttachPin(4, 4);  
         ledcSetup(4, 5000, 8);   
         int val = P1.toInt();
         ledcWrite(4,val);  
       }
-      else if (cmd=="restart") {  //重啟電源
-        ESP.restart();
-      }
-      else if(cmd=="servo") {  //伺服馬達接於IO2 (SG90)
+      else if(cmd=="servo") {  //伺服馬達接於IO2 (SG90 1638-7864)
         ledcAttachPin(2, 3);
         ledcSetup(3, 50, 16);
          
@@ -374,6 +378,10 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           val = 1638; 
         ledcWrite(3, val);
       }
+      else if (cmd=="relay") {  //繼電器接於IO13
+        pinMode(13, OUTPUT);  
+        digitalWrite(13, P1.toInt());  
+      }     
       else if (cmd=="resetwifi") {  //重設網路連線  
         for (int i=0;i<2;i++) {
           WiFi.begin(P1.c_str(), P2.c_str());
@@ -534,6 +542,15 @@ static esp_err_t info_handler(httpd_req_t *req){
   httpd_resp_set_type(req, "text/html");
   httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
   return httpd_resp_send(req, return_html, strlen(return_html));
+}
+
+//test
+static esp_err_t test_handler(httpd_req_t *req){
+    String html = "<font color='red'>"+WiFi.localIP().toString()+"</font>";
+    sprintf(return_html, html.c_str());
+    httpd_resp_set_type(req, "text/html");
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    return httpd_resp_send(req, return_html, strlen(return_html));
 }
 
 static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size_t len){
@@ -732,7 +749,15 @@ void startCameraServer(){
         .method    = HTTP_GET,
         .handler   = info_handler,
         .user_ctx  = NULL
-    };         
+    };
+
+   //自訂網路資訊動態查詢網頁路徑
+   httpd_uri_t test_uri = {
+        .uri       = "/test",       //http://192.168.xxx.xxx/test
+        .method    = HTTP_GET,
+        .handler   = test_handler,
+        .user_ctx  = NULL
+    };                 
 
     Serial.printf("Starting web server on port: '%d'\n", config.server_port);  //TCP Port
     if (httpd_start(&camera_httpd, &config) == ESP_OK) {
@@ -742,7 +767,8 @@ void startCameraServer(){
         httpd_register_uri_handler(camera_httpd, &status_uri);        
         httpd_register_uri_handler(camera_httpd, &capture_uri);        
         httpd_register_uri_handler(camera_httpd, &wifi_uri);   //註冊WI-FI設定網頁
-        httpd_register_uri_handler(camera_httpd, &info_uri);   //註冊網路資訊動態查詢網頁        
+        httpd_register_uri_handler(camera_httpd, &info_uri);   //註冊網路資訊動態查詢網頁
+        httpd_register_uri_handler(camera_httpd, &test_uri);   //test               
     }
 
     config.server_port += 1;  //Stream Port
