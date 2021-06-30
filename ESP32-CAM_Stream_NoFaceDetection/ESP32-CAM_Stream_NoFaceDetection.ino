@@ -75,7 +75,6 @@ char return_html[1024];
 #include "fb_gfx.h"              //影像繪圖函式
 #include "esp_http_server.h"     //HTTP Server函式
 #include "esp_timer.h"           //計時器函式
-#include "Arduino.h"             //Arduino核心函式
 
 //ESP32-CAM 安信可模組腳位設定
 #define PWDN_GPIO_NUM     32

@@ -209,7 +209,7 @@ void loop()
   if (v==1) {
     SendCapturedImage2Spreadsheet();
     //Serial.println(SendCapturedImage2Spreadsheet());  //取回傳送結果輸出序列埠
-    delay(5000);  //是延遲時間設定，最小為5秒
+    delay(5000);  //視延遲時間設定，最小為5秒
   }
   else
     delay(1000);

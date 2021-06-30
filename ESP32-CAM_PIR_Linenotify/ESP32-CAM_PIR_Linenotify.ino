@@ -51,7 +51,6 @@ void setup()
   Serial.setDebugOutput(true);  //開啟診斷輸出
   Serial.println();
 
-
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
@@ -171,7 +170,7 @@ void loop()
   if (v==1) {
     sendCapturedImage2LineNotify(myToken);
     //Serial.println(sendCapturedImage2LineNotify(myToken));  //取回傳送結果輸出序列埠
-    delay(5000);  //是延遲時間設定，最小為5秒
+    delay(5000);  //視延遲時間設定，最小為5秒
   }
   delay(1000);  
 }

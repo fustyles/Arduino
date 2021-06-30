@@ -204,7 +204,7 @@ void loop()
   if (v==1) {
     SendCapturedImage2GoogleDrive();
     //Serial.println(SendCapturedImage2GoogleDrive());  //取回傳送結果輸出序列埠
-    delay(5000);  //是延遲時間設定，最小為5秒
+    delay(5000);  //視延遲時間設定，最小為5秒
   }
   else
     delay(1000);
