@@ -55,7 +55,6 @@ const char* password = "87654321";   //WIFI連線密碼 (至少8碼)
 #include "esp_http_server.h"     //HTTP Server函式
 #include "esp_timer.h"           //計時器函式
 #include "img_converters.h"      //影像格式轉換函式
-#include "Arduino.h"             //Arduino核心函式
 
 #include "fb_gfx.h"              //影像繪圖函式
 #include "fd_forward.h"          //人臉偵測函式
