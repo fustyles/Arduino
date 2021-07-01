@@ -21,9 +21,9 @@ http://192.168.xxx.xxx?resetwifi=ssid;password  //重設網路
 http://192.168.xxx.xxx?getstill                 //取得視訊影像
 http://192.168.xxx.xxx?status                   //取得視訊設定
 
-http://192.168.xxx.xxx/control?flash=value      //閃光燈 value= 0~255
-http://192.168.xxx.xxx/control?servo=value      //伺服馬達 value= 0~180
-http://192.168.xxx.xxx/control?relay=value      //繼電器 value = 0, 1
+http://192.168.xxx.xxx?flash=value              //閃光燈 value= 0~255
+http://192.168.xxx.xxx?servo=value              //伺服馬達 value= 0~180
+http://192.168.xxx.xxxl?relay=value             //繼電器 value = 0, 1
 http://192.168.xxx.xxx?framesize=value          //解析度 value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120), 11->QXGA(2048x1564 for OV3660)
 http://192.168.xxx.xxx?quality&val=value        //畫質 value = 10 ~ 63
 http://192.168.xxx.xxx?brightness=value         //亮度 value = -2 ~ 2
