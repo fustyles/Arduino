@@ -14,7 +14,6 @@ int pinPIR = 13;
 #include "esp_camera.h"
 #include "FS.h"
 #include "SD_MMC.h"
-#include <EEPROM.h>
 #include <Preferences.h>
 Preferences preferences;
 
