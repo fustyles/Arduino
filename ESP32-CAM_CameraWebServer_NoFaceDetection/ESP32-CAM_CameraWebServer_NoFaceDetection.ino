@@ -1,6 +1,6 @@
 /*
 ESP32-CAM CameraWebServer (No face detection)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-29 21:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-1 00:00
 https://www.facebook.com/francefu
 
 Face recognition works well in v1.0.4, v1.0.5, v1.0.6 or above.
@@ -44,8 +44,13 @@ http://192.168.xxx.xxx/control?var=ae_level&val=value       //自動曝光層級
 https://heyrick.eu/blog/index.php?diary=20210418
 */
 
-const char* ssid = "teacher";        //WIFI連線帳號
-const char* password = "87654321";   //WIFI連線密碼 (至少8碼)
+//輸入WIFI連線帳號密碼
+const char* ssid = "teacher";
+const char* password = "87654321";
+
+//輸入AP端連線帳號密碼  http://192.168.4.1
+const char* apssid = "esp32-cam";
+const char* appassword = "12345678";         //AP密碼至少要8個字元以上  
 
 #include "soc/soc.h"             //用於電源不穩不重開機 
 #include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機 
@@ -119,7 +124,7 @@ void setup() {
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-
+  
   //
   // WARNING!!! PSRAM IC required for UXGA resolution and high JPEG quality
   //            Ensure ESP32 Wrover Module or other board with PSRAM is selected
@@ -153,25 +158,74 @@ void setup() {
     s->set_saturation(s, -2); // lower the saturation
   }
   // drop down frame size for higher initial frame rate
-  s->set_framesize(s, FRAMESIZE_QVGA);    //解析度 UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768), SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120), QXGA(2048x1564 for OV3660)
+  s->set_framesize(s, FRAMESIZE_CIF);    //解析度 UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768), SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120), QXGA(2048x1564 for OV3660)
 
-  //s->set_vflip(s, 1);    //設定垂直翻轉
-  //s->set_hmirror(s, 1);  //設定水平鏡像
+  //s->set_vflip(s, 1);  //垂直翻轉
+  //s->set_hmirror(s, 1);  //水平鏡像
+          
+  //閃光燈(GPIO4)
+  ledcAttachPin(4, 4);  
+  ledcSetup(4, 5000, 8); 
+  
+  WiFi.mode(WIFI_AP_STA);  //其他模式 WiFi.mode(WIFI_AP); WiFi.mode(WIFI_STA);
 
-  WiFi.begin(ssid, password);    //執行網路連線
+  //指定Client端靜態IP
+  //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
 
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
+  for (int i=0;i<2;i++) {
+    WiFi.begin(ssid, password);    //執行網路連線
+  
+    delay(1000);
+    Serial.println("");
+    Serial.print("Connecting to ");
+    Serial.println(ssid);
+    
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        if ((StartTime+5000) < millis()) break;    //等待10秒連線
+    } 
+  
+    if (WiFi.status() == WL_CONNECTED) {    //若連線成功
+      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP         
+      Serial.println("");
+      Serial.println("STAIP address: ");
+      Serial.println(WiFi.localIP());
+      Serial.println("");
+  
+      for (int i=0;i<5;i++) {   //若連上WIFI設定閃光燈快速閃爍
+        ledcWrite(4,10);
+        delay(200);
+        ledcWrite(4,0);
+        delay(200);    
+      }
+      break;
+    }
+  } 
+
+  if (WiFi.status() != WL_CONNECTED) {    //若連線失敗
+    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);         
+
+    for (int i=0;i<2;i++) {    //若連不上WIFI設定閃光燈慢速閃爍
+      ledcWrite(4,10);
+      delay(1000);
+      ledcWrite(4,0);
+      delay(1000);    
+    }
+  } 
+  
+  //指定AP端IP
+  //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
   Serial.println("");
-  Serial.println("WiFi connected");
+  Serial.println("APIP address: ");
+  Serial.println(WiFi.softAPIP());  
+  Serial.println("");
+  
+  startCameraServer();    //啟動視訊服務器 
 
-  startCameraServer();    //啟動視訊服務器
-
-  Serial.print("Camera Ready! Use 'http://");
-  Serial.print(WiFi.localIP());
-  Serial.println("' to connect");
+  //設定閃光燈為低電位
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);              
 }
 
 void loop() {
