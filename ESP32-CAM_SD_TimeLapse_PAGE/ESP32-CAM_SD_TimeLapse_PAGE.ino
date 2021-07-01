@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Time Lapse
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-7-25 18:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-1 00:00
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
@@ -9,22 +9,24 @@ http://192.168.xxx.xxx/capture     //取得影像          嵌入網頁語法 <i
 http://192.168.xxx.xxx/status      //取得影像狀態值
 
 //自訂指令格式  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
-http://192.168.xxx.xxx/control?saveimage      //儲存影像至SD卡
+
 http://192.168.xxx.xxx/control?resetwifi=ssid;password   //重設Wi-Fi網路
-http://192.168.xxx.xxx/control?restart   //重啟ESP32-CAM
-http://192.168.xxx.xxx/control?resetfilename   //重設檔名由1開始編號
+http://192.168.xxx.xxx/control?restart                   //重啟ESP32-CAM
+http://192.168.xxx.xxx/control?resetfilename             //重設檔名由1開始編號
+http://192.168.xxx.xxx/control?saveimage                 //儲存影像至SD卡
 
 //官方指令格式  http://192.168.xxx.xxx/control?var=xxx&val=xxx
-http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
-http://192.168.xxx.xxx/control?var=quality&val=value    // value = 10 to 63
-http://192.168.xxx.xxx/control?var=brightness&val=value    // value = -2 to 2
-http://192.168.xxx.xxx/control?var=contrast&val=value    // value = -2 to 2 
-http://192.168.xxx.xxx/control?var=flash&val=value    // value = 0 to 255
+
+http://192.168.xxx.xxx/control?var=flash&val=value          //閃光燈 value= 0~255
+http://192.168.xxx.xxx/control?var=framesize&val=value      //解析度 value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120), 11->QXGA(2048x1564 for OV3660)
+http://192.168.xxx.xxx/control?var=quality&val=value        //畫質 value = 10 ~ 63
+http://192.168.xxx.xxx/control?var=brightness&val=value     //亮度 value = -2 ~ 2
+http://192.168.xxx.xxx/control?var=contrast&val=value       //對比 value = -2 ~ 2
 */
 
 //輸入WIFI連線帳號密碼
-const char* ssid = "*****";
-const char* password = "*****";
+const char* ssid = "teacher";
+const char* password = "87654321";
 
 //輸入AP端連線帳號密碼  http://192.168.4.1
 const char* apssid = "esp32-cam";
@@ -41,10 +43,7 @@ const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 //官方函式庫
 #include "esp_camera.h"          //視訊函式庫
 #include "esp_http_server.h"     //HTTP Server函式庫
-#include "esp_timer.h"           //計時器函式庫
 #include "img_converters.h"      //影像格式轉換函式庫
-#include "fb_gfx.h"              //影像繪圖函式庫
-#include "fd_forward.h"          //人臉偵測函式庫
 
 String Feedback="";   //自訂指令回傳客戶端訊息
 
@@ -70,59 +69,20 @@ byte equalstate=0;
 byte semicolonstate=0;
 
 typedef struct {
-        size_t size; //number of values used for filtering
-        size_t index; //current value index
-        size_t count; //value count
-        int sum;
-        int * values; //array to be filled with values
-} ra_filter_t;
-
-typedef struct {
         httpd_req_t *req;
         size_t len;
 } jpg_chunking_t;
 
+//影像傳輸網頁標頭設定
 #define PART_BOUNDARY "123456789000000000000987654321"
 static const char* _STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
 static const char* _STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
 static const char* _STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n";
 
-static ra_filter_t ra_filter;
 httpd_handle_t stream_httpd = NULL;
 httpd_handle_t camera_httpd = NULL;
 
-static ra_filter_t * ra_filter_init(ra_filter_t * filter, size_t sample_size){
-    memset(filter, 0, sizeof(ra_filter_t));
-
-    filter->values = (int *)malloc(sample_size * sizeof(int));
-    if(!filter->values){
-        return NULL;
-    }
-    memset(filter->values, 0, sample_size * sizeof(int));
-
-    filter->size = sample_size;
-    return filter;
-}
-
-static int ra_filter_run(ra_filter_t * filter, int value){
-    if(!filter->values){
-        return value;
-    }
-    filter->sum -= filter->values[filter->index];
-    filter->values[filter->index] = value;
-    filter->sum += filter->values[filter->index];
-    filter->index++;
-    filter->index = filter->index % filter->size;
-    if (filter->count < filter->size) {
-        filter->count++;
-    }
-    return filter->sum / filter->count;
-}
-
-// WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
-//            or another board which has PSRAM enabled
-
-//ESP32-CAM模組腳位設定
+//ESP32-CAM 安信可模組腳位設定
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -148,7 +108,7 @@ void setup() {
   Serial.setDebugOutput(true);  //開啟診斷輸出
   Serial.println();
 
-  //視訊組態設定
+  //視訊組態設定  https://github.com/espressif/esp32-camera/blob/master/driver/include/esp_camera.h
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
@@ -170,8 +130,15 @@ void setup() {
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  //init with high specs to pre-allocate larger buffers
-  if(psramFound()){
+  
+  //
+  // WARNING!!! PSRAM IC required for UXGA resolution and high JPEG quality
+  //            Ensure ESP32 Wrover Module or other board with PSRAM is selected
+  //            Partial images will be transmitted if image exceeds buffer size
+  //   
+  // if PSRAM IC present, init with UXGA resolution and higher JPEG quality
+  //                      for larger pre-allocated frame buffer.
+  if(psramFound()){  //是否有PSRAM(Psuedo SRAM)記憶體IC
     config.frame_size = FRAMESIZE_UXGA;
     config.jpeg_quality = 10;
     config.fb_count = 2;
@@ -185,13 +152,22 @@ void setup() {
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
-    return;
+    ESP.restart();
   }
 
-  //可動態改變視訊框架大小(解析度大小)
+  //可自訂視訊框架預設大小(解析度大小)
   sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_QVGA);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+  // initial sensors are flipped vertically and colors are a bit saturated
+  if (s->id.PID == OV3660_PID) {
+    s->set_vflip(s, 1); // flip it back
+    s->set_brightness(s, 1); // up the brightness just a bit
+    s->set_saturation(s, -2); // lower the saturation
+  }
+  // drop down frame size for higher initial frame rate
+  s->set_framesize(s, FRAMESIZE_CIF);    //解析度 UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768), SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120), QXGA(2048x1564 for OV3660)
 
+  //s->set_vflip(s, 1);  //垂直翻轉
+  //s->set_hmirror(s, 1);  //水平鏡像
 
   //SD Card
   if(!SD_MMC.begin()){
@@ -234,43 +210,48 @@ void setup() {
   //指定Client端靜態IP
   //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
 
-  WiFi.begin(ssid, password);    //執行網路連線
-
-  delay(1000);
-  Serial.println("");
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
+  for (int i=0;i<2;i++) {
+    WiFi.begin(ssid, password);    //執行網路連線
   
-  long int StartTime=millis();
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    if ((StartTime+10000) < millis()) break;    //等待10秒連線
+    delay(1000);
+    Serial.println("");
+    Serial.print("Connecting to ");
+    Serial.println(ssid);
+    
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        if ((StartTime+5000) < millis()) break;    //等待10秒連線
+    } 
+  
+    if (WiFi.status() == WL_CONNECTED) {    //若連線成功
+      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP         
+      Serial.println("");
+      Serial.println("STAIP address: ");
+      Serial.println(WiFi.localIP());
+      Serial.println("");
+  
+      for (int i=0;i<5;i++) {   //若連上WIFI設定閃光燈快速閃爍
+        ledcWrite(4,10);
+        delay(200);
+        ledcWrite(4,0);
+        delay(200);    
+      }
+      break;
+    }
   } 
 
-  if (WiFi.status() == WL_CONNECTED) {    //若連線成功
-    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP         
-    Serial.println("");
-    Serial.println("STAIP address: ");
-    Serial.println(WiFi.localIP()); 
-
-    for (int i=0;i<5;i++) {   //若連上WIFI設定閃光燈快速閃爍
-      ledcWrite(4,10);
-      delay(200);
-      ledcWrite(4,0);
-      delay(200);    
-    }    
-  }
-  else {
-    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);    
+  if (WiFi.status() != WL_CONNECTED) {    //若連線失敗
+    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);         
 
     for (int i=0;i<2;i++) {    //若連不上WIFI設定閃光燈慢速閃爍
       ledcWrite(4,10);
       delay(1000);
       ledcWrite(4,0);
       delay(1000);    
-    }      
-  }     
-
+    }
+  } 
+  
   //指定AP端IP
   //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
   Serial.println("");
@@ -295,67 +276,62 @@ void setup() {
 void loop() {
 }
 
-//自訂網址路徑要執行的函式
+//啟動視訊服務器
 void startCameraServer(){
-  httpd_config_t config = HTTPD_DEFAULT_CONFIG();  //可在HTTPD_DEFAULT_CONFIG()中設定Server Port 
+    //https://github.com/espressif/esp-idf/blob/master/components/esp_http_server/include/esp_http_server.h
+    httpd_config_t config = HTTPD_DEFAULT_CONFIG();  //可在HTTPD_DEFAULT_CONFIG()中設定Server Port
 
-  //http://192.168.xxx.xxx/
-  httpd_uri_t index_uri = {
-      .uri       = "/",
-      .method    = HTTP_GET,
-      .handler   = index_handler,
-      .user_ctx  = NULL
-  };
+    //可自訂網址路徑對應執行的函式
+    httpd_uri_t index_uri = {
+        .uri       = "/",             //http://192.168.xxx.xxx/
+        .method    = HTTP_GET,
+        .handler   = index_handler,
+        .user_ctx  = NULL
+    };
 
-  //http://192.168.xxx.xxx/status
-  httpd_uri_t status_uri = {
-      .uri       = "/status",
-      .method    = HTTP_GET,
-      .handler   = status_handler,
-      .user_ctx  = NULL
-  };
+    httpd_uri_t status_uri = {
+        .uri       = "/status",       //http://192.168.xxx.xxx/status
+        .method    = HTTP_GET,
+        .handler   = status_handler,
+        .user_ctx  = NULL
+    };
 
-  //http://192.168.xxx.xxx/control
-  httpd_uri_t cmd_uri = {
-      .uri       = "/control",
-      .method    = HTTP_GET,
-      .handler   = cmd_handler,
-      .user_ctx  = NULL
-  }; 
+    httpd_uri_t cmd_uri = {
+        .uri       = "/control",      //http://192.168.xxx.xxx/control
+        .method    = HTTP_GET,
+        .handler   = cmd_handler,
+        .user_ctx  = NULL
+    };
 
-  //http://192.168.xxx.xxx/capture
-  httpd_uri_t capture_uri = {
-      .uri       = "/capture",
-      .method    = HTTP_GET,
-      .handler   = capture_handler,
-      .user_ctx  = NULL
-  };
+    httpd_uri_t capture_uri = {
+        .uri       = "/capture",      //http://192.168.xxx.xxx/capture
+        .method    = HTTP_GET,
+        .handler   = capture_handler,
+        .user_ctx  = NULL
+    };
 
-  //http://192.168.xxx.xxx:81/stream
-  httpd_uri_t stream_uri = {
-      .uri       = "/stream",
-      .method    = HTTP_GET,
-      .handler   = stream_handler,
-      .user_ctx  = NULL
-  };
-  
-  ra_filter_init(&ra_filter, 20);
-  
-  Serial.printf("Starting web server on port: '%d'\n", config.server_port);  //Server Port
-  if (httpd_start(&camera_httpd, &config) == ESP_OK) {
-      //註冊自訂網址路徑對應執行的函式
-      httpd_register_uri_handler(camera_httpd, &index_uri);
-      httpd_register_uri_handler(camera_httpd, &cmd_uri);
-      httpd_register_uri_handler(camera_httpd, &status_uri);
-      httpd_register_uri_handler(camera_httpd, &capture_uri);
-  }
-  
-  config.server_port += 1;  //Stream Port
-  config.ctrl_port += 1;    //UDP Port
-  Serial.printf("Starting stream server on port: '%d'\n", config.server_port);
-  if (httpd_start(&stream_httpd, &config) == ESP_OK) {
-      httpd_register_uri_handler(stream_httpd, &stream_uri);
-  }
+   httpd_uri_t stream_uri = {
+        .uri       = "/stream",       //http://192.168.xxx.xxx:81/stream
+        .method    = HTTP_GET,
+        .handler   = stream_handler,
+        .user_ctx  = NULL
+    };
+    
+    Serial.printf("Starting web server on port: '%d'\n", config.server_port);  //TCP Port
+    if (httpd_start(&camera_httpd, &config) == ESP_OK) {
+        //註冊自訂網址路徑對應執行的函式
+        httpd_register_uri_handler(camera_httpd, &index_uri);
+        httpd_register_uri_handler(camera_httpd, &cmd_uri);
+        httpd_register_uri_handler(camera_httpd, &status_uri);
+        httpd_register_uri_handler(camera_httpd, &capture_uri);
+    }
+
+    config.server_port += 1;  //Stream Port
+    config.ctrl_port += 1;  //UDP Port
+    Serial.printf("Starting stream server on port: '%d'\n", config.server_port);
+    if (httpd_start(&stream_httpd, &config) == ESP_OK) {
+        httpd_register_uri_handler(stream_httpd, &stream_uri);
+    }
 }
 
 //自訂網頁首頁
@@ -365,49 +341,291 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <title>ESP32 OV2460</title>
-        <style> 
-          body { font-family: Arial,Helvetica,sans-serif; background: #181818; color: #EFEFEF; font-size: 16px } h2 { font-size: 18px } section.main { display: flex } #menu,section.main { flex-direction: column } #menu { display: none; flex-wrap: nowrap; min-width: 340px; background: #363636; padding: 8px; border-radius: 4px; margin-top: -10px; margin-right: 10px; } #content { display: flex; flex-wrap: wrap; align-items: stretch } figure { padding: 0px; margin: 0; -webkit-margin-before: 0; margin-block-start: 0; -webkit-margin-after: 0; margin-block-end: 0; -webkit-margin-start: 0; margin-inline-start: 0; -webkit-margin-end: 0; margin-inline-end: 0 } figure img { display: block; width: 100%; height: auto; border-radius: 4px; margin-top: 8px; } @media (min-width: 800px) and (orientation:landscape) { #content { display:flex; flex-wrap: nowrap; align-items: stretch } figure img { display: block; max-width: 100%; max-height: calc(100vh - 40px); width: auto; height: auto } figure { padding: 0 0 0 0px; margin: 0; -webkit-margin-before: 0; margin-block-start: 0; -webkit-margin-after: 0; margin-block-end: 0; -webkit-margin-start: 0; margin-inline-start: 0; -webkit-margin-end: 0; margin-inline-end: 0 } } section#buttons { display: flex; flex-wrap: nowrap; justify-content: space-between } #nav-toggle { cursor: pointer; display: block } #nav-toggle-cb { outline: 0; opacity: 0; width: 0; height: 0 } #nav-toggle-cb:checked+#menu { display: block } .input-group { display: flex; flex-wrap: nowrap; line-height: 22px; margin: 5px 0 } .input-group>label { display: inline-block; padding-right: 10px; min-width: 47% } .input-group input,.input-group select { flex-grow: 1 } .range-max,.range-min { display: inline-block; padding: 0 5px } button { display: block; margin: 5px; padding: 0 12px; border: 0; line-height: 28px; cursor: pointer; color: #fff; background: #ff3034; border-radius: 5px; font-size: 16px; outline: 0 } button:hover { background: #ff494d } button:active { background: #f21c21 } button.disabled { cursor: default; background: #a0a0a0 } input[type=range] { -webkit-appearance: none; width: 100%; height: 22px; background: #363636; cursor: pointer; margin: 0 } input[type=range]:focus { outline: 0 } input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 2px; cursor: pointer; background: #EFEFEF; border-radius: 0; border: 0 solid #EFEFEF } input[type=range]::-webkit-slider-thumb { border: 1px solid rgba(0,0,30,0); height: 22px; width: 22px; border-radius: 50px; background: #ff3034; cursor: pointer; -webkit-appearance: none; margin-top: -11.5px } input[type=range]:focus::-webkit-slider-runnable-track { background: #EFEFEF } input[type=range]::-moz-range-track { width: 100%; height: 2px; cursor: pointer; background: #EFEFEF; border-radius: 0; border: 0 solid #EFEFEF } input[type=range]::-moz-range-thumb { border: 1px solid rgba(0,0,30,0); height: 22px; width: 22px; border-radius: 50px; background: #ff3034; cursor: pointer } input[type=range]::-ms-track { width: 100%; height: 2px; cursor: pointer; background: 0 0; border-color: transparent; color: transparent } input[type=range]::-ms-fill-lower { background: #EFEFEF; border: 0 solid #EFEFEF; border-radius: 0 } input[type=range]::-ms-fill-upper { background: #EFEFEF; border: 0 solid #EFEFEF; border-radius: 0 } input[type=range]::-ms-thumb { border: 1px solid rgba(0,0,30,0); height: 22px; width: 22px; border-radius: 50px; background: #ff3034; cursor: pointer; height: 2px } input[type=range]:focus::-ms-fill-lower { background: #EFEFEF } input[type=range]:focus::-ms-fill-upper { background: #363636 } .switch { display: block; position: relative; line-height: 22px; font-size: 16px; height: 22px } .switch input { outline: 0; opacity: 0; width: 0; height: 0 } .slider { width: 50px; height: 22px; border-radius: 22px; cursor: pointer; background-color: grey } .slider,.slider:before { display: inline-block; transition: .4s } .slider:before { position: relative; content: ""; border-radius: 50%; height: 16px; width: 16px; left: 4px; top: 3px; background-color: #fff } input:checked+.slider { background-color: #ff3034 } input:checked+.slider:before { -webkit-transform: translateX(26px); transform: translateX(26px) } select { border: 1px solid #363636; font-size: 14px; height: 22px; outline: 0; border-radius: 5px } .image-container { position: relative; min-width: 160px } .close { position: absolute; right: 5px; top: 5px; background: #ff3034; width: 16px; height: 16px; border-radius: 100px; color: #fff; text-align: center; line-height: 18px; cursor: pointer } .hidden { display: none } 
-        </style>
         <style>
-        .tooltip {
-          position: relative;
-          display: inline-block;
-          border-bottom: 1px dotted black;
-        }
-        
-        .tooltip .tooltiptext {
-          visibility: hidden;
-          width: 120px;
-          background-color: #555;
-          color: #fff;
-          text-align: center;
-          border-radius: 6px;
-          padding: 5px 0;
-          position: absolute;
-          z-index: 1;
-          bottom: 125%;
-          left: 50%;
-          margin-left: -60px;
-          opacity: 0;
-          transition: opacity 0.3s;
-        }
-        
-        .tooltip .tooltiptext::after {
-          content: "";
-          position: absolute;
-          top: 100%;
-          left: 50%;
-          margin-left: -5px;
-          border-width: 5px;
-          border-style: solid;
-          border-color: #555 transparent transparent transparent;
-        }
-        
-        .tooltip:hover .tooltiptext {
-          visibility: visible;
-          opacity: 1;
-        }  
-        </style>      
+            body {
+                font-family: Arial,Helvetica,sans-serif;
+                background: #181818;
+                color: #EFEFEF;
+                font-size: 16px
+            }
+            h2 {
+                font-size: 18px
+            }
+            section.main {
+                display: flex
+            }
+            #menu,section.main {
+                flex-direction: column
+            }
+            #menu {
+                display: none;
+                flex-wrap: nowrap;
+                min-width: 340px;
+                background: #363636;
+                padding: 8px;
+                border-radius: 4px;
+                margin-top: -10px;
+                margin-right: 10px;
+            }
+            #content {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: stretch
+            }
+            figure {
+                padding: 0px;
+                margin: 0;
+                -webkit-margin-before: 0;
+                margin-block-start: 0;
+                -webkit-margin-after: 0;
+                margin-block-end: 0;
+                -webkit-margin-start: 0;
+                margin-inline-start: 0;
+                -webkit-margin-end: 0;
+                margin-inline-end: 0
+            }
+            figure img {
+                display: block;
+                width: 100%;
+                height: auto;
+                border-radius: 4px;
+                margin-top: 8px;
+            }
+            @media (min-width: 800px) and (orientation:landscape) {
+                #content {
+                    display:flex;
+                    flex-wrap: nowrap;
+                    align-items: stretch
+                }
+                figure img {
+                    display: block;
+                    max-width: 100%;
+                    max-height: calc(100vh - 40px);
+                    width: auto;
+                    height: auto
+                }
+                figure {
+                    padding: 0 0 0 0px;
+                    margin: 0;
+                    -webkit-margin-before: 0;
+                    margin-block-start: 0;
+                    -webkit-margin-after: 0;
+                    margin-block-end: 0;
+                    -webkit-margin-start: 0;
+                    margin-inline-start: 0;
+                    -webkit-margin-end: 0;
+                    margin-inline-end: 0
+                }
+            }
+            section#buttons {
+                display: flex;
+                flex-wrap: nowrap;
+                justify-content: space-between
+            }
+            #nav-toggle {
+                cursor: pointer;
+                display: block
+            }
+            #nav-toggle-cb {
+                outline: 0;
+                opacity: 0;
+                width: 0;
+                height: 0
+            }
+            #nav-toggle-cb:checked+#menu {
+                display: flex
+            }
+            .input-group {
+                display: flex;
+                flex-wrap: nowrap;
+                line-height: 22px;
+                margin: 5px 0
+            }
+            .input-group>label {
+                display: inline-block;
+                padding-right: 10px;
+                min-width: 47%
+            }
+            .input-group input,.input-group select {
+                flex-grow: 1
+            }
+            .range-max,.range-min {
+                display: inline-block;
+                padding: 0 5px
+            }
+            button {
+                display: block;
+                margin: 5px;
+                padding: 0 12px;
+                border: 0;
+                line-height: 28px;
+                cursor: pointer;
+                color: #fff;
+                background: #ff3034;
+                border-radius: 5px;
+                font-size: 16px;
+                outline: 0
+            }
+            button:hover {
+                background: #ff494d
+            }
+            button:active {
+                background: #f21c21
+            }
+            button.disabled {
+                cursor: default;
+                background: #a0a0a0
+            }
+            input[type=range] {
+                -webkit-appearance: none;
+                width: 100%;
+                height: 22px;
+                background: #363636;
+                cursor: pointer;
+                margin: 0
+            }
+            input[type=range]:focus {
+                outline: 0
+            }
+            input[type=range]::-webkit-slider-runnable-track {
+                width: 100%;
+                height: 2px;
+                cursor: pointer;
+                background: #EFEFEF;
+                border-radius: 0;
+                border: 0 solid #EFEFEF
+            }
+            input[type=range]::-webkit-slider-thumb {
+                border: 1px solid rgba(0,0,30,0);
+                height: 22px;
+                width: 22px;
+                border-radius: 50px;
+                background: #ff3034;
+                cursor: pointer;
+                -webkit-appearance: none;
+                margin-top: -11.5px
+            }
+            input[type=range]:focus::-webkit-slider-runnable-track {
+                background: #EFEFEF
+            }
+            input[type=range]::-moz-range-track {
+                width: 100%;
+                height: 2px;
+                cursor: pointer;
+                background: #EFEFEF;
+                border-radius: 0;
+                border: 0 solid #EFEFEF
+            }
+            input[type=range]::-moz-range-thumb {
+                border: 1px solid rgba(0,0,30,0);
+                height: 22px;
+                width: 22px;
+                border-radius: 50px;
+                background: #ff3034;
+                cursor: pointer
+            }
+            input[type=range]::-ms-track {
+                width: 100%;
+                height: 2px;
+                cursor: pointer;
+                background: 0 0;
+                border-color: transparent;
+                color: transparent
+            }
+            input[type=range]::-ms-fill-lower {
+                background: #EFEFEF;
+                border: 0 solid #EFEFEF;
+                border-radius: 0
+            }
+            input[type=range]::-ms-fill-upper {
+                background: #EFEFEF;
+                border: 0 solid #EFEFEF;
+                border-radius: 0
+            }
+            input[type=range]::-ms-thumb {
+                border: 1px solid rgba(0,0,30,0);
+                height: 22px;
+                width: 22px;
+                border-radius: 50px;
+                background: #ff3034;
+                cursor: pointer;
+                height: 2px
+            }
+            input[type=range]:focus::-ms-fill-lower {
+                background: #EFEFEF
+            }
+            input[type=range]:focus::-ms-fill-upper {
+                background: #363636
+            }
+            .switch {
+                display: block;
+                position: relative;
+                line-height: 22px;
+                font-size: 16px;
+                height: 22px
+            }
+            .switch input {
+                outline: 0;
+                opacity: 0;
+                width: 0;
+                height: 0
+            }
+            .slider {
+                width: 50px;
+                height: 22px;
+                border-radius: 22px;
+                cursor: pointer;
+                background-color: grey
+            }
+            .slider,.slider:before {
+                display: inline-block;
+                transition: .4s
+            }
+            .slider:before {
+                position: relative;
+                content: "";
+                border-radius: 50%;
+                height: 16px;
+                width: 16px;
+                left: 4px;
+                top: 3px;
+                background-color: #fff
+            }
+            input:checked+.slider {
+                background-color: #ff3034
+            }
+            input:checked+.slider:before {
+                -webkit-transform: translateX(26px);
+                transform: translateX(26px)
+            }
+            select {
+                border: 1px solid #363636;
+                font-size: 14px;
+                height: 22px;
+                outline: 0;
+                border-radius: 5px
+            }
+            .image-container {
+                position: relative;
+                min-width: 160px
+            }
+            .close {
+                position: absolute;
+                right: 5px;
+                top: 5px;
+                background: #ff3034;
+                width: 16px;
+                height: 16px;
+                border-radius: 100px;
+                color: #fff;
+                text-align: center;
+                line-height: 18px;
+                cursor: pointer
+            }
+            .hidden {
+                display: none
+            }
+        </style>    
     </head>
     <body>
         <figure>
@@ -425,16 +643,16 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                     <input type="checkbox" id="nav-toggle-cb" checked="checked">
                     <nav id="menu">
                         <section id="buttons">
+                            <button id="restart">Restart board</button>
                             <button id="get-still">Get Still</button>
                             <button id="toggle-stream">Start Stream</button>
-                            <button id="face_enroll" style="display:none">Enroll Face</button>
                         </section>                         
                         <div class="input-group" id="flash-group">
                             <label for="flash">Flash</label>
                             <div class="range-min">0</div>
-                            <input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}" class="default-action">
+                            <input type="range" id="flash" min="0" max="255" value="0" class="default-action">
                             <div class="range-max">255</div>
-                        </div>                        
+                        </div>                       
                         <div class="input-group" id="framesize-group">
                             <label for="framesize">Resolution</label>
                             <select id="framesize" class="default-action">
@@ -467,6 +685,24 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                             <input type="range" id="contrast" min="-2" max="2" value="0" class="default-action">
                             <div class="range-max">2</div>
                         </div>
+                        <div class="input-group" id="saturation-group">
+                            <label for="saturation">Saturation</label>
+                            <div class="range-min">-2</div>
+                            <input type="range" id="saturation" min="-2" max="2" value="0" class="default-action">
+                            <div class="range-max">2</div>
+                        </div>
+                        <div class="input-group" id="special_effect-group">
+                            <label for="special_effect">Special Effect</label>
+                            <select id="special_effect" class="default-action">
+                                <option value="0" selected="selected">No Effect</option>
+                                <option value="1">Negative</option>
+                                <option value="2">Grayscale</option>
+                                <option value="3">Red Tint</option>
+                                <option value="4">Green Tint</option>
+                                <option value="5">Blue Tint</option>
+                                <option value="6">Sepia</option>
+                            </select>
+                        </div>                        
                         <div class="input-group" id="resetfilename-group">
                             <label for="resetfilename">Reset Filename</label>
                             <section id="buttons">
@@ -474,13 +710,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                             </section>
                         </div>                         
                         <div class="input-group" id="timelapse-group">
-                            <label for="contrast">Interval(ms)</label>
-                            <div class="range-min">100</div>
+                            <label for="contrast">Interval(s)</label>
+                            <div class="range-min">0.1</div>
                             <div class="tooltip">
-                            <input type="range" id="interval" min="100" max="60000" step="100" value="1000" class="default-action">
-                            <span id="interval_tip" class="tooltiptext">1000</span>
+                            <input type="range" id="interval" min="0.1" max="60" step="0.1" value="5" class="default-action">
+                            <span id="interval_tip" class="tooltiptext">60</span>
                             </div>
-                            <div class="range-max">60000</div>
+                            <div class="range-max">60</div>
                         </div>                         
                         <div class="input-group" id="timelapse-group">
                             <label for="timelapse">Start TimeLapse</label>
@@ -531,21 +767,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           
               if (updateRemote && initialValue !== value) {
                 updateConfig(el);
-              } else if(!updateRemote){
-                if(el.id === "aec"){
-                  value ? hide(exposure) : show(exposure)
-                } else if(el.id === "agc"){
-                  if (value) {
-                    show(gainCeiling)
-                    hide(agcGain)
-                  } else {
-                    hide(gainCeiling)
-                    show(agcGain)
-                  }
-                } else if(el.id === "awb_gain"){
-                  value ? show(wb) : hide(wb)
-                }
-              }
+              } 
             }
           
             function updateConfig (el) {
@@ -565,9 +787,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 default:
                   return
               }
-          
-              const query = `${baseHost}/control?var=${el.id}&val=${value}`
-          
+              
+              if (el.id =="flash") {  //新增flash自訂指令
+                var query = baseHost+"/control?flash=" + String(value);
+              } else {
+                var query = `${baseHost}/control?var=${el.id}&val=${value}`
+              }
+  
               fetch(query)
                 .then(response => {
                   console.log(`request to ${query} finished, status: ${response.status}`)
@@ -591,7 +817,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 document
                   .querySelectorAll('.default-action')
                   .forEach(el => {
-                    updateValue(el, state[el.id], false)
+                    if (el.id=="flash") {  //新增flash設定預設值0
+                      flash.value=0;
+                      fetch(baseHost+"/control?flash=0");
+                    } else if (el.id=="interval") {  //新增interval設定預設值5
+                      interval.value=5;
+                      interval_tip.innerHTML = interval.value;
+                    } else {                          
+                      updateValue(el, state[el.id], false)
+                    }
                   })
               })
           
@@ -600,6 +834,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             const stillButton = document.getElementById('get-still')
             const streamButton = document.getElementById('toggle-stream')
             const closeButton = document.getElementById('close-stream')
+            const restartButton = document.getElementById('restart')            //新增restart變數
+            const flash = document.getElementById('flash')                      //新增flash變數
+            const interval = document.getElementById('interval')                //新增interval變數
             
             const stopStream = () => {
               window.stop();
@@ -611,6 +848,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
               show(viewContainer)
               streamButton.innerHTML = 'Stop Stream'
             }
+
+            //新增重啟電源按鈕點選事件 (自訂指令格式：http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9)
+            restartButton.onclick = () => {
+              fetch(baseHost+"/control?restart");
+            }            
           
             // Attach actions to buttons
             stillButton.onclick = () => {
@@ -644,12 +886,10 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             const resetfilename = document.getElementById('resetfilename')
             const framesize = document.getElementById('framesize')
             const timelapse = document.getElementById('timelapse')
-            const interval = document.getElementById('interval')
             const interval_tip = document.getElementById('interval_tip')
             const range = document.getElementById('range')
             const ifr = document.getElementById('ifr')
             var myTimer;
-
             resetfilename.onclick = () => {
               ifr.src =  document.location.origin+'/control?resetfilename';
             }            
@@ -661,7 +901,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 updateValue(recognize, false)
               }
             }
-
             interval.onchange = () => {
               interval_tip.innerHTML = interval.value;
               if (timelapse.checked) {
@@ -669,7 +908,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 ifr.src =  document.location.origin+'/control?saveimage';
                 myTimer = setInterval(function(){
                   ifr.src =  document.location.origin+'/control?saveimage';
-                }, interval.value);
+                }, Number(interval.value)*1000);
               }             
             }            
           
@@ -679,7 +918,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 ifr.src =  document.location.origin+'/control?saveimage';
                 myTimer = setInterval(function(){
                   ifr.src =  document.location.origin+'/control?saveimage';
-                }, interval.value);
+                }, Number(interval.value)*1000);
               } 
             }            
           })
@@ -705,8 +944,8 @@ static esp_err_t status_handler(httpd_req_t *req){
     p+=sprintf(p, "\"quality\":%u,", s->status.quality);
     p+=sprintf(p, "\"brightness\":%d,", s->status.brightness);
     p+=sprintf(p, "\"contrast\":%d,", s->status.contrast);
-    p+=sprintf(p, "\"interval\":%d,", 1000);    
-    p+=sprintf(p, "\"flash\":%u", 0);
+    p+=sprintf(p, "\"saturation\":%d,", s->status.saturation);    
+    p+=sprintf(p, "\"special_effect\":%u", s->status.special_effect);
     *p++ = '}';
     *p++ = 0;
     httpd_resp_set_type(req, "application/json");
@@ -763,38 +1002,50 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       if (cmd=="your cmd") {
         // You can do anything
         // Feedback="<font color=\"red\">Hello World</font>";   //可為一般文字或HTML語法
-      }
-      else if (cmd=="restart") {
+      } else if (cmd=="restart") {
         ESP.restart();
-      }      
-      else if (cmd=="resetwifi") {  //重設Wi-Fi連結
-        WiFi.begin(P1.c_str(), P2.c_str());
-        Serial.print("Connecting to ");
-        Serial.println(P1);
-        long int StartTime=millis();
-        while (WiFi.status() != WL_CONNECTED) 
-        {
-            delay(500);
-            if ((StartTime+5000) < millis()) break;
-        } 
-        Serial.println("");
-        Serial.println("STAIP: "+WiFi.localIP().toString());
-        Feedback="STAIP: "+WiFi.localIP().toString();
-      }       
-      else if (cmd=="saveimage") {  //儲存影像至SD卡
+      } else if (cmd=="flash") {  //閃光燈
+        ledcAttachPin(4, 4);  
+        ledcSetup(4, 5000, 8);   
+        int val = P1.toInt();
+        ledcWrite(4,val);
+      } else if (cmd=="resetwifi") {  //重設網路連線  
+        for (int i=0;i<2;i++) {
+          WiFi.begin(P1.c_str(), P2.c_str());
+          Serial.print("Connecting to ");
+          Serial.println(P1);
+          long int StartTime=millis();
+          while (WiFi.status() != WL_CONNECTED) {
+              delay(500);
+              if ((StartTime+5000) < millis()) break;
+          } 
+          Serial.println("");
+          Serial.println("STAIP: "+WiFi.localIP().toString());
+          Feedback="STAIP: "+WiFi.localIP().toString();
+  
+          if (WiFi.status() == WL_CONNECTED) {
+            WiFi.softAP((WiFi.localIP().toString()+"_"+P1).c_str(), P2.c_str());
+            for (int i=0;i<2;i++) {    //若連不上WIFI設定閃光燈慢速閃爍
+              ledcWrite(4,10);
+              delay(300);
+              ledcWrite(4,0);
+              delay(300);    
+            }
+            break;
+          }
+        }
+      } else if (cmd=="saveimage") {  //儲存影像至SD卡
         EEPROM.begin(sizeof(int)*4);
         EEPROM.write(0, EEPROM.read(0)+1);
         EEPROM.commit(); 
         saveCapturedImage(String(EEPROM.read(0))); 
         Feedback=String(EEPROM.read(0)) + ".jpg finished.";
-      }
-      else if (cmd=="resetfilename") {  //重設檔名由1開始
+      } else if (cmd=="resetfilename") {  //重設檔名由1開始
         EEPROM.begin(sizeof(int)*4);
         EEPROM.write(0, 0);
         EEPROM.commit();
         Feedback="Start with '1.jpg'";
-      }  
-      else {
+      } else {
         Feedback="Command is not defined";
       }
 
@@ -819,8 +1070,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if(!strcmp(variable, "brightness")) res = s->set_brightness(s, val);
       else if(!strcmp(variable, "flash")) {  //Control flash
         ledcWrite(4,val);
-      }    
-      else {
+      } else {
           res = -1;
       }
   
@@ -834,8 +1084,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         httpd_resp_set_type(req, "text/html");
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         return httpd_resp_send(req, resp, strlen(resp));  //回傳參數字串
-      }
-      else {
+      } else {
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         return httpd_resp_send(req, NULL, 0);
       }
@@ -858,7 +1107,6 @@ static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size
 static esp_err_t capture_handler(httpd_req_t *req){
     camera_fb_t * fb = NULL;
     esp_err_t res = ESP_OK;
-    int64_t fr_start = esp_timer_get_time();
 
     fb = esp_camera_fb_get();
     if (!fb) {
@@ -870,58 +1118,18 @@ static esp_err_t capture_handler(httpd_req_t *req){
     httpd_resp_set_type(req, "image/jpeg");
     httpd_resp_set_hdr(req, "Content-Disposition", "inline; filename=capture.jpg");
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-    
-    size_t out_len, out_width, out_height;
-    uint8_t * out_buf;
-    bool s;
-    if(fb->width > 400){
-        size_t fb_len = 0;
-        if(fb->format == PIXFORMAT_JPEG){
-            fb_len = fb->len;
-            res = httpd_resp_send(req, (const char *)fb->buf, fb->len);
-        } else {
-            jpg_chunking_t jchunk = {req, 0};
-            res = frame2jpg_cb(fb, 80, jpg_encode_stream, &jchunk)?ESP_OK:ESP_FAIL;
-            httpd_resp_send_chunk(req, NULL, 0);
-            fb_len = jchunk.len;
-        }
-        esp_camera_fb_return(fb);
-        int64_t fr_end = esp_timer_get_time();
-        Serial.printf("JPG: %uB %ums\n", (uint32_t)(fb_len), (uint32_t)((fr_end - fr_start)/1000));
-        return res;
+
+    size_t fb_len = 0;
+    if(fb->format == PIXFORMAT_JPEG){
+        fb_len = fb->len;
+        res = httpd_resp_send(req, (const char *)fb->buf, fb->len);
+    } else {
+        jpg_chunking_t jchunk = {req, 0};
+        res = frame2jpg_cb(fb, 80, jpg_encode_stream, &jchunk)?ESP_OK:ESP_FAIL;
+        httpd_resp_send_chunk(req, NULL, 0);
+        fb_len = jchunk.len;
     }
-
-    dl_matrix3du_t *image_matrix = dl_matrix3du_alloc(1, fb->width, fb->height, 3);
-    if (!image_matrix) {
-        esp_camera_fb_return(fb);
-        Serial.println("dl_matrix3du_alloc failed");
-        httpd_resp_send_500(req);
-        return ESP_FAIL;
-    }
-
-    out_buf = image_matrix->item;
-    out_len = fb->width * fb->height * 3;
-    out_width = fb->width;
-    out_height = fb->height;
-
-    s = fmt2rgb888(fb->buf, fb->len, fb->format, out_buf);
     esp_camera_fb_return(fb);
-    if(!s){
-        dl_matrix3du_free(image_matrix);
-        Serial.println("to rgb888 failed");
-        httpd_resp_send_500(req);
-        return ESP_FAIL;
-    }
-
-    jpg_chunking_t jchunk = {req, 0};
-    s = fmt2jpg_cb(out_buf, out_len, out_width, out_height, PIXFORMAT_RGB888, 90, jpg_encode_stream, &jchunk);
-    dl_matrix3du_free(image_matrix);
-    if(!s){
-        Serial.println("JPEG compression failed");
-        return ESP_FAIL;
-    }
-
-    int64_t fr_end = esp_timer_get_time();
     return res;
 }
 
@@ -932,19 +1140,12 @@ static esp_err_t stream_handler(httpd_req_t *req){
     size_t _jpg_buf_len = 0;
     uint8_t * _jpg_buf = NULL;
     char * part_buf[64];
-    dl_matrix3du_t *image_matrix = NULL;
-    int64_t fr_start = 0;
-    int64_t fr_ready = 0;
-
-    static int64_t last_frame = 0;
-    if(!last_frame) {
-        last_frame = esp_timer_get_time();
-    }
 
     res = httpd_resp_set_type(req, _STREAM_CONTENT_TYPE);
     if(res != ESP_OK){
         return res;
     }
+
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
     while(true){
@@ -953,60 +1154,30 @@ static esp_err_t stream_handler(httpd_req_t *req){
             Serial.println("Camera capture failed");
             res = ESP_FAIL;
         } else {
-            fr_start = esp_timer_get_time();
-            fr_ready = fr_start;
-            if(fb->width > 400){
-                if(fb->format != PIXFORMAT_JPEG){
-                    bool jpeg_converted = frame2jpg(fb, 80, &_jpg_buf, &_jpg_buf_len);
-                    esp_camera_fb_return(fb);
-                    fb = NULL;
-                    if(!jpeg_converted){
-                        Serial.println("JPEG compression failed");
-                        res = ESP_FAIL;
-                    }
-                } else {
-                    _jpg_buf_len = fb->len;
-                    _jpg_buf = fb->buf;
-                }
-            } else {
-
-                image_matrix = dl_matrix3du_alloc(1, fb->width, fb->height, 3);
-
-                if (!image_matrix) {
-                    Serial.println("dl_matrix3du_alloc failed");
-                    res = ESP_FAIL;
-                } else {
-                    if(!fmt2rgb888(fb->buf, fb->len, fb->format, image_matrix->item)){
-                        Serial.println("fmt2rgb888 failed");
-                        res = ESP_FAIL;
-                    } else {
-                        fr_ready = esp_timer_get_time();
-                        if (fb->format != PIXFORMAT_JPEG){
-                            if(!fmt2jpg(image_matrix->item, fb->width*fb->height*3, fb->width, fb->height, PIXFORMAT_RGB888, 90, &_jpg_buf, &_jpg_buf_len)){
-                                Serial.println("fmt2jpg failed");
-                                res = ESP_FAIL;
-                            }
-                            esp_camera_fb_return(fb);
-                            fb = NULL;
-                        } else {
-                            _jpg_buf = fb->buf;
-                            _jpg_buf_len = fb->len;
-                        }
-                    }
-                    dl_matrix3du_free(image_matrix);
-                }
-            }
+          if(fb->format != PIXFORMAT_JPEG){
+              bool jpeg_converted = frame2jpg(fb, 80, &_jpg_buf, &_jpg_buf_len);
+              esp_camera_fb_return(fb);
+              fb = NULL;
+              if(!jpeg_converted){
+                  Serial.println("JPEG compression failed");
+                  res = ESP_FAIL;
+              }
+          } else {
+              _jpg_buf_len = fb->len;
+              _jpg_buf = fb->buf;
+          }
         }
-        if(res == ESP_OK){
-            size_t hlen = snprintf((char *)part_buf, 64, _STREAM_PART, _jpg_buf_len);
-            res = httpd_resp_send_chunk(req, (const char *)part_buf, hlen);
-        }
+
         if(res == ESP_OK){
             res = httpd_resp_send_chunk(req, (const char *)_jpg_buf, _jpg_buf_len);
         }
         if(res == ESP_OK){
             res = httpd_resp_send_chunk(req, _STREAM_BOUNDARY, strlen(_STREAM_BOUNDARY));
         }
+        if(res == ESP_OK){
+            size_t hlen = snprintf((char *)part_buf, 64, _STREAM_PART, _jpg_buf_len);
+            res = httpd_resp_send_chunk(req, (const char *)part_buf, hlen);
+        }                
         if(fb){
             esp_camera_fb_return(fb);
             fb = NULL;
@@ -1018,24 +1189,8 @@ static esp_err_t stream_handler(httpd_req_t *req){
         if(res != ESP_OK){
             break;
         }
-        int64_t fr_end = esp_timer_get_time();
-
-        int64_t ready_time = (fr_ready - fr_start)/1000;
-        
-        int64_t frame_time = fr_end - last_frame;
-        last_frame = fr_end;
-        frame_time /= 1000;
-        uint32_t avg_frame_time = ra_filter_run(&ra_filter, frame_time);
-        /*
-         Serial.printf("MJPG: %uB %ums (%.1ffps), AVG: %ums (%.1ffps), %u+%u+%u+%u=%u %s%d\n",
-            (uint32_t)(_jpg_buf_len),
-            (uint32_t)frame_time, 1000.0 / (uint32_t)frame_time,
-            avg_frame_time, 1000.0 / avg_frame_time
-        );
-        */
     }
 
-    last_frame = 0;
     return res;
 }
 
