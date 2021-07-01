@@ -129,21 +129,28 @@ void setup() {
   Serial.println();
   
   SD_MMC.end();
-  pinMode(pinPIR, INPUT_PULLUP);  
+  pinMode(pinPIR, INPUT_PULLUP); 
+   
+  /*
+  //檔案流水號重設
+  preferences.begin("SD", false);
+  preferences.putUInt("number", 0);
+  preferences.end(); 
+  */ 
 }
 
 void loop() {
   int v = digitalRead(pinPIR);
   Serial.println(v);
   if (v==1) {
-    preferences.begin("file", false);
+    preferences.begin("SD", false);
     int n = preferences.getUInt("number", 0);
     
     saveCapturedImage2SD(String(n+1));
     
     preferences.putUInt("number", (n+1));
     preferences.end();
-    delay(5000);
+    //delay(4000);
   }
   delay(1000);
 }

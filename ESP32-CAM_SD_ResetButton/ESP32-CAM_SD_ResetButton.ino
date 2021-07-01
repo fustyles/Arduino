@@ -1,23 +1,22 @@
 /*
-ESP32-CAM (Press the RESET button to take a photo and save the photo to SD card)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-8-20 00:00
+ESP32-CAM 按Reset按鈕拍照儲存影像於SD卡
+Press the RESET button to take a photo and save the photo to the SD card
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-30 00:00
 https://www.facebook.com/francefu
 */
 
-#include <EEPROM.h>
-
-#include "esp_camera.h"
 #include <WiFi.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
+#include "esp_camera.h"
 #include "FS.h"
 #include "SD_MMC.h"
-#include "esp_camera.h"
+#include <Preferences.h>
+Preferences preferences;
 
-// WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
-//            or another board which has PSRAM enabled
+//Arduino IDE開發版選擇 ESP32 Wrover Module
 
-//CAMERA_MODEL_AI_THINKER
+//ESP32-CAM 安信可模組腳位設定
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -37,10 +36,10 @@ https://www.facebook.com/francefu
 #define PCLK_GPIO_NUM     22
 
 void setup() {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
-  
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
+    
   Serial.begin(115200);
-  Serial.setDebugOutput(true);
+  Serial.setDebugOutput(true);  //開啟診斷輸出
   Serial.println();
 
   camera_config_t config;
@@ -64,75 +63,89 @@ void setup() {
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  //init with high specs to pre-allocate larger buffers
-  if(psramFound()){
+  
+  //
+  // WARNING!!! PSRAM IC required for UXGA resolution and high JPEG quality
+  //            Ensure ESP32 Wrover Module or other board with PSRAM is selected
+  //            Partial images will be transmitted if image exceeds buffer size
+  //   
+  // if PSRAM IC present, init with UXGA resolution and higher JPEG quality
+  //                      for larger pre-allocated frame buffer.
+  if(psramFound()){  //是否有PSRAM(Psuedo SRAM)記憶體IC
     config.frame_size = FRAMESIZE_UXGA;
-    config.jpeg_quality = 10;  //0-63 lower number means higher quality
+    config.jpeg_quality = 10;
     config.fb_count = 2;
   } else {
     config.frame_size = FRAMESIZE_SVGA;
-    config.jpeg_quality = 12;  //0-63 lower number means higher quality
+    config.jpeg_quality = 12;
     config.fb_count = 1;
   }
-  
-  // camera init
+
+  //視訊初始化
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
-    delay(1000);
     ESP.restart();
   }
 
-  //drop down frame size for higher initial frame rate
+  //可自訂視訊框架預設大小(解析度大小)
   sensor_t * s = esp_camera_sensor_get();
+  // initial sensors are flipped vertically and colors are a bit saturated
+  if (s->id.PID == OV3660_PID) {
+    s->set_vflip(s, 1); // flip it back
+    s->set_brightness(s, 1); // up the brightness just a bit
+    s->set_saturation(s, -2); // lower the saturation
+  }
+  // drop down frame size for higher initial frame rate
   s->set_framesize(s, FRAMESIZE_UXGA);  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+
+  //s->set_vflip(s, 1);  //垂直翻轉
+  //s->set_hmirror(s, 1);  //水平鏡像
+  
+  //閃光燈(GPIO4)
+  ledcAttachPin(4, 4);  
+  ledcSetup(4, 5000, 8);
 
   //SD Card
   if(!SD_MMC.begin()){
     Serial.println("Card Mount Failed");
-    return;
+    ESP.restart();
   }
 
-  /*
   uint8_t cardType = SD_MMC.cardType();
 
   if(cardType == CARD_NONE){
     Serial.println("No SD_MMC card attached");
     SD_MMC.end();
-    return;
-  }
-
-  Serial.print("SD_MMC Card Type: ");
-  if(cardType == CARD_MMC){
-      Serial.println("MMC");
-  } else if(cardType == CARD_SD){
-      Serial.println("SDSC");
-  } else if(cardType == CARD_SDHC){
-      Serial.println("SDHC");
-  } else {
-      Serial.println("UNKNOWN");
-  }    
+    ESP.restart();
+  }  
 
   Serial.printf("SD_MMC Card Size: %lluMB\n", SD_MMC.cardSize() / (1024 * 1024));
   Serial.printf("Total space: %lluMB\n", SD_MMC.totalBytes() / (1024 * 1024));
   Serial.printf("Used space: %lluMB\n", SD_MMC.usedBytes() / (1024 * 1024));
   Serial.println();
-
-  */
   
-  SD_MMC.end(); 
+  SD_MMC.end();
 
-  EEPROM.begin(sizeof(int)*4);
-  EEPROM.write(0, EEPROM.read(0)+1);
-  EEPROM.commit(); 
-  saveCapturedImage(String(EEPROM.read(0)));
+  /*
+  //檔案流水號重設
+  preferences.begin("SD", false);
+  preferences.putUInt("number", 0);
+  preferences.end(); 
+  */ 
+
+  preferences.begin("SD", false);
+  int n = preferences.getUInt("number", 0);
+  saveCapturedImage2SD(String(n+1));
+  preferences.putUInt("number", (n+1));
+  preferences.end();
 }
 
 void loop() {
   delay(10000);
 }
 
-void saveCapturedImage(String filename) {
+void saveCapturedImage2SD(String filename) {
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();
   if (!fb) {
