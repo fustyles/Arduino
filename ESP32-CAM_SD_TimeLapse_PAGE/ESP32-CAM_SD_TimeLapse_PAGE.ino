@@ -896,11 +896,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           
             framesize.onchange = () => {
               updateConfig(framesize)
-              if (framesize.value > 5) {
-                updateValue(detect, false)
-                updateValue(recognize, false)
-              }
             }
+            
             interval.onchange = () => {
               interval_tip.innerHTML = interval.value;
               if (timelapse.checked) {
