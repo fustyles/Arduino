@@ -1135,6 +1135,7 @@ void startCameraServer(){
         httpd_register_uri_handler(camera_httpd, &cmd_uri);
         httpd_register_uri_handler(camera_httpd, &status_uri);
         httpd_register_uri_handler(camera_httpd, &capture_uri);
+        httpd_register_uri_handler(camera_httpd, &stream_uri); 
         httpd_register_uri_handler(camera_httpd, &wifi_uri);   //註冊WI-FI設定網頁   
     }
 
