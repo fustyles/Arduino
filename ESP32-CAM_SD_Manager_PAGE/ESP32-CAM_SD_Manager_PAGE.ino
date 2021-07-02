@@ -1233,9 +1233,9 @@ String deleteimage(String filename) {
   File file = fs.open(filename);
   String message="";
   if(fs.remove(filename)){
-      message = "<font color=red>" + filename + " File deleted</font>";
+      message = "<font color=yellow>" + filename + " File deleted</font>";
   } else {
-      message = "<font color=red>" + filename + " failed</font>";
+      message = "<font color=yellow>" + filename + " failed</font>";
   }
   file.close();
   SD_MMC.end();
