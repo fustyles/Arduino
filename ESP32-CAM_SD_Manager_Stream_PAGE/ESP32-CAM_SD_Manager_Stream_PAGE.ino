@@ -890,6 +890,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
 //網頁首頁  http://192.168.xxx.xxx
 static esp_err_t index_handler(httpd_req_t *req){
     httpd_resp_set_type(req, "text/html");
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     return httpd_resp_send(req, (const char *)INDEX_HTML, strlen(INDEX_HTML));
 }
 
