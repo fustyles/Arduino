@@ -1,6 +1,6 @@
 /*
 ESP32-CAM SD file manager
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-1 22:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-1 23:30
 https://www.facebook.com/francefu
 
 自訂指令格式 :  
@@ -8,16 +8,16 @@ http://APIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://STAIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 
 預設AP端IP： 192.168.4.1
-http://192.168.xxx.xxx                          //首頁
-http://192.168.xxx.xxx?ip                       //IP
-http://192.168.xxx.xxx?mac                      //MAC
-http://192.168.xxx.xxx?restart                  //重啟電源
-http://192.168.xxx.xxx?digitalwrite=pin;value   //數位輸出
-http://192.168.xxx.xxx?analogwrite=pin;value    //類比輸出
-http://192.168.xxx.xxx?digitalread=pin          //數位讀取
-http://192.168.xxx.xxx?analogread=pin           //類比讀取
-http://192.168.xxx.xxx?touchread=pin            //觸碰讀取
-http://192.168.xxx.xxx?resetwifi=ssid;password  //重設網路
+http://192.168.xxx.xxx                           //首頁
+http://192.168.xxx.xxx?ip                        //IP
+http://192.168.xxx.xxx?mac                       //MAC
+http://192.168.xxx.xxx?restart                   //重啟電源
+http://192.168.xxx.xxx?digitalwrite=pin;value    //數位輸出
+http://192.168.xxx.xxx?analogwrite=pin;value     //類比輸出
+http://192.168.xxx.xxx?digitalread=pin           //數位讀取
+http://192.168.xxx.xxx?analogread=pin            //類比讀取
+http://192.168.xxx.xxx?touchread=pin             //觸碰讀取
+http://192.168.xxx.xxx?resetwifi=ssid;password   //重設網路
 
 http://192.168.xxx.xxx?getstill                  //取得視訊影像
 http://192.168.xxx.xxx?status                    //取得視訊設定
@@ -26,18 +26,17 @@ http://192.168.xxx.xxx?listimages                //列出SD卡影像清單
 http://192.168.xxx.xxx?showimage=/filename       //取得SD卡影像
 http://192.168.xxx.xxx?deleteimage=/filename     //刪除SD卡影像
 
-
-http://192.168.xxx.xxx?flash=value              //閃光燈 value= 0~255
-http://192.168.xxx.xxx?servo=pin;value          //伺服馬達 value= 0~180
-http://192.168.xxx.xxx?relay=pin;value         //繼電器 value = 0, 1
-http://192.168.xxx.xxx?framesize=value          //解析度 value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120), 11->QXGA(2048x1564 for OV3660)
-http://192.168.xxx.xxx?quality&val=value        //畫質 value = 10 ~ 63
-http://192.168.xxx.xxx?brightness=value         //亮度 value = -2 ~ 2
-http://192.168.xxx.xxx?contrast=value           //對比 value = -2 ~ 2
-http://192.168.xxx.xxx/saturation=value         //飽和度 value = -2 ~ 2 
-http://192.168.xxx.xxx/special_effect=value     //特效 value = 0 ~ 6
-http://192.168.xxx.xxx?hmirror=value            //水平鏡像 value = 0 or 1 
-http://192.168.xxx.xxx?vflip=value              //垂直翻轉 value = 0 or 1 
+http://192.168.xxx.xxx?flash=value                //閃光燈 value= 0~255
+http://192.168.xxx.xxx?servo=pin;value            //伺服馬達 value= 0~180
+http://192.168.xxx.xxx?relay=pin;value            //繼電器 value = 0, 1
+http://192.168.xxx.xxx?framesize=value            //解析度 value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120), 11->QXGA(2048x1564 for OV3660)
+http://192.168.xxx.xxx?quality&val=value          //畫質 value = 10 ~ 63
+http://192.168.xxx.xxx?brightness=value           //亮度 value = -2 ~ 2
+http://192.168.xxx.xxx?contrast=value             //對比 value = -2 ~ 2
+http://192.168.xxx.xxx?saturation=value           //飽和度 value = -2 ~ 2 
+http://192.168.xxx.xxx?special_effect=value       //特效 value = 0 ~ 6
+http://192.168.xxx.xxx?hmirror=value              //水平鏡像 value = 0 or 1 
+http://192.168.xxx.xxx?vflip=value                //垂直翻轉 value = 0 or 1 
 */
 
 //輸入WIFI連線帳號密碼
@@ -56,11 +55,28 @@ const char* appassword = "12345678";    //AP端密碼至少要八個字元以上
 #include "FS.h"                 //檔案系統函式庫
 #include "SD_MMC.h"             //SD卡存取函式庫
 
-String Feedback="";   //回傳客戶端訊息
-//指令參數值
-String Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";
-//指令拆解狀態值
-byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
+String Feedback="";   //自訂指令回傳客戶端訊息
+
+//自訂指令參數值
+String Command="";
+String cmd="";
+String P1="";
+String P2="";
+String P3="";
+String P4="";
+String P5="";
+String P6="";
+String P7="";
+String P8="";
+String P9="";
+
+//自訂指令拆解狀態值
+byte ReceiveState=0;
+byte cmdState=1;
+byte strState=1;
+byte questionstate=0;
+byte equalstate=0;
+byte semicolonstate=0;
 
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
 //            or another board which has PSRAM enabled
@@ -244,8 +260,7 @@ void ExecuteCommand() {
       ledcSetup(9, 5000, 8);
       ledcWrite(9,P2.toInt());
     }
-  }       
-  else if (cmd=="analogread") {  //類比讀取
+  } else if (cmd=="analogread") {  //類比讀取
     Feedback=String(analogRead(P1.toInt()));
   } else if (cmd=="touchread") {  //觸碰讀取
     Feedback=String(touchRead(P1.toInt()));
@@ -256,7 +271,7 @@ void ExecuteCommand() {
     ledcSetup(4, 5000, 8);   
     int val = P1.toInt();
     ledcWrite(4,val);  
-  } else if(cmd=="servo") {  //伺服馬達 (SG90 1638-7864)
+  } else if(cmd=="servo") {  //伺服馬達
     ledcAttachPin(P1.toInt(), 3);
     ledcSetup(3, 50, 16);
      
@@ -294,7 +309,7 @@ void ExecuteCommand() {
         break;
       }
     }
-  } else if (cmd=="framesize") {
+  } else if (cmd=="framesize") { //解析度
     int val = P1.toInt();
     sensor_t * s = esp_camera_sensor_get(); 
     s->set_framesize(s, (framesize_t)val);    
@@ -402,19 +417,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 color: #EFEFEF;
                 font-size: 16px
             }
-
             h2 {
                 font-size: 18px
             }
-
             section.main {
                 display: flex
             }
-
             #menu,section.main {
                 flex-direction: column
             }
-
             #menu {
                 display: none;
                 flex-wrap: nowrap;
@@ -425,13 +436,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 margin-top: -10px;
                 margin-right: 10px;
             }
-
             #content {
                 display: flex;
                 flex-wrap: wrap;
                 align-items: stretch
             }
-
             figure {
                 padding: 0px;
                 margin: 0;
@@ -444,7 +453,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 -webkit-margin-end: 0;
                 margin-inline-end: 0
             }
-
             figure img {
                 display: block;
                 width: 100%;
@@ -452,14 +460,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 border-radius: 4px;
                 margin-top: 8px;
             }
-
             @media (min-width: 800px) and (orientation:landscape) {
                 #content {
                     display:flex;
                     flex-wrap: nowrap;
                     align-items: stretch
                 }
-
                 figure img {
                     display: block;
                     max-width: 100%;
@@ -467,7 +473,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                     width: auto;
                     height: auto
                 }
-
                 figure {
                     padding: 0 0 0 0px;
                     margin: 0;
@@ -481,51 +486,42 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                     margin-inline-end: 0
                 }
             }
-
             section#buttons {
                 display: flex;
                 flex-wrap: nowrap;
                 justify-content: space-between
             }
-
             #nav-toggle {
                 cursor: pointer;
                 display: block
             }
-
             #nav-toggle-cb {
                 outline: 0;
                 opacity: 0;
                 width: 0;
                 height: 0
             }
-
             #nav-toggle-cb:checked+#menu {
                 display: flex
             }
-
             .input-group {
                 display: flex;
                 flex-wrap: nowrap;
                 line-height: 22px;
                 margin: 5px 0
             }
-
             .input-group>label {
                 display: inline-block;
                 padding-right: 10px;
                 min-width: 47%
             }
-
             .input-group input,.input-group select {
                 flex-grow: 1
             }
-
             .range-max,.range-min {
                 display: inline-block;
                 padding: 0 5px
             }
-
             button {
                 display: block;
                 margin: 5px;
@@ -539,20 +535,16 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 font-size: 16px;
                 outline: 0
             }
-
             button:hover {
                 background: #ff494d
             }
-
             button:active {
                 background: #f21c21
             }
-
             button.disabled {
                 cursor: default;
                 background: #a0a0a0
             }
-
             input[type=range] {
                 -webkit-appearance: none;
                 width: 100%;
@@ -561,11 +553,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 cursor: pointer;
                 margin: 0
             }
-
             input[type=range]:focus {
                 outline: 0
             }
-
             input[type=range]::-webkit-slider-runnable-track {
                 width: 100%;
                 height: 2px;
@@ -574,7 +564,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 border-radius: 0;
                 border: 0 solid #EFEFEF
             }
-
             input[type=range]::-webkit-slider-thumb {
                 border: 1px solid rgba(0,0,30,0);
                 height: 22px;
@@ -585,11 +574,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 -webkit-appearance: none;
                 margin-top: -11.5px
             }
-
             input[type=range]:focus::-webkit-slider-runnable-track {
                 background: #EFEFEF
             }
-
             input[type=range]::-moz-range-track {
                 width: 100%;
                 height: 2px;
@@ -598,7 +585,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 border-radius: 0;
                 border: 0 solid #EFEFEF
             }
-
             input[type=range]::-moz-range-thumb {
                 border: 1px solid rgba(0,0,30,0);
                 height: 22px;
@@ -607,7 +593,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 background: #ff3034;
                 cursor: pointer
             }
-
             input[type=range]::-ms-track {
                 width: 100%;
                 height: 2px;
@@ -616,19 +601,16 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 border-color: transparent;
                 color: transparent
             }
-
             input[type=range]::-ms-fill-lower {
                 background: #EFEFEF;
                 border: 0 solid #EFEFEF;
                 border-radius: 0
             }
-
             input[type=range]::-ms-fill-upper {
                 background: #EFEFEF;
                 border: 0 solid #EFEFEF;
                 border-radius: 0
             }
-
             input[type=range]::-ms-thumb {
                 border: 1px solid rgba(0,0,30,0);
                 height: 22px;
@@ -638,15 +620,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 cursor: pointer;
                 height: 2px
             }
-
             input[type=range]:focus::-ms-fill-lower {
                 background: #EFEFEF
             }
-
             input[type=range]:focus::-ms-fill-upper {
                 background: #363636
             }
-
             .switch {
                 display: block;
                 position: relative;
@@ -654,14 +633,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 font-size: 16px;
                 height: 22px
             }
-
             .switch input {
                 outline: 0;
                 opacity: 0;
                 width: 0;
                 height: 0
             }
-
             .slider {
                 width: 50px;
                 height: 22px;
@@ -669,12 +646,10 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 cursor: pointer;
                 background-color: grey
             }
-
             .slider,.slider:before {
                 display: inline-block;
                 transition: .4s
             }
-
             .slider:before {
                 position: relative;
                 content: "";
@@ -685,16 +660,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 top: 3px;
                 background-color: #fff
             }
-
             input:checked+.slider {
                 background-color: #ff3034
             }
-
             input:checked+.slider:before {
                 -webkit-transform: translateX(26px);
                 transform: translateX(26px)
             }
-
             select {
                 border: 1px solid #363636;
                 font-size: 14px;
@@ -702,12 +674,10 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 outline: 0;
                 border-radius: 5px
             }
-
             .image-container {
                 position: relative;
                 min-width: 160px
             }
-
             .close {
                 position: absolute;
                 right: 5px;
@@ -721,7 +691,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 line-height: 18px;
                 cursor: pointer
             }
-
             .hidden {
                 display: none
             }
@@ -840,24 +809,20 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         <script>
 document.addEventListener('DOMContentLoaded', function (event) {
   var baseHost = document.location.origin
-
   const hide = el => {
     el.classList.add('hidden')
   }
   const show = el => {
     el.classList.remove('hidden')
   }
-
   const disable = el => {
     el.classList.add('disabled')
     el.disabled = true
   }
-
   const enable = el => {
     el.classList.remove('disabled')
     el.disabled = false
   }
-
   const updateValue = (el, value, updateRemote) => {
     updateRemote = updateRemote == null ? true : updateRemote
     let initialValue
@@ -869,12 +834,10 @@ document.addEventListener('DOMContentLoaded', function (event) {
       initialValue = el.value
       el.value = value
     }
-
     if (updateRemote && initialValue !== value) {
       updateConfig(el);
     }
   }
-
   function updateConfig (el) {
     let value
     switch (el.type) {
@@ -892,15 +855,12 @@ document.addEventListener('DOMContentLoaded', function (event) {
       default:
         return
     }
-
     var query = `${baseHost}/?${el.id}=${value}`
-
     fetch(query)
       .then(response => {
         console.log(`request to ${query} finished, status: ${response.status}`)
       })
   }
-
   document
     .querySelectorAll('.close')
     .forEach(el => {
@@ -908,7 +868,6 @@ document.addEventListener('DOMContentLoaded', function (event) {
         hide(el.parentNode)
       }
     })
-
   // read initial values
   fetch(`${baseHost}/?status`)
     .then(function (response) {
@@ -926,7 +885,6 @@ document.addEventListener('DOMContentLoaded', function (event) {
           }
         })
     })
-
   const view = document.getElementById('stream')
   const viewContainer = document.getElementById('stream-container')
   const stillButton = document.getElementById('get-still')
@@ -954,7 +912,6 @@ document.addEventListener('DOMContentLoaded', function (event) {
     show(viewContainer);
     ifr.style.display="none";
   }
-
   function error_handle() {
     restartCount++;
     clearInterval(myTimer);
@@ -980,7 +937,6 @@ document.addEventListener('DOMContentLoaded', function (event) {
     message.innerHTML = "";
     ifr.style.display="none";
   }
-
   imageList.onclick = function (event) {
     show(viewContainer);
     ifr.style.display="block";
@@ -999,31 +955,25 @@ document.addEventListener('DOMContentLoaded', function (event) {
     view.src = `${baseHost}/?getstill=${Date.now()}`
     show(viewContainer);     
   }
-
   closeButton.onclick = () => {
     hide(viewContainer)
   }
-
   //新增重啟電源按鈕點選事件 (自訂指令格式：http://192.168.xxx.xxx/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9)
   restartButton.onclick = () => {
     fetch(baseHost+"/?restart");
   }    
-
   // Attach default on change action
   document
     .querySelectorAll('.default-action')
     .forEach(el => {
       el.onchange = () => updateConfig(el)
     })
-
   // framesize
   const framesize = document.getElementById('framesize')
-
   framesize.onchange = () => {
     updateConfig(framesize)
   }
 })
-
         </script>
     </body>
 </html>)rawliteral";
