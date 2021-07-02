@@ -10,6 +10,18 @@ http://192.168.xxx.xxx/status      //取得影像狀態值
 
 //自訂指令格式  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 
+http://192.168.xxx.xxx/control?ip                       //IP
+http://192.168.xxx.xxx/control?mac                      //MAC
+http://192.168.xxx.xxx/control?restart                  //重啟電源
+http://192.168.xxx.xxx/control?digitalwrite=pin;value   //數位輸出
+http://192.168.xxx.xxx/control?analogwrite=pin;value    //類比輸出
+http://192.168.xxx.xxx/control?digitalread=pin          //數位讀取
+http://192.168.xxx.xxx/control?analogread=pin           //類比讀取
+http://192.168.xxx.xxx/control?touchread=pin            //觸碰讀取
+http://192.168.xxx.xxx/control?resetwifi=ssid;password  //重設網路
+http://192.168.xxx.xxx/control?flash=value              //閃光燈 value= 0~255
+http://192.168.xxx.xxx/control?servo=pin;value          //伺服馬達 value= 0~180
+http://192.168.xxx.xxx/control?relay=pin;value         //繼電器 value = 0, 1
 http://192.168.xxx.xxx/control?resetwifi=ssid;password   //重設Wi-Fi網路
 http://192.168.xxx.xxx/control?restart                   //重啟ESP32-CAM
 http://192.168.xxx.xxx/control?saveimage=/filename       //儲存影像至SD卡，filename不含附檔名
@@ -912,7 +924,9 @@ static esp_err_t status_handler(httpd_req_t *req){
     p+=sprintf(p, "\"saturation\":%d,", s->status.saturation);    
     p+=sprintf(p, "\"special_effect\":%u,", s->status.special_effect);
     p+=sprintf(p, "\"vflip\":%u,", s->status.vflip);
-    p+=sprintf(p, "\"hmirror\":%u", s->status.hmirror);   
+    p+=sprintf(p, "\"hmirror\":%u,", s->status.hmirror);
+    p+=sprintf(p, "\"saturation\":%d,", s->status.saturation);
+    p+=sprintf(p, "\"special_effect\":%u", s->status.special_effect);           
     *p++ = '}';
     *p++ = 0;
     httpd_resp_set_type(req, "application/json");
@@ -965,17 +979,59 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
       Serial.println(""); 
 
-      //自訂指令區塊  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+      //自訂指令區塊  http://192.168.xxx.xxx?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
       if (cmd=="your cmd") {
         // You can do anything
         // Feedback="<font color=\"red\">Hello World</font>";   //可為一般文字或HTML語法
-      } else if (cmd=="restart") {
+      } else if (cmd=="ip") {  //查詢APIP, STAIP
+        Feedback="AP IP: "+WiFi.softAPIP().toString();    
+        Feedback+="<br>";
+        Feedback+="STA IP: "+WiFi.localIP().toString();
+      } else if (cmd=="mac") {  //查詢MAC位址
+        Feedback="STA MAC: "+WiFi.macAddress();
+      } else if (cmd=="restart") {  //重設WIFI連線
+        ESP.restart();
+      } else if (cmd=="digitalwrite") {  //數位輸出
+        ledcDetachPin(P1.toInt());
+        pinMode(P1.toInt(), OUTPUT);
+        digitalWrite(P1.toInt(), P2.toInt());
+      } else if (cmd=="digitalread") {  //數位輸入
+        Feedback=String(digitalRead(P1.toInt()));
+      } else if (cmd=="analogwrite") {  //類比輸出
+        if (P1=="4") {
+          ledcAttachPin(4, 4);  
+          ledcSetup(4, 5000, 8);
+          ledcWrite(4,P2.toInt());     
+        } else {
+          ledcAttachPin(P1.toInt(), 9);
+          ledcSetup(9, 5000, 8);
+          ledcWrite(9,P2.toInt());
+        }
+      }       
+      else if (cmd=="analogread") {  //類比讀取
+        Feedback=String(analogRead(P1.toInt()));
+      } else if (cmd=="touchread") {  //觸碰讀取
+        Feedback=String(touchRead(P1.toInt()));
+      } else if (cmd=="restart") {  //重啟電源
         ESP.restart();
       } else if (cmd=="flash") {  //閃光燈
         ledcAttachPin(4, 4);  
         ledcSetup(4, 5000, 8);   
         int val = P1.toInt();
-        ledcWrite(4,val);
+        ledcWrite(4,val);  
+      } else if(cmd=="servo") {  //伺服馬達 (SG90 1638-7864)
+        ledcAttachPin(P1.toInt(), 3);
+        ledcSetup(3, 50, 16);
+         
+        int val = 7864-P2.toInt()*34.59; 
+        if (val > 7864)
+           val = 7864;
+        else if (val < 1638)
+          val = 1638; 
+        ledcWrite(3, val);
+      } else if (cmd=="relay") {  //繼電器
+        pinMode(P1.toInt(), OUTPUT);  
+        digitalWrite(P1.toInt(), P2.toInt());
       } else if (cmd=="resetwifi") {  //重設網路連線  
         for (int i=0;i<2;i++) {
           WiFi.begin(P1.c_str(), P2.c_str());
@@ -1062,7 +1118,9 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if(!strcmp(variable, "contrast")) res = s->set_contrast(s, val);
       else if(!strcmp(variable, "brightness")) res = s->set_brightness(s, val);
       else if(!strcmp(variable, "hmirror")) res = s->set_hmirror(s, val);  //水平鏡像
-      else if(!strcmp(variable, "vflip")) res = s->set_vflip(s, val);  //垂直翻轉      
+      else if(!strcmp(variable, "vflip")) res = s->set_vflip(s, val);  //垂直翻轉  
+      else if(!strcmp(variable, "saturation")) res = s->set_saturation(s, val);  //飽和度
+      else if(!strcmp(variable, "special_effect")) res = s->set_special_effect(s, val);  //特效              
       else if(!strcmp(variable, "flash")) {  //Control flash
         ledcWrite(4,val);
       } else {
