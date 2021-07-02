@@ -8,7 +8,7 @@ http://192.168.xxx.xxx:81/stream   //取得串流影像       網頁語法 <img 
 http://192.168.xxx.xxx/capture     //取得影像           網頁語法 <img src="http://192.168.xxx.xxx/capture">
 http://192.168.xxx.xxx/status      //取得影像狀態值
 
-自訂指令格式  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+//自訂指令格式  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 
 http://192.168.xxx.xxx/control?ip                        //IP
 http://192.168.xxx.xxx/control?mac                       //MAC
@@ -1061,22 +1061,22 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         } else {
           Serial.println("Read from file: "+P1);
           Serial.println("file size: "+String(file.size()));
-          char *buf;
-          buf = (char*) malloc (sizeof(char)*file.size());
+          char *buff;
+          buff = (char*) malloc (sizeof(char)*file.size());
           long i = 0;
           while (file.available()) {
-            buf[i] = file.read(); 
+            buff[i] = file.read(); 
             i++;  
           }
       
           httpd_resp_set_type(req, "image/jpeg");
           httpd_resp_set_hdr(req, "Content-Disposition", "inline; filename=capture.jpg");
           httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-          return httpd_resp_send(req, buf, file.size());
+          return httpd_resp_send(req, buff, file.size());
       
           file.close();
           SD_MMC.end();
-          free(buf);
+          free(buff);
         }
         pinMode(4, OUTPUT);
         digitalWrite(4, LOW);          
