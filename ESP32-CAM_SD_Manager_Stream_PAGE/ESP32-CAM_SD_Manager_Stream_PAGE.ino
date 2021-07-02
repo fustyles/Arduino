@@ -1108,9 +1108,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if(!strcmp(variable, "vflip")) res = s->set_vflip(s, val);  //垂直翻轉  
       else if(!strcmp(variable, "saturation")) res = s->set_saturation(s, val);  //飽和度
       else if(!strcmp(variable, "special_effect")) res = s->set_special_effect(s, val);  //特效              
-      else if(!strcmp(variable, "flash")) {  //Control flash
-        ledcWrite(4,val);
-      } else {
+      else {
           res = -1;
       }
   
