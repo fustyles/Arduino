@@ -8,7 +8,7 @@ http://192.168.xxx.xxx:81/stream   //取得串流影像       網頁語法 <img 
 http://192.168.xxx.xxx/capture     //取得影像           網頁語法 <img src="http://192.168.xxx.xxx/capture">
 http://192.168.xxx.xxx/status      //取得影像狀態值
 
-//自訂指令格式  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+自訂指令格式  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 
 http://192.168.xxx.xxx/control?ip                        //IP
 http://192.168.xxx.xxx/control?mac                       //MAC
