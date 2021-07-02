@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Fake Stream
+ESP32-CAM SD Manager
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-1 00:00
 https://www.facebook.com/francefu
 
