@@ -49,7 +49,7 @@ const char* appassword = "12345678";    //AP端密碼至少要八個字元以上
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
-#include "esp_camera.h"         //視訊
+#include "esp_camera.h"         //視訊函式庫
 #include "soc/soc.h"            //用於電源不穩不重開機
 #include "soc/rtc_cntl_reg.h"   //用於電源不穩不重開機
 #include "FS.h"                 //檔案系統函式庫
@@ -107,7 +107,7 @@ void setup() {
   Serial.setDebugOutput(true);  //開啟診斷輸出
   Serial.println();
 
-  //視訊組態設定
+  //視訊組態設定  https://github.com/espressif/esp32-camera/blob/master/driver/include/esp_camera.h
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
