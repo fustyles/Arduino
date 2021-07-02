@@ -36,6 +36,10 @@ http://192.168.xxx.xxx/control?var=framesize&val=value      //解析度 value = 
 http://192.168.xxx.xxx/control?var=quality&val=value        //畫質 value = 10 ~ 63
 http://192.168.xxx.xxx/control?var=brightness&val=value     //亮度 value = -2 ~ 2
 http://192.168.xxx.xxx/control?var=contrast&val=value       //對比 value = -2 ~ 2
+http://192.168.xxx.xxx/control?var=saturation&val=value         //飽和度 value = -2 ~ 2 
+http://192.168.xxx.xxx/control?var=special_effect&val=value     //特效 value = 0 ~ 6
+http://192.168.xxx.xxx/control?var=hmirror&val=value            //水平鏡像 value = 0 or 1 
+http://192.168.xxx.xxx/control?var=vflip&val=value              //垂直翻轉 value = 0 or 1 
 */
 
 //輸入WIFI連線帳號密碼
@@ -690,13 +694,20 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                                 <option value="6">Sepia</option>
                             </select>
                         </div>
+                        <div class="input-group" id="hmirror-group">
+                            <label for="hmirror">H-Mirror</label>
+                            <div class="switch">
+                                <input id="hmirror" type="checkbox" class="default-action" checked="checked">
+                                <label class="slider" for="hmirror"></label>
+                            </div>
+                        </div>
                         <div class="input-group" id="vflip-group">
                             <label for="vflip">V-Flip</label>
                             <div class="switch">
                                 <input id="vflip" type="checkbox" class="default-action" checked="checked">
                                 <label class="slider" for="vflip"></label>
                             </div>
-                        </div>                                                                                                
+                        </div>                                                                                               
                     </nav>
                 </div>
             </div>
