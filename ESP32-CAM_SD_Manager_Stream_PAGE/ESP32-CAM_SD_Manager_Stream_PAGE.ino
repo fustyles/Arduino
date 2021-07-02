@@ -1,5 +1,5 @@
 /*
-ESP32-CAM error
+ESP32-CAM SD manager
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-1 00:00
 https://www.facebook.com/francefu
 
