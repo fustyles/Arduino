@@ -78,9 +78,6 @@ byte questionstate=0;
 byte equalstate=0;
 byte semicolonstate=0;
 
-// WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
-//            or another board which has PSRAM enabled
-
 //安可信ESP32-CAM模組腳位設定
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
@@ -132,7 +129,14 @@ void setup() {
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  //init with high specs to pre-allocate larger buffers
+  
+  //
+  // WARNING!!! PSRAM IC required for UXGA resolution and high JPEG quality
+  //            Ensure ESP32 Wrover Module or other board with PSRAM is selected
+  //            Partial images will be transmitted if image exceeds buffer size
+  //   
+  // if PSRAM IC present, init with UXGA resolution and higher JPEG quality
+  //                      for larger pre-allocated frame buffer.
   if(psramFound()){
     config.frame_size = FRAMESIZE_UXGA;
     config.jpeg_quality = 10;  //0-63 lower number means higher quality
@@ -143,7 +147,7 @@ void setup() {
     config.fb_count = 1;
   }
   
-  // camera init
+  //視訊初始化
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
@@ -151,10 +155,20 @@ void setup() {
     ESP.restart();
   }
 
-  //drop down frame size for higher initial frame rate
+  //可自訂視訊框架預設大小(解析度大小)
   sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_QVGA);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA  設定初始化影像解析度 
+  // initial sensors are flipped vertically and colors are a bit saturated
+  if (s->id.PID == OV3660_PID) {
+    s->set_vflip(s, 1); // flip it back
+    s->set_brightness(s, 1); // up the brightness just a bit
+    s->set_saturation(s, -2); // lower the saturation
+  }
+  // drop down frame size for higher initial frame rate
+  s->set_framesize(s, FRAMESIZE_CIF);    //解析度 UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768), SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120), QXGA(2048x1564 for OV3660)
 
+  //s->set_vflip(s, 1);  //垂直翻轉
+  //s->set_hmirror(s, 1);  //水平鏡像
+  
   //閃光燈
   ledcAttachPin(4, 4);  
   ledcSetup(4, 5000, 8);    
@@ -937,12 +951,13 @@ document.addEventListener('DOMContentLoaded', function (event) {
     message.innerHTML = "";
     ifr.style.display="none";
   }
+  //新增SD卡檔案列表按鈕點選事件
   imageList.onclick = function (event) {
     show(viewContainer);
     ifr.style.display="block";
     ifr.src = baseHost+'?listimages';
   }
-  
+  //新增儲存影像截圖按鈕點選事件
   saveStill.onclick = function (event) {
     show(viewContainer);
     ifr.style.display="block";
@@ -958,7 +973,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
   closeButton.onclick = () => {
     hide(viewContainer)
   }
-  //新增重啟電源按鈕點選事件 (自訂指令格式：http://192.168.xxx.xxx/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9)
+  //新增重啟電源按鈕點選事件
   restartButton.onclick = () => {
     fetch(baseHost+"/?restart");
   }    

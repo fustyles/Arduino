@@ -1,29 +1,29 @@
 /*
-ESP32-CAM SD file manager
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-1 22:30
+ESP32-CAM SD manager
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-1 23:30
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
-http://192.168.xxx.xxx:81/stream   //取得串流影像       嵌入網頁語法 <img src="http://192.168.xxx.xxx:81/stream">
-http://192.168.xxx.xxx/capture     //取得影像          嵌入網頁語法 <img src="http://192.168.xxx.xxx/capture">
+http://192.168.xxx.xxx:81/stream   //取得串流影像       網頁語法 <img src="http://192.168.xxx.xxx:81/stream">
+http://192.168.xxx.xxx/capture     //取得影像           網頁語法 <img src="http://192.168.xxx.xxx/capture">
 http://192.168.xxx.xxx/status      //取得影像狀態值
 
 //自訂指令格式  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 
-http://192.168.xxx.xxx/control?ip                       //IP
-http://192.168.xxx.xxx/control?mac                      //MAC
-http://192.168.xxx.xxx/control?restart                  //重啟電源
-http://192.168.xxx.xxx/control?digitalwrite=pin;value   //數位輸出
-http://192.168.xxx.xxx/control?analogwrite=pin;value    //類比輸出
-http://192.168.xxx.xxx/control?digitalread=pin          //數位讀取
-http://192.168.xxx.xxx/control?analogread=pin           //類比讀取
-http://192.168.xxx.xxx/control?touchread=pin            //觸碰讀取
-http://192.168.xxx.xxx/control?resetwifi=ssid;password  //重設網路
-http://192.168.xxx.xxx/control?flash=value              //閃光燈 value= 0~255
-http://192.168.xxx.xxx/control?servo=pin;value          //伺服馬達 value= 0~180
-http://192.168.xxx.xxx/control?relay=pin;value         //繼電器 value = 0, 1
+http://192.168.xxx.xxx/control?ip                        //IP
+http://192.168.xxx.xxx/control?mac                       //MAC
+http://192.168.xxx.xxx/control?restart                   //重啟電源
+http://192.168.xxx.xxx/control?digitalwrite=pin;value    //數位輸出
+http://192.168.xxx.xxx/control?analogwrite=pin;value     //類比輸出
+http://192.168.xxx.xxx/control?digitalread=pin           //數位讀取
+http://192.168.xxx.xxx/control?analogread=pin            //類比讀取
+http://192.168.xxx.xxx/control?touchread=pin             //觸碰讀取
 http://192.168.xxx.xxx/control?resetwifi=ssid;password   //重設Wi-Fi網路
 http://192.168.xxx.xxx/control?restart                   //重啟ESP32-CAM
+http://192.168.xxx.xxx/control?flash=value               //閃光燈 value= 0~255
+http://192.168.xxx.xxx/control?servo=pin;value           //伺服馬達 value= 0~180
+http://192.168.xxx.xxx/control?relay=pin;value           //繼電器 value = 0, 1
+
 http://192.168.xxx.xxx/control?saveimage=/filename       //儲存影像至SD卡，filename不含附檔名
 http://192.168.xxx.xxx/control?listimages                //列出SD卡影像清單
 http://192.168.xxx.xxx/control?showimage=/filename       //取得SD卡影像
@@ -31,11 +31,10 @@ http://192.168.xxx.xxx/control?deleteimage=/filename     //刪除SD卡影像
 
 //官方指令格式  http://192.168.xxx.xxx/control?var=xxx&val=xxx
 
-http://192.168.xxx.xxx/control?var=flash&val=value          //閃光燈 value= 0~255
-http://192.168.xxx.xxx/control?var=framesize&val=value      //解析度 value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120), 11->QXGA(2048x1564 for OV3660)
-http://192.168.xxx.xxx/control?var=quality&val=value        //畫質 value = 10 ~ 63
-http://192.168.xxx.xxx/control?var=brightness&val=value     //亮度 value = -2 ~ 2
-http://192.168.xxx.xxx/control?var=contrast&val=value       //對比 value = -2 ~ 2
+http://192.168.xxx.xxx/control?var=framesize&val=value          //解析度 value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120), 11->QXGA(2048x1564 for OV3660)
+http://192.168.xxx.xxx/control?var=quality&val=value            //畫質 value = 10 ~ 63
+http://192.168.xxx.xxx/control?var=brightness&val=value         //亮度 value = -2 ~ 2
+http://192.168.xxx.xxx/control?var=contrast&val=value           //對比 value = -2 ~ 2
 http://192.168.xxx.xxx/control?var=saturation&val=value         //飽和度 value = -2 ~ 2 
 http://192.168.xxx.xxx/control?var=special_effect&val=value     //特效 value = 0 ~ 6
 http://192.168.xxx.xxx/control?var=hmirror&val=value            //水平鏡像 value = 0 or 1 
@@ -832,7 +831,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
               ifr.style.display="none";              
             }
 
-            //新增重啟電源按鈕點選事件 (自訂指令格式：http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9)
+            //新增重啟電源按鈕點選事件
             restartButton.onclick = () => {
               fetch(baseHost+"/control?restart");
             }            
@@ -857,13 +856,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 startStream()
               }
             }
-
+            //新增SD卡檔案列表按鈕點選事件
             imageList.onclick = function (event) {
               show(viewContainer);
               ifr.style.display="block";              
               ifr.src = baseHost+'/control?listimages';
             }
-            
+            //新增儲存影像截圖按鈕點選事件
             saveStill.onclick = function (event) {
               show(viewContainer);
               ifr.style.display="block";              
