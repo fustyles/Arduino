@@ -1,5 +1,5 @@
 /*
-ESP32-CAM SD manager
+ESP32-CAM SD file manager
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-1 22:30
 https://www.facebook.com/francefu
 
