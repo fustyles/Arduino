@@ -627,7 +627,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 <div class="close" id="close-stream">×</div>
                 <img id="stream" src="" crossorigin="anonymous">
             </div>
-        </figure>    
+        </figure>
+        <iframe id="ifr" width="350" height="200" style="display:none"></iframe>              
         <section class="main">
             <div id="logo">
                 <label for="nav-toggle-cb" id="nav-toggle">&#9776;&nbsp;&nbsp;Toggle OV2640 settings</label>
@@ -640,7 +641,19 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                             <button id="restart">Restart board</button>
                             <button id="get-still">Get Still</button>
                             <button id="toggle-stream">Start Stream</button>
-                        </section>                         
+                        </section>
+                        <div class="input-group" id="saveStill-group">
+                            <label for="saveStill">Save Still</label>
+                            <section id="buttons">
+                            <button id="saveStill">Save to SD</button>
+                            </section>
+                        </div> 
+                        <div class="input-group" id="imageList-group">
+                            <label for="imageList">File List</label>
+                            <section id="buttons">
+                            <button id="imageList">Get List</button>
+                            </section>
+                        </div>                                                   
                         <div class="input-group" id="flash-group">
                             <label for="flash">Flash</label>
                             <div class="range-min">0</div>
@@ -703,30 +716,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                                 <input id="vflip" type="checkbox" class="default-action" checked="checked">
                                 <label class="slider" for="vflip"></label>
                             </div>
-                        </div>
-                        <div class="input-group" id="saveStill-group">
-                            <label for="saveStill">Save Still</label>
-                            <section id="buttons">
-                            <button id="saveStill">Save to SD</button>
-                            </section>
-                        </div>                         
-                        <div class="input-group" id="saveStill-group">
-                            <label for="saveStill">Save Still</label>
-                            <section id="buttons">
-                            <button id="saveStill">Save to SD</button>
-                            </section>
-                        </div> 
-                        <div class="input-group" id="imageList-group">
-                            <label for="imageList">File List</label>
-                            <section id="buttons">
-                            <button id="imageList">Get List</button>
-                            </section>
-                        </div>                                                                          
+                        </div>                                                                                                
                     </nav>
                 </div>
             </div>
         </section>
-        <iframe id="ifr" width="400" height="200"></iframe>
         
         <script>
           document.addEventListener('DOMContentLoaded', function (event) {
@@ -1289,9 +1283,9 @@ String ListImages() {
     if(!file.isDirectory()){
       String filename=String(file.name());
       if (filename=="/"+P1+".jpg")
-        list = "<tr><td><button onclick=\'location.href = location.origin+\"/control?deleteimage="+String(file.name())+"\";\'>Delete</button></td><td style=\"border: 2px solid red\"><button onclick=\'parent.document.getElementById(\"stream\").src=location.origin+\"/control?showimage="+String(file.name())+"\";\'>"+String(file.name())+"</button></td><td align=\'right\'><font color=red>"+String(file.size())+" B</font></td><td><button onclick=\'location.href=location.origin+\"/control?showimage="+String(file.name())+"\";\'>download</button></td></tr>"+list;
+        list = "<tr style=\"border: 2px solid yellow\"><td><button onclick=\'location.href = location.origin+\"/control?deleteimage="+String(file.name())+"\";\'>Del</button></td><td><font color=red>"+String(file.name())+"</font></td><td align=\'right\'><font color=red>"+String(file.size())+" B</font></td><td><button onclick=\'parent.document.getElementById(\"stream\").src=location.origin+\"/control?showimage="+String(file.name())+"\";\'>show</button></td></tr>"+list;
       else
-        list = "<tr><td><button onclick=\'location.href = location.origin+\"/control?deleteimage="+String(file.name())+"\";\'>Delete</button></td><td><button onclick=\'parent.document.getElementById(\"stream\").src=location.origin+\"/control?showimage="+String(file.name())+"\";\'>"+String(file.name())+"</button></td><td align=\'right\'><font color=red>"+String(file.size())+" B</font></td><td><button onclick=\'location.href=location.origin+\"/control?showimage="+String(file.name())+"\";\'>download</button></td></tr>"+list;        
+        list = "<tr><td><button onclick=\'location.href = location.origin+\"/control?deleteimage="+String(file.name())+"\";\'>Del</button></td><td><font color=red>"+String(file.name())+"</font></td><td align=\'right\'><font color=red>"+String(file.size())+" B</font></td><td><button onclick=\'parent.document.getElementById(\"stream\").src=location.origin+\"/control?showimage="+String(file.name())+"\";\'>show</button></td></tr>"+list;        
     }
     file = root.openNextFile();
   }
@@ -1319,9 +1313,9 @@ String deleteimage(String filename) {
   File file = fs.open(filename);
   String message="";
   if(fs.remove(filename)){
-      message = "<font color=red>" + filename + " File deleted</font>";
+      message = "<font color=yellow>" + filename + " File deleted</font>";
   } else {
-      message = "<font color=red>" + filename + " failed</font>";
+      message = "<font color=yellow>" + filename + " failed</font>";
   }
   file.close();
   SD_MMC.end();
