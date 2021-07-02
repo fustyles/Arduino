@@ -1037,35 +1037,35 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       } else if (cmd=="deleteimage") {
         Feedback=deleteimage(P1)+"<br>"+ListImages(); 
       } else if (cmd=="showimage") {
-        //回傳SD卡影像檔案
         if(!SD_MMC.begin()){
           Serial.println("Card Mount Failed");
-          return httpd_resp_send(req, NULL, 0);
         }  
         
         fs::FS &fs = SD_MMC;
         File file = fs.open(P1);
         if(!file){
           Serial.println("Failed to open file for reading");
+          SD_MMC.end();    
+        } else {
+          Serial.println("Read from file: "+P1);
+          Serial.println("file size: "+String(file.size()));
+          char *buf;
+          buf = (char*) malloc (sizeof(char)*file.size());
+          long i = 0;
+          while (file.available()) {
+            buf[i] = file.read(); 
+            i++;  
+          }
+      
+          httpd_resp_set_type(req, "image/jpeg");
+          httpd_resp_set_hdr(req, "Content-Disposition", "inline; filename=capture.jpg");
+          httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+          httpd_resp_send(req, buf, file.size());
+      
+          file.close();
           SD_MMC.end();
-          return httpd_resp_send(req, NULL, 0);    
+          free(buf);
         }
-    
-        Serial.println("file size: "+String(file.size()));
-        
-        uint8_t buf[file.size()];
-        size_t buf_len = file.size();
-        for (int i = 0; i < file.size(); i++){ 
-          buf[i] = (uint8_t)file.read();
-        }
-                
-        file.close();
-        SD_MMC.end();
-        
-        httpd_resp_set_type(req, "image/jpeg");
-        httpd_resp_set_hdr(req, "Content-Disposition", "inline; filename=sd.jpg");
-        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-        return httpd_resp_send(req, (const char *)buf, buf_len);
       } else {
         Feedback="Command is not defined";
       }
