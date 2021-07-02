@@ -1060,7 +1060,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           httpd_resp_set_type(req, "image/jpeg");
           httpd_resp_set_hdr(req, "Content-Disposition", "inline; filename=capture.jpg");
           httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-          httpd_resp_send(req, buf, file.size());
+          return httpd_resp_send(req, buf, file.size());
       
           file.close();
           SD_MMC.end();
