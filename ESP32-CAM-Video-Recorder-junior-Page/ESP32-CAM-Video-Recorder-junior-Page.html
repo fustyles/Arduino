@@ -1,0 +1,305 @@
+<!-- 
+Author : ChungYi Fu (Kaohsiung, Taiwan)   2021/6/18 14:00
+https://www.facebook.com/francefu
+
+Try it (Page)
+https://fustyles.github.io/webduino/CautionArea/ESP32-CAM-Video-Recorder-junior-Page.html
+
+Chrome瀏覽器設定須更改：允許開啟不安全內容。否則http未加密連結會被阻擋無法串流！若將網頁下載到本機執行，則不用更改安全性設定。
+瀏覽器網址執行 chrome://settings/content/siteDetails?site=https://fustyles.github.io
+
+音效下載 (將音效剪輯長度成0.2秒再使用)
+https://taira-komori.jpn.org/freesoundtw.html
+
+線上音效剪輯
+https://mp3cut.net/tw/
+-->
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>ESP32-CAM 錄影</title>
+        <style>
+          body{font-family:Arial,Helvetica,sans-serif;background:#181818;color:#EFEFEF;font-size:16px}h2{font-size:18px}section.main{display:flex}#menu,section.main{flex-direction:column}#menu{display:flex;flex-wrap:nowrap;min-width:340px;background:#363636;padding:8px;border-radius:4px;margin-top:-10px;margin-right:10px}#content{display:flex;flex-wrap:wrap;align-items:stretch}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}figure img{display:block;width:100%;height:auto;border-radius:4px;margin-top:8px}@media (min-width: 800px) and (orientation:landscape){#content{display:flex;flex-wrap:nowrap;align-items:stretch}figure img{display:block;max-width:100%;max-height:calc(100vh - 40px);width:auto;height:auto}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}}section#buttons{display:flex;flex-wrap:nowrap;justify-content:space-between}#nav-toggle{cursor:pointer;display:block}#nav-toggle-cb{outline:0;opacity:0;width:0;height:0}#nav-toggle-cb:checked+#menu{display:none}.input-group{display:flex;flex-wrap:nowrap;line-height:22px;margin:5px 0}.input-group>label{display:inline-block;padding-right:10px;min-width:47%}.input-group input,.input-group select{flex-grow:1}.range-max,.range-min{display:inline-block;padding:0 5px}button{display:block;margin:5px;padding:0 12px;border:0;line-height:28px;cursor:pointer;color:#fff;background:#ff3034;border-radius:5px;font-size:16px;outline:0}button:hover{background:#ff494d}button:active{background:#f21c21}button.disabled{cursor:default;background:#a0a0a0}input[type=range]{-webkit-appearance:none;width:100%;height:22px;background:#363636;cursor:pointer;margin:0}input[type=range]:focus{outline:0}input[type=range]::-webkit-slider-runnable-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-webkit-slider-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;-webkit-appearance:none;margin-top:-11.5px}input[type=range]:focus::-webkit-slider-runnable-track{background:#EFEFEF}input[type=range]::-moz-range-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-moz-range-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer}input[type=range]::-ms-track{width:100%;height:2px;cursor:pointer;background:0 0;border-color:transparent;color:transparent}input[type=range]::-ms-fill-lower{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-fill-upper{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;height:2px}input[type=range]:focus::-ms-fill-lower{background:#EFEFEF}input[type=range]:focus::-ms-fill-upper{background:#363636}.switch{display:block;position:relative;line-height:22px;font-size:16px;height:22px}.switch input{outline:0;opacity:0;width:0;height:0}.slider{width:50px;height:22px;border-radius:22px;cursor:pointer;background-color:grey}.slider,.slider:before{display:inline-block;transition:.4s}.slider:before{position:relative;content:"";border-radius:50%;height:16px;width:16px;left:4px;top:3px;background-color:#fff}input:checked+.slider{background-color:#ff3034}input:checked+.slider:before{-webkit-transform:translateX(26px);transform:translateX(26px)}select{border:1px solid #363636;font-size:14px;height:22px;outline:0;border-radius:5px}.image-container{position:relative;min-width:160px}.close{position:absolute;right:5px;top:5px;background:#ff3034;width:16px;height:16px;border-radius:100px;color:#fff;text-align:center;line-height:18px;cursor:pointer}.hidden{display:none}
+        </style>      
+    </head>
+    <body>
+    <figure>
+	  ESP32-CAM IP：<input type="text" id="ip" size="15" value="192.168."><input type="button" value="設定" onclick="setIP();">&nbsp;&nbsp;<a href="https://github.com/fustyles/Arduino/blob/master/ESP32-CAM-Video-Recorder-junior-Page/ESP32-CAM-Video-Recorder-junior-Page.ino" target="_blank">韌體</a>
+      <div id="stream-container" class="image-container hidden">
+        <div class="close" id="close-stream">×</div>
+        <img id="stream" src="" crossorigin="anonymous" style="background-color:#000000;">
+      </div>
+    </figure>
+        <section class="main">
+            <section id="buttons">
+                <table>
+				<tr><td><button id="restart" onclick="fetch(baseHost+'/control?restart');">重啟電源</button></td><td align="right"><button id="get-still">取得截圖</button></td><td><button id="toggle-stream">開始串流</button></td></tr>
+                <tr><td align="right"><button onclick="showIframe();ifr.src = baseHost+'/list';">檔案列表</button></td><td><button onclick="hideIframe();getMessage(baseHost+'/control?record');">開始錄影</button></td><td><button onclick="hideIframe();clearTimeout(recordTimer);getMessage(baseHost+'/control?stop');">停止錄影</button></td></tr>
+                </table>
+			</section>         
+            <div id="logo">
+				<span id="message" style="color:yellow"></span><br>
+				<iframe id="ifr" width="320" height="200" style="border: 0px solid white;background:white;display:none"></iframe><br>
+				<label for="nav-toggle-cb" id="nav-toggle">☰&nbsp;&nbsp;設定</label>
+            </div>
+            <div id="content">
+                <div id="sidebar">
+                    <input type="checkbox" id="nav-toggle-cb">
+                    <nav id="menu">
+                        <div class="input-group" id="framesize-group">
+                            <label for="framesize">解析度</label>
+                            <select id="framesize" class="default-action">
+								<option value="10"></option>
+								<option value="10">UXGA(1600x1200)</option>
+								<option value="9">SXGA(1280x1024)</option>
+								<option value="8">XGA(1024x768)</option>
+								<option value="7">SVGA(800x600)</option>
+								<option value="6">VGA(640x480)</option>
+								<option value="5" selected>CIF(400x296)</option>
+								<option value="4">QVGA(320x240)</option>
+								<option value="3">HQVGA(240x176)</option>
+								<option value="0">QQVGA(160x120)</option>							  
+                            </select>
+                        </div>					
+                        <div class="input-group" id="avilength-group">
+                            <label for="avilength">影片長度(秒)</label>
+                            <div class="range-min"></div>
+                            <input type="range" id="avilength" min="10" max="3600" step="10" value="180" class="default-action">
+                            <div id="len" class="range-max">180</div>
+                        </div>					
+                        <div class="input-group" id="recordonce-group">
+                            <label for="recordonce">錄製一次</label>
+                            <div class="switch">
+                                <input id="recordonce" type="checkbox" class="default-action" checked>
+                                <label class="slider" for="recordonce"></label>
+                            </div>
+                        </div>					
+                        <div class="input-group" id="resetfilegroup">
+                            <label>重設檔名群組</label>
+                            <div class="switch">
+								<button onclick="getMessage(baseHost+'/control?resetfilegroup');">設定為1</button>
+                                <input id="aaa" type="checkbox" class="default-action" style="display:none">
+                                <label class="slider" for="aaa" style="display:none"></label>
+                            </div>
+                        </div>	
+                        <div class="input-group" id="resetfilegroup">
+                        </div>							
+                        <div class="input-group" id="flash-group">
+                            <label for="flash">閃光燈</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="flash" min="0" max="255" value="0" class="default-action">
+                            <div class="range-max">255</div>
+                        </div>
+                        <div class="input-group" id="quality-group">
+                            <label for="quality">畫質</label>
+                            <div class="range-min">10</div>
+                            <input type="range" id="quality" min="10" max="63" value="10" class="default-action">
+                            <div class="range-max">63</div>
+                        </div>
+                        <div class="input-group" id="brightness-group">
+                            <label for="brightness">亮度</label>
+                            <div class="range-min">-2</div>
+                            <input type="range" id="brightness" min="-2" max="2" value="0" class="default-action">
+                            <div class="range-max">2</div>
+                        </div>
+                        <div class="input-group" id="contrast-group">
+                            <label for="contrast">對比</label>
+                            <div class="range-min">-2</div>
+                            <input type="range" id="contrast" min="-2" max="2" value="0" class="default-action">
+                            <div class="range-max">2</div>
+                        </div>
+                        <div class="input-group" id="hmirror-group">
+                            <label for="hmirror">鏡像</label>
+                            <div class="switch">
+                                <input id="hmirror" type="checkbox" class="default-action">
+                                <label class="slider" for="hmirror"></label>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </section>
+		
+        <script>
+		  var baseHost = "";
+          var streamUrl = "";
+          document.addEventListener('DOMContentLoaded', function (event) {
+            const hide = el => {
+              el.classList.add('hidden')
+            }
+            const show = el => {
+              el.classList.remove('hidden')
+            }
+            const disable = el => {
+              el.classList.add('disabled')
+              el.disabled = true
+            }
+            const enable = el => {
+              el.classList.remove('disabled')
+              el.disabled = false
+            }
+            const updateValue = (el, value, updateRemote) => {
+              updateRemote = updateRemote == null ? true : updateRemote
+              let initialValue
+              if (el.type === 'checkbox') {
+                initialValue = el.checked
+                value = !!value
+                el.checked = value
+              } else {
+                initialValue = el.value
+                el.value = value
+              }
+              if (updateRemote && initialValue !== value) {
+                updateConfig(el);
+              } 
+            }
+            function updateConfig (el) {
+              let value
+              switch (el.type) {
+                case 'checkbox':
+                  value = el.checked ? 1 : 0
+                  break
+                case 'range':
+                case 'select-one':
+                  value = el.value
+                  break
+                case 'button':
+                case 'submit':
+                  value = '1'
+                  break
+                default:
+                  return
+              }
+			  
+			  if (el.id=="avilength") {
+				document.getElementById('len').innerHTML = value;
+			  }
+			  value
+              const query = `${baseHost}/control?var=${el.id}&val=${value}`
+			  
+			  getMessage(query);
+            }
+            document
+              .querySelectorAll('.close')
+              .forEach(el => {
+                el.onclick = () => {
+                  hide(el.parentNode)
+                }
+              })
+			  
+            const view = document.getElementById('stream')
+            const viewContainer = document.getElementById('stream-container')
+            const stillButton = document.getElementById('get-still')
+            const streamButton = document.getElementById('toggle-stream')
+            const closeButton = document.getElementById('close-stream')
+            const stopStream = () => {
+              window.stop();
+			  view.src = '';
+			  hideIframe();
+              streamButton.innerHTML = '開始串流'
+            }
+            const startStream = () => {
+			  console.log(streamUrl);
+			  hideIframe();	  
+              view.src = `${streamUrl}/stream`
+              show(viewContainer)
+              streamButton.innerHTML = '停止串流'
+            }
+            // Attach actions to buttons
+            stillButton.onclick = () => {
+              stopStream()
+
+			  message.innerHTML = "";
+				
+              try{
+                view.src = `${baseHost}/capture?_cb=${Date.now()}`
+              }
+              catch(e) {
+                view.src = `${baseHost}/capture?_cb=${Date.now()}`  
+              }
+              show(viewContainer)
+            }
+            closeButton.onclick = () => {
+              stopStream()
+              hide(viewContainer)
+            }
+            streamButton.onclick = () => {
+              const streamEnabled = streamButton.innerHTML === '停止串流'
+              if (streamEnabled) {
+                stopStream()
+              } else {
+                startStream()
+              }
+            }
+            // Attach default on change action
+            document
+              .querySelectorAll('.default-action')
+              .forEach(el => {
+                el.onchange = () => updateConfig(el)
+              })
+          })
+        </script>
+        <script>
+		var ip = document.getElementById('ip');		
+		var link = document.getElementById('link');
+		var ifr = document.getElementById("ifr");
+		var message = document.getElementById("message");
+		var recordTimer;
+		
+		function setIP() {
+		    message.innerHTML="";
+			baseHost = "http://"+ip.value;
+			streamUrl = baseHost + ':81';
+			console.log(baseHost);
+			console.log(streamUrl);
+			
+			message.innerHTML=baseHost+" 嘗試連線中...";
+			fetch(baseHost).then(function(response) {
+				return response.text();
+			}).then(function(text) {
+				message.innerHTML=baseHost+" 連線成功";
+				setTimeout(function(){getRecordState(); }, 2000);
+			}).catch(function(error) {
+				message.innerHTML=baseHost+" 連線失敗";
+			});
+		}
+    		  
+		function execute(val) {
+			message.innerHTML="";
+			hideIframe();
+			getMessage(baseHost+val);
+		}
+		
+		function getMessage(url) {
+		    clearTimeout(recordTimer);
+			getRecordState();
+
+			fetch(url).then(function(response) {
+				return response.text();
+			}).then(function(text) {
+				message.innerHTML=text;
+			}).catch(function(error) {
+				message.innerHTML="連線執行指令失敗";
+			});
+		}
+		
+		function hideIframe() {
+			ifr.style.display="none";
+		}
+		
+		function showIframe() {
+			ifr.style.display="block";
+		}
+		
+		function getRecordState() {
+			recordTimer = setTimeout(function() {
+				getMessage(baseHost+'/control?message');
+				getRecordState();
+			}, 2000);
+		}
+		
+		</script>
+  
+    </body>
+</html>
