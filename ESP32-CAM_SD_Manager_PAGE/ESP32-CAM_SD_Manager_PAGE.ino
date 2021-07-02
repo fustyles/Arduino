@@ -1,6 +1,6 @@
 /*
 ESP32-CAM SD manager
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-1 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-1 22:00
 https://www.facebook.com/francefu
 
 自訂指令格式 :  
@@ -1013,6 +1013,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
   }
   
   saveStill.onclick = function (event) {
+    show(viewContainer);
     ifr.style.display="block";
     ifr.src =baseHost+'?saveimage='+(new Date().getFullYear()*10000000000+(new Date().getMonth()+1)*100000000+new Date().getDate()*1000000+new Date().getHours()*10000+new Date().getMinutes()*100+new Date().getSeconds()+new Date().getSeconds()*0.001).toString();
   }      

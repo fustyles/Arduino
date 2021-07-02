@@ -1,6 +1,6 @@
 /*
 ESP32-CAM SD manager
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-1 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-1 22:00
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
@@ -848,11 +848,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             }
 
             imageList.onclick = function (event) {
+              show(viewContainer);
               ifr.style.display="block";              
               ifr.src = baseHost+'/control?listimages';
             }
             
             saveStill.onclick = function (event) {
+              show(viewContainer);
               ifr.style.display="block";              
               ifr.src =baseHost+'/control?saveimage='+(new Date().getFullYear()*10000000000+(new Date().getMonth()+1)*100000000+new Date().getDate()*1000000+new Date().getHours()*10000+new Date().getMinutes()*100+new Date().getSeconds()+new Date().getSeconds()*0.001).toString();
             }
@@ -1066,6 +1068,8 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           SD_MMC.end();
           free(buf);
         }
+        pinMode(4, OUTPUT);
+        digitalWrite(4, LOW);          
       } else {
         Feedback="Command is not defined";
       }
