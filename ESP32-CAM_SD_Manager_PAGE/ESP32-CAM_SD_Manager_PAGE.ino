@@ -1,6 +1,6 @@
 /*
 ESP32-CAM SD manager
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-1 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-1 22:30
 https://www.facebook.com/francefu
 
 自訂指令格式 :  
@@ -19,8 +19,8 @@ http://192.168.xxx.xxx?analogread=pin           //類比讀取
 http://192.168.xxx.xxx?touchread=pin            //觸碰讀取
 http://192.168.xxx.xxx?resetwifi=ssid;password  //重設網路
 
-http://192.168.xxx.xxx?getstill                          //取得視訊影像
-http://192.168.xxx.xxx?status                            //取得視訊設定
+http://192.168.xxx.xxx?getstill                  //取得視訊影像
+http://192.168.xxx.xxx?status                    //取得視訊設定
 http://192.168.xxx.xxx?saveimage=/filename       //儲存影像至SD卡，filename不含附檔名
 http://192.168.xxx.xxx?listimages                //列出SD卡影像清單
 http://192.168.xxx.xxx?showimage=/filename       //取得SD卡影像
@@ -200,64 +200,14 @@ void setup() {
   pinMode(4, OUTPUT);
   digitalWrite(4, LOW);  
 
-  server.begin();          
+  server.begin();  //啟動服務器
 }
 
 void loop() {
-  Feedback="";Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
-  ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
-  
-  client = server.available();
-
-  if (client) { 
-    String currentLine = "";
-
-    while (client.connected()) {
-      if (client.available()) {
-        char c = client.read();             
-        
-        getCommand(c);   //將緩衝區取得的字元拆解出指令參數
-                
-        if (c == '\n') {
-          if (currentLine.length() == 0) {    
-            
-            if (cmd=="getstill") {  //取得視訊截圖
-              getStill(); 
-            } else if (cmd=="showimage") {  //取得SD卡圖檔  
-              showimage();            
-            } else if (cmd=="status") {  //取得視訊狀態             
-              status();           
-            } else {  //取得管理首頁 
-              mainpage();
-            }
-                        
-            Feedback="";
-            break;
-          } else {
-            currentLine = "";
-          }
-        } 
-        else if (c != '\r') {
-          currentLine += c;
-        }
-
-        if ((currentLine.indexOf("/?")!=-1)&&(currentLine.indexOf(" HTTP")!=-1)) {
-          if (Command.indexOf("stop")!=-1) {  //若指令中含關鍵字stop立即斷線 -> http://192.168.xxx.xxx/?cmd=aaa;bbb;ccc;stop
-            client.println();
-            client.println();
-            client.stop();
-          }
-          currentLine="";
-          Feedback="";
-          ExecuteCommand();
-        }
-      }
-    }
-    delay(1);
-    client.stop();
-  }
+  listenConnection();  //監聽連線
 }
 
+//執行一般指令
 void ExecuteCommand() {
   //Serial.println("");
   //Serial.println("Command: "+Command);
@@ -382,36 +332,61 @@ void ExecuteCommand() {
   if (Feedback=="") Feedback=Command;  
 }
 
-//拆解命令字串置入變數
-void getCommand(char c)
-{
-  if (c=='?') ReceiveState=1;
-  if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
+//監聽連線與回傳網頁文字或圖檔
+void listenConnection() {
+  Feedback="";Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
+  ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
   
-  if (ReceiveState==1)
-  {
-    Command=Command+String(c);
-    
-    if (c=='=') cmdState=0;
-    if (c==';') strState++;
-  
-    if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
-    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) P1=P1+String(c);
-    if ((cmdState==0)&&(strState==2)&&(c!=';')) P2=P2+String(c);
-    if ((cmdState==0)&&(strState==3)&&(c!=';')) P3=P3+String(c);
-    if ((cmdState==0)&&(strState==4)&&(c!=';')) P4=P4+String(c);
-    if ((cmdState==0)&&(strState==5)&&(c!=';')) P5=P5+String(c);
-    if ((cmdState==0)&&(strState==6)&&(c!=';')) P6=P6+String(c);
-    if ((cmdState==0)&&(strState==7)&&(c!=';')) P7=P7+String(c);
-    if ((cmdState==0)&&(strState==8)&&(c!=';')) P8=P8+String(c);
-    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) P9=P9+String(c);
-    
-    if (c=='?') questionstate=1;
-    if (c=='=') equalstate=1;
-    if ((strState>=9)&&(c==';')) semicolonstate=1;
+  client = server.available();
+
+  if (client) { 
+    String currentLine = "";
+
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();             
+        
+        getCommand(c);   //將緩衝區取得的字元拆解出指令參數
+                
+        if (c == '\n') {
+          if (currentLine.length() == 0) {    
+            
+            if (cmd=="getstill") {  //取得視訊截圖
+              getStill(); 
+            } else if (cmd=="showimage") {  //取得SD卡圖檔  
+              showimage();            
+            } else if (cmd=="status") {  //取得視訊狀態             
+              status();           
+            } else {  //取得管理首頁 
+              mainpage();
+            }
+                        
+            Feedback="";
+            break;
+          } else {
+            currentLine = "";
+          }
+        } 
+        else if (c != '\r') {
+          currentLine += c;
+        }
+
+        if ((currentLine.indexOf("/?")!=-1)&&(currentLine.indexOf(" HTTP")!=-1)) {
+          if (Command.indexOf("stop")!=-1) {  //若指令中含關鍵字stop立即斷線 -> http://192.168.xxx.xxx/?cmd=aaa;bbb;ccc;stop
+            client.println();
+            client.println();
+            client.stop();
+          }
+          currentLine="";
+          Feedback="";
+          ExecuteCommand();
+        }
+      }
+    }
+    delay(1);
+    client.stop();
   }
 }
-
 
 //自訂網頁首頁管理介面
 static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
@@ -1055,7 +1030,6 @@ document.addEventListener('DOMContentLoaded', function (event) {
 
 //設定選單初始值取回json格式
 void status(){
-  //回傳視訊狀態
   sensor_t * s = esp_camera_sensor_get();
   String json = "{";
   json += "\"framesize\":"+String(s->status.framesize)+",";
@@ -1081,8 +1055,8 @@ void status(){
   }
 }
 
+//回傳HTML首頁或Feedback
 void mainpage() {
-  //回傳HTML首頁或Feedback
   client.println("HTTP/1.1 200 OK");
   client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
   client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
@@ -1102,8 +1076,8 @@ void mainpage() {
   } 
 }
 
+//回傳JPEG格式影像
 void getStill() {
-  //回傳JPEG格式影像
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();  
   if(!fb) {
@@ -1247,8 +1221,8 @@ String deleteimage(String filename) {
   return message;
 }
 
+//回傳SD卡影像檔案
 void showimage() {
-  //回傳SD卡影像檔案
   if(!SD_MMC.begin()){
     Serial.println("Card Mount Failed");
   }  
@@ -1295,4 +1269,33 @@ void showimage() {
 
   pinMode(4, OUTPUT);
   digitalWrite(4, LOW);
+}
+
+//拆解命令字串置入變數
+void getCommand(char c) {
+  if (c=='?') ReceiveState=1;
+  if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
+  
+  if (ReceiveState==1)
+  {
+    Command=Command+String(c);
+    
+    if (c=='=') cmdState=0;
+    if (c==';') strState++;
+  
+    if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
+    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) P1=P1+String(c);
+    if ((cmdState==0)&&(strState==2)&&(c!=';')) P2=P2+String(c);
+    if ((cmdState==0)&&(strState==3)&&(c!=';')) P3=P3+String(c);
+    if ((cmdState==0)&&(strState==4)&&(c!=';')) P4=P4+String(c);
+    if ((cmdState==0)&&(strState==5)&&(c!=';')) P5=P5+String(c);
+    if ((cmdState==0)&&(strState==6)&&(c!=';')) P6=P6+String(c);
+    if ((cmdState==0)&&(strState==7)&&(c!=';')) P7=P7+String(c);
+    if ((cmdState==0)&&(strState==8)&&(c!=';')) P8=P8+String(c);
+    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) P9=P9+String(c);
+    
+    if (c=='?') questionstate=1;
+    if (c=='=') equalstate=1;
+    if ((strState>=9)&&(c==';')) semicolonstate=1;
+  }
 }
