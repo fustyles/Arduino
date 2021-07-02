@@ -306,7 +306,7 @@ void ExecuteCommand() {
     ledcSetup(4, 5000, 8);   
     int val = P1.toInt();
     ledcWrite(4,val);  
-  } else if(cmd=="servo") {  //伺服馬達 (SG90 1638-7864)
+  } else if(cmd=="servo") {  //伺服馬達接於IO2 (SG90 1638-7864)
     ledcAttachPin(P1.toInt(), 3);
     ledcSetup(3, 50, 16);
      
@@ -316,7 +316,7 @@ void ExecuteCommand() {
     else if (val < 1638)
       val = 1638; 
     ledcWrite(3, val);
-  } else if (cmd=="relay") {  //繼電器
+  } else if (cmd=="relay") {  //繼電器接於IO13
     pinMode(P1.toInt(), OUTPUT);  
     digitalWrite(P1.toInt(), P2.toInt());
   } else if (cmd=="resetwifi") {  //重設網路連線  
@@ -1148,13 +1148,13 @@ String saveCapturedImage(String filename) {
   fb = esp_camera_fb_get();  
   if(!fb) {
     Serial.println("Camera capture failed");
-    return "Camera capture failed";
+    return "<font color=yellow>Camera capture failed</font>";
   }
 
   //SD Card
   if(!SD_MMC.begin()){
     response = "Card Mount Failed";
-    return "Card Mount Failed";
+    return "<font color=yellow>Card Mount Failed</font>";
   }  
   
   fs::FS &fs = SD_MMC; 
@@ -1164,7 +1164,7 @@ String saveCapturedImage(String filename) {
   if(!file){
     esp_camera_fb_return(fb);
     SD_MMC.end();
-    return "Failed to open file in writing mode";
+    return "<font color=yellow>Failed to open file in writing mode</font>";
   } 
   else {
     file.write(fb->buf, fb->len);
@@ -1187,14 +1187,14 @@ String ListImages() {
   //SD Card
   if(!SD_MMC.begin()){
     Serial.println("Card Mount Failed");
-    return "Card Mount Failed";
+    return "<font color=yellow>Card Mount Failed</font>";
   }  
   
   fs::FS &fs = SD_MMC; 
   File root = fs.open("/");
   if(!root){
     Serial.println("Failed to open directory");
-    return "Failed to open directory";
+    return "<font color=yellow>Failed to open directory</font>";
   }
 
   String list="";

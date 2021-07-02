@@ -182,38 +182,6 @@ void setup() {
   //s->set_vflip(s, 1);  //垂直翻轉
   //s->set_hmirror(s, 1);  //水平鏡像
   
-  //SD Card
-  if(!SD_MMC.begin()){
-    Serial.println("Card Mount Failed");
-    return;
-  }
-
-  uint8_t cardType = SD_MMC.cardType();
-
-  if(cardType == CARD_NONE){
-    Serial.println("No SD_MMC card attached");
-    SD_MMC.end();
-    return;
-  }
-
-  Serial.print("SD_MMC Card Type: ");
-  if(cardType == CARD_MMC){
-      Serial.println("MMC");
-  } else if(cardType == CARD_SD){
-      Serial.println("SDSC");
-  } else if(cardType == CARD_SDHC){
-      Serial.println("SDHC");
-  } else {
-      Serial.println("UNKNOWN");
-  }    
-
-  Serial.printf("SD_MMC Card Size: %lluMB\n", SD_MMC.cardSize() / (1024 * 1024));
-  Serial.printf("Total space: %lluMB\n", SD_MMC.totalBytes() / (1024 * 1024));
-  Serial.printf("Used space: %lluMB\n", SD_MMC.usedBytes() / (1024 * 1024));
-  Serial.println();
-  
-  SD_MMC.end();  
-  
   //閃光燈(GPIO4)
   ledcAttachPin(4, 4);  
   ledcSetup(4, 5000, 8);
@@ -843,12 +811,14 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             const stopStream = () => {
               window.stop();
               streamButton.innerHTML = 'Start Stream'
+              ifr.style.display="none";                
             }
           
             const startStream = () => {
               view.src = `${streamUrl}/stream`
               show(viewContainer)
               streamButton.innerHTML = 'Stop Stream'
+              ifr.style.display="none";              
             }
 
             //新增重啟電源按鈕點選事件 (自訂指令格式：http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9)
@@ -860,7 +830,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             stillButton.onclick = () => {
               stopStream()
               view.src = `${baseHost}/capture?_cb=${Date.now()}`
-              show(viewContainer)
+              show(viewContainer)             
             }
           
             closeButton.onclick = () => {
@@ -878,10 +848,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             }
 
             imageList.onclick = function (event) {
+              ifr.style.display="block";              
               ifr.src = baseHost+'/control?listimages';
             }
             
             saveStill.onclick = function (event) {
+              ifr.style.display="block";              
               ifr.src =baseHost+'/control?saveimage='+(new Date().getFullYear()*10000000000+(new Date().getMonth()+1)*100000000+new Date().getDate()*1000000+new Date().getHours()*10000+new Date().getMinutes()*100+new Date().getSeconds()+new Date().getSeconds()*0.001).toString();
             }
             
@@ -1286,13 +1258,13 @@ String saveCapturedImage(String filename) {
   fb = esp_camera_fb_get();  
   if(!fb) {
     Serial.println("Camera capture failed");
-    return "Camera capture failed";
+    return "<font color=yellow>Camera capture failed</font>";
   }
 
   //SD Card
   if(!SD_MMC.begin()){
     response = "Card Mount Failed";
-    return "Card Mount Failed";
+    return "<font color=yellow>Card Mount Failed</font>";
   }  
   
   fs::FS &fs = SD_MMC; 
@@ -1302,7 +1274,7 @@ String saveCapturedImage(String filename) {
   if(!file){
     esp_camera_fb_return(fb);
     SD_MMC.end();
-    return "Failed to open file in writing mode";
+    return "<font color=yellow>Failed to open file in writing mode</font>";
   } 
   else {
     file.write(fb->buf, fb->len);
@@ -1325,14 +1297,14 @@ String ListImages() {
   //SD Card
   if(!SD_MMC.begin()){
     Serial.println("Card Mount Failed");
-    return "Card Mount Failed";
+    return "<font color=yellow>Card Mount Failed</font>";
   }  
   
   fs::FS &fs = SD_MMC; 
   File root = fs.open("/");
   if(!root){
     Serial.println("Failed to open directory");
-    return "Failed to open directory";
+    return "<font color=yellow>Failed to open directory</font>";
   }
 
   String list="";
@@ -1364,7 +1336,7 @@ String deleteimage(String filename) {
   //SD Card
   if(!SD_MMC.begin()){
     Serial.println("Card Mount Failed");
-    return "Card Mount Failed";
+    return "<font color=yellow>Card Mount Failed</font>";
   }  
   
   fs::FS &fs = SD_MMC;
