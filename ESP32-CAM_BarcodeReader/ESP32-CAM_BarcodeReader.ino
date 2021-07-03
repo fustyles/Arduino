@@ -42,15 +42,14 @@ http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255
 */
 
 //輸入WIFI連線帳號密碼
-const char* ssid     = "";   //your network SSID
-const char* password = "";   //your network password
+const char* ssid = "teacher";
+const char* password = "87654321";
 
-//輸入AP端連線帳號密碼
-const char* apssid = "ESP32-CAM";
-const char* appassword = "12345678";         //AP密碼至少要8個字元以上
+//輸入AP端連線帳號密碼  http://192.168.4.1
+const char* apssid = "esp32-cam";
+const char* appassword = "12345678";         //AP密碼至少要8個字元以上 
 
 #include <WiFi.h>
-#include <esp32-hal-ledc.h>      //用於控制伺服馬達
 #include "esp_camera.h"          //視訊函式
 #include "soc/soc.h"             //用於電源不穩不重開機 
 #include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機 
@@ -575,7 +574,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <title>ESP32 OV2460</title>
-        <style>
+        <style>        
             body {
                 font-family: Arial,Helvetica,sans-serif;
                 background: #181818;
@@ -592,7 +591,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 flex-direction: column
             }
             #menu {
-                display: none;
+                display: block;
                 flex-wrap: nowrap;
                 min-width: 340px;
                 background: #363636;
@@ -667,7 +666,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 height: 0
             }
             #nav-toggle-cb:checked+#menu {
-                display: block
+                display: none
             }
             .input-group {
                 display: flex;
@@ -860,7 +859,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 display: none
             }
         </style>
-        <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
         <script src="https:\/\/fustyles.github.io/webduino/barcode-reader.js/barcode-reader.umd.min.js"></script>     
     </head>
     <body>
@@ -1090,7 +1088,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               console.log(code);
               result.innerHTML = code;
               
-              $.ajax({url: document.location.origin+'/control?serial='+code, async: false}); 
+              fetch(document.location.origin+'/control?serial='+code); 
             })
             .catch(err => {
               console.log(err)
