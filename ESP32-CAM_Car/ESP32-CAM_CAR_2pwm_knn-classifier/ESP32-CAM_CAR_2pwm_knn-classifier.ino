@@ -52,12 +52,11 @@ const char* password = "87654321";
 const char* apssid = "esp32-cam";
 const char* appassword = "12345678";         //AP密碼至少要8個字元以上 
 
+int pinServo = 2;  //Servo Pin
 int angleValue = 30;   //伺服馬達初始角度
-
 int speedR = 255;  //紀錄右輪初始轉速 (gpio12, gpio13)
 int speedL = 255;  //紀錄左輪初始轉速 (gpio14, gpio15)
 double decelerate = 60;  //紀錄轉彎減速為 原速*百分比
-double pinServo = 2;  //Servo Pin
 
 #include <WiFi.h>
 #include <esp32-hal-ledc.h>      //用於控制伺服馬達
