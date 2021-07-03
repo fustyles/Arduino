@@ -518,7 +518,12 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         if (P1!=""&P1!="stop") Serial.println(P1);
         if (P2!=""&P2!="stop") Serial.println(P2);
         Serial.println();
-      }                         
+      }
+      else if (cmd=="decelerate") {  //轉彎減速為原速的百分比
+        int val = P1.toInt();      
+        decelerate = val;
+        Serial.println("Decelerate = " + String(val)); 
+      } 
       else if (cmd=="car") {  //自走車運動狀態
         int val = P1.toInt(); 
         if (val==1) {  //前進 http://192.168.xxx.xxx/control?car=1
@@ -641,10 +646,6 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         speedR = val;
         Serial.println("RightSpeed = " + String(val)); 
       }  
-      else if(!strcmp(variable, "decelerate")) {  //轉彎減速為原速的百分比   
-        decelerate = val;
-        Serial.println("Decelerate = " + String(val)); 
-      }
       else if(!strcmp(variable, "servo")) {  //伺服馬達
         angleValue = val;
         ledcAttachPin(pinServo, 3);
