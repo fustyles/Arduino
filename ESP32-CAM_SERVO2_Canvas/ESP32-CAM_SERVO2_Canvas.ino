@@ -901,7 +901,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 display: none
             }
         </style>
-        <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>      
     </head>
     <body>
         <figure>
@@ -1180,7 +1179,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
               var angleH = (e.offsetX/320)*180;
               var angleV = ((320-e.offsetY)/320)*180;
               var cmd = document.location.origin+'/control?servo2='+angleH+';'+angleV;
-              $.ajax({url: cmd, async: false});
+              fetch(cmd);
               document.getElementById('servoH').value=angleH;
               document.getElementById('servoV').value=angleV;
               
