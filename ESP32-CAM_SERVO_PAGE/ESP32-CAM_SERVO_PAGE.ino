@@ -13,6 +13,21 @@ http://192.168.xxx.xxx:81/stream   //取得串流影像
 http://192.168.xxx.xxx/capture     //取得影像
 http://192.168.xxx.xxx/status      //取得視訊參數值
 
+//自訂指令格式  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+http://192.168.xxx.xxx/control?ip                        //IP
+http://192.168.xxx.xxx/control?mac                       //MAC
+http://192.168.xxx.xxx/control?restart                   //重啟電源
+http://192.168.xxx.xxx/control?digitalwrite=pin;value    //數位輸出
+http://192.168.xxx.xxx/control?analogwrite=pin;value     //類比輸出
+http://192.168.xxx.xxx/control?digitalread=pin           //數位讀取
+http://192.168.xxx.xxx/control?analogread=pin            //類比讀取
+http://192.168.xxx.xxx/control?touchread=pin             //觸碰讀取
+http://192.168.xxx.xxx/control?resetwifi=ssid;password   //重設Wi-Fi網路
+http://192.168.xxx.xxx/control?restart                   //重啟ESP32-CAM
+http://192.168.xxx.xxx/control?flash=value               //閃光燈 value= 0~255
+http://192.168.xxx.xxx/control?servo=pin;value           //伺服馬達 value= 0~180
+http://192.168.xxx.xxx/control?relay=pin;value           //繼電器 value = 0, 1
+
 設定視訊參數(官方指令格式)  http://192.168.xxx.xxx/control?var=*****&val=*****
 http://192.168.xxx.xxx/control?var=flash&val=value        //value= 0~255
 http://192.168.xxx.xxx/control?var=servo1&val=value        //value= 1700~8000
@@ -44,8 +59,8 @@ http://192.168.xxx.xxx/control?var=wb_mode&val=value    // value = 0 ~ 4
 http://192.168.xxx.xxx/control?var=ae_level&val=value    // value = -2 ~ 2  
 */
 
-const char* ssid = "*****";
-const char* password = "*****";
+const char* ssid = "teacher";
+const char* password = "87654321";
 
 char* apssid = "ESP32-CAM";
 char* appassword = "12345678";         //AP password require at least 8 characters.
@@ -55,33 +70,32 @@ char* appassword = "12345678";         //AP password require at least 8 characte
 #include "soc/rtc_cntl_reg.h"
 
 #include "esp_http_server.h"
-#include "esp_timer.h"
 #include "esp_camera.h"
 #include "img_converters.h"
 
-#include "fb_gfx.h"
-#include "fd_forward.h"
-#include "fr_forward.h"
 
-#define ENROLL_CONFIRM_TIMES 5
-#define FACE_ID_SAVE_NUMBER 7
+String Feedback="";   //自訂指令回傳客戶端訊息
 
-#define FACE_COLOR_WHITE  0x00FFFFFF
-#define FACE_COLOR_BLACK  0x00000000
-#define FACE_COLOR_RED    0x000000FF
-#define FACE_COLOR_GREEN  0x0000FF00
-#define FACE_COLOR_BLUE   0x00FF0000
-#define FACE_COLOR_YELLOW (FACE_COLOR_RED | FACE_COLOR_GREEN)
-#define FACE_COLOR_CYAN   (FACE_COLOR_BLUE | FACE_COLOR_GREEN)
-#define FACE_COLOR_PURPLE (FACE_COLOR_BLUE | FACE_COLOR_RED)
+//自訂指令參數值
+String Command="";
+String cmd="";
+String P1="";
+String P2="";
+String P3="";
+String P4="";
+String P5="";
+String P6="";
+String P7="";
+String P8="";
+String P9="";
 
-typedef struct {
-        size_t size; //number of values used for filtering
-        size_t index; //current value index
-        size_t count; //value count
-        int sum;
-        int * values; //array to be filled with values
-} ra_filter_t;
+//自訂指令拆解狀態值
+byte ReceiveState=0;
+byte cmdState=1;
+byte strState=1;
+byte questionstate=0;
+byte equalstate=0;
+byte semicolonstate=0;
 
 typedef struct {
         httpd_req_t *req;
@@ -93,48 +107,10 @@ static const char* _STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" 
 static const char* _STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
 static const char* _STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n";
 
-static ra_filter_t ra_filter;
 httpd_handle_t stream_httpd = NULL;
 httpd_handle_t camera_httpd = NULL;
 
-static mtmn_config_t mtmn_config = {0};
-static int8_t detection_enabled = 0;
-static int8_t recognition_enabled = 0;
-static int8_t is_enrolling = 0;
-static face_id_list id_list = {0};
-
-static ra_filter_t * ra_filter_init(ra_filter_t * filter, size_t sample_size){
-    memset(filter, 0, sizeof(ra_filter_t));
-
-    filter->values = (int *)malloc(sample_size * sizeof(int));
-    if(!filter->values){
-        return NULL;
-    }
-    memset(filter->values, 0, sample_size * sizeof(int));
-
-    filter->size = sample_size;
-    return filter;
-}
-
-static int ra_filter_run(ra_filter_t * filter, int value){
-    if(!filter->values){
-        return value;
-    }
-    filter->sum -= filter->values[filter->index];
-    filter->values[filter->index] = value;
-    filter->sum += filter->values[filter->index];
-    filter->index++;
-    filter->index = filter->index % filter->size;
-    if (filter->count < filter->size) {
-        filter->count++;
-    }
-    return filter->sum / filter->count;
-}
-
-// WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
-//            or another board which has PSRAM enabled
-
-//CAMERA_MODEL_AI_THINKER
+//ESP32-CAM 安信可模組腳位設定
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -154,12 +130,13 @@ static int ra_filter_run(ra_filter_t * filter, int value){
 #define PCLK_GPIO_NUM     22
 
 void setup() {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
-  
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
+    
   Serial.begin(115200);
-  Serial.setDebugOutput(true);
+  Serial.setDebugOutput(true);  //開啟診斷輸出
   Serial.println();
 
+  //視訊組態設定  https://github.com/espressif/esp32-camera/blob/master/driver/include/esp_camera.h
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
@@ -181,28 +158,44 @@ void setup() {
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  //init with high specs to pre-allocate larger buffers
-  if(psramFound()){
+  
+  //
+  // WARNING!!! PSRAM IC required for UXGA resolution and high JPEG quality
+  //            Ensure ESP32 Wrover Module or other board with PSRAM is selected
+  //            Partial images will be transmitted if image exceeds buffer size
+  //   
+  // if PSRAM IC present, init with UXGA resolution and higher JPEG quality
+  //                      for larger pre-allocated frame buffer.
+  if(psramFound()){  //是否有PSRAM(Psuedo SRAM)記憶體IC
     config.frame_size = FRAMESIZE_UXGA;
-    config.jpeg_quality = 10;  //0-63 lower number means higher quality
+    config.jpeg_quality = 10;
     config.fb_count = 2;
   } else {
     config.frame_size = FRAMESIZE_SVGA;
-    config.jpeg_quality = 12;  //0-63 lower number means higher quality
+    config.jpeg_quality = 12;
     config.fb_count = 1;
   }
-  
-  // camera init
+
+  //視訊初始化
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
-    delay(1000);
     ESP.restart();
   }
 
-  //drop down frame size for higher initial frame rate
+  //可自訂視訊框架預設大小(解析度大小)
   sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_QVGA);  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+  // initial sensors are flipped vertically and colors are a bit saturated
+  if (s->id.PID == OV3660_PID) {
+    s->set_vflip(s, 1); // flip it back
+    s->set_brightness(s, 1); // up the brightness just a bit
+    s->set_saturation(s, -2); // lower the saturation
+  }
+  // drop down frame size for higher initial frame rate
+  s->set_framesize(s, FRAMESIZE_QVGA);    //解析度 UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768), SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120), QXGA(2048x1564 for OV3660)
+
+  //s->set_vflip(s, 1);  //垂直翻轉
+  //s->set_hmirror(s, 1);  //水平鏡像
   
   //Servo
   ledcAttachPin(2, 3);  
@@ -217,178 +210,68 @@ void setup() {
   ledcAttachPin(4, 4);  
   ledcSetup(4, 5000, 8);
 
-  Serial.println("ssid: " + (String)ssid);
-  Serial.println("password: " + (String)password);
-  
-  WiFi.begin(ssid, password);
+  WiFi.mode(WIFI_AP_STA);  //其他模式 WiFi.mode(WIFI_AP); WiFi.mode(WIFI_STA);
 
-  long int StartTime=millis();
-  while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
-      if ((StartTime+10000) < millis()) break;
+  //指定Client端靜態IP
+  //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
+
+  for (int i=0;i<2;i++) {
+    WiFi.begin(ssid, password);    //執行網路連線
+  
+    delay(1000);
+    Serial.println("");
+    Serial.print("Connecting to ");
+    Serial.println(ssid);
+    
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        if ((StartTime+5000) < millis()) break;    //等待10秒連線
+    } 
+  
+    if (WiFi.status() == WL_CONNECTED) {    //若連線成功
+      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP         
+      Serial.println("");
+      Serial.println("STAIP address: ");
+      Serial.println(WiFi.localIP());
+      Serial.println("");
+  
+      for (int i=0;i<5;i++) {   //若連上WIFI設定閃光燈快速閃爍
+        ledcWrite(4,10);
+        delay(200);
+        ledcWrite(4,0);
+        delay(200);    
+      }
+      break;
+    }
   } 
 
-  startCameraServer();
+  if (WiFi.status() != WL_CONNECTED) {    //若連線失敗
+    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);         
 
-  Serial.println("");
-  Serial.println("WiFi connected");    
-  Serial.print("Camera Ready! Use 'http://");
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.print(WiFi.localIP());
-    Serial.println("' to connect");
-    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);    
-    
-    for (int i=0;i<5;i++) {
-      ledcWrite(4,10);
-      delay(200);
-      ledcWrite(4,0);
-      delay(200);    
-    }        
-  }
-  else {
-    Serial.print(WiFi.softAPIP());
-    Serial.println("' to connect");
-    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);    
-    
-    for (int i=0;i<2;i++) {
+    for (int i=0;i<2;i++) {    //若連不上WIFI設定閃光燈慢速閃爍
       ledcWrite(4,10);
       delay(1000);
       ledcWrite(4,0);
       delay(1000);    
-    }  
-  }     
+    }
+  } 
+  
+  //指定AP端IP
+  //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
+  Serial.println("");
+  Serial.println("APIP address: ");
+  Serial.println(WiFi.softAPIP());  
+  Serial.println("");
+  
+  startCameraServer(); 
+
+  //設定閃光燈為低電位
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW); 
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  delay(10000);
-}
-
-// Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-static void rgb_print(dl_matrix3du_t *image_matrix, uint32_t color, const char * str){
-    fb_data_t fb;
-    fb.width = image_matrix->w;
-    fb.height = image_matrix->h;
-    fb.data = image_matrix->item;
-    fb.bytes_per_pixel = 3;
-    fb.format = FB_BGR888;
-    fb_gfx_print(&fb, (fb.width - (strlen(str) * 14)) / 2, 10, color, str);
-}
-
-static int rgb_printf(dl_matrix3du_t *image_matrix, uint32_t color, const char *format, ...){
-    char loc_buf[64];
-    char * temp = loc_buf;
-    int len;
-    va_list arg;
-    va_list copy;
-    va_start(arg, format);
-    va_copy(copy, arg);
-    len = vsnprintf(loc_buf, sizeof(loc_buf), format, arg);
-    va_end(copy);
-    if(len >= sizeof(loc_buf)){
-        temp = (char*)malloc(len+1);
-        if(temp == NULL) {
-            return 0;
-        }
-    }
-    vsnprintf(temp, len+1, format, arg);
-    va_end(arg);
-    rgb_print(image_matrix, color, temp);
-    if(len > 64){
-        free(temp);
-    }
-    return len;
-}
-
-static void draw_face_boxes(dl_matrix3du_t *image_matrix, box_array_t *boxes, int face_id){
-    int x, y, w, h, i;
-    uint32_t color = FACE_COLOR_YELLOW;
-    if(face_id < 0){
-        color = FACE_COLOR_RED;
-    } else if(face_id > 0){
-        color = FACE_COLOR_GREEN;
-    }
-    fb_data_t fb;
-    fb.width = image_matrix->w;
-    fb.height = image_matrix->h;
-    fb.data = image_matrix->item;
-    fb.bytes_per_pixel = 3;
-    fb.format = FB_BGR888;
-    for (i = 0; i < boxes->len; i++){
-        // rectangle box
-        x = (int)boxes->box[i].box_p[0];
-        y = (int)boxes->box[i].box_p[1];
-        w = (int)boxes->box[i].box_p[2] - x + 1;
-        h = (int)boxes->box[i].box_p[3] - y + 1;
-        fb_gfx_drawFastHLine(&fb, x, y, w, color);
-        fb_gfx_drawFastHLine(&fb, x, y+h-1, w, color);
-        fb_gfx_drawFastVLine(&fb, x, y, h, color);
-        fb_gfx_drawFastVLine(&fb, x+w-1, y, h, color);
-#if 0
-        // landmark
-        int x0, y0, j;
-        for (j = 0; j < 10; j+=2) {
-            x0 = (int)boxes->landmark[i].landmark_p[j];
-            y0 = (int)boxes->landmark[i].landmark_p[j+1];
-            fb_gfx_fillRect(&fb, x0, y0, 3, 3, color);
-        }
-#endif
-    }
-}
-
-static int run_face_recognition(dl_matrix3du_t *image_matrix, box_array_t *net_boxes){
-    dl_matrix3du_t *aligned_face = NULL;
-    int matched_id = 0;
-
-    aligned_face = dl_matrix3du_alloc(1, FACE_WIDTH, FACE_HEIGHT, 3);
-    if(!aligned_face){
-        Serial.println("Could not allocate face recognition buffer");
-        return matched_id;
-    }
-    if (align_face(net_boxes, image_matrix, aligned_face) == ESP_OK){
-        if (is_enrolling == 1){
-            int8_t left_sample_face = enroll_face(&id_list, aligned_face);
-
-            if(left_sample_face == (ENROLL_CONFIRM_TIMES - 1)){
-                Serial.printf("Enrolling Face ID: %d\n", id_list.tail);
-            }
-            Serial.printf("Enrolling Face ID: %d sample %d\n", id_list.tail, ENROLL_CONFIRM_TIMES - left_sample_face);
-            rgb_printf(image_matrix, FACE_COLOR_CYAN, "ID[%u] Sample[%u]", id_list.tail, ENROLL_CONFIRM_TIMES - left_sample_face);
-            if (left_sample_face == 0){
-                is_enrolling = 0;
-                Serial.printf("Enrolled Face ID: %d\n", id_list.tail);
-            }
-        } else {
-            matched_id = recognize_face(&id_list, aligned_face);
-            if (matched_id >= 0) {
-                Serial.printf("Match Face ID: %u\n", matched_id);
-                rgb_printf(image_matrix, FACE_COLOR_GREEN, "Hello Subject %u", matched_id);
-            } else {
-                Serial.println("No Match Found");
-                rgb_print(image_matrix, FACE_COLOR_RED, "Intruder Alert!");
-                matched_id = -1;
-            }
-        }
-    } else {
-        Serial.println("Face Not Aligned");
-        //rgb_print(image_matrix, FACE_COLOR_YELLOW, "Human Detected");
-    }
-
-    dl_matrix3du_free(aligned_face);
-    return matched_id;
 }
 
 static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size_t len){
@@ -403,10 +286,10 @@ static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size
     return len;
 }
 
+//影像截圖
 static esp_err_t capture_handler(httpd_req_t *req){
     camera_fb_t * fb = NULL;
     esp_err_t res = ESP_OK;
-    int64_t fr_start = esp_timer_get_time();
 
     fb = esp_camera_fb_get();
     if (!fb) {
@@ -417,186 +300,67 @@ static esp_err_t capture_handler(httpd_req_t *req){
 
     httpd_resp_set_type(req, "image/jpeg");
     httpd_resp_set_hdr(req, "Content-Disposition", "inline; filename=capture.jpg");
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
-    size_t out_len, out_width, out_height;
-    uint8_t * out_buf;
-    bool s;
-    bool detected = false;
-    int face_id = 0;
-    if(!detection_enabled || fb->width > 400){
-        size_t fb_len = 0;
-        if(fb->format == PIXFORMAT_JPEG){
-            fb_len = fb->len;
-            res = httpd_resp_send(req, (const char *)fb->buf, fb->len);
-        } else {
-            jpg_chunking_t jchunk = {req, 0};
-            res = frame2jpg_cb(fb, 80, jpg_encode_stream, &jchunk)?ESP_OK:ESP_FAIL;
-            httpd_resp_send_chunk(req, NULL, 0);
-            fb_len = jchunk.len;
-        }
-        esp_camera_fb_return(fb);
-        int64_t fr_end = esp_timer_get_time();
-        Serial.printf("JPG: %uB %ums\n", (uint32_t)(fb_len), (uint32_t)((fr_end - fr_start)/1000));
-        return res;
+    size_t fb_len = 0;
+    if(fb->format == PIXFORMAT_JPEG){
+        fb_len = fb->len;
+        res = httpd_resp_send(req, (const char *)fb->buf, fb->len);
+    } else {
+        jpg_chunking_t jchunk = {req, 0};
+        res = frame2jpg_cb(fb, 80, jpg_encode_stream, &jchunk)?ESP_OK:ESP_FAIL;
+        httpd_resp_send_chunk(req, NULL, 0);
+        fb_len = jchunk.len;
     }
-
-    dl_matrix3du_t *image_matrix = dl_matrix3du_alloc(1, fb->width, fb->height, 3);
-    if (!image_matrix) {
-        esp_camera_fb_return(fb);
-        Serial.println("dl_matrix3du_alloc failed");
-        httpd_resp_send_500(req);
-        return ESP_FAIL;
-    }
-
-    out_buf = image_matrix->item;
-    out_len = fb->width * fb->height * 3;
-    out_width = fb->width;
-    out_height = fb->height;
-
-    s = fmt2rgb888(fb->buf, fb->len, fb->format, out_buf);
     esp_camera_fb_return(fb);
-    if(!s){
-        dl_matrix3du_free(image_matrix);
-        Serial.println("to rgb888 failed");
-        httpd_resp_send_500(req);
-        return ESP_FAIL;
-    }
-
-    box_array_t *net_boxes = face_detect(image_matrix, &mtmn_config);
-
-    if (net_boxes){
-        detected = true;
-        if(recognition_enabled){
-            face_id = run_face_recognition(image_matrix, net_boxes);
-        }
-        draw_face_boxes(image_matrix, net_boxes, face_id);
-        free(net_boxes->box);
-        free(net_boxes->landmark);
-        free(net_boxes);
-    }
-
-    jpg_chunking_t jchunk = {req, 0};
-    s = fmt2jpg_cb(out_buf, out_len, out_width, out_height, PIXFORMAT_RGB888, 90, jpg_encode_stream, &jchunk);
-    dl_matrix3du_free(image_matrix);
-    if(!s){
-        Serial.println("JPEG compression failed");
-        return ESP_FAIL;
-    }
-
-    int64_t fr_end = esp_timer_get_time();
-    Serial.printf("FACE: %uB %ums %s%d\n", (uint32_t)(jchunk.len), (uint32_t)((fr_end - fr_start)/1000), detected?"DETECTED ":"", face_id);
     return res;
 }
 
+//影像串流
 static esp_err_t stream_handler(httpd_req_t *req){
     camera_fb_t * fb = NULL;
     esp_err_t res = ESP_OK;
     size_t _jpg_buf_len = 0;
     uint8_t * _jpg_buf = NULL;
     char * part_buf[64];
-    dl_matrix3du_t *image_matrix = NULL;
-    bool detected = false;
-    int face_id = 0;
-    int64_t fr_start = 0;
-    int64_t fr_ready = 0;
-    int64_t fr_face = 0;
-    int64_t fr_recognize = 0;
-    int64_t fr_encode = 0;
-
-    static int64_t last_frame = 0;
-    if(!last_frame) {
-        last_frame = esp_timer_get_time();
-    }
 
     res = httpd_resp_set_type(req, _STREAM_CONTENT_TYPE);
     if(res != ESP_OK){
         return res;
     }
+
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
     while(true){
-        detected = false;
-        face_id = 0;
         fb = esp_camera_fb_get();
         if (!fb) {
             Serial.println("Camera capture failed");
             res = ESP_FAIL;
         } else {
-            fr_start = esp_timer_get_time();
-            fr_ready = fr_start;
-            fr_face = fr_start;
-            fr_encode = fr_start;
-            fr_recognize = fr_start;
-            if(!detection_enabled || fb->width > 400){
-                if(fb->format != PIXFORMAT_JPEG){
-                    bool jpeg_converted = frame2jpg(fb, 80, &_jpg_buf, &_jpg_buf_len);
-                    esp_camera_fb_return(fb);
-                    fb = NULL;
-                    if(!jpeg_converted){
-                        Serial.println("JPEG compression failed");
-                        res = ESP_FAIL;
-                    }
-                } else {
-                    _jpg_buf_len = fb->len;
-                    _jpg_buf = fb->buf;
-                }
-            } else {
-
-                image_matrix = dl_matrix3du_alloc(1, fb->width, fb->height, 3);
-
-                if (!image_matrix) {
-                    Serial.println("dl_matrix3du_alloc failed");
-                    res = ESP_FAIL;
-                } else {
-                    if(!fmt2rgb888(fb->buf, fb->len, fb->format, image_matrix->item)){
-                        Serial.println("fmt2rgb888 failed");
-                        res = ESP_FAIL;
-                    } else {
-                        fr_ready = esp_timer_get_time();
-                        box_array_t *net_boxes = NULL;
-                        if(detection_enabled){
-                            net_boxes = face_detect(image_matrix, &mtmn_config);
-                        }
-                        fr_face = esp_timer_get_time();
-                        fr_recognize = fr_face;
-                        if (net_boxes || fb->format != PIXFORMAT_JPEG){
-                            if(net_boxes){
-                                detected = true;
-                                if(recognition_enabled){
-                                    face_id = run_face_recognition(image_matrix, net_boxes);
-                                }
-                                fr_recognize = esp_timer_get_time();
-                                draw_face_boxes(image_matrix, net_boxes, face_id);
-                                free(net_boxes->box);
-                                free(net_boxes->landmark);
-                                free(net_boxes);
-                            }
-                            if(!fmt2jpg(image_matrix->item, fb->width*fb->height*3, fb->width, fb->height, PIXFORMAT_RGB888, 90, &_jpg_buf, &_jpg_buf_len)){
-                                Serial.println("fmt2jpg failed");
-                                res = ESP_FAIL;
-                            }
-                            esp_camera_fb_return(fb);
-                            fb = NULL;
-                        } else {
-                            _jpg_buf = fb->buf;
-                            _jpg_buf_len = fb->len;
-                        }
-                        fr_encode = esp_timer_get_time();
-                    }
-                    dl_matrix3du_free(image_matrix);
-                }
-            }
+          if(fb->format != PIXFORMAT_JPEG){
+              bool jpeg_converted = frame2jpg(fb, 80, &_jpg_buf, &_jpg_buf_len);
+              esp_camera_fb_return(fb);
+              fb = NULL;
+              if(!jpeg_converted){
+                  Serial.println("JPEG compression failed");
+                  res = ESP_FAIL;
+              }
+          } else {
+              _jpg_buf_len = fb->len;
+              _jpg_buf = fb->buf;
+          }
         }
-        if(res == ESP_OK){
-            size_t hlen = snprintf((char *)part_buf, 64, _STREAM_PART, _jpg_buf_len);
-            res = httpd_resp_send_chunk(req, (const char *)part_buf, hlen);
-        }
+
         if(res == ESP_OK){
             res = httpd_resp_send_chunk(req, (const char *)_jpg_buf, _jpg_buf_len);
         }
         if(res == ESP_OK){
             res = httpd_resp_send_chunk(req, _STREAM_BOUNDARY, strlen(_STREAM_BOUNDARY));
         }
+        if(res == ESP_OK){
+            size_t hlen = snprintf((char *)part_buf, 64, _STREAM_PART, _jpg_buf_len);
+            res = httpd_resp_send_chunk(req, (const char *)part_buf, hlen);
+        }                
         if(fb){
             esp_camera_fb_return(fb);
             fb = NULL;
@@ -608,37 +372,19 @@ static esp_err_t stream_handler(httpd_req_t *req){
         if(res != ESP_OK){
             break;
         }
-        int64_t fr_end = esp_timer_get_time();
-
-        int64_t ready_time = (fr_ready - fr_start)/1000;
-        int64_t face_time = (fr_face - fr_ready)/1000;
-        int64_t recognize_time = (fr_recognize - fr_face)/1000;
-        int64_t encode_time = (fr_encode - fr_recognize)/1000;
-        int64_t process_time = (fr_encode - fr_start)/1000;
-        
-        int64_t frame_time = fr_end - last_frame;
-        last_frame = fr_end;
-        frame_time /= 1000;
-        uint32_t avg_frame_time = ra_filter_run(&ra_filter, frame_time);
-        Serial.printf("MJPG: %uB %ums (%.1ffps), AVG: %ums (%.1ffps), %u+%u+%u+%u=%u %s%d\n",
-            (uint32_t)(_jpg_buf_len),
-            (uint32_t)frame_time, 1000.0 / (uint32_t)frame_time,
-            avg_frame_time, 1000.0 / avg_frame_time,
-            (uint32_t)ready_time, (uint32_t)face_time, (uint32_t)recognize_time, (uint32_t)encode_time, (uint32_t)process_time,
-            (detected)?"DETECTED ":"", face_id
-        );
     }
 
-    last_frame = 0;
     return res;
 }
 
+//指令參數控制
 static esp_err_t cmd_handler(httpd_req_t *req){
-    char*  buf;
+    char*  buf;  //存取網址後帶的參數字串
     size_t buf_len;
-    char variable[32] = {0,};
-    char value[32] = {0,};
-
+    char variable[128] = {0,};  //存取參數var值，可修改陣列長度。
+    char value[128] = {0,};  //存取參數val值，可修改陣列長度。
+    String myCmd = "";
+    
     buf_len = httpd_req_get_url_query_len(req) + 1;
     if (buf_len > 1) {
         buf = (char*)malloc(buf_len);
@@ -647,17 +393,12 @@ static esp_err_t cmd_handler(httpd_req_t *req){
             return ESP_FAIL;
         }
         if (httpd_req_get_url_query_str(req, buf, buf_len) == ESP_OK) {
-            if (httpd_query_key_value(buf, "var", variable, sizeof(variable)) == ESP_OK &&
-                httpd_query_key_value(buf, "val", value, sizeof(value)) == ESP_OK) {
-            } else {
-                free(buf);
-                httpd_resp_send_404(req);
-                return ESP_FAIL;
-            }
-        } else {
-            free(buf);
-            httpd_resp_send_404(req);
-            return ESP_FAIL;
+          if (httpd_query_key_value(buf, "var", variable, sizeof(variable)) == ESP_OK &&
+            httpd_query_key_value(buf, "val", value, sizeof(value)) == ESP_OK) {
+          } 
+          else {
+            myCmd = String(buf);    //若無var, val參數則為自訂參數
+          }
         }
         free(buf);
     } else {
@@ -665,84 +406,191 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         return ESP_FAIL;
     }
 
-    int val = atoi(value);
-    sensor_t * s = esp_camera_sensor_get();
-    int res = 0;
+    Feedback="";Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
+    ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;     
+    if (myCmd.length()>0) {
+      myCmd = "?"+myCmd;  //網址後帶的參數字串轉換成自訂參數格式
+      for (int i=0;i<myCmd.length();i++) {
+        getCommand(char(myCmd.charAt(i)));  //拆解參數字串
+      }
+    }
+
+    if (cmd.length()>0) {
+      Serial.println("");
+      //Serial.println("Command: "+Command);
+      Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
+      Serial.println(""); 
+
+      //自訂指令區塊  http://192.168.xxx.xxx?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+      if (cmd=="your cmd") {
+        // You can do anything
+        // Feedback="<font color=\"red\">Hello World</font>";   //可為一般文字或HTML語法
+      } else if (cmd=="ip") {  //查詢APIP, STAIP
+        Feedback="AP IP: "+WiFi.softAPIP().toString();    
+        Feedback+="<br>";
+        Feedback+="STA IP: "+WiFi.localIP().toString();
+      } else if (cmd=="mac") {  //查詢MAC位址
+        Feedback="STA MAC: "+WiFi.macAddress();
+      } else if (cmd=="restart") {  //重設WIFI連線
+        ESP.restart();
+      } else if (cmd=="digitalwrite") {  //數位輸出
+        ledcDetachPin(P1.toInt());
+        pinMode(P1.toInt(), OUTPUT);
+        digitalWrite(P1.toInt(), P2.toInt());
+      } else if (cmd=="digitalread") {  //數位輸入
+        Feedback=String(digitalRead(P1.toInt()));
+      } else if (cmd=="analogwrite") {  //類比輸出
+        if (P1=="4") {
+          ledcAttachPin(4, 4);  
+          ledcSetup(4, 5000, 8);
+          ledcWrite(4,P2.toInt());     
+        } else {
+          ledcAttachPin(P1.toInt(), 9);
+          ledcSetup(9, 5000, 8);
+          ledcWrite(9,P2.toInt());
+        }
+      }       
+      else if (cmd=="analogread") {  //類比讀取
+        Feedback=String(analogRead(P1.toInt()));
+      } else if (cmd=="touchread") {  //觸碰讀取
+        Feedback=String(touchRead(P1.toInt()));
+      } else if (cmd=="restart") {  //重啟電源
+        ESP.restart();
+      } else if (cmd=="flash") {  //閃光燈
+        ledcAttachPin(4, 4);  
+        ledcSetup(4, 5000, 8);   
+        int val = P1.toInt();
+        ledcWrite(4,val);  
+      } else if(cmd=="servo") {  //伺服馬達 (SG90 1638-7864)
+        ledcAttachPin(P1.toInt(), 3);
+        ledcSetup(3, 50, 16);
+         
+        int val = 7864-P2.toInt()*34.59; 
+        if (val > 7864)
+           val = 7864;
+        else if (val < 1638)
+          val = 1638; 
+        ledcWrite(3, val);
+      } else if (cmd=="relay") {  //繼電器
+        pinMode(P1.toInt(), OUTPUT);  
+        digitalWrite(P1.toInt(), P2.toInt());
+      } else if (cmd=="resetwifi") {  //重設網路連線  
+        for (int i=0;i<2;i++) {
+          WiFi.begin(P1.c_str(), P2.c_str());
+          Serial.print("Connecting to ");
+          Serial.println(P1);
+          long int StartTime=millis();
+          while (WiFi.status() != WL_CONNECTED) {
+              delay(500);
+              if ((StartTime+5000) < millis()) break;
+          } 
+          Serial.println("");
+          Serial.println("STAIP: "+WiFi.localIP().toString());
+          Feedback="STAIP: "+WiFi.localIP().toString();
+  
+          if (WiFi.status() == WL_CONNECTED) {
+            WiFi.softAP((WiFi.localIP().toString()+"_"+P1).c_str(), P2.c_str());
+            for (int i=0;i<2;i++) {    //若連不上WIFI設定閃光燈慢速閃爍
+              ledcWrite(4,10);
+              delay(300);
+              ledcWrite(4,0);
+              delay(300);    
+            }
+            break;
+          }
+        }       
+      } else {
+        Feedback="Command is not defined";
+      }
+
+      if (Feedback=="") Feedback=Command;  //若沒有設定回傳資料就回傳Command值
     
-    if(!strcmp(variable, "framesize")) {
-        if(s->pixformat == PIXFORMAT_JPEG) res = s->set_framesize(s, (framesize_t)val);
-    }
-    else if(!strcmp(variable, "quality")) res = s->set_quality(s, val);
-    else if(!strcmp(variable, "contrast")) res = s->set_contrast(s, val);
-    else if(!strcmp(variable, "brightness")) res = s->set_brightness(s, val);
-    else if(!strcmp(variable, "saturation")) res = s->set_saturation(s, val);
-    else if(!strcmp(variable, "gainceiling")) res = s->set_gainceiling(s, (gainceiling_t)val);
-    else if(!strcmp(variable, "colorbar")) res = s->set_colorbar(s, val);
-    else if(!strcmp(variable, "awb")) res = s->set_whitebal(s, val);
-    else if(!strcmp(variable, "agc")) res = s->set_gain_ctrl(s, val);
-    else if(!strcmp(variable, "aec")) res = s->set_exposure_ctrl(s, val);
-    else if(!strcmp(variable, "hmirror")) res = s->set_hmirror(s, val);
-    else if(!strcmp(variable, "vflip")) res = s->set_vflip(s, val);
-    else if(!strcmp(variable, "awb_gain")) res = s->set_awb_gain(s, val);
-    else if(!strcmp(variable, "agc_gain")) res = s->set_agc_gain(s, val);
-    else if(!strcmp(variable, "aec_value")) res = s->set_aec_value(s, val);
-    else if(!strcmp(variable, "aec2")) res = s->set_aec2(s, val);
-    else if(!strcmp(variable, "dcw")) res = s->set_dcw(s, val);
-    else if(!strcmp(variable, "bpc")) res = s->set_bpc(s, val);
-    else if(!strcmp(variable, "wpc")) res = s->set_wpc(s, val);
-    else if(!strcmp(variable, "raw_gma")) res = s->set_raw_gma(s, val);
-    else if(!strcmp(variable, "lenc")) res = s->set_lenc(s, val);
-    else if(!strcmp(variable, "special_effect")) res = s->set_special_effect(s, val);
-    else if(!strcmp(variable, "wb_mode")) res = s->set_wb_mode(s, val);
-    else if(!strcmp(variable, "ae_level")) res = s->set_ae_level(s, val);
-    else if(!strcmp(variable, "face_detect")) {
-        detection_enabled = val;
-        if(!detection_enabled) {
-            recognition_enabled = 0;
-        }
-    }
-    else if(!strcmp(variable, "face_enroll")) is_enrolling = val;
-    else if(!strcmp(variable, "face_recognize")) {
-        recognition_enabled = val;
-        if(recognition_enabled){
-            detection_enabled = val;
-        }
-    }
-    else if(!strcmp(variable, "servo1")) {
-      ledcAttachPin(2, 3);  
-      ledcSetup(3, 50, 16);      
-      if (val > 8000)
-         val = 8000;
-      else if (val < 1700)
-        val = 1700;   
-      val = 1700 + (8000 - val);   
-      ledcWrite(3, val); 
-    }  
-    else if(!strcmp(variable, "servo2")) {
-      ledcAttachPin(13, 5);  
-      ledcSetup(5, 50, 16);      
-      if (val > 8000)
-         val = 8000;
-      else if (val < 1700)
-        val = 1700;   
-      val = 1700 + (8000 - val);   
-      ledcWrite(5, val); 
+      const char *resp = Feedback.c_str();
+      httpd_resp_set_type(req, "text/html");  //設定回傳資料格式
+      httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");  //允許跨網域讀取
+      return httpd_resp_send(req, resp, strlen(resp));
     } 
-    else if(!strcmp(variable, "flash")) {
-      ledcWrite(4,val);
-    }  
     else {
-        res = -1;
+      int val = atoi(value); 
+      sensor_t * s = esp_camera_sensor_get();
+      int res = 0;
+  
+      //官方指令區塊，也可在此自訂指令  http://192.168.xxx.xxx/control?var=xxx&val=xxx
+      if(!strcmp(variable, "framesize")) {
+          if(s->pixformat == PIXFORMAT_JPEG) res = s->set_framesize(s, (framesize_t)val);
+      }
+      else if(!strcmp(variable, "quality")) res = s->set_quality(s, val);
+      else if(!strcmp(variable, "contrast")) res = s->set_contrast(s, val);
+      else if(!strcmp(variable, "brightness")) res = s->set_brightness(s, val);
+      else if(!strcmp(variable, "saturation")) res = s->set_saturation(s, val);
+      else if(!strcmp(variable, "gainceiling")) res = s->set_gainceiling(s, (gainceiling_t)val);
+      else if(!strcmp(variable, "colorbar")) res = s->set_colorbar(s, val);
+      else if(!strcmp(variable, "awb")) res = s->set_whitebal(s, val);
+      else if(!strcmp(variable, "agc")) res = s->set_gain_ctrl(s, val);
+      else if(!strcmp(variable, "aec")) res = s->set_exposure_ctrl(s, val);
+      else if(!strcmp(variable, "hmirror")) res = s->set_hmirror(s, val);
+      else if(!strcmp(variable, "vflip")) res = s->set_vflip(s, val);
+      else if(!strcmp(variable, "awb_gain")) res = s->set_awb_gain(s, val);
+      else if(!strcmp(variable, "agc_gain")) res = s->set_agc_gain(s, val);
+      else if(!strcmp(variable, "aec_value")) res = s->set_aec_value(s, val);
+      else if(!strcmp(variable, "aec2")) res = s->set_aec2(s, val);
+      else if(!strcmp(variable, "dcw")) res = s->set_dcw(s, val);
+      else if(!strcmp(variable, "bpc")) res = s->set_bpc(s, val);
+      else if(!strcmp(variable, "wpc")) res = s->set_wpc(s, val);
+      else if(!strcmp(variable, "raw_gma")) res = s->set_raw_gma(s, val);
+      else if(!strcmp(variable, "lenc")) res = s->set_lenc(s, val);
+      else if(!strcmp(variable, "special_effect")) res = s->set_special_effect(s, val);
+      else if(!strcmp(variable, "wb_mode")) res = s->set_wb_mode(s, val);
+      else if(!strcmp(variable, "ae_level")) res = s->set_ae_level(s, val);
+      else if(!strcmp(variable, "servo1")) {
+        ledcAttachPin(2, 3);
+        ledcSetup(3, 50, 16);
+         
+        val = 7864-val*34.59; 
+        if (val > 7864)
+           val = 7864;
+        else if (val < 1638)
+          val = 1638; 
+        ledcWrite(3, val);
+      }  
+      else if(!strcmp(variable, "servo2")) {
+        ledcAttachPin(13, 5);
+        ledcSetup(5, 50, 16);
+         
+        val = 7864-val*34.59; 
+        if (val > 7864)
+           val = 7864;
+        else if (val < 1638)
+          val = 1638; 
+        ledcWrite(5, val);
+      } 
+      else if(!strcmp(variable, "flash")) {
+        ledcAttachPin(4, 4);  
+        ledcSetup(4, 5000, 8);         
+        ledcWrite(4, val);
+      }  
+      else {
+          res = -1;
+      }
+  
+      if(res){
+          return httpd_resp_send_500(req);
+      }
+  
+      if (buf) {
+        Feedback = String(buf);
+        const char *resp = Feedback.c_str();
+        httpd_resp_set_type(req, "text/html");
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+        return httpd_resp_send(req, resp, strlen(resp));  //回傳參數字串
+      } else {
+        httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+        return httpd_resp_send(req, NULL, 0);
+      }
     }
-
-    if(res){
-        return httpd_resp_send_500(req);
-    }
-
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-    return httpd_resp_send(req, NULL, 0);
 }
 
+//顯示視訊參數狀態(須回傳json格式)
 static esp_err_t status_handler(httpd_req_t *req){
     static char json_response[1024];
 
@@ -773,10 +621,7 @@ static esp_err_t status_handler(httpd_req_t *req){
     p+=sprintf(p, "\"vflip\":%u,", s->status.vflip);
     p+=sprintf(p, "\"hmirror\":%u,", s->status.hmirror);
     p+=sprintf(p, "\"dcw\":%u,", s->status.dcw);
-    p+=sprintf(p, "\"colorbar\":%u,", s->status.colorbar);
-    p+=sprintf(p, "\"face_detect\":%u,", detection_enabled);
-    p+=sprintf(p, "\"face_enroll\":%u,", is_enrolling);
-    p+=sprintf(p, "\"face_recognize\":%u", recognition_enabled);
+    p+=sprintf(p, "\"colorbar\":%u", s->status.colorbar);
     *p++ = '}';
     *p++ = 0;
     httpd_resp_set_type(req, "application/json");
@@ -805,9 +650,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <section class="main">
             <section id="buttons">
                 <table>
-                <tr><td align="center"><button id="get-still">Get Still</button></td><td align="center"><button id="toggle-stream">Start Stream</button></td><td align="center"><button id="face_enroll" class="disabled" disabled="disabled">Enroll Face</button></td></tr>
-                <tr><td>Servo1</td><td align="center" colspan="2"><input type="range" id="servo1" min="1700" max="8000" step="35" value="4850" onchange="try{fetch(document.location.origin+'/control?var=servo1&val='+this.value);}catch(e){}"></td></tr>
-                <tr><td>Servo2</td><td align="center" colspan="2"><input type="range" id="servo2" min="1700" max="8000" step="35" value="4850" onchange="try{fetch(document.location.origin+'/control?var=servo2&val='+this.value);}catch(e){}"></td></tr>
+                <tr><td align="center"><button id="get-still">Get Still</button></td><td align="center"><button id="toggle-stream">Start Stream</button></td><td align="center"></td></tr>
+                <tr><td>Servo1</td><td align="center" colspan="2"><input type="range" id="servo1" min="0" max="180" step="1" value="90" onchange="try{fetch(document.location.origin+'/control?var=servo1&val='+this.value);}catch(e){}"></td></tr>
+                <tr><td>Servo2</td><td align="center" colspan="2"><input type="range" id="servo2" min="0" max="180" step="1" value="90" onchange="try{fetch(document.location.origin+'/control?var=servo2&val='+this.value);}catch(e){}"></td></tr>
                 <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}"></td></tr>
                 <tr><td>Rotate</td><td align="center" colspan="2">
                     <select onchange="document.getElementById('stream').style.transform='rotate('+this.value+')';">
@@ -1001,26 +846,172 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                                 <label class="slider" for="colorbar"></label>
                             </div>
                         </div>
-                        <div class="input-group" id="face_detect-group">
-                            <label for="face_detect">Face Detection</label>
-                            <div class="switch">
-                                <input id="face_detect" type="checkbox" class="default-action">
-                                <label class="slider" for="face_detect"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="face_recognize-group">
-                            <label for="face_recognize">Face Recognition</label>
-                            <div class="switch">
-                                <input id="face_recognize" type="checkbox" class="default-action">
-                                <label class="slider" for="face_recognize"></label>
-                            </div>
-                        </div>
                     </nav>
                 </div>
             </div>
         </section>
         <script>
-          document.addEventListener('DOMContentLoaded',function(){function b(B){let C;switch(B.type){case'checkbox':C=B.checked?1:0;break;case'range':case'select-one':C=B.value;break;case'button':case'submit':C='1';break;default:return;}const D=`${c}/control?var=${B.id}&val=${C}`;fetch(D).then(E=>{console.log(`request to ${D} finished, status: ${E.status}`)})}var c=document.location.origin;const e=B=>{B.classList.add('hidden')},f=B=>{B.classList.remove('hidden')},g=B=>{B.classList.add('disabled'),B.disabled=!0},h=B=>{B.classList.remove('disabled'),B.disabled=!1},i=(B,C,D)=>{D=!(null!=D)||D;let E;'checkbox'===B.type?(E=B.checked,C=!!C,B.checked=C):(E=B.value,B.value=C),D&&E!==C?b(B):!D&&('aec'===B.id?C?e(v):f(v):'agc'===B.id?C?(f(t),e(s)):(e(t),f(s)):'awb_gain'===B.id?C?f(x):e(x):'face_recognize'===B.id&&(C?h(n):g(n)))};document.querySelectorAll('.close').forEach(B=>{B.onclick=()=>{e(B.parentNode)}}),fetch(`${c}/status`).then(function(B){return B.json()}).then(function(B){document.querySelectorAll('.default-action').forEach(C=>{i(C,B[C.id],!1)})});const j=document.getElementById('stream'),k=document.getElementById('stream-container'),l=document.getElementById('get-still'),m=document.getElementById('toggle-stream'),n=document.getElementById('face_enroll'),o=document.getElementById('close-stream'),p=()=>{window.stop(),m.innerHTML='Start Stream'},q=()=>{j.src=`${c+':81'}/stream`,f(k),m.innerHTML='Stop Stream'};l.onclick=()=>{p(),j.src=`${c}/capture?_cb=${Date.now()}`,f(k)},o.onclick=()=>{p(),e(k)},m.onclick=()=>{const B='Stop Stream'===m.innerHTML;B?p():q()},n.onclick=()=>{b(n)},document.querySelectorAll('.default-action').forEach(B=>{B.onchange=()=>b(B)});const r=document.getElementById('agc'),s=document.getElementById('agc_gain-group'),t=document.getElementById('gainceiling-group');r.onchange=()=>{b(r),r.checked?(f(t),e(s)):(e(t),f(s))};const u=document.getElementById('aec'),v=document.getElementById('aec_value-group');u.onchange=()=>{b(u),u.checked?e(v):f(v)};const w=document.getElementById('awb_gain'),x=document.getElementById('wb_mode-group');w.onchange=()=>{b(w),w.checked?f(x):e(x)};const y=document.getElementById('face_detect'),z=document.getElementById('face_recognize'),A=document.getElementById('framesize');A.onchange=()=>{b(A),5<A.value&&(i(y,!1),i(z,!1))},y.onchange=()=>{return 5<A.value?(alert('Please select CIF or lower resolution before enabling this feature!'),void i(y,!1)):void(b(y),!y.checked&&(g(n),i(z,!1)))},z.onchange=()=>{return 5<A.value?(alert('Please select CIF or lower resolution before enabling this feature!'),void i(z,!1)):void(b(z),z.checked?(h(n),i(y,!0)):g(n))}});
+document.addEventListener('DOMContentLoaded', function (event) {
+  var baseHost = document.location.origin
+  var streamUrl = baseHost + ':81'
+  const hide = el => {
+    el.classList.add('hidden')
+  }
+  const show = el => {
+    el.classList.remove('hidden')
+  }
+  const disable = el => {
+    el.classList.add('disabled')
+    el.disabled = true
+  }
+  const enable = el => {
+    el.classList.remove('disabled')
+    el.disabled = false
+  }
+  const updateValue = (el, value, updateRemote) => {
+    updateRemote = updateRemote == null ? true : updateRemote
+    let initialValue
+    if (el.type === 'checkbox') {
+      initialValue = el.checked
+      value = !!value
+      el.checked = value
+    } else {
+      initialValue = el.value
+      el.value = value
+    }
+    if (updateRemote && initialValue !== value) {
+      updateConfig(el);
+    } else if(!updateRemote){
+      if(el.id === "aec"){
+        value ? hide(exposure) : show(exposure)
+      } else if(el.id === "agc"){
+        if (value) {
+          show(gainCeiling)
+          hide(agcGain)
+        } else {
+          hide(gainCeiling)
+          show(agcGain)
+        }
+      } else if(el.id === "awb_gain"){
+        value ? show(wb) : hide(wb)
+      }
+    }
+  }
+  function updateConfig (el) {
+    let value
+    switch (el.type) {
+      case 'checkbox':
+        value = el.checked ? 1 : 0
+        break
+      case 'range':
+      case 'select-one':
+        value = el.value
+        break
+      case 'button':
+      case 'submit':
+        value = '1'
+        break
+      default:
+        return
+    }
+    const query = `${baseHost}/control?var=${el.id}&val=${value}`
+    fetch(query)
+      .then(response => {
+        console.log(`request to ${query} finished, status: ${response.status}`)
+      })
+  }
+  document
+    .querySelectorAll('.close')
+    .forEach(el => {
+      el.onclick = () => {
+        hide(el.parentNode)
+      }
+    })
+  // read initial values
+  fetch(`${baseHost}/status`)
+    .then(function (response) {
+      return response.json()
+    })
+    .then(function (state) {
+      document
+        .querySelectorAll('.default-action')
+        .forEach(el => {
+          updateValue(el, state[el.id], false)
+        })
+    })
+  const view = document.getElementById('stream')
+  const viewContainer = document.getElementById('stream-container')
+  const stillButton = document.getElementById('get-still')
+  const streamButton = document.getElementById('toggle-stream')
+  const closeButton = document.getElementById('close-stream')
+  const stopStream = () => {
+    window.stop();
+    streamButton.innerHTML = 'Start Stream'
+  }
+  const startStream = () => {
+    view.src = `${streamUrl}/stream`
+    show(viewContainer)
+    streamButton.innerHTML = 'Stop Stream'
+  }
+  // Attach actions to buttons
+  stillButton.onclick = () => {
+    stopStream()
+    view.src = `${baseHost}/capture?_cb=${Date.now()}`
+    show(viewContainer)
+  }
+  closeButton.onclick = () => {
+    stopStream()
+    hide(viewContainer)
+  }
+  streamButton.onclick = () => {
+    const streamEnabled = streamButton.innerHTML === 'Stop Stream'
+    if (streamEnabled) {
+      stopStream()
+    } else {
+      startStream()
+    }
+  }
+  // Attach default on change action
+  document
+    .querySelectorAll('.default-action')
+    .forEach(el => {
+      el.onchange = () => updateConfig(el)
+    })
+  // Custom actions
+  // Gain
+  const agc = document.getElementById('agc')
+  const agcGain = document.getElementById('agc_gain-group')
+  const gainCeiling = document.getElementById('gainceiling-group')
+  agc.onchange = () => {
+    updateConfig(agc)
+    if (agc.checked) {
+      show(gainCeiling)
+      hide(agcGain)
+    } else {
+      hide(gainCeiling)
+      show(agcGain)
+    }
+  }
+  // Exposure
+  const aec = document.getElementById('aec')
+  const exposure = document.getElementById('aec_value-group')
+  aec.onchange = () => {
+    updateConfig(aec)
+    aec.checked ? hide(exposure) : show(exposure)
+  }
+  // AWB
+  const awb = document.getElementById('awb_gain')
+  const wb = document.getElementById('wb_mode-group')
+  awb.onchange = () => {
+    updateConfig(awb)
+    awb.checked ? show(wb) : hide(wb)
+  }
+  // framesize
+  const framesize = document.getElementById('framesize')
+  framesize.onchange = () => {
+    updateConfig(framesize)
+  }
+})
         </script>
     </body>
 </html>
@@ -1070,22 +1061,6 @@ void startCameraServer(){
         .handler   = stream_handler,
         .user_ctx  = NULL
     };
-
-
-    ra_filter_init(&ra_filter, 20);
-    
-    mtmn_config.min_face = 80;
-    mtmn_config.pyramid = 0.7;
-    mtmn_config.p_threshold.score = 0.6;
-    mtmn_config.p_threshold.nms = 0.7;
-    mtmn_config.r_threshold.score = 0.7;
-    mtmn_config.r_threshold.nms = 0.7;
-    mtmn_config.r_threshold.candidate_number = 4;
-    mtmn_config.o_threshold.score = 0.7;
-    mtmn_config.o_threshold.nms = 0.4;
-    mtmn_config.o_threshold.candidate_number = 1;
-    
-    face_id_init(&id_list, FACE_ID_SAVE_NUMBER, ENROLL_CONFIRM_TIMES);
     
     Serial.printf("Starting web server on port: '%d'\n", config.server_port);
     if (httpd_start(&camera_httpd, &config) == ESP_OK) {
@@ -1101,4 +1076,34 @@ void startCameraServer(){
     if (httpd_start(&stream_httpd, &config) == ESP_OK) {
         httpd_register_uri_handler(stream_httpd, &stream_uri);
     }
+}
+
+//拆解命令字串置入變數
+void getCommand(char c)
+{
+  if (c=='?') ReceiveState=1;
+  if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
+  
+  if (ReceiveState==1)
+  {
+    Command=Command+String(c);
+    
+    if (c=='=') cmdState=0;
+    if (c==';') strState++;
+  
+    if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
+    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) P1=P1+String(c);
+    if ((cmdState==0)&&(strState==2)&&(c!=';')) P2=P2+String(c);
+    if ((cmdState==0)&&(strState==3)&&(c!=';')) P3=P3+String(c);
+    if ((cmdState==0)&&(strState==4)&&(c!=';')) P4=P4+String(c);
+    if ((cmdState==0)&&(strState==5)&&(c!=';')) P5=P5+String(c);
+    if ((cmdState==0)&&(strState==6)&&(c!=';')) P6=P6+String(c);
+    if ((cmdState==0)&&(strState==7)&&(c!=';')) P7=P7+String(c);
+    if ((cmdState==0)&&(strState==8)&&(c!=';')) P8=P8+String(c);
+    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) P9=P9+String(c);
+    
+    if (c=='?') questionstate=1;
+    if (c=='=') equalstate=1;
+    if ((strState>=9)&&(c==';')) semicolonstate=1;
+  }
 }
