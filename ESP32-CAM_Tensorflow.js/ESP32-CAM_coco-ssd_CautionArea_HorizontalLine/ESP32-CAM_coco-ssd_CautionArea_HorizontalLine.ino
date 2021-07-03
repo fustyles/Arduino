@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Caution area using horizontal line (tfjs coco-ssd)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-16 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-3 22:00
 https://www.facebook.com/francefu
 
 物件類別
