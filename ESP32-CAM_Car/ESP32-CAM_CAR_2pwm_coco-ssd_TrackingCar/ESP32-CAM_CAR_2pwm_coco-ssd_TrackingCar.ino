@@ -57,7 +57,7 @@ const char* password = "87654321";
 const char* apssid = "esp32-cam";
 const char* appassword = "12345678";         //AP密碼至少要8個字元以上 
 
-int angleValue = 150;   //伺服馬達初始角度
+int angleValue = 30;   //伺服馬達初始角度
 
 int speedR = 160;  //紀錄右輪初始轉速 (gpio12, gpio13)
 int speedL = 160;  //紀錄左輪初始轉速 (gpio14, gpio15)
