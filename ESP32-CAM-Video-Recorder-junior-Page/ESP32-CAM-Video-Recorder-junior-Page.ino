@@ -9,7 +9,7 @@
   https://fustyles.github.io/webduino/CautionArea/ESP32-CAM-Video-Recorder-junior-Page.html
   Chrome瀏覽器設定須更改：允許開啟不安全內容。否則http未加密連結會被阻擋無法串流！若將網頁下載到本機執行，則不用更改安全性設定。
   瀏覽器網址執行 chrome://settings/content/siteDetails?site=https://fustyles.github.io
-  
+
   http://192.168.xxx.xxx             //網頁首頁管理介面
   http://192.168.xxx.xxx:81/stream   //取得串流影像       <img src="http://192.168.xxx.xxx:81/stream">
   http://192.168.xxx.xxx/capture     //取得影像          <img src="http://192.168.xxx.xxx/capture">
@@ -1434,7 +1434,6 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     buf_len = httpd_req_get_url_query_len(req) + 1;
     if (buf_len > 1) {
         buf = (char*)malloc(buf_len);
-        
         if(!buf){
             httpd_resp_send_500(req);
             return ESP_FAIL;
@@ -1447,6 +1446,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
             myCmd = String(buf);
           }
         }
+        free(buf);
     } else {
         httpd_resp_send_404(req);
         return ESP_FAIL;

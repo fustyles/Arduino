@@ -1433,7 +1433,6 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     buf_len = httpd_req_get_url_query_len(req) + 1;
     if (buf_len > 1) {
         buf = (char*)malloc(buf_len);
-        
         if(!buf){
             httpd_resp_send_500(req);
             return ESP_FAIL;
@@ -1446,6 +1445,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
             myCmd = String(buf);
           }
         }
+        free(buf);
     } else {
         httpd_resp_send_404(req);
         return ESP_FAIL;
