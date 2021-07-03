@@ -859,8 +859,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                             <div class="range-min">0</div>
                             <input type="range" id="speedL" min="0" max="255" value="255" class="default-action">
                             <div class="range-max">255</div>
-                        </div>                                                
-                    
+                        </div>  
                         <div class="input-group" id="flash-group">
                             <label for="flash">Flash</label>
                             <div class="range-min">0</div>
