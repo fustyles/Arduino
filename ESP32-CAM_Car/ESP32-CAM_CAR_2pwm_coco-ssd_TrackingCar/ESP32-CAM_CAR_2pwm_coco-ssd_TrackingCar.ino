@@ -50,17 +50,19 @@ http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255
 */
 
 //輸入WIFI連線帳號密碼
-const char* ssid     = "*****";   //your network SSID
-const char* password = "*****";   //your network password
+const char* ssid = "teacher";
+const char* password = "87654321";
 
-//輸入AP端連線帳號密碼
-const char* apssid = "ESP32-CAM";
-const char* appassword = "12345678";         //AP密碼至少要8個字元以上
+//輸入AP端連線帳號密碼  http://192.168.4.1
+const char* apssid = "esp32-cam";
+const char* appassword = "12345678";         //AP密碼至少要8個字元以上 
+
+int angleValue = 150;   //伺服馬達初始角度
 
 int speedR = 160;  //紀錄右輪初始轉速 (gpio12, gpio13)
 int speedL = 160;  //紀錄左輪初始轉速 (gpio14, gpio15)
 double decelerate = 60;  //紀錄轉彎減速為 原速*百分比
-double servoPin = 2;  //Servo Pin
+double pinServo = 2;  //Servo Pin
 
 #include <WiFi.h>
 #include <esp32-hal-ledc.h>      //用於控制伺服馬達
@@ -196,10 +198,11 @@ void setup() {
 
   //鏡像
   s->set_hmirror(s, 1);
-
-  ledcAttachPin(servoPin, 3);  
+  //s->set_vflip(s, 1);  //垂直翻轉
+  
+  ledcAttachPin(pinServo, 3);  
   ledcSetup(3, 50, 16);  
-  ledcWrite(3, transferAngle(30, "right"));   
+  servo_rotate(3, angleValue);   
   
   //閃光燈(GPIO4)
   ledcAttachPin(4, 4);  
@@ -281,14 +284,13 @@ void loop() {
 
 }
 
-int transferAngle(int angle, String side) {     
-  if (angle > 180)
-     angle = 180;
-  else if (angle < 0)
-    angle = 0;
-  if (side="right")
-    angle = 180 - angle;     
-  return angle*6300/180+1700;
+void servo_rotate(int channel, int angle) {
+    int val = 7864-angle*34.59; 
+    if (val > 7864)
+       val = 7864;
+    else if (val < 1638)
+      val = 1638; 
+    ledcWrite(channel, val);
 }
 
 static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size_t len){
@@ -516,37 +518,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         if (P1!=""&P1!="stop") Serial.println(P1);
         if (P2!=""&P2!="stop") Serial.println(P2);
         Serial.println();
-      }       
-      else if (cmd=="servo") {  //自走車運動狀態
-        int val = P1.toInt();    
-        ledcAttachPin(servoPin, 3);  
-        ledcSetup(3, 50, 16);
-        ledcWrite(3, transferAngle(val, "right"));  
-      }        
-      //自走車運動狀態控制      
-      else if (cmd=="speedL") {  //左輪車速
-        int val = P1.toInt();
-        if (val > 255)
-           val = 255;
-        else if (val < 0)
-          val = 0;       
-        speedL = val;
-        Serial.println("LeftSpeed = " + String(val)); 
-      }  
-      else if (cmd=="speedR") {  //右輪車速
-        int val = P1.toInt();
-        if (val > 255)
-           val = 255;
-        else if (val < 0)
-          val = 0;       
-        speedR = val;
-        Serial.println("RightSpeed = " + String(val)); 
-      }  
-      else if (cmd=="decelerate") {  //轉彎減速為原速的百分比
-        int val = P1.toInt();      
-        decelerate = val;
-        Serial.println("Decelerate = " + String(val)); 
-      }       
+      }                         
       else if (cmd=="car") {  //自走車運動狀態
         int val = P1.toInt(); 
         if (val==1) {  //前進 http://192.168.xxx.xxx/control?car=1
@@ -652,6 +624,35 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         ledcAttachPin(4, 4);  
         ledcSetup(4, 5000, 8);        
         ledcWrite(4,val);
+      }
+      else if(!strcmp(variable, "speedL")) {  //左輪車速
+        if (val > 255)
+           val = 255;
+        else if (val < 0)
+          val = 0;       
+        speedL = val;
+        Serial.println("LeftSpeed = " + String(val)); 
+      }  
+      else if(!strcmp(variable, "speedR")) {  //右輪車速
+        if (val > 255)
+           val = 255;
+        else if (val < 0)
+          val = 0;       
+        speedR = val;
+        Serial.println("RightSpeed = " + String(val)); 
+      }  
+      else if(!strcmp(variable, "decelerate")) {  //轉彎減速為原速的百分比   
+        decelerate = val;
+        Serial.println("Decelerate = " + String(val)); 
+      }
+      else if(!strcmp(variable, "servo")) {  //伺服馬達
+        angleValue = val;
+        ledcAttachPin(pinServo, 3);
+        ledcSetup(3, 50, 16);
+        servo_rotate(3, angleValue);
+        delay(100);
+        
+        Serial.println("servoH="+String(angleValue));
       } 
       else {
           res = -1;
@@ -683,8 +684,9 @@ static esp_err_t status_handler(httpd_req_t *req){
     char * p = json_response;
     *p++ = '{';
     p+=sprintf(p, "\"flash\":%d,", 0);
-    p+=sprintf(p, "\"speedL\":%d,", 160);
-    p+=sprintf(p, "\"speedR\":%d,", 160);
+    p+=sprintf(p, "\"speedL\":%d,", speedL);
+    p+=sprintf(p, "\"speedR\":%d,", speedR);
+    p+=sprintf(p, "\"servo\":%d,", angleValue);    
     p+=sprintf(p, "\"framesize\":%u,", s->status.framesize);
     p+=sprintf(p, "\"quality\":%u,", s->status.quality);
     p+=sprintf(p, "\"brightness\":%d,", s->status.brightness);
@@ -709,7 +711,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <style>
           body{font-family:Arial,Helvetica,sans-serif;background:#181818;color:#EFEFEF;font-size:16px}h2{font-size:18px}section.main{display:flex}#menu,section.main{flex-direction:column}#menu{display:none;flex-wrap:nowrap;min-width:340px;background:#363636;padding:8px;border-radius:4px;margin-top:-10px;margin-right:10px}#content{display:flex;flex-wrap:wrap;align-items:stretch}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}figure img{display:block;width:100%;height:auto;border-radius:4px;margin-top:8px}@media (min-width: 800px) and (orientation:landscape){#content{display:flex;flex-wrap:nowrap;align-items:stretch}figure img{display:block;max-width:100%;max-height:calc(100vh - 40px);width:auto;height:auto}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}}section#buttons{display:flex;flex-wrap:nowrap;justify-content:space-between}#nav-toggle{cursor:pointer;display:block}#nav-toggle-cb{outline:0;opacity:0;width:0;height:0}#nav-toggle-cb:checked+#menu{display:flex}.input-group{display:flex;flex-wrap:nowrap;line-height:22px;margin:5px 0}.input-group>label{display:inline-block;padding-right:10px;min-width:47%}.input-group input,.input-group select{flex-grow:1}.range-max,.range-min{display:inline-block;padding:0 5px}button{display:block;margin:5px;padding:0 12px;border:0;line-height:28px;cursor:pointer;color:#fff;background:#ff3034;border-radius:5px;font-size:16px;outline:0}button:hover{background:#ff494d}button:active{background:#f21c21}button.disabled{cursor:default;background:#a0a0a0}input[type=range]{-webkit-appearance:none;width:100%;height:22px;background:#363636;cursor:pointer;margin:0}input[type=range]:focus{outline:0}input[type=range]::-webkit-slider-runnable-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-webkit-slider-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;-webkit-appearance:none;margin-top:-11.5px}input[type=range]:focus::-webkit-slider-runnable-track{background:#EFEFEF}input[type=range]::-moz-range-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-moz-range-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer}input[type=range]::-ms-track{width:100%;height:2px;cursor:pointer;background:0 0;border-color:transparent;color:transparent}input[type=range]::-ms-fill-lower{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-fill-upper{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;height:2px}input[type=range]:focus::-ms-fill-lower{background:#EFEFEF}input[type=range]:focus::-ms-fill-upper{background:#363636}.switch{display:block;position:relative;line-height:22px;font-size:16px;height:22px}.switch input{outline:0;opacity:0;width:0;height:0}.slider{width:50px;height:22px;border-radius:22px;cursor:pointer;background-color:grey}.slider,.slider:before{display:inline-block;transition:.4s}.slider:before{position:relative;content:"";border-radius:50%;height:16px;width:16px;left:4px;top:3px;background-color:#fff}input:checked+.slider{background-color:#ff3034}input:checked+.slider:before{-webkit-transform:translateX(26px);transform:translateX(26px)}select{border:1px solid #363636;font-size:14px;height:22px;outline:0;border-radius:5px}.image-container{position:relative;min-width:160px}.close{position:absolute;right:5px;top:5px;background:#ff3034;width:16px;height:16px;border-radius:100px;color:#fff;text-align:center;line-height:18px;cursor:pointer}.hidden{display:none}
         </style>
-        <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
         <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"> </script>
         <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.1.0"> </script>      
     </head>
@@ -725,7 +726,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             <section id="buttons">
                 <table>
                 <tr><td><button id="restart" onclick="try{fetch(document.location.origin+'/control?restart');}catch(e){}">Restart</button></td><td><button id="toggle-stream" style="display:none"></button></td><td><button id="face_enroll" style="display:none" class="disabled" disabled="disabled"></button><button id="get-still">get-still</button></td></tr>
-                <tr><td>Flash</td><td colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?flash='+this.value);}catch(e){}"></td></tr>
                 <tr><td colspan="2">Turn Decelerate<select onclick="try{fetch(document.location.origin+'/control?decelerate='+this.value);}catch(e){}"><option value="100">100%</option><option value="90">90%</option><option value="80">80%</option><option value="70">70%</option><option value="60" selected="selected">60%</option><option value="50">50%</option><option value="40">40%</option><option value="30">30%</option><option value="10">20%</option><option value="10">10%</option><option value="0">0%</option></select></td><td><input type="checkbox" id="nostop" onclick="noStopControl();">No Stop</td></tr> 
                 <tr><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=6');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=6');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">FrontLeft</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=1');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=1');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Front</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=7');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=7');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">FrontRight</button></td></tr>
                 <tr><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=2');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=2');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Left</button></td><td align="center"><button onclick="try{stopDetection();fetch(document.location.origin+'/control?car=3');}catch(e){}">Stop</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=4');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=4');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Right</button></td></tr>
@@ -829,10 +829,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                     </select>
                   </td>
                 </tr>
-                <tr><td colspan="3">Auto<input type="checkbox" id="motorState" checked>Control Motor<input type="checkbox" id="servoState" checked>Control Servo</td></tr> 
-                <tr><td>Servo</td><td colspan="2"><input type="range" id="servo" min="0" max="90" value="30" onchange="try{fetch(document.location.origin+'/control?servo='+this.value);}catch(e){}"></td></tr>
-                <tr><td>SpeedR</td><td colspan="2"><input type="range" id="speedR" min="0" max="255" value="160" onchange="try{fetch(document.location.origin+'/control?speedR='+this.value);}catch(e){}"></td></tr>
-                <tr><td>SpeedL</td><td colspan="2"><input type="range" id="speedL" min="0" max="255" value="160" onchange="try{fetch(document.location.origin+'/control?speedL='+this.value);}catch(e){}"></td></tr>
+                <tr><td colspan="3">Auto<input type="checkbox" id="motorState">Control Motor<input type="checkbox" id="servoState">Control Servo</td></tr> 
                 <tr><td><span id="message" style="display:none"></span></td><td></td><td></td></tr> 
                 <tr style="display:none"><td colspan="3"></td></tr> 
                 </table>
@@ -843,7 +840,26 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             <div id="content">
                 <div id="sidebar">
                     <input type="checkbox" id="nav-toggle-cb">
-                    <nav id="menu">
+                    <nav id="menu">                        
+                        <div class="input-group" id="servo-group">
+                            <label for="servo">Servo</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="servo" min="0" max="180" value="90" class="default-action">
+                            <div class="range-max">180</div>
+                        </div>
+                        <div class="input-group" id="speedR-group">
+                            <label for="speedR">speed R</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="speedR" min="0" max="255" value="255" class="default-action">
+                            <div class="range-max">255</div>
+                        </div>
+                        <div class="input-group" id="speedL-group">
+                            <label for="speedL">Speed L</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="speedL" min="0" max="255" value="255" class="default-action">
+                            <div class="range-max">255</div>
+                        </div>                                                
+                    
                         <div class="input-group" id="flash-group">
                             <label for="flash">Flash</label>
                             <div class="range-min">0</div>
@@ -1038,21 +1054,17 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           var getStill = document.getElementById('get-still');
           var motorState = document.getElementById('motorState');
           var servoState = document.getElementById('servoState');
+          var servo = document.getElementById('servo');
           var myTimer;  
           var restartCount=0;     
           var Model;
-          var angle1Value = 30;
+          var angleValue = 30;
           var lastValue = 0;          
 
           getStill.onclick = function (event) { 
             clearInterval(myTimer);   
             myTimer = setInterval(function(){error_handle();},5000);
             ShowImage.src=location.origin+'/?getstill='+Math.random();
-          }
-
-          servoState.onclick = function (event) { 
-            if (servoState.checked)
-              $.ajax({url: document.location.origin+'/control?servo='+angle1Value+';stop', async: false});
           }
       
           function error_handle() {
@@ -1121,7 +1133,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                           delay=200;
                         else
                           delay=150; 
-                        $.ajax({url: document.location.origin+'/control?car=7;'+delay, async: false});  //左前進
+                        fetch(document.location.origin+'/control?car=7;'+delay);  //左前進
                         lastValue = 3;
                       }
                       else if (midX>(320/2+40)) {
@@ -1130,12 +1142,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                           delay=200;
                         else
                           delay=150;
-                        $.ajax({url: document.location.origin+'/control?car=6;'+delay, async: false});  //右前進
+                        fetch(document.location.origin+'/control?car=6;'+delay);  //右前進
                         lastValue = 3;
                       }                    
                       else if (midX>=(320/2-40)&&midX<=(320/2+40)) {  //物件中心點在正中心自訂區域120~200中則前進
                         if (lastValue!=1)
-                          $.ajax({url: document.location.origin+'/control?car=1;;stop', async: false});
+                          fetch(document.location.origin+'/control?car=1;;stop');
                         lastValue = 1;
                       } 
                     }
@@ -1144,24 +1156,25 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                     if (servoState.checked) {
                       if (midY>(240/2+30)) {
                         if (midY>195) {  //物件中心點偏下程度
-                          angle1Value-=5;
+                          angleValue-=5;
                         } else {
-                          angle1Value-=3; 
+                          angleValue-=3; 
                         }
-                        if (angle1Value > 90) angle1Value2 = 0;
-                        if (angle1Value < 4850) angle1Value2 = 4850;                  
-                        $.ajax({url: document.location.origin+'/control?servo1='+angle1Value+';stop', async: false}); 
+                        if (angleValue <0) angleValue = 0;
+                        if (angleValue >180) angleValue = 180;                  
+                        fetch(document.location.origin+'/control?var=servo&val='+angleValue); 
                       }
                       else if (midY<(240/2)-30) {
                         if (midY<45) {  //物件中心點偏上程度
-                          angle1Value+=5;
+                          angleValue+=5;
                         } else {
-                          angle1Value+=3;   
+                          angleValue+=3;   
                         }
-                        if (angle1Value > 90) angle1Value2 = 90;
-                        if (angle1Value < 0) angle1Value2 = 0;                  
-                        $.ajax({url: document.location.origin+'/control?servo='+angle1Value+';stop', async: false});  
+                        if (angleValue <0) angleValue = 0;
+                        if (angleValue >180) angleValue = 180;                  
+                        fetch(document.location.origin+'/control?var=servo&val='+angleValue);  
                       }
+                      servo.value = angleValue;
                     }    
                     break;
                   }
@@ -1172,7 +1185,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 
               if (objectCount==0) {
                 if (motorState.checked) {
-                  $.ajax({url: document.location.origin+'/control?car=3;;stop', async: false});  //停止
+                  fetch(document.location.origin+'/control?car=3;;stop');  //停止
                   lastValue = 3;
                 }
               }
@@ -1186,22 +1199,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               } 
             });
           }
-      
-          function getFeedback(target) {
-            var data = $.ajax({
-            type: "get",
-            dataType: "text",
-            url: target,
-            success: function(response)
-              {
-                result.innerHTML = response;
-              },
-              error: function(exception)
-              {
-                result.innerHTML = 'fail';
-              }
-            });
-          }     
       
           window.onload = function () { loadModel(); }            
         </script>
