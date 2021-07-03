@@ -489,6 +489,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
             myCmd = String(buf);   //如果非官方格式不含var, val，則為自訂指令格式
           }
         }
+        free(buf);
     } else {
         httpd_resp_send_404(req);
         return ESP_FAIL;
