@@ -46,15 +46,15 @@ http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255
 */
 
 //輸入WIFI連線帳號密碼
-const char* ssid     = "*****";   //your network SSID
-const char* password = "*****";   //your network password
+const char* ssid = "teacher";
+const char* password = "87654321";
+
+//輸入AP端連線帳號密碼  http://192.168.4.1
+const char* apssid = "esp32-cam";
+const char* appassword = "12345678";         //AP密碼至少要8個字元以上 
 
 int speedR = 255;  //You can adjust the speed of the wheel. (gpio12, gpio13)
 int speedL = 255;  //You can adjust the speed of the wheel. (gpio14, gpio15)
-
-//輸入AP端連線帳號密碼
-const char* apssid = "ESP32-CAM";
-const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 
 #include <WiFi.h>
 #include "soc/soc.h"             //用於電源不穩不重開機 
@@ -959,6 +959,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             <img id="stream" src="" crossorigin="anonymous">
           </div>
           <div id="joy3Div" style="width:200px;height:200px;margin:50px"></div>
+          <input type="checkbox" id="chkcanvas">Hide control panel
         </figure>
         <section id="buttons">
             <table>
@@ -1193,6 +1194,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           var Joy3 = new JoyStick('joy3Div', joy3Param);
           var carState = "";
           var runState = 0;
+
+          chkcanvas.onchange = function(e){  
+            if (chkcanvas.checked)
+              joy3Div.style.display = "none";
+            else
+              joy3Div.style.display = "block";
+          }
           
           setInterval(function(){
             if (runState == 1) return;
