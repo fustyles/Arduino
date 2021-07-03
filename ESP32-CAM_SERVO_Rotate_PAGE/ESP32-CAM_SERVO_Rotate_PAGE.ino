@@ -61,14 +61,14 @@ http://192.168.xxx.xxx/control?var=ae_level&val=value    // value = -2 ~ 2
 const char* ssid = "teacher";
 const char* password = "87654321";
 
-int angle=90;              //Angle of Servo position (1700~8000)
-int degree=10;              //Degrees in angle of rotation
-int rotationInterval=1000;   //Rotation interval (ms)
-byte rotateState = 0;
-
 //輸入AP端連線帳號密碼  http://192.168.4.1
 const char* apssid = "esp32-cam";
 const char* appassword = "12345678";         //AP密碼至少要8個字元以上 
+
+int angle1Value=90;              //Angle of Servo position (0~180)
+int degree=10;              //Degrees in angle of rotation
+int rotationInterval=1000;   //Rotation interval (ms)
+byte rotateState = 0;
 
 #include <WiFi.h>
 #include "soc/soc.h"
@@ -203,7 +203,7 @@ void setup() {
   //Servo
   ledcAttachPin(2, 3);  
   ledcSetup(3, 50, 16);
-  servo_rotate(3, 90);
+  servo_rotate(3, angle1Value);
   
   //Flash
   ledcAttachPin(4, 4);  
@@ -272,12 +272,12 @@ void setup() {
 
 void loop() {
   if (rotateState==1) {
-    angle+=degree;
-    if ((angle<=0)||(angle>=180)) {
+    angle1Value+=degree;
+    if ((angle1Value<=0)||(angle1Value>=180)) {
       degree*=(-1);
-      angle+=degree*2;
+      angle1Value+=degree*2;
     }
-    servo_rotate(3, angle);
+    servo_rotate(3, angle1Value);
     delay(rotationInterval);
   }
 }
@@ -478,7 +478,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         ledcSetup(4, 5000, 8);   
         int val = P1.toInt();
         ledcWrite(4,val);  
-      } else if(cmd=="servo") {  //伺服馬達 (SG90 1638-7864)
+      } else if(cmd=="servo") {  //伺服馬達
         ledcAttachPin(P1.toInt(), 3);
         ledcSetup(3, 50, 16);
          
@@ -560,7 +560,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if(!strcmp(variable, "ae_level")) res = s->set_ae_level(s, val);
       else if(!strcmp(variable, "servo")) {
         rotateState = false;
-        angle = val;
+        angle1Value = val;
         ledcAttachPin(2, 3);
         ledcSetup(3, 50, 16);
         servo_rotate(3, val);
@@ -600,31 +600,15 @@ static esp_err_t status_handler(httpd_req_t *req){
     sensor_t * s = esp_camera_sensor_get();
     char * p = json_response;
     *p++ = '{';
-    p+=sprintf(p, "\"rotate\":%u,", 0);
+    p+=sprintf(p, "\"rotate\":%d,", 0);    
+    p+=sprintf(p, "\"flash\":%d,", 0);
+    p+=sprintf(p, "\"servo\":%d,", angle1Value);   
     p+=sprintf(p, "\"framesize\":%u,", s->status.framesize);
     p+=sprintf(p, "\"quality\":%u,", s->status.quality);
     p+=sprintf(p, "\"brightness\":%d,", s->status.brightness);
     p+=sprintf(p, "\"contrast\":%d,", s->status.contrast);
-    p+=sprintf(p, "\"saturation\":%d,", s->status.saturation);
-    p+=sprintf(p, "\"special_effect\":%u,", s->status.special_effect);
-    p+=sprintf(p, "\"wb_mode\":%u,", s->status.wb_mode);
-    p+=sprintf(p, "\"awb\":%u,", s->status.awb);
-    p+=sprintf(p, "\"awb_gain\":%u,", s->status.awb_gain);
-    p+=sprintf(p, "\"aec\":%u,", s->status.aec);
-    p+=sprintf(p, "\"aec2\":%u,", s->status.aec2);
-    p+=sprintf(p, "\"ae_level\":%d,", s->status.ae_level);
-    p+=sprintf(p, "\"aec_value\":%u,", s->status.aec_value);
-    p+=sprintf(p, "\"agc\":%u,", s->status.agc);
-    p+=sprintf(p, "\"agc_gain\":%u,", s->status.agc_gain);
-    p+=sprintf(p, "\"gainceiling\":%u,", s->status.gainceiling);
-    p+=sprintf(p, "\"bpc\":%u,", s->status.bpc);
-    p+=sprintf(p, "\"wpc\":%u,", s->status.wpc);
-    p+=sprintf(p, "\"raw_gma\":%u,", s->status.raw_gma);
-    p+=sprintf(p, "\"lenc\":%u,", s->status.lenc);
-    p+=sprintf(p, "\"vflip\":%u,", s->status.vflip);
-    p+=sprintf(p, "\"hmirror\":%u,", s->status.hmirror);
-    p+=sprintf(p, "\"dcw\":%u,", s->status.dcw);
-    p+=sprintf(p, "\"colorbar\":%u", s->status.colorbar);
+    p+=sprintf(p, "\"hmirror\":%u,", s->status.hmirror); 
+    p+=sprintf(p, "\"vflip\":%u", s->status.vflip);
     *p++ = '}';
     *p++ = 0;
     httpd_resp_set_type(req, "application/json");
@@ -639,7 +623,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <title>ESP32 OV2460</title>
-        <style>
+        <style>        
             body {
                 font-family: Arial,Helvetica,sans-serif;
                 background: #181818;
@@ -656,7 +640,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 flex-direction: column
             }
             #menu {
-                display: none;
+                display: block;
                 flex-wrap: nowrap;
                 min-width: 340px;
                 background: #363636;
@@ -731,7 +715,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 height: 0
             }
             #nav-toggle-cb:checked+#menu {
-                display: flex
+                display: none
             }
             .input-group {
                 display: flex;
@@ -923,7 +907,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             .hidden {
                 display: none
             }
-        </style>    
+        </style>
     </head>
     <body>
     <figure>
@@ -936,8 +920,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             <section id="buttons">
                 <table>
                 <tr><td align="center"><button id="get-still">Get Still</button></td><td align="center"><button id="toggle-stream">Start Stream</button></td><td align="center"></td></tr>
-                <tr><td>Servo1</td><td align="center" colspan="2"><input type="range" id="servo" min="0" max="180" step="1" value="90" onchange="rotate.checked=false;try{fetch(document.location.origin+'/control?var=servo&val='+this.value);}catch(e){}"></td></tr>
-                <tr><td>Flash</td><td align="center" colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.location.origin+'/control?var=flash&val='+this.value);}catch(e){}"></td></tr>
                 </table>
             </section>         
             <div id="logo">
@@ -947,12 +929,24 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <div id="sidebar">
                     <input type="checkbox" id="nav-toggle-cb">
                     <nav id="menu">
+                        <div class="input-group" id="servo-group">
+                            <label for="servo">Servo</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="servo" min="0" max="180" value="90" step="1" class="default-action">
+                            <div class="range-max">180</div>
+                        </div>                    
                         <div class="input-group" id="rotate-group">
-                            <label for="rotate">Auto-Rotate</label>
+                            <label for="rotate">Servo Auto-Rotate</label>
                             <div class="switch">
                                 <input id="rotate" type="checkbox" class="default-action" checked="checked">
                                 <label class="slider" for="rotate"></label>
                             </div>
+                        </div>
+                        <div class="input-group" id="flash-group">
+                            <label for="flash">Flash</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="flash" min="0" max="255" value="0" class="default-action">
+                            <div class="range-max">255</div>
                         </div>                      
                         <div class="input-group" id="framesize-group">
                             <label for="framesize">Resolution</label>
@@ -962,8 +956,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                                 <option value="8">XGA(1024x768)</option>
                                 <option value="7">SVGA(800x600)</option>
                                 <option value="6">VGA(640x480)</option>
-                                <option value="5" selected="selected">CIF(400x296)</option>
-                                <option value="4">QVGA(320x240)</option>
+                                <option value="5">CIF(400x296)</option>
+                                <option value="4" selected="selected">QVGA(320x240)</option>
                                 <option value="3">HQVGA(240x176)</option>
                                 <option value="0">QQVGA(160x120)</option>
                             </select>
@@ -986,121 +980,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                             <input type="range" id="contrast" min="-2" max="2" value="0" class="default-action">
                             <div class="range-max">2</div>
                         </div>
-                        <div class="input-group" id="saturation-group">
-                            <label for="saturation">Saturation</label>
-                            <div class="range-min">-2</div>
-                            <input type="range" id="saturation" min="-2" max="2" value="0" class="default-action">
-                            <div class="range-max">2</div>
-                        </div>
-                        <div class="input-group" id="special_effect-group">
-                            <label for="special_effect">Special Effect</label>
-                            <select id="special_effect" class="default-action">
-                                <option value="0" selected="selected">No Effect</option>
-                                <option value="1">Negative</option>
-                                <option value="2">Grayscale</option>
-                                <option value="3">Red Tint</option>
-                                <option value="4">Green Tint</option>
-                                <option value="5">Blue Tint</option>
-                                <option value="6">Sepia</option>
-                            </select>
-                        </div>
-                        <div class="input-group" id="awb-group">
-                            <label for="awb">AWB</label>
-                            <div class="switch">
-                                <input id="awb" type="checkbox" class="default-action" checked="checked">
-                                <label class="slider" for="awb"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="awb_gain-group">
-                            <label for="awb_gain">AWB Gain</label>
-                            <div class="switch">
-                                <input id="awb_gain" type="checkbox" class="default-action" checked="checked">
-                                <label class="slider" for="awb_gain"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="wb_mode-group">
-                            <label for="wb_mode">WB Mode</label>
-                            <select id="wb_mode" class="default-action">
-                                <option value="0" selected="selected">Auto</option>
-                                <option value="1">Sunny</option>
-                                <option value="2">Cloudy</option>
-                                <option value="3">Office</option>
-                                <option value="4">Home</option>
-                            </select>
-                        </div>
-                        <div class="input-group" id="aec-group">
-                            <label for="aec">AEC SENSOR</label>
-                            <div class="switch">
-                                <input id="aec" type="checkbox" class="default-action" checked="checked">
-                                <label class="slider" for="aec"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="aec2-group">
-                            <label for="aec2">AEC DSP</label>
-                            <div class="switch">
-                                <input id="aec2" type="checkbox" class="default-action" checked="checked">
-                                <label class="slider" for="aec2"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="ae_level-group">
-                            <label for="ae_level">AE Level</label>
-                            <div class="range-min">-2</div>
-                            <input type="range" id="ae_level" min="-2" max="2" value="0" class="default-action">
-                            <div class="range-max">2</div>
-                        </div>
-                        <div class="input-group" id="aec_value-group">
-                            <label for="aec_value">Exposure</label>
-                            <div class="range-min">0</div>
-                            <input type="range" id="aec_value" min="0" max="1200" value="204" class="default-action">
-                            <div class="range-max">1200</div>
-                        </div>
-                        <div class="input-group" id="agc-group">
-                            <label for="agc">AGC</label>
-                            <div class="switch">
-                                <input id="agc" type="checkbox" class="default-action" checked="checked">
-                                <label class="slider" for="agc"></label>
-                            </div>
-                        </div>
-                        <div class="input-group hidden" id="agc_gain-group">
-                            <label for="agc_gain">Gain</label>
-                            <div class="range-min">1x</div>
-                            <input type="range" id="agc_gain" min="0" max="30" value="5" class="default-action">
-                            <div class="range-max">31x</div>
-                        </div>
-                        <div class="input-group" id="gainceiling-group">
-                            <label for="gainceiling">Gain Ceiling</label>
-                            <div class="range-min">2x</div>
-                            <input type="range" id="gainceiling" min="0" max="6" value="0" class="default-action">
-                            <div class="range-max">128x</div>
-                        </div>
-                        <div class="input-group" id="bpc-group">
-                            <label for="bpc">BPC</label>
-                            <div class="switch">
-                                <input id="bpc" type="checkbox" class="default-action">
-                                <label class="slider" for="bpc"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="wpc-group">
-                            <label for="wpc">WPC</label>
-                            <div class="switch">
-                                <input id="wpc" type="checkbox" class="default-action" checked="checked">
-                                <label class="slider" for="wpc"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="raw_gma-group">
-                            <label for="raw_gma">Raw GMA</label>
-                            <div class="switch">
-                                <input id="raw_gma" type="checkbox" class="default-action" checked="checked">
-                                <label class="slider" for="raw_gma"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="lenc-group">
-                            <label for="lenc">Lens Correction</label>
-                            <div class="switch">
-                                <input id="lenc" type="checkbox" class="default-action" checked="checked">
-                                <label class="slider" for="lenc"></label>
-                            </div>
-                        </div>
                         <div class="input-group" id="hmirror-group">
                             <label for="hmirror">H-Mirror</label>
                             <div class="switch">
@@ -1113,20 +992,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                             <div class="switch">
                                 <input id="vflip" type="checkbox" class="default-action" checked="checked">
                                 <label class="slider" for="vflip"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="dcw-group">
-                            <label for="dcw">DCW (Downsize EN)</label>
-                            <div class="switch">
-                                <input id="dcw" type="checkbox" class="default-action" checked="checked">
-                                <label class="slider" for="dcw"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="colorbar-group">
-                            <label for="colorbar">Color Bar</label>
-                            <div class="switch">
-                                <input id="colorbar" type="checkbox" class="default-action">
-                                <label class="slider" for="colorbar"></label>
                             </div>
                         </div>
                     </nav>
@@ -1164,20 +1029,6 @@ document.addEventListener('DOMContentLoaded', function (event) {
     }
     if (updateRemote && initialValue !== value) {
       updateConfig(el);
-    } else if(!updateRemote){
-      if(el.id === "aec"){
-        value ? hide(exposure) : show(exposure)
-      } else if(el.id === "agc"){
-        if (value) {
-          show(gainCeiling)
-          hide(agcGain)
-        } else {
-          hide(gainCeiling)
-          show(agcGain)
-        }
-      } else if(el.id === "awb_gain"){
-        value ? show(wb) : hide(wb)
-      }
     }
   }
   function updateConfig (el) {
@@ -1196,9 +1047,6 @@ document.addEventListener('DOMContentLoaded', function (event) {
         break
       default:
         return
-    }
-    if (el.id=="rotate") {
-      if (el.checked) value="1"; else value="0";
     }
     const query = `${baseHost}/control?var=${el.id}&val=${value}`
     fetch(query)
@@ -1230,7 +1078,6 @@ document.addEventListener('DOMContentLoaded', function (event) {
   const stillButton = document.getElementById('get-still')
   const streamButton = document.getElementById('toggle-stream')
   const closeButton = document.getElementById('close-stream')
-  const rotate = document.getElementById('rotate')
   const stopStream = () => {
     window.stop();
     streamButton.innerHTML = 'Start Stream'
@@ -1264,35 +1111,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
     .forEach(el => {
       el.onchange = () => updateConfig(el)
     })
-  // Custom actions
-  // Gain
-  const agc = document.getElementById('agc')
-  const agcGain = document.getElementById('agc_gain-group')
-  const gainCeiling = document.getElementById('gainceiling-group')
-  agc.onchange = () => {
-    updateConfig(agc)
-    if (agc.checked) {
-      show(gainCeiling)
-      hide(agcGain)
-    } else {
-      hide(gainCeiling)
-      show(agcGain)
-    }
-  }
-  // Exposure
-  const aec = document.getElementById('aec')
-  const exposure = document.getElementById('aec_value-group')
-  aec.onchange = () => {
-    updateConfig(aec)
-    aec.checked ? hide(exposure) : show(exposure)
-  }
-  // AWB
-  const awb = document.getElementById('awb_gain')
-  const wb = document.getElementById('wb_mode-group')
-  awb.onchange = () => {
-    updateConfig(awb)
-    awb.checked ? show(wb) : hide(wb)
-  }
+
   // framesize
   const framesize = document.getElementById('framesize')
   framesize.onchange = () => {
