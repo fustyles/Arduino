@@ -34,30 +34,15 @@ http://192.168.xxx.xxx/control?var=flash&val=value        //value= 0~255
 http://192.168.xxx.xxx/control?var=servo1&val=value        //value= 0~180
 http://192.168.xxx.xxx/control?var=servo2&val=value        //value= 0~180
 
-http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
-http://192.168.xxx.xxx/control?var=quality&val=value    // value = 10 ~ 63
-http://192.168.xxx.xxx/control?var=brightness&val=value    // value = -2 ~ 2
-http://192.168.xxx.xxx/control?var=contrast&val=value    // value = -2 ~ 2
-http://192.168.xxx.xxx/control?var=saturation&val=value    // value = -2 ~ 2 
-http://192.168.xxx.xxx/control?var=gainceiling&val=value    // value = 0 ~ 6
-http://192.168.xxx.xxx/control?var=colorbar&val=value    // value = 0 or 1
-http://192.168.xxx.xxx/control?var=awb&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=agc&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=aec&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=hmirror&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=vflip&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=awb_gain&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=agc_gain&val=value    // value = 0 ~ 30
-http://192.168.xxx.xxx/control?var=aec_value&val=value    // value = 0 ~ 1200
-http://192.168.xxx.xxx/control?var=aec2&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=dcw&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=bpc&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=wpc&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=raw_gma&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=lenc&val=value    // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=special_effect&val=value    // value = 0 ~ 6
-http://192.168.xxx.xxx/control?var=wb_mode&val=value    // value = 0 ~ 4
-http://192.168.xxx.xxx/control?var=ae_level&val=value    // value = -2 ~ 2  
+http://192.168.xxx.xxx/control?var=framesize&val=value          //解析度 value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120), 11->QXGA(2048x1564 for OV3660)
+http://192.168.xxx.xxx/control?var=quality&val=value            //畫質 value = 10 ~ 63
+http://192.168.xxx.xxx/control?var=brightness&val=value         //亮度 value = -2 ~ 2
+http://192.168.xxx.xxx/control?var=contrast&val=value           //對比 value = -2 ~ 2
+http://192.168.xxx.xxx/control?var=saturation&val=value         //飽和度 value = -2 ~ 2 
+http://192.168.xxx.xxx/control?var=special_effect&val=value     //特效 value = 0 ~ 6
+http://192.168.xxx.xxx/control?var=hmirror&val=value            //水平鏡像 value = 0 or 1 
+http://192.168.xxx.xxx/control?var=vflip&val=value              //垂直翻轉 value = 0 or 1       // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=flash&val=value              //閃光燈 value = 0 ~ 255
 */
 
 const char* ssid = "teacher";

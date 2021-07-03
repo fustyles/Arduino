@@ -29,15 +29,18 @@ http://192.168.xxx.xxx/control?relay=pin;value           //繼電器 value = 0, 
 http://192.168.xxx.xxx/control?servo2=valueH;valueV      //伺服馬達
 
 官方指令格式 http://192.168.xxx.xxx/control?var=***&val=***
-http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
-http://192.168.xxx.xxx/control?var=quality&val=value      // value = 10 ~ 63
-http://192.168.xxx.xxx/control?var=brightness&val=value   // value = -2 ~ 2
-http://192.168.xxx.xxx/control?var=contrast&val=value     // value = -2 ~ 2
-http://192.168.xxx.xxx/control?var=hmirror&val=value      // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=vflip&val=value        // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255
-http://192.168.xxx.xxx/control?var=servoH&val=value       //伺服馬達1 value= 0~180
-http://192.168.xxx.xxx/control?var=servoV&val=value       //伺服馬達2 value= 0~180
+
+http://192.168.xxx.xxx/control?var=framesize&val=value          //解析度 value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120), 11->QXGA(2048x1564 for OV3660)
+http://192.168.xxx.xxx/control?var=quality&val=value            //畫質 value = 10 ~ 63
+http://192.168.xxx.xxx/control?var=brightness&val=value         //亮度 value = -2 ~ 2
+http://192.168.xxx.xxx/control?var=contrast&val=value           //對比 value = -2 ~ 2
+http://192.168.xxx.xxx/control?var=saturation&val=value         //飽和度 value = -2 ~ 2 
+http://192.168.xxx.xxx/control?var=special_effect&val=value     //特效 value = 0 ~ 6
+http://192.168.xxx.xxx/control?var=hmirror&val=value            //水平鏡像 value = 0 or 1 
+http://192.168.xxx.xxx/control?var=vflip&val=value              //垂直翻轉 value = 0 or 1       // value = 0 or 1 
+http://192.168.xxx.xxx/control?var=flash&val=value              //閃光燈 value = 0 ~ 255
+http://192.168.xxx.xxx/control?var=servoH&val=value             //伺服馬達1 value= 0~180
+http://192.168.xxx.xxx/control?var=servoV&val=value             //伺服馬達2 value= 0~180
 */
 
 //輸入WIFI連線帳號密碼
@@ -188,12 +191,12 @@ void setup() {
   //Servo
   ledcAttachPin(2, 3);  
   ledcSetup(3, 50, 16);
-  servo_rotate(3, angle1Value1);  //90度
+  servo_rotate(3, angle1Value1);
   delay(1000);
 
   ledcAttachPin(13, 5);  
   ledcSetup(5, 50, 16);
-  servo_rotate(5, angle1Value2);   //90度 
+  servo_rotate(5, angle1Value2);
   delay(1000);
   
   //閃光燈(GPIO4)
