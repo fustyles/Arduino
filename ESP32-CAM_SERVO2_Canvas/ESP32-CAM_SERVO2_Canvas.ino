@@ -36,8 +36,8 @@ http://192.168.xxx.xxx/control?var=contrast&val=value     // value = -2 ~ 2
 http://192.168.xxx.xxx/control?var=hmirror&val=value      // value = 0 or 1 
 http://192.168.xxx.xxx/control?var=vflip&val=value        // value = 0 or 1 
 http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255
-http://192.168.xxx.xxx/control?var=servoH&val=value       //伺服馬達1 value= 1700~8000
-http://192.168.xxx.xxx/control?var=servoV&val=value       //伺服馬達2 value= 1700~8000
+http://192.168.xxx.xxx/control?var=servoH&val=value       //伺服馬達1 value= 0~180
+http://192.168.xxx.xxx/control?var=servoV&val=value       //伺服馬達2 value= 0~180
 */
 
 //輸入WIFI連線帳號密碼
