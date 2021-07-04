@@ -1146,7 +1146,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
            
           Model.estimatePersonSegmentation(aiView, outputStride, segmentationThreshold).then(segmentation => {
             //console.log(segmentation);
-            if (!chkResult.checked) result.innerHTML = JSON.stringify(segmentation);
+            if (chkResult.checked) result.innerHTML = JSON.stringify(segmentation);
         
             const maskBackground = true;
             const backgroundDarkeningMask = bodyPix.toMaskImageData(segmentation, maskBackground);
