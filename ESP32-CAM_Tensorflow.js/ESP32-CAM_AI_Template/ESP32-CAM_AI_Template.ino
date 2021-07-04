@@ -948,10 +948,6 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                 display: none
             }
         </style>
-        <!-- Load TensorFlow.js. This is required to use MobileNet. -->
-        <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.4"> </script>
-        <!-- Load the MobileNet model. -->
-        <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@1.0.0"> </script>
     </head>
     <body>
     ESP32-CAM IP：<input type="text" id="ip" size="20" value="192.168.">&nbsp;&nbsp;<input type="button" value="Set" onclick="start();">
