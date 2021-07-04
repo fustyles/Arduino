@@ -1068,13 +1068,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                                 <input id="uart" type="checkbox" class="default-action" checked="checked">
                                 <label class="slider" for="uart"></label>
                             </div>
-                        </div>
-                        <div class="input-group" id="probability-group">
-                            <label for="probability">probability</label>
-                            <div class="range-min">0</div>
-                            <input type="range" id="probability" min="0" max="1" value="0" step="0.1" class="default-action">
-                            <div class="range-max">1</div>
-                        </div>                                                    
+                        </div>                                                  
                     </nav>
                 </div>
             </div>
@@ -1091,7 +1085,6 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
         const result = document.getElementById('result');
         const uart = document.getElementById('uart');
         const chkResult = document.getElementById('chkResult');
-        const probability = document.getElementById('probability')
         var Model;
         
         function loadModel() {
@@ -1364,9 +1357,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                   })
                 */
               } else if (el.id=="uart") {  //新增relay設定預設值0
-                uart.checked = false;
-              } else if (el.id=="probability") {  //新增relay設定預設值0
-                probability.value = 0;                   
+                uart.checked = false;                 
               } else {    
                 updateValue(el, state[el.id], false)
               }
