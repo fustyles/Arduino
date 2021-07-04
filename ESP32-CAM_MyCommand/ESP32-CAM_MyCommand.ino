@@ -1,6 +1,6 @@
 /*
 ESP32-CAM 自訂指令
-Author : ChungYi Fu (Kaohsiung, Taiwan)
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-4 00:00
 https://www.facebook.com/francefu
 
 首頁
@@ -95,137 +95,6 @@ String Feedback = "";
 
 WiFiServer server(80);
 WiFiClient client;
-
-//執行自訂指令
-void ExecuteCommand() {
-  //Serial.println("");
-  //Serial.println("Command: "+Command);
-  if (cmd!="getstill") {
-    Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
-    Serial.println("");
-  }
-
-  //自訂指令區塊  http://192.168.xxx.xxx?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
-  if (cmd=="your cmd") {
-    // You can do anything
-    // Feedback="<font color=\"red\">Hello World</font>";   //可為一般文字或HTML語法
-  }
-  else if (cmd=="ip") {  //查詢APIP, STAIP
-    Feedback="AP IP: "+WiFi.softAPIP().toString();    
-    Feedback+="<br>";
-    Feedback+="STA IP: "+WiFi.localIP().toString();
-  }  
-  else if (cmd=="mac") {  //查詢MAC位址
-    Feedback="STA MAC: "+WiFi.macAddress();
-  }  
-  else if (cmd=="restart") {  //重設WIFI連線
-    ESP.restart();
-  }  
-  else if (cmd=="digitalwrite") {  //數位輸出
-    ledcDetachPin(P1.toInt());
-    pinMode(P1.toInt(), OUTPUT);
-    digitalWrite(P1.toInt(), P2.toInt());
-  }   
-  else if (cmd=="digitalread") {  //數位輸入
-    Feedback=String(digitalRead(P1.toInt()));
-  }
-  else if (cmd=="analogwrite") {  //類比輸出
-    if (P1=="4") {
-      ledcAttachPin(4, 4);  
-      ledcSetup(4, 5000, 8);
-      ledcWrite(4,P2.toInt());     
-    }
-    else {
-      ledcAttachPin(P1.toInt(), 9);
-      ledcSetup(9, 5000, 8);
-      ledcWrite(9,P2.toInt());
-    }
-  }       
-  else if (cmd=="analogread") {  //類比讀取
-    Feedback=String(analogRead(P1.toInt()));
-  }
-  else if (cmd=="touchread") {  //觸碰讀取
-    Feedback=String(touchRead(P1.toInt()));
-  }  
-  else if (cmd=="framesize") {  //解析度
-    Serial.println(FRAMESIZE_QQVGA);
-    sensor_t * s = esp_camera_sensor_get();  
-    if (P1=="0")
-      s->set_framesize(s, FRAMESIZE_QQVGA);
-    else if (P1=="3")
-      s->set_framesize(s, FRAMESIZE_HQVGA);
-    else if (P1=="4")
-      s->set_framesize(s, FRAMESIZE_QVGA);
-    else if (P1=="5")
-      s->set_framesize(s, FRAMESIZE_CIF);
-    else if (P1=="6")
-      s->set_framesize(s, FRAMESIZE_VGA);  
-    else if (P1=="7")
-      s->set_framesize(s, FRAMESIZE_SVGA);
-    else if (P1=="8")
-      s->set_framesize(s, FRAMESIZE_XGA);
-    else if (P1=="9")
-      s->set_framesize(s, FRAMESIZE_SXGA);
-    else if (P1=="10")
-      s->set_framesize(s, FRAMESIZE_UXGA);           
-    else 
-      s->set_framesize(s, FRAMESIZE_QVGA);     
-  }
-  else if (cmd=="quality") { 
-    sensor_t * s = esp_camera_sensor_get();
-    int val = P1.toInt(); 
-    s->set_quality(s, val);
-  }
-  else if (cmd=="contrast") {
-    sensor_t * s = esp_camera_sensor_get();
-    int val = P1.toInt(); 
-    s->set_contrast(s, val);
-  }
-  else if (cmd=="brightness") {
-    sensor_t * s = esp_camera_sensor_get();
-    int val = P1.toInt();  
-    s->set_brightness(s, val);  
-  } 
-  else if (cmd=="hmirror") {
-    sensor_t * s = esp_camera_sensor_get();
-    int val = P1.toInt();  
-    s->set_hmirror(s, val); 
-  }   
-  else if (cmd=="vflip") {
-    sensor_t * s = esp_camera_sensor_get();
-    int val = P1.toInt();  
-    s->set_vflip(s, val);
-  }
-  else if (cmd=="restart") {  //重啟電源
-    ESP.restart();
-  }         
-  else if (cmd=="flash") {  //閃光燈
-    ledcAttachPin(4, 4);  
-    ledcSetup(4, 5000, 8);   
-    int val = P1.toInt();
-    ledcWrite(4,val);  
-  }
-  else if(cmd=="servo") {  //伺服馬達 (SG90 1638-7864)
-    ledcAttachPin(P1.toInt(), 3);
-    ledcSetup(3, 50, 16);
-     
-    int val = 7864-P2.toInt()*34.59; 
-    if (val > 7864)
-       val = 7864;
-    else if (val < 1638)
-      val = 1638; 
-    ledcWrite(3, val);
-  }
-  else if (cmd=="relay") {  //繼電器
-    pinMode(P1.toInt(), OUTPUT);  
-    digitalWrite(13, P2.toInt());  
-  }       
-  else {
-    Feedback="Command is not defined.";
-  }  
-  
-  if (Feedback=="") Feedback=Command;  
-}
 
 void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
@@ -360,9 +229,124 @@ void setup() {
 }
 
 void loop() {
-  serverHandle();
-  delay(10);
+  listenConnection();
 }
+
+//執行自訂指令
+void ExecuteCommand() {
+  //Serial.println("");
+  //Serial.println("Command: "+Command);
+  if (cmd!="getstill") {
+    Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
+    Serial.println("");
+  }
+
+  //自訂指令區塊  http://192.168.xxx.xxx?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+  if (cmd=="your cmd") {
+    // You can do anything
+    // Feedback="<font color=\"red\">Hello World</font>";   //可為一般文字或HTML語法
+  }
+  else if (cmd=="ip") {  //查詢APIP, STAIP
+    Feedback="AP IP: "+WiFi.softAPIP().toString();    
+    Feedback+="<br>";
+    Feedback+="STA IP: "+WiFi.localIP().toString();
+  }  
+  else if (cmd=="mac") {  //查詢MAC位址
+    Feedback="STA MAC: "+WiFi.macAddress();
+  }  
+  else if (cmd=="restart") {  //重設WIFI連線
+    ESP.restart();
+  }  
+  else if (cmd=="digitalwrite") {  //數位輸出
+    ledcDetachPin(P1.toInt());
+    pinMode(P1.toInt(), OUTPUT);
+    digitalWrite(P1.toInt(), P2.toInt());
+  }   
+  else if (cmd=="digitalread") {  //數位輸入
+    Feedback=String(digitalRead(P1.toInt()));
+  }
+  else if (cmd=="analogwrite") {  //類比輸出
+    if (P1=="4") {
+      ledcAttachPin(4, 4);  
+      ledcSetup(4, 5000, 8);
+      ledcWrite(4,P2.toInt());     
+    }
+    else {
+      ledcAttachPin(P1.toInt(), 9);
+      ledcSetup(9, 5000, 8);
+      ledcWrite(9,P2.toInt());
+    }
+  }       
+  else if (cmd=="analogread") {  //類比讀取
+    Feedback=String(analogRead(P1.toInt()));
+  }
+  else if (cmd=="touchread") {  //觸碰讀取
+    Feedback=String(touchRead(P1.toInt()));
+  }  
+  else if (cmd=="framesize") {  //解析度
+    sensor_t * s = esp_camera_sensor_get();
+    int val = P1.toInt();
+    s->set_framesize(s, (framesize_t)val);   
+  }
+  else if (cmd=="quality") {  //畫質 
+    sensor_t * s = esp_camera_sensor_get();
+    int val = P1.toInt(); 
+    s->set_quality(s, val);
+  }
+  else if (cmd=="contrast") {  //對比
+    sensor_t * s = esp_camera_sensor_get();
+    int val = P1.toInt(); 
+    s->set_contrast(s, val);
+  }
+  else if (cmd=="brightness") {  //亮度
+    sensor_t * s = esp_camera_sensor_get();
+    int val = P1.toInt();  
+    s->set_brightness(s, val);  
+  } 
+  else if (cmd=="hmirror") {  //水平鏡像
+    sensor_t * s = esp_camera_sensor_get();
+    int val = P1.toInt();  
+    s->set_hmirror(s, val); 
+  }   
+  else if (cmd=="vflip") {  //垂直翻轉
+    sensor_t * s = esp_camera_sensor_get();
+    int val = P1.toInt();  
+    s->set_vflip(s, val);
+  }
+  else if (cmd=="serial") {  //序列埠
+    Serial.print(P1);
+  }  
+  else if (cmd=="restart") {  //重啟電源
+    ESP.restart();
+  }         
+  else if (cmd=="flash") {  //閃光燈
+    ledcAttachPin(4, 4);  
+    ledcSetup(4, 5000, 8);   
+    int val = P1.toInt();
+    ledcWrite(4,val);  
+  }
+  else if(cmd=="servo") {  //伺服馬達 (SG90 1638-7864)
+    ledcAttachPin(P1.toInt(), 3);
+    ledcSetup(3, 50, 16);
+     
+    int val = 7864-P2.toInt()*34.59; 
+    if (val > 7864)
+       val = 7864;
+    else if (val < 1638)
+      val = 1638; 
+    ledcWrite(3, val);
+  }
+  else if (cmd=="relay") {  //繼電器
+    pinMode(P1.toInt(), OUTPUT);  
+    digitalWrite(13, P2.toInt());  
+  }       
+  else {
+    Feedback="Command is not defined.";
+  }  
+  
+  if (Feedback=="") Feedback=Command;  
+}
+
 
 //自訂網頁首頁管理介面
 static const char PROGMEM INDEX_HTML[] = R"rawliteral(
@@ -370,7 +354,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
   </head><body>
   <img id="ShowImage" src=""> 
   <table>
@@ -457,39 +440,41 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     } 
     
     restart.onclick = function (event) {
-      $.ajax({url: location.origin+'?restart=stop', async: false}); 
+      fetch(location.origin+'?restart=stop'); 
     }    
 
     framesize.onclick = function (event) {
-      $.ajax({url: document.location.origin+'?framesize='+this.value+';stop', async: false});
+      fetch(document.location.origin+'?framesize='+this.value+';stop');
     }  
 
     flash.onchange = function (event) {
-      $.ajax({url: location.origin+'?flash='+this.value+';stop', async: false});
+      fetch(location.origin+'?flash='+this.value+';stop');
     } 
 
     quality.onclick = function (event) {
-      $.ajax({url: document.location.origin+'?quality='+this.value+';stop', async: false});
+      fetch(document.location.origin+'?quality='+this.value+';stop');
     } 
 
     brightness.onclick = function (event) {
-      $.ajax({url: document.location.origin+'?brightness='+this.value+';stop', async: false});
+      fetch(document.location.origin+'?brightness='+this.value+';stop');
     } 
 
     contrast.onclick = function (event) {
-      $.ajax({url: document.location.origin+'?contrast='+this.value+';stop', async: false});
+      fetch(document.location.origin+'?contrast='+this.value+';stop');
     }  
 
     mirrorimage.onclick = function (event) {
-      $.ajax({url: location.origin+'?hmirror='+this.value+';stop', async: false});
+      fetch(location.origin+'?hmirror='+this.value+';stop');
     }        
   </script>   
 )rawliteral";
 
-void serverHandle() {
+void listenConnection() {
   Feedback="";Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
   ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
+  
   client = server.available();
+  
   if (client) { 
     String currentLine = "";
 
@@ -502,7 +487,7 @@ void serverHandle() {
             if (cmd=="getstill") {
               getStill();            
             } else {
-              responseHTML();
+              mainPage();
             }         
             Feedback="";
             break;
@@ -530,7 +515,7 @@ void serverHandle() {
   }
 }
 
-void responseHTML() {
+void mainPage() {
     //回傳HTML首頁或Feedback
     client.println("HTTP/1.1 200 OK");
     client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
