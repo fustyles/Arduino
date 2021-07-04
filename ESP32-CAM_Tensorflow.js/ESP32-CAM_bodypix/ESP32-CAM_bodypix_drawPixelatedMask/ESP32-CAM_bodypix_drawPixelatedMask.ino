@@ -1,5 +1,5 @@
 /*
-ESP32-CAM tfjs segmentation
+ESP32-CAM tfjs draw Pixelated Mask
 https://github.com/tensorflow/tfjs-models/tree/master/body-pix
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-4 15:30
@@ -1146,10 +1146,15 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
             //console.log(segmentation);
             if (chkResult.checked) result.innerHTML = JSON.stringify(segmentation);
         
-            const backgroundBlurAmount = 5;
-            const edgeBlurAmount = 3;
+            const coloredPartImage = bodyPix.toColoredPartImageData(segmentation, rainbow);
+            //const coloredPartImage = bodyPix.toColoredPartImageData(segmentation, warm);
+            //const coloredPartImage = bodyPix.toColoredPartImageData(segmentation, spectral);
+            
+            const opacity = 0.7;
             const flipHorizontal = false;
-            bodyPix.drawBokehEffect(canvas, aiView, segmentation, backgroundBlurAmount, edgeBlurAmount, flipHorizontal);
+            const maskBlurAmount = 0;
+            const pixelCellWidth = 30.0;
+            bodyPix.drawPixelatedMask(canvas, aiView, coloredPartImage, opacity, maskBlurAmount, flipHorizontal, pixelCellWidth);
           
             aiStill.click();
           });  
