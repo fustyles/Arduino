@@ -1,5 +1,5 @@
 /*
-ESP32-CAM tfjs background Darkening Mask
+ESP32-CAM tfjs colored Part Image
 https://github.com/tensorflow/tfjs-models/tree/master/body-pix
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-4 15:30
@@ -1099,12 +1099,12 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
           bodyPix.load().then(function(net) {
             Model = net;
             result.innerHTML = "";
-            aiStill.style.display = "block";
+            aiStill.style.display = "block";           
             aiStill.click();
           }); 
         }
         
-        function detectImage() {          
+        function detectImage() {                    
           if (!chkResult.checked) result.innerHTML = "";
 
           const rainbow = [
@@ -1146,13 +1146,16 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
             //console.log(segmentation);
             if (chkResult.checked) result.innerHTML = JSON.stringify(segmentation);
         
-            const maskBackground = true;
-            const backgroundDarkeningMask = bodyPix.toMaskImageData(segmentation, maskBackground);
-            const opacity = 0.8;
-            const maskBlurAmount = 3;
-            const flipHorizontal = false;
-            bodyPix.drawMask(canvas, aiView, backgroundDarkeningMask, opacity, maskBlurAmount, flipHorizontal);
+            const coloredPartImage = bodyPix.toColoredPartImageData(segmentation, rainbow);
+            //const coloredPartImage = bodyPix.toColoredPartImageData(segmentation, warm);
+            //const coloredPartImage = bodyPix.toColoredPartImageData(segmentation, spectral);
             
+            const invert = true;
+            const opacity = 1;
+            const flipHorizontal = false;
+            const maskBlurAmount = 0;
+            bodyPix.drawMask(canvas, aiView, coloredPartImage, opacity, maskBlurAmount, flipHorizontal);
+          
             aiStill.click();
           });  
         }

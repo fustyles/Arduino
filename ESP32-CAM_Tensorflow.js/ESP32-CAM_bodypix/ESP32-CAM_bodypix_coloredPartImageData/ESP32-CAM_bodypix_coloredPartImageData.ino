@@ -1,5 +1,5 @@
 /*
-ESP32-CAM tfjs background Darkening Mask
+ESP32-CAM tfjs colored Part Image Data
 https://github.com/tensorflow/tfjs-models/tree/master/body-pix
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-4 15:30
@@ -1079,7 +1079,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                 </div>
             </div>
         </section>
-        Result：<input type="checkbox" id="chkResult">
+        Result：<input type="checkbox" id="chkResult" checked>
         <div id="result" style="color:red"><div>
                 
         <script>
@@ -1104,7 +1104,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
           }); 
         }
         
-        function detectImage() {          
+        function detectImage() {         
           if (!chkResult.checked) result.innerHTML = "";
 
           const rainbow = [
@@ -1146,13 +1146,20 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
             //console.log(segmentation);
             if (chkResult.checked) result.innerHTML = JSON.stringify(segmentation);
         
+            const coloredPartImage = bodyPix.toColoredPartImageData(segmentation, rainbow);
+            //const coloredPartImage = bodyPix.toColoredPartImageData(segmentation, warm);
+            //const coloredPartImage = bodyPix.toColoredPartImageData(segmentation, spectral);
+        
             const maskBackground = true;
-            const backgroundDarkeningMask = bodyPix.toMaskImageData(segmentation, maskBackground);
-            const opacity = 0.8;
+            const maskImage = bodyPix.toMaskImageData(segmentation, maskBackground);
+        
+            const opacity = 0.7;
             const maskBlurAmount = 3;
             const flipHorizontal = false;
-            bodyPix.drawMask(canvas, aiView, backgroundDarkeningMask, opacity, maskBlurAmount, flipHorizontal);
-            
+            const pixelCellWidth = 30.0;
+            bodyPix.drawPixelatedMask(canvas, aiView, coloredPartImage, opacity, maskBlurAmount, flipHorizontal, pixelCellWidth);
+            //bodyPix.drawPixelatedMask(canvas, aiView, maskImage, opacity, maskBlurAmount, flipHorizontal, pixelCellWidth);
+          
             aiStill.click();
           });  
         }
