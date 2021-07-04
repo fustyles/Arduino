@@ -973,6 +973,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                     <nav id="menu">
                         <section id="buttons">
                             <button id="restart">Restart board</button>
+                            <button id="stop-still">Stop</button>
                             <button id="get-still">Get Still</button>
                             <button id="toggle-stream" style="display:none">Start Stream</button>
                         </section>
@@ -1076,7 +1077,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
         <div id="result" style="color:red"><div>
                 
         <script>
-        //影像辨識
+        //法蘭斯影像辨識
         const aiView = document.getElementById('stream')
         const aiStill = document.getElementById('get-still')
         const canvas = document.getElementById('canvas')     
@@ -1131,16 +1132,16 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
         
         aiView.onload = function (event) {
           if (Model) {
-          try { 
-            document.createEvent("TouchEvent");
-            setTimeout(function(){detectImage();},250);
-          }
-          catch(e) { 
-            setTimeout(function(){detectImage();},150);
-          } 
+            try { 
+              document.createEvent("TouchEvent");
+              setTimeout(function(){detectImage();},250);
+            } catch(e) { 
+              setTimeout(function(){detectImage();},150);
+            } 
           }
         }        
-                   
+
+        //官方式函式
         function start() {
           var baseHost = 'http://'+document.getElementById("ip").value;  //var baseHost = document.location.origin
           var streamUrl = baseHost + ':81';
@@ -1148,6 +1149,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
           const hide = el => {
             el.classList.add('hidden')
           }
+          
           const show = el => {
             el.classList.remove('hidden')
           }
@@ -1165,7 +1167,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
           const updateValue = (el, value, updateRemote) => {
             updateRemote = updateRemote == null ? true : updateRemote
             let initialValue
-          if(!el) return;
+            if(!el) return;
             if (el.type === 'checkbox') {
               initialValue = el.checked
               value = !!value
@@ -1230,6 +1232,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
           const streamButton = document.getElementById('toggle-stream')
           const enrollButton = document.getElementById('face_enroll')
           const closeButton = document.getElementById('close-stream')
+          const stopButton = document.getElementById('stop-still')            //新增stopButton變數
           const restartButton = document.getElementById('restart')            //新增restart變數
           const flash = document.getElementById('flash')                      //新增flash變數
           const servo = document.getElementById('servo')                      //新增servo變數
@@ -1273,7 +1276,13 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
           //新增重啟電源按鈕點選事件 (自訂指令格式：http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9)
           restartButton.onclick = () => {
             fetch(baseHost+"/control?restart");
-          }  
+          }
+
+          //
+          stopButton.onclick = () => {
+            window.stop();
+            closeButton.click();
+          }            
         
           // Attach default on change action
           document

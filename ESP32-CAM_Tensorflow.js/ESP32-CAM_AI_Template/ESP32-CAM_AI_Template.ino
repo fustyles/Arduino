@@ -1,6 +1,7 @@
 /*
 ESP32-CAM AI Template
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-4 13:30
+
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-4 15:30
 https://www.facebook.com/francefu
 
 AP IP: 192.168.4.1
@@ -947,13 +948,18 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                 display: none
             }
         </style>
+        <!-- Load TensorFlow.js. This is required to use MobileNet. -->
+        <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.4"> </script>
+        <!-- Load the MobileNet model. -->
+        <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@1.0.0"> </script>
     </head>
     <body>
     ESP32-CAM IP：<input type="text" id="ip" size="20" value="192.168.">&nbsp;&nbsp;<input type="button" value="Set" onclick="start();">
     <figure>
       <div id="stream-container" class="image-container hidden">
         <div class="close" id="close-stream">×</div>
-        <img id="stream" src="">
+        <img id="stream" src="" style="display:none" >
+        <canvas id="canvas" width="0" height="0"></canvas>
       </div>
     </figure>
         <section class="main">
@@ -966,6 +972,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                     <nav id="menu">
                         <section id="buttons">
                             <button id="restart">Restart board</button>
+                            <button id="stop-still">Stop</button>
                             <button id="get-still">Get Still</button>
                             <button id="toggle-stream" style="display:none">Start Stream</button>
                         </section>
@@ -1044,6 +1051,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                             <div class="range-min">0</div>
                             <input type="range" id="servo" min="0" max="180" value="90" class="default-action">
                             <div class="range-max">180</div>
+                            <select id="pinServo" width="30"><option value="2" selected>IO2</option><option value="12">IO12</option><option value="13">IO13</option><option value="14">IO14</option><option value="15">IO15</option></select>
                         </div>
                         <div class="input-group" id="relay-group">
                             <label for="relay">Relay</label>
@@ -1051,6 +1059,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                                 <input id="relay" type="checkbox" class="default-action" checked="checked">
                                 <label class="slider" for="relay"></label>
                             </div>
+                            <select id="pinRelay" width="30"><option value="2">IO2</option><option value="12">IO12</option><option value="13" selected>IO13</option><option value="14">IO14</option><option value="15">IO15</option></select>
                         </div>
                         <div class="input-group" id="uart-group">
                             <label for="relay">UART</label>
@@ -1063,8 +1072,21 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                 </div>
             </div>
         </section>
+        Result：<input type="checkbox" id="chkResult" checked>
+        <div id="result" style="color:red"><div>
+                
         <script>
-                   
+        //法蘭斯影像辨識
+        const aiView = document.getElementById('stream')
+        const aiStill = document.getElementById('get-still')
+        const canvas = document.getElementById('canvas')     
+        var context = canvas.getContext("2d");  
+        const result = document.getElementById('result');
+        const uart = document.getElementById('uart');
+        const chkResult = document.getElementById('chkResult');
+ 
+
+        //官方式函式
         function start() {
           var baseHost = 'http://'+document.getElementById("ip").value;  //var baseHost = document.location.origin
           var streamUrl = baseHost + ':81';
@@ -1072,6 +1094,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
           const hide = el => {
             el.classList.add('hidden')
           }
+          
           const show = el => {
             el.classList.remove('hidden')
           }
@@ -1089,7 +1112,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
           const updateValue = (el, value, updateRemote) => {
             updateRemote = updateRemote == null ? true : updateRemote
             let initialValue
-          if(!el) return;
+            if(!el) return;
             if (el.type === 'checkbox') {
               initialValue = el.checked
               value = !!value
@@ -1125,9 +1148,9 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
             if (el.id =="flash") {  //新增flash自訂指令
               var query = baseHost+"/control?flash=" + String(value);
             } else if (el.id =="servo") {  //新增servo自訂指令
-              var query = baseHost+"/control?servo=" + String(value);
+              var query = baseHost+"/control?servo=" + pinServo.value + ";" + String(value);
             } else if (el.id =="relay") {  //新增繼電器自訂指令
-              var query = baseHost+"/control?relay=" + Number(relay.checked);
+              var query = baseHost+"/control?relay=" + pinRelay.value + ";" + Number(relay.checked);
             } else if (el.id =="uart") {  //新增uart自訂指令
               return;                           
             } else {
@@ -1154,10 +1177,13 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
           const streamButton = document.getElementById('toggle-stream')
           const enrollButton = document.getElementById('face_enroll')
           const closeButton = document.getElementById('close-stream')
+          const stopButton = document.getElementById('stop-still')            //新增stopButton變數
           const restartButton = document.getElementById('restart')            //新增restart變數
           const flash = document.getElementById('flash')                      //新增flash變數
           const servo = document.getElementById('servo')                      //新增servo變數
+          const pinServo = document.getElementById('pinServo');               //新增servo pin變數
           const relay = document.getElementById('relay')                      //新增relay變數
+          const pinRelay = document.getElementById('pinRelay');               //新增relay pin變數          
           const uart = document.getElementById('uart')                        //新增uart變數
           
           const stopStream = () => {
@@ -1173,7 +1199,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
           
           // Attach actions to buttons
           stillButton.onclick = () => {
-            stopStream()
+            //stopStream()
             view.src = `${baseHost}/capture?_cb=${Date.now()}`
             show(viewContainer)
           }
@@ -1195,7 +1221,13 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
           //新增重啟電源按鈕點選事件 (自訂指令格式：http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9)
           restartButton.onclick = () => {
             fetch(baseHost+"/control?restart");
-          }  
+          }
+
+          //
+          stopButton.onclick = () => {
+            window.stop();
+            closeButton.click();
+          }            
         
           // Attach default on change action
           document
@@ -1230,14 +1262,14 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                   })
               } else if (el.id=="servo") {  //新增servo設定預設值90度
                 servo.value=90;
-                var query = baseHost+"/control?servo=90";
+                var query = baseHost+"/control?servo=" + pinServo.value + ";90";
                 fetch(query)
                   .then(response => {
                     console.log(`request to ${query} finished, status: ${response.status}`)
                   })
               } else if (el.id=="relay") {  //新增relay設定預設值0
                 relay.checked = false;
-                var query = baseHost+"/control?relay=0";
+                var query = baseHost+"/control?relay=" + pinRelay.value + ";0";
                 fetch(query)
                   .then(response => {
                     console.log(`request to ${query} finished, status: ${response.status}`)
@@ -1248,7 +1280,9 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                 updateValue(el, state[el.id], false)
               }
             })
-          }) 
+          })
+
+          loadModel();
         }
         
         //  網址/?192.168.1.38  可自動帶入?後參數IP值
@@ -1262,7 +1296,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
           start();
         }
           
-        </script>
+    </script>        
     </body>
 </html>
 )rawliteral";
