@@ -1104,6 +1104,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
           canvas.setAttribute("width", aiView.width);
           canvas.setAttribute("height", aiView.height);
           context.drawImage(aiView, 0, 0, aiView.width, aiView.height);  
+          if (!chkResult.checked) result.innerHTML = "";
           
           const returnTensors = false;
           await Model.estimateFaces(canvas, returnTensors).then(predictions => {
@@ -1153,7 +1154,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                 }
               }
 
-              result.innerHTML = res;             
+              if (chkResult.checked) result.innerHTML = res;             
               
               for (let i = 0; i < predictions.length; i++) {
                 const start = predictions[i].topLeft;
@@ -1164,7 +1165,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                 context.strokeRect(start[0], start[1], size[0], size[1]);
               }        
             } else
-              result.innerHTML = "Unrecognizable";  
+              if (chkResult.checked) result.innerHTML = "Unrecognizable";  
             aiStill.click();
           });
         }
