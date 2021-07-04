@@ -1068,7 +1068,13 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                                 <input id="uart" type="checkbox" class="default-action" checked="checked">
                                 <label class="slider" for="uart"></label>
                             </div>
-                        </div>                         
+                        </div>
+                        <div class="input-group" id="probability-group">
+                            <label for="probability">probability</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="probability" min="0" max="1" value="0" step="0.1" class="default-action">
+                            <div class="range-max">1</div>
+                        </div>                                                    
                     </nav>
                 </div>
             </div>
@@ -1085,6 +1091,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
         const result = document.getElementById('result');
         const uart = document.getElementById('uart');
         const chkResult = document.getElementById('chkResult');
+        const probability = document.getElementById('probability')
         var Model;
         
         function loadModel() {
@@ -1112,7 +1119,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                 
                 //可在此依辨識結果Predictions[i].className與機率值Predictions[i].probability執行對應網址指令回傳ESP32-CAM
                 //https://github.com/tensorflow/tfjs-models/blob/master/mobilenet/src/imagenet_classes.ts
-                if (Predictions[i].className=="monitor"&&Number(Predictions[i].probability)>=0.2) {
+                if (Predictions[i].className=="monitor"&&Number(Predictions[i].probability)>=Number(probability.value)) {
                   if (uart.checked) {
                     var url = document.location.origin+'/control?uart=monitor';
                     fetch(url)
@@ -1317,20 +1324,26 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                   })
               } else if (el.id=="servo") {  //新增servo設定預設值90度
                 servo.value=90;
+                /*
                 var query = baseHost+"/control?servo=" + pinServo.value + ";90";
                 fetch(query)
                   .then(response => {
                     console.log(`request to ${query} finished, status: ${response.status}`)
                   })
+                */
               } else if (el.id=="relay") {  //新增relay設定預設值0
                 relay.checked = false;
+                /*
                 var query = baseHost+"/control?relay=" + pinRelay.value + ";0";
                 fetch(query)
                   .then(response => {
                     console.log(`request to ${query} finished, status: ${response.status}`)
                   })
+                */
               } else if (el.id=="uart") {  //新增relay設定預設值0
-                uart.checked = false;                
+                uart.checked = false;
+              } else if (el.id=="probability") {  //新增relay設定預設值0
+                probability.value = 0;                   
               } else {    
                 updateValue(el, state[el.id], false)
               }
