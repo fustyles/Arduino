@@ -1258,18 +1258,22 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                   })
               } else if (el.id=="servo") {  //新增servo設定預設值90度
                 servo.value=90;
+                /*
                 var query = baseHost+"/control?servo=" + pinServo.value + ";90";
                 fetch(query)
                   .then(response => {
                     console.log(`request to ${query} finished, status: ${response.status}`)
                   })
+                */
               } else if (el.id=="relay") {  //新增relay設定預設值0
                 relay.checked = false;
+                /*
                 var query = baseHost+"/control?relay=" + pinRelay.value + ";0";
                 fetch(query)
                   .then(response => {
                     console.log(`request to ${query} finished, status: ${response.status}`)
                   })
+                */
               } else if (el.id=="uart") {  //新增relay設定預設值0
                 uart.checked = false;                
               } else {    
@@ -1277,8 +1281,6 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
               }
             })
           })
-
-          loadModel();
         }
         
         //  網址/?192.168.1.38  可自動帶入?後參數IP值
