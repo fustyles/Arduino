@@ -364,11 +364,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   </tr>
   <tr>
     <td>MirrorImage</td> 
-    <td colspan="2">  
-      <select id="mirrorimage">
-        <option value="1">Y</option>
-        <option value="0">N</option>
-      </select>
+    <td colspan="2">
+      <input type="checkbox" id="mirrorimage">
     </td>
   </tr>   
   <tr>
@@ -406,12 +403,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <tr>
     <td>Rotate</td>
     <td align="left" colspan="2">
-        <select onchange="document.getElementById('ShowImage').style.transform='rotate('+this.value+')';">
-          <option value="0deg">0deg</option>
-          <option value="90deg">90deg</option>
-          <option value="180deg">180deg</option>
-          <option value="270deg">270deg</option>
-        </select>
+        <input type="range" id="rotate" min="0" max="360" value="0">
     </td>
   </tr>  
   </table>
@@ -463,8 +455,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       fetch(document.location.origin+'?contrast='+this.value+';stop');
     }  
 
-    mirrorimage.onclick = function (event) {
-      fetch(location.origin+'?hmirror='+this.value+';stop');
+    rotate.onclick = function (event) {
+       document.getElementById('ShowImage').style.transform='rotate('+this.value+'deg)';
+    }     
+
+    mirrorimage.onchange = function (event) {
+      fetch(location.origin+'?hmirror='+Number(this.checked)+';stop');
     }        
   </script>   
 )rawliteral";
