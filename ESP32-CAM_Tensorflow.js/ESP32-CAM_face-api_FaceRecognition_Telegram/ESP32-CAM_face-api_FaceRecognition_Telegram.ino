@@ -1,8 +1,9 @@
 /*
-ESP32-CAM Face recognition (face-api.js)
+ESP32-CAM Face recognition (face-api.js) with Telegram
 https://github.com/justadudewhohacks/face-api.js/
 
 因為人臉辨識會不斷地消耗記憶體，所以設計切換辨識開關僅執行一次辨識即復原。
+人臉辨識使用解析度QVGA(320x240)，變更將導致錯誤！
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-4 15:30
 https://www.facebook.com/francefu
@@ -48,15 +49,22 @@ const char* password = "87654321";
 
 //輸入AP端連線帳號密碼  http://192.168.4.1
 const char* apssid = "esp32-cam";
-const char* appassword = "12345678";         //AP密碼至少要8個字元以上 
+const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 
-String lineNotifyToken = "";    //Line Notify Token
+String myToken = "*****:*****";   // Create your bot and get the token -> https://telegram.me/fatherbot
+String myChatId = "*****";   // Get chat_id -> https://telegram.me/chatid_echo_bot
+
+int pinDoor = 2;  門鎖繼電器腳位IO2
+long message_id_last = 0;  //Telegram訊息代碼初始值
+int timer = 0;  //Telegram等待訊息指令計時秒數
+int timerLimit = 10;  //Telegram等待訊息指令秒數(s)，視訊畫面將暫停直到超時10秒
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include "esp_camera.h"         //視訊
 #include "soc/soc.h"            //用於電源不穩不重開機
 #include "soc/rtc_cntl_reg.h"   //用於電源不穩不重開機
+#include <ArduinoJson.h>         //解析json格式函式 
 
 String Feedback="";   //回傳客戶端訊息
 //指令參數值
@@ -324,10 +332,15 @@ void ExecuteCommand() {
   } else if (cmd=="uart") {  //UART
     Serial.print(P1);
 
-    //Line Notify (Smile)
-    if (P1=="happy") {
-      Serial.println("");
-      sendCapturedImage2LineNotify(lineNotifyToken);
+    //Telegram bot
+    if (P1=="unknown") {  //陌生人
+      sendCapturedImage2Telegram(myToken, myChatId);
+      String keyboard = "{\"keyboard\":[[{\"text\":\"/open\"},{\"text\":\"/still\"}], [{\"text\":\"/ledon\"},{\"text\":\"/ledoff\"}]],\"one_time_keyboard\":false}";
+      sendMessage2Telegram(myToken, myChatId, "Stranger", keyboard);
+      getTelegramMessage(myToken);
+    } else {  //主人
+      sendMessage2Telegram(myToken, myChatId, "Welcome back! " + P1, "");
+      telegramCommand("/open");
     }
   } else if (cmd=="resetwifi") {  //重設網路連線  
     for (int i=0;i<2;i++) {
@@ -414,7 +427,6 @@ void getCommand(char c)
     if ((strState>=9)&&(c==';')) semicolonstate=1;
   }
 }
-
 
 //自訂網頁首頁管理介面
 static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
@@ -745,7 +757,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                             <div class="range-min">0</div>
                             <input type="range" id="distancelimit" min="0" max="1" value="0.4" step="0.1" class="default-action">
                             <div class="range-max">1</div>
-                        </div>                                    
+                        </div>                                                          
                         <div class="input-group" id="flash-group">
                             <label for="flash">Flash</label>
                             <div class="range-min">0</div>
@@ -760,8 +772,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                                 <option value="8">XGA(1024x768)</option>
                                 <option value="7">SVGA(800x600)</option>
                                 <option value="6">VGA(640x480)</option>
-                                <option value="5" selected="selected">CIF(400x296)</option>
-                                <option value="4">QVGA(320x240)</option>
+                                <option value="5">CIF(400x296)</option>
+                                <option value="4" selected="selected">QVGA(320x240)</option>
                                 <option value="3">HQVGA(240x176)</option>
                                 <option value="0">QQVGA(160x120)</option>
                             </select>
@@ -851,25 +863,26 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         var res = "";
 
         //Model: https://github.com/fustyles/webduino/tree/master/TensorFlow/Face-api
-        const faceImagesPath = 'https://fustyles.github.io/webduino/TensorFlow/Face-api/facelist/';     //人名命名的資料夾路徑
+        const faceImagesPath = 'https://fustyles.github.io/webduino/TensorFlow/Face-api/facelist/';     //人名命名的樣本照片資料夾路徑
         const faceLabels = ['France', 'ChilingLin'];     //人名命名的資料夾列表
         faceImagesCount = 2 ;                            //每個人名命名的資料夾內的照片數，以流水編號命名JPG圖檔 1.jpg, 2.jpg...
         
-        const modelPath = 'https://fustyles.github.io/webduino/TensorFlow/Face-api/';
+        const modelPath = 'https://fustyles.github.io/webduino/TensorFlow/Face-api/';     //模型檔路徑
         let displaySize = { width:320, height: 240 }
         let labeledFaceDescriptors;
         let faceMatcher; 
-        
+
+        //載入模型
         Promise.all([
           faceapi.nets.faceLandmark68Net.load(modelPath),
           faceapi.nets.faceRecognitionNet.load(modelPath),
           faceapi.nets.ssdMobilenetv1.load(modelPath)      
         ]).then(function(){
           message.innerHTML = "";
-          aiStill.click();
+          aiStill.click();  //取得視訊影像
         })   
         
-        async function DetectImage() {
+        async function DetectImage() {  //執行人臉辨識
           canvas.setAttribute("width", aiView.width);
           canvas.setAttribute("height", aiView.height); 
           context.drawImage(aiView,0,0,canvas.width,canvas.height);
@@ -877,7 +890,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                       
           if (!labeledFaceDescriptors) {
             message.innerHTML = "Loading face images...";      
-            labeledFaceDescriptors = await loadLabeledImages();
+            labeledFaceDescriptors = await loadLabeledImages();  //讀取樣本照片
             message.innerHTML = "";
           }
                       
@@ -914,13 +927,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 drawBox.draw(canvas);
               })
               
-              uart.checked = false;  //因為每辨識一次就吃一點記憶體，所以辨識完就暫停辨識。
+              uart.checked = false;  //因為每辨識一次就耗用一點記憶體，所以辨識完就暫停辨識。
               if (chkResult.checked) message.innerHTML = res;            
           }
           aiStill.click();
         }
 
-        function loadLabeledImages() {
+        function loadLabeledImages() {  //讀取樣本照片
           return Promise.all(
             faceLabels.map(async label => {
               const descriptions = []
@@ -1166,8 +1179,8 @@ void status(){
   }
 }
 
+//回傳HTML首頁或Feedback變數內容
 void mainpage() {
-  //回傳HTML首頁或Feedback
   client.println("HTTP/1.1 200 OK");
   client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
   client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
@@ -1187,8 +1200,8 @@ void mainpage() {
   } 
 }
 
+//回傳JPEG格式影像
 void getStill() {
-  //回傳JPEG格式影像
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();  
   if(!fb) {
@@ -1225,7 +1238,94 @@ void getStill() {
   digitalWrite(4, LOW);              
 }
 
-String sendCapturedImage2LineNotify(String token) {
+//取得Telegram最新訊息
+void getTelegramMessage(String token) {
+  const char* myDomain = "api.telegram.org";
+  String getAll="", getBody = ""; 
+  JsonObject obj;
+  DynamicJsonDocument doc(1024);
+  String result;
+  long update_id;
+  String message;
+  long message_id;
+  String text;  
+
+  WiFiClientSecure client_tcp;
+  client_tcp.setInsecure();   //run version 1.0.5 or above
+  Serial.println("Connect to " + String(myDomain));
+  if (client_tcp.connect(myDomain, 443)) {
+    Serial.println("Connection successful");
+    timer = 0;
+    if (client_tcp.connected()) { 
+      while (timer<timerLimit) {  //最後一次取得訊息後經timerLimit停止監聽訊息
+        getAll = "";
+        getBody = "";
+  
+        String request = "limit=1&offset=-1&allowed_updates=message";
+        client_tcp.println("POST /bot"+token+"/getUpdates HTTP/1.1");
+        client_tcp.println("Host: " + String(myDomain));
+        client_tcp.println("Content-Length: " + String(request.length()));
+        client_tcp.println("Content-Type: application/x-www-form-urlencoded");
+        client_tcp.println("Connection: keep-alive");
+        client_tcp.println();
+        client_tcp.print(request);
+        
+        int waitTime = 5000;   // timeout 5 seconds
+        long startTime = millis();
+        boolean state = false;
+        
+        while ((startTime + waitTime) > millis()) {
+          //Serial.print(".");
+          delay(100);      
+          while (client_tcp.available()) {
+              char c = client_tcp.read();
+              if (c == '\n') {
+                if (getAll.length()==0) state=true; 
+                getAll = "";
+              } else if (c != '\r')
+                getAll += String(c);
+              if (state==true) getBody += String(c);
+              startTime = millis();
+           }
+           if (getBody.length()>0) break;
+        }
+  
+        //取得最新訊息json格式取值
+        deserializeJson(doc, getBody);
+        obj = doc.as<JsonObject>();
+        //result = obj["result"].as<String>();
+        //update_id =  obj["result"][0]["update_id"].as<String>().toInt();
+        //message = obj["result"][0]["message"].as<String>();
+        message_id = obj["result"][0]["message"]["message_id"].as<String>().toInt();
+        text = obj["result"][0]["message"]["text"].as<String>();
+  
+        if (message_id!=message_id_last&&message_id) {
+          int id_last = message_id_last;
+          message_id_last = message_id;
+          if (id_last==0) {
+            message_id = 0;
+          } else {
+            Serial.println(getBody);
+            Serial.println();
+          }
+          
+          if (text!="") {
+            Serial.println("["+String(message_id)+"] "+text);
+            telegramCommand(text);  //執行指令
+          }
+        }
+        delay(1000);
+        timer++;
+      }
+    }
+  }
+}
+
+//傳送影像到Telegram bot
+String sendCapturedImage2Telegram(String token, String chat_id) {
+  const char* myDomain = "api.telegram.org";
+  String getAll="", getBody = "";
+
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();  
   if(!fb) {
@@ -1233,48 +1333,46 @@ String sendCapturedImage2LineNotify(String token) {
     delay(1000);
     ESP.restart();
     return "Camera capture failed";
-  }
-   
+  }  
+  
+  Serial.println("Connect to " + String(myDomain));
+  
   WiFiClientSecure client_tcp;
   client_tcp.setInsecure();   //run version 1.0.5 or above
-  Serial.println("Connect to notify-api.line.me");
-  if (client_tcp.connect("notify-api.line.me", 443)) {
+  
+  if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
     
-    String message = "ESP32-CAM";
-    String head = "--Taiwan\r\nContent-Disposition: form-data; name=\"message\"; \r\n\r\n" + message + "\r\n--Taiwan\r\nContent-Disposition: form-data; name=\"imageFile\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
+    String head = "--Taiwan\r\nContent-Disposition: form-data; name=\"chat_id\"; \r\n\r\n" + chat_id + "\r\n--Taiwan\r\nContent-Disposition: form-data; name=\"photo\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
     String tail = "\r\n--Taiwan--\r\n";
 
     uint16_t imageLen = fb->len;
     uint16_t extraLen = head.length() + tail.length();
     uint16_t totalLen = imageLen + extraLen;
   
-    client_tcp.println("POST /api/notify HTTP/1.1");
-    client_tcp.println("Connection: close"); 
-    client_tcp.println("Host: notify-api.line.me");
-    client_tcp.println("Authorization: Bearer " + token);
+    client_tcp.println("POST /bot"+token+"/sendPhoto HTTP/1.1");
+    client_tcp.println("Host: " + String(myDomain));
     client_tcp.println("Content-Length: " + String(totalLen));
     client_tcp.println("Content-Type: multipart/form-data; boundary=Taiwan");
     client_tcp.println();
     client_tcp.print(head);
-    
+  
     uint8_t *fbBuf = fb->buf;
     size_t fbLen = fb->len;
     for (size_t n=0;n<fbLen;n=n+1024) {
       if (n+1024<fbLen) {
         client_tcp.write(fbBuf, 1024);
         fbBuf += 1024;
-      }
-      else if (fbLen%1024>0) {
+      } else if (fbLen%1024>0) {
         size_t remainder = fbLen%1024;
         client_tcp.write(fbBuf, remainder);
       }
     }  
     
     client_tcp.print(tail);
+    
     esp_camera_fb_return(fb);
-
-    String getResponse="",Feedback="";
+    
     int waitTime = 10000;   // timeout 10 seconds
     long startTime = millis();
     boolean state = false;
@@ -1282,24 +1380,110 @@ String sendCapturedImage2LineNotify(String token) {
     while ((startTime + waitTime) > millis()) {
       Serial.print(".");
       delay(100);      
-      while (client_tcp.available())  {
+      while (client_tcp.available()) {
           char c = client_tcp.read();
-          if (state==true) Feedback += String(c);        
+          if (state==true) getBody += String(c);        
           if (c == '\n') {
-            if (getResponse.length()==0) state=true; 
-            getResponse = "";
+            if (getAll.length()==0) state=true; 
+            getAll = "";
           } 
           else if (c != '\r')
-            getResponse += String(c);
+            getAll += String(c);
           startTime = millis();
        }
-       if (Feedback.length()>0) break;
+       if (getBody.length()>0) break;
     }
-    Serial.println();
     client_tcp.stop();
-    return Feedback;
+    Serial.println();
+    Serial.println(getBody);
+  } else {
+    getBody="Connected to api.telegram.org failed.";
+    Serial.println("Connected to api.telegram.org failed.");
   }
-  else {
-    return "Connected to notify-api.line.me failed.";
+
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);   
+  
+  return getBody;
+}
+
+//傳送Telegram文字訊息與指令按鈕
+String sendMessage2Telegram(String token, String chat_id, String text, String keyboard) {
+  const char* myDomain = "api.telegram.org";
+  String getAll="", getBody = "";
+  
+  String request = "parse_mode=HTML&chat_id="+chat_id+"&text="+text;
+  if (keyboard!="") request += "&reply_markup="+keyboard;
+  
+  Serial.println("Connect to " + String(myDomain));
+  
+  WiFiClientSecure client_tcp;
+  client_tcp.setInsecure();   //run version 1.0.5 or above
+  
+  if (client_tcp.connect(myDomain, 443)) {
+    Serial.println("Connection successful");
+    client_tcp.println("POST /bot"+token+"/sendMessage HTTP/1.1");
+    client_tcp.println("Host: " + String(myDomain));
+    client_tcp.println("Content-Length: " + String(request.length()));
+    client_tcp.println("Content-Type: application/x-www-form-urlencoded");
+    client_tcp.println("Connection: keep-alive");
+    client_tcp.println();
+    client_tcp.print(request);
+    
+    int waitTime = 5000;   // timeout 5 seconds
+    long startTime = millis();
+    boolean state = false;
+    
+    while ((startTime + waitTime) > millis()) {
+      Serial.print(".");
+      delay(100);      
+      while (client_tcp.available()) {
+          char c = client_tcp.read();
+          if (state==true) getBody += String(c);      
+          if (c == '\n') {
+            if (getAll.length()==0) state=true; 
+            getAll = "";
+          } else if (c != '\r')
+            getAll += String(c);
+          startTime = millis();
+       }
+       if (getBody.length()>0) break;
+    }
+    client_tcp.stop();
+    Serial.println();
+    Serial.println(getBody);
+  } else {
+    getBody="Connected to api.telegram.org failed.";
+    Serial.println("Connected to api.telegram.org failed.");
+  }
+
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);
+
+  return getBody;     
+}
+
+//執行Telegram訊息指令
+void telegramCommand(String text) {
+  if (!text||text=="") return;
+  timer = 0;  
+  // 自訂指令
+  if (text=="/still") {         //取得視訊截圖
+    sendCapturedImage2Telegram(myToken, myChatId);
+  } else if (text=="/ledon") {  //開啟閃光燈
+    ledcDetachPin(4);
+    pinMode(4 , OUTPUT);
+    digitalWrite(4, HIGH);
+    sendMessage2Telegram(myToken, myChatId, "Turn on the flash", "");
+  } else if (text=="/ledoff") {  //關閉閃光燈
+    ledcDetachPin(4);
+    pinMode(4 , OUTPUT);
+    digitalWrite(4, LOW);
+    sendMessage2Telegram(myToken, myChatId, "Turn off the flash", "");
+  } else if (text=="/open") {  //開啟門鎖
+    pinMode(pinDoor , OUTPUT);
+    digitalWrite(pinDoor, HIGH);
+    delay(2000);
+    digitalWrite(pinDoor, LOW);
   }
 }
