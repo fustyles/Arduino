@@ -1009,7 +1009,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             } else if (el.id =="relay") {  //新增繼電器自訂指令
               var query = baseHost+"?relay=" + pinRelay.value + ";" + Number(relay.checked);
             } else if (el.id =="uart") {  //新增uart自訂指令
-              return;                           
+              return;
+            } else if (el.id =="probability") {  //新增probability自訂指令
+              return;                                          
             } else {
               var query = `${baseHost}/?${el.id}=${value}`
             }
@@ -1110,9 +1112,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                     console.log(`request to ${query} finished, status: ${response.status}`)
                   })
                 */
-              } else if (el.id=="uart") {  //新增relay設定預設值0
+              } else if (el.id=="uart") {  //新增uart設定預設值0
                 uart.checked = false;
-              } else if (el.id=="probability") {  //新增relay設定預設值0
+              } else if (el.id=="probability") {  //新增probability設定預設值0
                 probability.value = 0;                                  
               } else {    
                 updateValue(el, state[el.id], false)

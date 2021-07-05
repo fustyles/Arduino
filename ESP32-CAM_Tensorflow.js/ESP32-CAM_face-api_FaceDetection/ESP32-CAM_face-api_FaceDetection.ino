@@ -1250,10 +1250,12 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
               var query = baseHost+"/control?flash=" + String(value);
             } else if (el.id =="servo") {  //新增servo自訂指令
               var query = baseHost+"/control?servo=" + pinServo.value + ";" + String(value);
-            } else if (el.id =="relay") {  //新增繼電器自訂指令
+            } else if (el.id =="relay") {  //新增relay自訂指令
               var query = baseHost+"/control?relay=" + pinRelay.value + ";" + Number(relay.checked);
             } else if (el.id =="uart") {  //新增uart自訂指令
-              return;                           
+              return; 
+            } else if (el.id =="probability") {  //新增probability自訂指令
+              return;                                         
             } else {
               var query = `${baseHost}/control?var=${el.id}&val=${value}`
             }
@@ -1379,9 +1381,9 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                     console.log(`request to ${query} finished, status: ${response.status}`)
                   })
                 */
-              } else if (el.id=="uart") {  //新增relay設定預設值0
+              } else if (el.id=="uart") {  //新增uart設定預設值0
                 uart.checked = false;
-              } else if (el.id=="probability") {  //新增relay設定預設值0
+              } else if (el.id=="probability") {  //新增probability設定預設值0
                 probability.value = 0;                                  
               } else {    
                 updateValue(el, state[el.id], false)
