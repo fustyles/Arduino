@@ -940,7 +940,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             document.createEvent("TouchEvent");
             setTimeout(function(){DetectImage();},250);
           } catch(e) { 
-            setTimeout(function(){DetectImage();},100);
+            setTimeout(function(){DetectImage();},150);
           } 
         }
         
