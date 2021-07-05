@@ -2,6 +2,9 @@
 ESP32-CAM save a captured photo to Telegram
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-5 15:00
 https://www.facebook.com/francefu
+
+Telegram Bot API
+https://core.telegram.org/bots/api
 */
 
 //輸入WIFI連線帳號密碼
