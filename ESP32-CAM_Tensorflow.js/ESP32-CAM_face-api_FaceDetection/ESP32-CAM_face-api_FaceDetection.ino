@@ -1183,7 +1183,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
             document.createEvent("TouchEvent");
             setTimeout(function(){DetectImage();},250);
           } catch(e) { 
-            DetectImage();
+            setTimeout(function(){DetectImage();},150);
           } 
         }
         
