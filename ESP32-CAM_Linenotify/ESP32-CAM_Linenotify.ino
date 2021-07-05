@@ -160,15 +160,15 @@ void setup()
   digitalWrite(4, LOW); 
 
   //傳送影像
-  Serial.println(sendCapturedImage2LineNotify());
+  Serial.println(sendCapturedImage2LineNotify(lineNotifyToken));
   //傳送文字
-  Serial.println(sendRequest2LineNotify("message=\nHello\nWorld"));
+  Serial.println(sendRequest2LineNotify(lineNotifyToken, "message=\nHello\nWorld"));
   //傳送貼圖
-  Serial.println(sendRequest2LineNotify("message=Hello World&stickerPackageId=1&stickerId=2"));
+  Serial.println(sendRequest2LineNotify(lineNotifyToken, "message=Hello World&stickerPackageId=1&stickerId=2"));
   //傳送網址  
   String imageThumbnail = "https://s2.lookerpets.com/imgs/202008/14/11/15973742786521.jpg";
   String imageFullsize = "https://i.ytimg.com/vi/WLUEXiTAPaI/maxresdefault.jpg";
-  Serial.println(sendRequest2LineNotify("message=Hello World&imageThumbnail="+imageFullsize+"&imageFullsize="+imageThumbnail));
+  Serial.println(sendRequest2LineNotify(lineNotifyToken, "message=Hello World&imageThumbnail="+imageFullsize+"&imageFullsize="+imageThumbnail));
 }
 
 void loop()
@@ -176,7 +176,7 @@ void loop()
   delay(72000);  //You could only send up to 50 images to Line Notify in one hour.
 }
 
-String sendCapturedImage2LineNotify() {
+String sendCapturedImage2LineNotify(String token) {
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();  
   if(!fb) {
@@ -203,7 +203,7 @@ String sendCapturedImage2LineNotify() {
     client_tcp.println("POST /api/notify HTTP/1.1");
     client_tcp.println("Connection: close"); 
     client_tcp.println("Host: notify-api.line.me");
-    client_tcp.println("Authorization: Bearer " + lineNotifyToken);
+    client_tcp.println("Authorization: Bearer " + token);
     client_tcp.println("Content-Length: " + String(totalLen));
     client_tcp.println("Content-Type: multipart/form-data; boundary=Taiwan");
     client_tcp.println();
@@ -255,7 +255,7 @@ String sendCapturedImage2LineNotify() {
   }
 }
 
-String sendRequest2LineNotify(String request) {
+String sendRequest2LineNotify(String token, String request) {
   request.replace("%","%25");
   request.replace(" ","%20");
   //request.replace("&","%20");
@@ -285,7 +285,7 @@ String sendRequest2LineNotify(String request) {
     client_tcp.println("Connection: close"); 
     client_tcp.println("Host: notify-api.line.me");
     client_tcp.println("User-Agent: ESP8266/1.0");
-    client_tcp.println("Authorization: Bearer " + lineNotifyToken);
+    client_tcp.println("Authorization: Bearer " + token);
     client_tcp.println("Content-Type: application/x-www-form-urlencoded");
     client_tcp.println("Content-Length: " + String(request.length()));
     client_tcp.println();
