@@ -2,6 +2,8 @@
 ESP32-CAM Face recognition (face-api.js)
 https://github.com/justadudewhohacks/face-api.js/
 
+因為人臉辨識會不斷地消耗記憶體，所以設計切換辨識開關僅執行一次辨識即復原。
+
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-4 15:30
 https://www.facebook.com/francefu
 
@@ -1094,7 +1096,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
         //Model: https://github.com/fustyles/webduino/tree/master/TensorFlow/Face-api
         const faceImagesPath = 'https://fustyles.github.io/webduino/TensorFlow/Face-api/facelist/';     //人名命名的資料夾路徑
         const faceLabels = ['France', 'ChilingLin'];     //人名命名的資料夾列表
-        faceImagesCount = 2 ;                       //每個人名命名的資料夾內的照片數，以流水編號命名JPG圖檔 1.jpg, 2.jpg...
+        faceImagesCount = 2 ;                            //每個人名命名的資料夾內的照片數，以流水編號命名JPG圖檔 1.jpg, 2.jpg...
         
         const modelPath = 'https://fustyles.github.io/webduino/TensorFlow/Face-api/';
         let displaySize = { width:320, height: 240 }
@@ -1125,7 +1127,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
           if (uart.checked) {
             let displaySize = { width:canvas.width, height: canvas.height }
       
-            faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, Number(distancelimit))  //距離上限，若超過此值則顯示unknow，否則顯示人名
+            faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, Number(distancelimit.value))  //距離上限，若超過此值則顯示unknow，否則顯示人名
             
             const detections = await faceapi.detectAllFaces(canvas).withFaceLandmarks().withFaceDescriptors();
             const resizedDetections = faceapi.resizeResults(detections, displaySize);
@@ -1133,13 +1135,14 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
             const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
             
             if (chkResult.checked) message.innerHTML = JSON.stringify(results);
-            console.log(JSON.stringify(detections));
-            console.log(JSON.stringify(results));
+            //console.log(JSON.stringify(detections));
+            //console.log(JSON.stringify(resizedDetections));
+            //console.log(JSON.stringify(results));
             
             res = "";
             results.forEach((result, i) => {
                 if (uart.checked) {
-                  //當辨識出人臉
+                  //當辨識出人臉時將辨識人名回傳
                   var query = document.location.origin+'/control?uart='+result.label;
                   fetch(query)
                     .then(response => {
@@ -1249,7 +1252,9 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
             } else if (el.id =="relay") {  //新增繼電器自訂指令
               var query = baseHost+"/control?relay=" + pinRelay.value + ";" + Number(relay.checked);
             } else if (el.id =="uart") {  //新增uart自訂指令
-              return;                           
+              return;
+            } else if (el.id =="distancelimit") {  //新增distancelimit自訂指令
+              return;                                          
             } else {
               var query = `${baseHost}/control?var=${el.id}&val=${value}`
             }
@@ -1375,9 +1380,9 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                     console.log(`request to ${query} finished, status: ${response.status}`)
                   })
                 */
-              } else if (el.id=="uart") {  //新增relay設定預設值0
+              } else if (el.id=="uart") {  //新增uart設定預設值0
                 uart.checked = false;
-              } else if (el.id=="distancelimit") {  //新增relay設定預設值0
+              } else if (el.id=="distancelimit") {  //新增distance limit設定預設值0.4
                 distancelimit.value = 0.4;                                  
               } else {    
                 updateValue(el, state[el.id], false)

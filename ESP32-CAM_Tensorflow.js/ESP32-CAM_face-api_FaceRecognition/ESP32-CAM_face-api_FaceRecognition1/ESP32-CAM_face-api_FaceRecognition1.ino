@@ -2,6 +2,8 @@
 ESP32-CAM Face recognition (face-api.js)
 https://github.com/justadudewhohacks/face-api.js/
 
+因為人臉辨識會不斷地消耗記憶體，所以設計切換辨識開關僅執行一次辨識即復原。
+
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-4 15:30
 https://www.facebook.com/francefu
 
@@ -864,7 +866,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         //Model: https://github.com/fustyles/webduino/tree/master/TensorFlow/Face-api
         const faceImagesPath = 'https://fustyles.github.io/webduino/TensorFlow/Face-api/facelist/';     //人名命名的資料夾路徑
         const faceLabels = ['France', 'ChilingLin'];     //人名命名的資料夾列表
-        faceImagesCount = 2 ;                       //每個人名命名的資料夾內的照片數，以流水編號命名JPG圖檔 1.jpg, 2.jpg...
+        faceImagesCount = 2 ;                            //每個人名命名的資料夾內的照片數，以流水編號命名JPG圖檔 1.jpg, 2.jpg...
         
         const modelPath = 'https://fustyles.github.io/webduino/TensorFlow/Face-api/';
         let displaySize = { width:320, height: 240 }
@@ -903,6 +905,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
             
             if (chkResult.checked) message.innerHTML = JSON.stringify(results);
+            //console.log(JSON.stringify(detections));
+            //console.log(JSON.stringify(resizedDetections));
+            //console.log(JSON.stringify(results));
             
             res = "";
             results.forEach((result, i) => {
