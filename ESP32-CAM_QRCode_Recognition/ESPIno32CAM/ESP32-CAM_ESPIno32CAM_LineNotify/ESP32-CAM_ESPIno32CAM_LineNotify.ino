@@ -48,7 +48,7 @@ Replace to ...
 const char* ssid     = "*****";   //Wi-Fi帳號
 const char* password = "*****";   //Wi-Fi密碼
 
-String myLineNotifyToken = "*****";    //Line Notify Token
+String lineNotifyToken = "*****";    //Line Notify Token
 
 #include <WiFi.h>
 #include <HTTPClient.h>
@@ -142,7 +142,7 @@ void loop() {
       cam.printDebug("Data type: "+ qr.dataType(res.dataType));
       cam.printfDebug("Length: %d",res.length);
       cam.printDebug("Payload: "+res.payload);
-      LineNotify(myLineNotifyToken, " message="+res.payload);
+      LineNotify(lineNotifyToken, " message="+res.payload);
     }
     else
       cam.printDebug("FAIL");
