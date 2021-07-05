@@ -324,6 +324,7 @@ void ExecuteCommand() {
 
     //Line Notify (Smile)
     if (P1=="happy") {
+      Serial.println("");
       sendCapturedImage2LineNotify(lineNotifyToken);
     }
   } else if (cmd=="resetwifi") {  //重設網路連線  
