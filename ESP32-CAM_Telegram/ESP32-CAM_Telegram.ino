@@ -1,27 +1,23 @@
 /*
 ESP32-CAM save a captured photo to Telegram
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-8-15 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-5 15:00
 https://www.facebook.com/francefu
 */
 
-// Enter your WiFi ssid and password
-const char* ssid     = "*****";   //your network SSID
-const char* password = "*****";   //your network password
+//輸入WIFI連線帳號密碼
+const char* ssid     = "teacher";   //your network SSID
+const char* password = "87654321";   //your network password
 
-String token = "*****:*****";   // Create your bot and get the token -> https://telegram.me/fatherbot
-String chat_id = "*****";   // Get chat_id -> https://telegram.me/chatid_echo_bot
+String myToken = "*****:**********";   // Create your bot and get the token -> https://telegram.me/fatherbot
+String myChatId = "*****";   // Get chat_id -> https://telegram.me/chatid_echo_bot
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
-#include "soc/soc.h"
-#include "soc/rtc_cntl_reg.h"
+#include "soc/soc.h"             //用於電源不穩不重開機 
+#include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機 
+#include "esp_camera.h"          //視訊函式
 
-#include "esp_camera.h"
-
-// WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
-//            or another board which has PSRAM enabled
-
-//CAMERA_MODEL_AI_THINKER
+//ESP32-CAM 安信可模組腳位設定
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -40,59 +36,15 @@ String chat_id = "*****";   // Get chat_id -> https://telegram.me/chatid_echo_bo
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
-void setup()
+void setup() 
 {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
-  
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
+    
   Serial.begin(115200);
-  delay(10);
-  
-  WiFi.mode(WIFI_STA);
+  Serial.setDebugOutput(true);  //開啟診斷輸出
+  Serial.println();
 
-  Serial.println("");
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-  WiFi.begin(ssid, password);  
-  
-  long int StartTime=millis();
-  while (WiFi.status() != WL_CONNECTED) 
-  {
-    delay(500);
-    if ((StartTime+10000) < millis()) break;
-  } 
-
-  Serial.println("");
-  Serial.println("STAIP address: ");
-  Serial.println(WiFi.localIP());
-    
-  Serial.println("");
-
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("Reset");
-    
-    ledcAttachPin(4, 3);
-    ledcSetup(3, 5000, 8);
-    ledcWrite(3,10);
-    delay(200);
-    ledcWrite(3,0);
-    delay(200);    
-    ledcDetachPin(3);
-        
-    delay(1000);
-    ESP.restart();
-  }
-  else {
-    ledcAttachPin(4, 3);
-    ledcSetup(3, 5000, 8);
-    for (int i=0;i<5;i++) {
-      ledcWrite(3,10);
-      delay(200);
-      ledcWrite(3,0);
-      delay(200);    
-    }
-    ledcDetachPin(3);      
-  }
-
+  //視訊組態設定  https://github.com/espressif/esp32-camera/blob/master/driver/include/esp_camera.h
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
@@ -114,35 +66,104 @@ void setup()
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  //init with high specs to pre-allocate larger buffers
-  if(psramFound()){
+  
+  //
+  // WARNING!!! PSRAM IC required for UXGA resolution and high JPEG quality
+  //            Ensure ESP32 Wrover Module or other board with PSRAM is selected
+  //            Partial images will be transmitted if image exceeds buffer size
+  //   
+  // if PSRAM IC present, init with UXGA resolution and higher JPEG quality
+  //                      for larger pre-allocated frame buffer.
+  if(psramFound()){  //是否有PSRAM(Psuedo SRAM)記憶體IC
     config.frame_size = FRAMESIZE_UXGA;
-    config.jpeg_quality = 10;  //0-63 lower number means higher quality
+    config.jpeg_quality = 10;
     config.fb_count = 2;
   } else {
     config.frame_size = FRAMESIZE_SVGA;
-    config.jpeg_quality = 12;  //0-63 lower number means higher quality
+    config.jpeg_quality = 12;
     config.fb_count = 1;
   }
-  
-  // camera init
+
+  //視訊初始化
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
-    delay(1000);
     ESP.restart();
   }
 
-  //drop down frame size for higher initial frame rate
+  //可自訂視訊框架預設大小(解析度大小)
   sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_CIF);  // UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+  // initial sensors are flipped vertically and colors are a bit saturated
+  if (s->id.PID == OV3660_PID) {
+    s->set_vflip(s, 1); // flip it back
+    s->set_brightness(s, 1); // up the brightness just a bit
+    s->set_saturation(s, -2); // lower the saturation
+  }
+  // drop down frame size for higher initial frame rate
+  s->set_framesize(s, FRAMESIZE_SVGA);    //解析度 UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768), SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120), QXGA(2048x1564 for OV3660)
+
+  //s->set_vflip(s, 1);  //垂直翻轉
+  //s->set_hmirror(s, 1);  //水平鏡像
+  
+  //閃光燈(GPIO4)
+  ledcAttachPin(4, 4);  
+  ledcSetup(4, 5000, 8);
+  
+  WiFi.mode(WIFI_AP_STA);  //其他模式 WiFi.mode(WIFI_AP); WiFi.mode(WIFI_STA);
+
+  //指定Client端靜態IP
+  //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
+
+  for (int i=0;i<2;i++) {
+    WiFi.begin(ssid, password);    //執行網路連線
+  
+    delay(1000);
+    Serial.println("");
+    Serial.print("Connecting to ");
+    Serial.println(ssid);
+    
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        if ((StartTime+5000) < millis()) break;    //等待10秒連線
+    } 
+  
+    if (WiFi.status() == WL_CONNECTED) {    //若連線成功
+      Serial.println("");
+      Serial.println("STAIP address: ");
+      Serial.println(WiFi.localIP());
+      Serial.println("");
+  
+      for (int i=0;i<5;i++) {   //若連上WIFI設定閃光燈快速閃爍
+        ledcWrite(4,10);
+        delay(200);
+        ledcWrite(4,0);
+        delay(200);    
+      }
+      break;
+    }
+  } 
+
+  if (WiFi.status() != WL_CONNECTED) {    //若連線失敗
+    for (int i=0;i<2;i++) {    //若連不上WIFI設定閃光燈慢速閃爍
+      ledcWrite(4,10);
+      delay(1000);
+      ledcWrite(4,0);
+      delay(1000);    
+    }
+    ESP.restart();
+  } 
+
+  //設定閃光燈為低電位
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW); 
+
+  sendMessage2Telegram(myToken, myChatId, "Hello Taiwan.\nHow are you?");
+  sendCapturedImage2Telegram(myToken, myChatId);
 }
 
-void loop()
+void loop() 
 {
-  sendCapturedImage2Telegram(token, chat_id);
-  delay(72000);
-  
   /*
   int gpioPIR = 13;   //PIR Motion Sensor
   pinMode(gpioPIR, INPUT_PULLUP);
@@ -170,8 +191,10 @@ String sendCapturedImage2Telegram(String token, String chat_id) {
   }  
   
   Serial.println("Connect to " + String(myDomain));
+  
   WiFiClientSecure client_tcp;
   client_tcp.setInsecure();   //run version 1.0.5 or above
+  
   if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
     
@@ -195,8 +218,7 @@ String sendCapturedImage2Telegram(String token, String chat_id) {
       if (n+1024<fbLen) {
         client_tcp.write(fbBuf, 1024);
         fbBuf += 1024;
-      }
-      else if (fbLen%1024>0) {
+      } else if (fbLen%1024>0) {
         size_t remainder = fbLen%1024;
         client_tcp.write(fbBuf, remainder);
       }
@@ -210,16 +232,13 @@ String sendCapturedImage2Telegram(String token, String chat_id) {
     long startTime = millis();
     boolean state = false;
     
-    while ((startTime + waitTime) > millis())
-    {
+    while ((startTime + waitTime) > millis()) {
       Serial.print(".");
       delay(100);      
-      while (client_tcp.available()) 
-      {
+      while (client_tcp.available()) {
           char c = client_tcp.read();
           if (state==true) getBody += String(c);        
-          if (c == '\n') 
-          {
+          if (c == '\n') {
             if (getAll.length()==0) state=true; 
             getAll = "";
           } 
@@ -230,9 +249,9 @@ String sendCapturedImage2Telegram(String token, String chat_id) {
        if (getBody.length()>0) break;
     }
     client_tcp.stop();
+    Serial.println();
     Serial.println(getBody);
-  }
-  else {
+  } else {
     getBody="Connected to api.telegram.org failed.";
     Serial.println("Connected to api.telegram.org failed.");
   }
@@ -245,8 +264,10 @@ String sendMessage2Telegram(String token, String chat_id, String text) {
   String getAll="", getBody = "";
   
   Serial.println("Connect to " + String(myDomain));
+  
   WiFiClientSecure client_tcp;
   client_tcp.setInsecure();   //run version 1.0.5 or above
+  
   if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
 
@@ -262,16 +283,13 @@ String sendMessage2Telegram(String token, String chat_id, String text) {
     long startTime = millis();
     boolean state = false;
     
-    while ((startTime + waitTime) > millis())
-    {
+    while ((startTime + waitTime) > millis()) {
       Serial.print(".");
       delay(100);      
-      while (client_tcp.available()) 
-      {
+      while (client_tcp.available()) {
           char c = client_tcp.read();
           if (state==true) getBody += String(c);        
-          if (c == '\n') 
-          {
+          if (c == '\n') {
             if (getAll.length()==0) state=true; 
             getAll = "";
           } 
@@ -282,9 +300,9 @@ String sendMessage2Telegram(String token, String chat_id, String text) {
        if (getBody.length()>0) break;
     }
     client_tcp.stop();
+    Serial.println();
     Serial.println(getBody);
-  }
-  else {
+  } else {
     getBody="Connected to api.telegram.org failed.";
     Serial.println("Connected to api.telegram.org failed.");
   }
