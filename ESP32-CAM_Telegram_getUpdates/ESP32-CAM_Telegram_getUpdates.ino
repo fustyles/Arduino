@@ -15,8 +15,8 @@ https://core.telegram.org/bots/api
 const char* ssid     = "teacher";   //your network SSID
 const char* password = "87654321";   //your network password
 
-String myToken = "1636695736:AAGLi8kHrFbRWd6gpsq1ToxBTmvxH-UQJ7s";   // Create your bot and get the token -> https://telegram.me/fatherbot
-String myChatId = "901901847";                                       // Get chat_id -> https://telegram.me/chatid_echo_bot
+String myToken = "*****:*****";   // Create your bot and get the token -> https://telegram.me/fatherbot
+String myChatId = "*****";                                       // Get chat_id -> https://telegram.me/chatid_echo_bot
 
 /*
 If "sendHelp" variable is equal to "true", it will send the command list to Telegram Bot when the board boots. 
