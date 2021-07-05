@@ -1011,7 +1011,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             } else if (el.id =="uart") {  //新增uart自訂指令
               return;                           
             } else {
-              var query = `${baseHost}?var=${el.id}&val=${value}`
+              var query = `${baseHost}/?${el.id}=${value}`
             }
         
             fetch(query)
