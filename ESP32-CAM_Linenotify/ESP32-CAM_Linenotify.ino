@@ -110,7 +110,7 @@ void setup()
   ledcAttachPin(4, 4);  
   ledcSetup(4, 5000, 8);
   
-  WiFi.mode(WIFI_AP_STA);  //其他模式 WiFi.mode(WIFI_AP); WiFi.mode(WIFI_STA);
+  WiFi.mode(WIFI_STA);  //其他模式 WiFi.mode(WIFI_AP); WiFi.mode(WIFI_STA);
 
   //指定Client端靜態IP
   //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
