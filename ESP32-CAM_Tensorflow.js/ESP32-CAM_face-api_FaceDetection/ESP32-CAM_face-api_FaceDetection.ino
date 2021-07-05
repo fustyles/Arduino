@@ -974,6 +974,19 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                             <button id="get-still">Get Still</button>
                             <button id="toggle-stream" style="display:none">Start Stream</button>
                         </section>
+                        <div class="input-group" id="uart-group">
+                            <label for="relay">UART (Smile)</label>
+                            <div class="switch">
+                                <input id="uart" type="checkbox" class="default-action" checked="checked">
+                                <label class="slider" for="uart"></label>
+                            </div>
+                        </div>
+                        <div class="input-group" id="probability-group">
+                            <label for="probability">probability</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="probability" min="0" max="1" value="0" step="0.1" class="default-action">
+                            <div class="range-max">1</div>
+                        </div>                           
                         <div class="input-group" id="flash-group">
                             <label for="flash">Flash</label>
                             <div class="range-min">0</div>
@@ -1058,20 +1071,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                                 <label class="slider" for="relay"></label>
                             </div>
                             <select id="pinRelay" width="30"><option value="2">IO2</option><option value="12">IO12</option><option value="13" selected>IO13</option><option value="14">IO14</option><option value="15">IO15</option></select>
-                        </div>
-                        <div class="input-group" id="uart-group">
-                            <label for="relay">UART</label>
-                            <div class="switch">
-                                <input id="uart" type="checkbox" class="default-action" checked="checked">
-                                <label class="slider" for="uart"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="probability-group">
-                            <label for="probability">probability</label>
-                            <div class="range-min">0</div>
-                            <input type="range" id="probability" min="0" max="1" value="0" step="0.1" class="default-action">
-                            <div class="range-max">1</div>
-                        </div>                                                 
+                        </div>                                              
                     </nav>
                 </div>
             </div>

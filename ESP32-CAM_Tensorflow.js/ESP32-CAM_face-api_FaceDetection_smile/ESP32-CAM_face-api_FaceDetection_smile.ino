@@ -732,7 +732,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                             <button id="toggle-stream" style="display:none">Start Stream</button>                                                     
                         </section>
                         <div class="input-group" id="uart-group">
-                            <label for="relay">Smile Detect</label>
+                            <label for="relay">UART (Smile)</label>
                             <div class="switch">
                                 <input id="uart" type="checkbox" class="default-action" checked="checked">
                                 <label class="slider" for="uart"></label>
