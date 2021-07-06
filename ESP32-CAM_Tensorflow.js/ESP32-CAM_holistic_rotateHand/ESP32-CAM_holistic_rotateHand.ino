@@ -1169,15 +1169,15 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                 thumbangle+=180;
               }
               var query_flash = "http:\/\/"+ip.value+"/control?flash="+Math.floor(thumbangle*255/180);
-              //var query_flash = "http:\/\/"+ip.value+"/control?servo=2;"+Math.floor(thumbangle);     //control servo
+              //var query_flash = "http:\/\/"+ip.value+"/control?servo=2;"+Math.floor(thumbangle);     //control servo (IO2)
             } else {
               var query_flash = "http:\/\/"+ip.value+"/control?flash=0";
-              //var query_flash = "http:\/\/"+ip.value+"/control?servo=2;0";     //control servo
+              //var query_flash = "http:\/\/"+ip.value+"/control?servo=2;0";     //control servo (IO2)
             }
           }
           else {
             var query_flash = "http:\/\/"+ip.value+"/control?flash=0";
-            //var query_flash = "http:\/\/"+ip.value+"/control?servo=2;0";     //control servo
+            //var query_flash = "http:\/\/"+ip.value+"/control?servo=2;0";     //control servo (IO2)
           }
           if (query_last!=query_flash) {
             query_last=query_flash;             
