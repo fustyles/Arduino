@@ -1,8 +1,8 @@
 /*
-ESP32-CAM Mediapipe Holistic 旋轉手掌控制閃光燈
+ESP32-CAM Mediapipe Holistic 旋轉左手掌控制閃光燈強弱
 https://google.github.io/mediapipe/solutions/holistic.html
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-4 15:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-ˊ :30
 https://www.facebook.com/francefu
 
 AP IP: 192.168.4.1
@@ -1157,19 +1157,19 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
           }
           context.restore();
 
-          //自訂拇指旋轉角度條件判斷
-          var thumb4x = (holistic_lefthand_position("4", "x"));
-          var thumb4y = (holistic_lefthand_position("4", "y"));
-          var thumb2x = (holistic_lefthand_position("2", "x"));
-          var thumb2y = (holistic_lefthand_position("2", "y"));
-          var thumbangle = (holistic_angle(thumb4x, thumb4y, thumb2x, thumb2y));
-          if (thumbangle) {
-            if (thumb4y<=thumb2y) {
-              if (thumbangle < 0) {
-                thumbangle+=180;
+          //自訂左手掌中指指尖與手腕連線角度條件判斷
+          var Wrist0x = (holistic_lefthand_position("0", "x"));
+          var Wrist0y = (holistic_lefthand_position("0", "y"));
+          var middlefinger12x = (holistic_lefthand_position("12", "x"));
+          var middlefinger12y = (holistic_lefthand_position("12", "y"));
+          var handangle = (holistic_angle(Wrist0x, Wrist0y, middlefinger12x, middlefinger12y));
+          if (handangle) {
+            if (Wrist0y>=middlefinger12y) {
+              if (handangle < 0) {
+                handangle+=180;
               }
-              var query_flash = "http:\/\/"+ip.value+"/control?flash="+Math.floor(thumbangle*255/180);
-              //var query_flash = "http:\/\/"+ip.value+"/control?servo=2;"+Math.floor(thumbangle);     //control servo (IO2)
+              var query_flash = "http:\/\/"+ip.value+"/control?flash="+Math.floor(handangle*255/180);
+              //var query_flash = "http:\/\/"+ip.value+"/control?servo=2;"+Math.floor(handangle);     //control servo (IO2)
             } else {
               var query_flash = "http:\/\/"+ip.value+"/control?flash=0";
               //var query_flash = "http:\/\/"+ip.value+"/control?servo=2;0";     //control servo (IO2)
