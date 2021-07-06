@@ -52,7 +52,7 @@ const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 String myToken = "*****:*****";   // Create your bot and get the token -> https://telegram.me/fatherbot
 String myChatId = "*****";   // Get chat_id -> https://telegram.me/chatid_echo_bot
 
-int pinDoor = 2;  門鎖繼電器腳位IO2
+int pinDoor = 2;  //門鎖繼電器腳位IO2
 long message_id_last = 0;  //Telegram訊息代碼初始值
 int timer = 0;  //Telegram等待訊息指令計時秒數
 int timerLimit = 10;  //Telegram等待訊息指令秒數(s)，視訊畫面將暫停直到超時10秒
