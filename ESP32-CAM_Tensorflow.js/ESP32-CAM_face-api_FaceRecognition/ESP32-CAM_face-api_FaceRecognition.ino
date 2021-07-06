@@ -977,7 +977,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                             <button id="toggle-stream" style="display:none">Start Stream</button>
                         </section>
                         <div class="input-group" id="uart-group">
-                            <label for="relay">Recognize face</label>
+                            <label for="uart">Recognize face</label>
                             <div class="switch">
                                 <input id="uart" type="checkbox" class="default-action" checked="checked">
                                 <label class="slider" for="uart"></label>
