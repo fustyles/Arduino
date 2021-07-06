@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Mediapipe Holistic 旋轉手掌控制閃光燈
+ESP32-CAM Mediapipe Holistic
 https://google.github.io/mediapipe/solutions/holistic.html
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-4 15:30
