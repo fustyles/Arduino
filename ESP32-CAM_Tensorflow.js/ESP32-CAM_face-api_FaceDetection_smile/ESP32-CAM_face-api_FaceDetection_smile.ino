@@ -31,8 +31,8 @@ http://192.168.xxx.xxx?framesize=value          //解析度 value = 10->UXGA(160
 http://192.168.xxx.xxx?quality&val=value        //畫質 value = 10 ~ 63
 http://192.168.xxx.xxx?brightness=value         //亮度 value = -2 ~ 2
 http://192.168.xxx.xxx?contrast=value           //對比 value = -2 ~ 2
-http://192.168.xxx.xxx/saturation=value         //飽和度 value = -2 ~ 2 
-http://192.168.xxx.xxx/special_effect=value     //特效 value = 0 ~ 6
+http://192.168.xxx.xxx?saturation=value         //飽和度 value = -2 ~ 2 
+http://192.168.xxx.xxx?special_effect=value     //特效 value = 0 ~ 6
 http://192.168.xxx.xxx?hmirror=value            //水平鏡像 value = 0 or 1 
 http://192.168.xxx.xxx?vflip=value              //垂直翻轉 value = 0 or 1 
 
