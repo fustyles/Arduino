@@ -1,12 +1,15 @@
 /*
   Author : ChungYi Fu (Kaohsiung, Taiwan)  Modified: 2021-6-19 00:00
   https://www.facebook.com/francefu
-  
-  Refer to the code. (ESP32-arduino core version 1.06)
-  https://github.com/jameszah/ESP32-CAM-Video-Recorder-junior
 
+  Refer to the code. (ESP32-arduino core version 1.06)
+  https://github.com/jameszah/ESP32-CAM-Video-Recorder-junior/blob/master/ESP32-CAM-Video-Recorder-junior-50x-lpmod.ino
+  
   Try it (Page)
   https://fustyles.github.io/webduino/CautionArea/ESP32-CAM-Video-Recorder-junior-Page.html
+  Chrome瀏覽器設定須更改：允許開啟不安全內容。否則http未加密連結會被阻擋無法串流！若將網頁下載到本機執行，則不用更改安全性設定。
+  瀏覽器網址執行 chrome://settings/content/siteDetails?site=https://fustyles.github.io
+  You must change the settings to allow insecure content.
 
   Url Command
   http://192.168.xxx.xxx                               //Main Page
