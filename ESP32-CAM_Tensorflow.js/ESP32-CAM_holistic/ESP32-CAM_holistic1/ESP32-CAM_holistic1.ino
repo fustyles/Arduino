@@ -934,7 +934,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           if (angle<0) angle = 180 + angle;
           if (input_y0<input_y1) angle = 180 + angle;
           return angle;
-        } 
+        }
 
         function holistic_face_position(input_index, input_data){
           var json = faceResult.innerHTML;
@@ -951,7 +951,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           }
           return "";
         }
-
+        
         function holistic_pose_position(input_index, input_data){
           var json = poseResult.innerHTML;
           if (json!=""&&json!="undefined") {
@@ -967,7 +967,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           }
           return "";
         }
-
+        
         function holistic_lefthand_position(input_index, input_data){
           var json = lefthandResult.innerHTML;
           if (json!=""&&json!="undefined") {
@@ -983,7 +983,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           }
           return "";
         }
-
+        
         function holistic_righthand_position(input_index, input_data){
           var json = righthandResult.innerHTML;
           if (json!=""&&json!="undefined") {

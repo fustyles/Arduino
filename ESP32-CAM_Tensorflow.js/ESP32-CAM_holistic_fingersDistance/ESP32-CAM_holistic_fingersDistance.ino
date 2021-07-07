@@ -1218,68 +1218,68 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
           if (angle<0) angle = 180 + angle;
           if (input_y0<input_y1) angle = 180 + angle;
           return angle;
-        } 
+        }
 
         function holistic_face_position(input_index, input_data){
           var json = faceResult.innerHTML;
           if (json!=""&&json!="undefined") {
-                var result = JSON.parse('{"data":'+json+'}');
-                if (result["data"].length>0) {
-                  if (input_data=="x")
-                        return Number(result["data"][input_index].x)*Number(canvas.width);
-                  else if (input_data=="y")
-                        return Number(result["data"][input_index].y)*Number(canvas.height);
-                  else if (input_data=="z")
-                        return Number(result["data"][input_index].z)*Number(canvas.width);
-                }
+          var result = JSON.parse('{"data":'+json+'}');
+          if (result["data"].length>0) {
+            if (input_data=="x")
+            return Number(result["data"][input_index].x)*Number(canvas.width);
+            else if (input_data=="y")
+            return Number(result["data"][input_index].y)*Number(canvas.height);
+            else if (input_data=="z")
+            return Number(result["data"][input_index].z)*Number(canvas.width);
+          }
           }
           return "";
         }
-
+        
         function holistic_pose_position(input_index, input_data){
           var json = poseResult.innerHTML;
           if (json!=""&&json!="undefined") {
-                var result = JSON.parse('{"data":'+json+'}');
-                if (result["data"].length>0) {
-                  if (input_data=="x")
-                        return Number(result["data"][input_index].x)*Number(canvas.width);
-                  else if (input_data=="y")
-                        return Number(result["data"][input_index].y)*Number(canvas.height);
-                  else if (input_data=="z")
-                        return Number(result["data"][input_index].z)*Number(canvas.width);
-                }
+          var result = JSON.parse('{"data":'+json+'}');
+          if (result["data"].length>0) {
+            if (input_data=="x")
+            return Number(result["data"][input_index].x)*Number(canvas.width);
+            else if (input_data=="y")
+            return Number(result["data"][input_index].y)*Number(canvas.height);
+            else if (input_data=="z")
+            return Number(result["data"][input_index].z)*Number(canvas.width);
+          }
           }
           return "";
         }
-
+        
         function holistic_lefthand_position(input_index, input_data){
           var json = lefthandResult.innerHTML;
           if (json!=""&&json!="undefined") {
-                var result = JSON.parse('{"data":'+json+'}');
-                if (result["data"].length>0) {
-                  if (input_data=="x")
-                        return Number(result["data"][input_index].x)*Number(canvas.width);
-                  else if (input_data=="y")
-                        return Number(result["data"][input_index].y)*Number(canvas.height);
-                  else if (input_data=="z")
-                        return Number(result["data"][input_index].z)*Number(canvas.width);
-                }
+          var result = JSON.parse('{"data":'+json+'}');
+          if (result["data"].length>0) {
+            if (input_data=="x")
+            return Number(result["data"][input_index].x)*Number(canvas.width);
+            else if (input_data=="y")
+            return Number(result["data"][input_index].y)*Number(canvas.height);
+            else if (input_data=="z")
+            return Number(result["data"][input_index].z)*Number(canvas.width);
+          }
           }
           return "";
         }
-
+        
         function holistic_righthand_position(input_index, input_data){
           var json = righthandResult.innerHTML;
           if (json!=""&&json!="undefined") {
-                var result = JSON.parse('{"data":'+json+'}');
-                if (result["data"].length>0) {
-                  if (input_data=="x")
-                        return Number(result["data"][input_index].x)*Number(canvas.width);
-                  else if (input_data=="y")
-                        return Number(result["data"][input_index].y)*Number(canvas.height);
-                  else if (input_data=="z")
-                        return Number(result["data"][input_index].z)*Number(canvas.width);
-                }
+          var result = JSON.parse('{"data":'+json+'}');
+          if (result["data"].length>0) {
+            if (input_data=="x")
+            return Number(result["data"][input_index].x)*Number(canvas.width);
+            else if (input_data=="y")
+            return Number(result["data"][input_index].y)*Number(canvas.height);
+            else if (input_data=="z")
+            return Number(result["data"][input_index].z)*Number(canvas.width);
+          }
           }
           return "";
         }
