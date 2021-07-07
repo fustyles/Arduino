@@ -1214,8 +1214,11 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
         }   
         
         function holistic_angle(input_x0,input_y0,input_x1,input_y1) {
-            return (Math.atan((input_y1-input_y0)/(input_x1-input_x0)) / Math.PI) * 180;
-        }
+          var angle = (Math.atan((input_y1-input_y0)/(input_x1-input_x0)) / Math.PI) * 180;
+          if (angle<0) angle = 180 + angle;
+          if (input_y0<input_y1) angle = 180 + angle;
+          return angle;
+        } 
 
         function holistic_face_position(input_index, input_data){
           var json = faceResult.innerHTML;
