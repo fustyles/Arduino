@@ -2,7 +2,7 @@
 ESP32-CAM Mediapipe Holistic 旋轉左手掌控制閃光燈強弱
 https://google.github.io/mediapipe/solutions/holistic.html
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-ˊ :30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-6 00:30
 https://www.facebook.com/francefu
 
 AP IP: 192.168.4.1
