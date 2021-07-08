@@ -8,7 +8,7 @@
   You need to connect to AP (192.168.4.1) to set Wi-Fi settings.
 
   Recorder manager page
-  https://fustyles.github.io/webduino/CautionArea/ESP32-CAM-Video-Recorder-junior-Page_en.html   (English)
+  https://fustyles.github.io/webduino/CautionArea/ESP32-CAM-Video-Recorder-junior_en_Page.html   (English)
   https://fustyles.github.io/webduino/CautionArea/ESP32-CAM-Video-Recorder-junior-Page.html   (Traditional Chinese)
   You must change Chrome settings to allow "insecure content".
   URL： chrome://settings/content/siteDetails?site=https://fustyles.github.io
