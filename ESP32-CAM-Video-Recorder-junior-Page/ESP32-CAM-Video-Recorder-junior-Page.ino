@@ -1356,7 +1356,7 @@ static esp_err_t index_wifi_handler(httpd_req_t *req) {
       <body>
       WIFI SSID: <input type="text" id="ssid"><br>
       WIFI  PWD: <input type="text" id="pwd"><br>
-      <input type="button" value="設定" onclick="location.href='/control?resetwifi='+document.getElementById('ssid').value+';'+document.getElementById('pwd').value;">
+      <input type="button" value="Set" onclick="location.href='/control?resetwifi='+document.getElementById('ssid').value+';'+document.getElementById('pwd').value;">
       </body>
   </html>        
   )rawliteral";
