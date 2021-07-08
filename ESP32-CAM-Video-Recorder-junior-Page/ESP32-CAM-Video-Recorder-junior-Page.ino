@@ -7,11 +7,15 @@
 
   You need to connect to AP (192.168.4.1) to set Wi-Fi settings.
 
-  Try it (Page)
-  https://fustyles.github.io/webduino/CautionArea/ESP32-CAM-Video-Recorder-junior-Page.html
+  Try it (Recorder manager)
+  https://fustyles.github.io/webduino/CautionArea/ESP32-CAM-Video-Recorder-junior-Page_en.html   (English)
+  https://fustyles.github.io/webduino/CautionArea/ESP32-CAM-Video-Recorder-junior-Page.html   (Traditional Chinese)
+  
+  You must change Chrome settings to allow "insecure content".
+  URL： chrome://settings/content/siteDetails?site=https://fustyles.github.io
+  
   Chrome瀏覽器設定須更改：允許開啟不安全內容。否則http未加密連結會被阻擋無法串流！若將網頁下載到本機執行，則不用更改安全性設定。
-  瀏覽器網址執行 chrome://settings/content/siteDetails?site=https://fustyles.github.io
-  You must change the settings to allow insecure content.
+  
 
   http://192.168.xxx.xxx             //網頁首頁管理介面
   http://192.168.xxx.xxx:81/stream   //取得串流影像       <img src="http://192.168.xxx.xxx:81/stream">
