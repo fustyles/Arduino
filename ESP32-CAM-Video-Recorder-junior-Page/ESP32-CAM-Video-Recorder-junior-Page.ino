@@ -5,6 +5,8 @@
   Refer to the code. (ESP32-arduino core version 1.06)
   https://github.com/jameszah/ESP32-CAM-Video-Recorder-junior/blob/master/ESP32-CAM-Video-Recorder-junior-50x-lpmod.ino
 
+  You need to connect to AP (192.168.4.1) to set Wi-Fi settings.
+
   Try it (Page)
   https://fustyles.github.io/webduino/CautionArea/ESP32-CAM-Video-Recorder-junior-Page.html
   Chrome瀏覽器設定須更改：允許開啟不安全內容。否則http未加密連結會被阻擋無法串流！若將網頁下載到本機執行，則不用更改安全性設定。
