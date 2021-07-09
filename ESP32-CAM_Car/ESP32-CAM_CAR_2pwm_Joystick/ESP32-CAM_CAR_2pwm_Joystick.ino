@@ -958,14 +958,18 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           <div class="close" id="close-stream">×</div>
             <img id="stream" src="" crossorigin="anonymous">
           </div>
-          <div id="joy3Div" style="width:200px;height:200px;margin:50px"></div>
-          <input type="checkbox" id="chkcanvas">Hide control panel
         </figure>
         <section id="buttons">
             <table>
-              <tr><td><button id="restart" onclick="try{fetch(document.location.origin+'/control?restart');}catch(e){}">Restart</button></td><td><button id="get-still">Get Still</button></td><td><button id="toggle-stream">Start Stream</button></td></tr>
+              <tr>
+              <td><button id="restart" onclick="try{fetch(document.location.origin+'/control?restart');}catch(e){}">Restart</button></td>
+              <td><button id="get-still">Get Still</button></td>
+              <td><button id="toggle-stream">Start Stream</button></td>
+              </tr>
             </table>
         </section>
+        <input type="checkbox" id="chkcanvas">Hide control panel
+        <div id="joy3Div" style="width:200px;height:200px;margin:50px"></div>
         <section class="main">      
             <div id="logo">
                 <label for="nav-toggle-cb" id="nav-toggle">&#9776;&nbsp;&nbsp;Toggle settings</label>

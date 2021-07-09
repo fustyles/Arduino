@@ -2,7 +2,7 @@
 ESP32-CAM Remote Control Car (Use Mobile 3-Axis)
 You must open the page in Firefox.
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-3 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-9 22:00
 https://www.facebook.com/francefu
 
 Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
@@ -673,10 +673,291 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <title>ESP32 OV2460</title>
         <style>
-          body{font-family:Arial,Helvetica,sans-serif;background:#181818;color:#EFEFEF;font-size:16px}h2{font-size:18px}section.main{display:flex}#menu,section.main{flex-direction:column}#menu{display:none;flex-wrap:nowrap;min-width:340px;background:#363636;padding:8px;border-radius:4px;margin-top:-10px;margin-right:10px}#content{display:flex;flex-wrap:wrap;align-items:stretch}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}figure img{display:block;width:100%;height:auto;border-radius:4px;margin-top:8px}@media (min-width: 800px) and (orientation:landscape){#content{display:flex;flex-wrap:nowrap;align-items:stretch}figure img{display:block;max-width:100%;max-height:calc(100vh - 40px);width:auto;height:auto}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}}section#buttons{display:flex;flex-wrap:nowrap;justify-content:space-between}#nav-toggle{cursor:pointer;display:block}#nav-toggle-cb{outline:0;opacity:0;width:0;height:0}#nav-toggle-cb:checked+#menu{display:flex}.input-group{display:flex;flex-wrap:nowrap;line-height:22px;margin:5px 0}.input-group>label{display:inline-block;padding-right:10px;min-width:47%}.input-group input,.input-group select{flex-grow:1}.range-max,.range-min{display:inline-block;padding:0 5px}button{display:block;margin:5px;padding:0 12px;border:0;line-height:28px;cursor:pointer;color:#fff;background:#ff3034;border-radius:5px;font-size:16px;outline:0}button:hover{background:#ff494d}button:active{background:#f21c21}button.disabled{cursor:default;background:#a0a0a0}input[type=range]{-webkit-appearance:none;width:100%;height:22px;background:#363636;cursor:pointer;margin:0}input[type=range]:focus{outline:0}input[type=range]::-webkit-slider-runnable-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-webkit-slider-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;-webkit-appearance:none;margin-top:-11.5px}input[type=range]:focus::-webkit-slider-runnable-track{background:#EFEFEF}input[type=range]::-moz-range-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-moz-range-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer}input[type=range]::-ms-track{width:100%;height:2px;cursor:pointer;background:0 0;border-color:transparent;color:transparent}input[type=range]::-ms-fill-lower{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-fill-upper{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;height:2px}input[type=range]:focus::-ms-fill-lower{background:#EFEFEF}input[type=range]:focus::-ms-fill-upper{background:#363636}.switch{display:block;position:relative;line-height:22px;font-size:16px;height:22px}.switch input{outline:0;opacity:0;width:0;height:0}.slider{width:50px;height:22px;border-radius:22px;cursor:pointer;background-color:grey}.slider,.slider:before{display:inline-block;transition:.4s}.slider:before{position:relative;content:"";border-radius:50%;height:16px;width:16px;left:4px;top:3px;background-color:#fff}input:checked+.slider{background-color:#ff3034}input:checked+.slider:before{-webkit-transform:translateX(26px);transform:translateX(26px)}select{border:1px solid #363636;font-size:14px;height:22px;outline:0;border-radius:5px}.image-container{position:relative;min-width:160px}.close{position:absolute;right:5px;top:5px;background:#ff3034;width:16px;height:16px;border-radius:100px;color:#fff;text-align:center;line-height:18px;cursor:pointer}.hidden{display:none}
-        </style>     
+            body {
+                font-family: Arial,Helvetica,sans-serif;
+                background: #181818;
+                color: #EFEFEF;
+                font-size: 16px
+            }
+            h2 {
+                font-size: 18px
+            }
+            section.main {
+                display: flex
+            }
+            #menu,section.main {
+                flex-direction: column
+            }
+            #menu {
+                display: flex;
+                flex-wrap: nowrap;
+                min-width: 340px;
+                background: #363636;
+                padding: 8px;
+                border-radius: 4px;
+                margin-top: -10px;
+                margin-right: 10px;
+            }
+            #content {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: stretch
+            }
+            figure {
+                padding: 0px;
+                margin: 0;
+                -webkit-margin-before: 0;
+                margin-block-start: 0;
+                -webkit-margin-after: 0;
+                margin-block-end: 0;
+                -webkit-margin-start: 0;
+                margin-inline-start: 0;
+                -webkit-margin-end: 0;
+                margin-inline-end: 0
+            }
+            figure img {
+                display: block;
+                width: 100%;
+                height: auto;
+                border-radius: 4px;
+                margin-top: 8px;
+            }
+            @media (min-width: 800px) and (orientation:landscape) {
+                #content {
+                    display:flex;
+                    flex-wrap: nowrap;
+                    align-items: stretch
+                }
+                figure img {
+                    display: block;
+                    max-width: 100%;
+                    max-height: calc(100vh - 40px);
+                    width: auto;
+                    height: auto
+                }
+                figure {
+                    padding: 0 0 0 0px;
+                    margin: 0;
+                    -webkit-margin-before: 0;
+                    margin-block-start: 0;
+                    -webkit-margin-after: 0;
+                    margin-block-end: 0;
+                    -webkit-margin-start: 0;
+                    margin-inline-start: 0;
+                    -webkit-margin-end: 0;
+                    margin-inline-end: 0
+                }
+            }
+            section#buttons {
+                display: flex;
+                flex-wrap: nowrap;
+                justify-content: space-between
+            }
+            #nav-toggle {
+                cursor: pointer;
+                display: block
+            }
+            #nav-toggle-cb {
+                outline: 0;
+                opacity: 0;
+                width: 0;
+                height: 0
+            }
+            #nav-toggle-cb:checked+#menu {
+                display: none
+            }
+            .input-group {
+                display: flex;
+                flex-wrap: nowrap;
+                line-height: 22px;
+                margin: 5px 0
+            }
+            .input-group>label {
+                display: inline-block;
+                padding-right: 10px;
+                min-width: 47%
+            }
+            .input-group input,.input-group select {
+                flex-grow: 1
+            }
+            .range-max,.range-min {
+                display: inline-block;
+                padding: 0 5px
+            }
+            button {
+                display: block;
+                margin: 5px;
+                padding: 0 12px;
+                border: 0;
+                line-height: 28px;
+                cursor: pointer;
+                color: #fff;
+                background: #ff3034;
+                border-radius: 5px;
+                font-size: 16px;
+                outline: 0
+            }
+            button:hover {
+                background: #ff494d
+            }
+            button:active {
+                background: #f21c21
+            }
+            button.disabled {
+                cursor: default;
+                background: #a0a0a0
+            }
+            input[type=range] {
+                -webkit-appearance: none;
+                width: 100%;
+                height: 22px;
+                background: #363636;
+                cursor: pointer;
+                margin: 0
+            }
+            input[type=range]:focus {
+                outline: 0
+            }
+            input[type=range]::-webkit-slider-runnable-track {
+                width: 100%;
+                height: 2px;
+                cursor: pointer;
+                background: #EFEFEF;
+                border-radius: 0;
+                border: 0 solid #EFEFEF
+            }
+            input[type=range]::-webkit-slider-thumb {
+                border: 1px solid rgba(0,0,30,0);
+                height: 22px;
+                width: 22px;
+                border-radius: 50px;
+                background: #ff3034;
+                cursor: pointer;
+                -webkit-appearance: none;
+                margin-top: -11.5px
+            }
+            input[type=range]:focus::-webkit-slider-runnable-track {
+                background: #EFEFEF
+            }
+            input[type=range]::-moz-range-track {
+                width: 100%;
+                height: 2px;
+                cursor: pointer;
+                background: #EFEFEF;
+                border-radius: 0;
+                border: 0 solid #EFEFEF
+            }
+            input[type=range]::-moz-range-thumb {
+                border: 1px solid rgba(0,0,30,0);
+                height: 22px;
+                width: 22px;
+                border-radius: 50px;
+                background: #ff3034;
+                cursor: pointer
+            }
+            input[type=range]::-ms-track {
+                width: 100%;
+                height: 2px;
+                cursor: pointer;
+                background: 0 0;
+                border-color: transparent;
+                color: transparent
+            }
+            input[type=range]::-ms-fill-lower {
+                background: #EFEFEF;
+                border: 0 solid #EFEFEF;
+                border-radius: 0
+            }
+            input[type=range]::-ms-fill-upper {
+                background: #EFEFEF;
+                border: 0 solid #EFEFEF;
+                border-radius: 0
+            }
+            input[type=range]::-ms-thumb {
+                border: 1px solid rgba(0,0,30,0);
+                height: 22px;
+                width: 22px;
+                border-radius: 50px;
+                background: #ff3034;
+                cursor: pointer;
+                height: 2px
+            }
+            input[type=range]:focus::-ms-fill-lower {
+                background: #EFEFEF
+            }
+            input[type=range]:focus::-ms-fill-upper {
+                background: #363636
+            }
+            .switch {
+                display: block;
+                position: relative;
+                line-height: 22px;
+                font-size: 16px;
+                height: 22px
+            }
+            .switch input {
+                outline: 0;
+                opacity: 0;
+                width: 0;
+                height: 0
+            }
+            .slider {
+                width: 50px;
+                height: 22px;
+                border-radius: 22px;
+                cursor: pointer;
+                background-color: grey
+            }
+            .slider,.slider:before {
+                display: inline-block;
+                transition: .4s
+            }
+            .slider:before {
+                position: relative;
+                content: "";
+                border-radius: 50%;
+                height: 16px;
+                width: 16px;
+                left: 4px;
+                top: 3px;
+                background-color: #fff
+            }
+            input:checked+.slider {
+                background-color: #ff3034
+            }
+            input:checked+.slider:before {
+                -webkit-transform: translateX(26px);
+                transform: translateX(26px)
+            }
+            select {
+                border: 1px solid #363636;
+                font-size: 14px;
+                height: 22px;
+                outline: 0;
+                border-radius: 5px
+            }
+            .image-container {
+                position: relative;
+                min-width: 160px
+            }
+            .close {
+                position: absolute;
+                right: 5px;
+                top: 5px;
+                background: #ff3034;
+                width: 16px;
+                height: 16px;
+                border-radius: 100px;
+                color: #fff;
+                text-align: center;
+                line-height: 18px;
+                cursor: pointer
+            }
+            .hidden {
+                display: none
+            }
+        </style>   
     </head>
-    <body onload="document.getElementById('ip').value=location.origin;">
     <figure>
       <div id="stream-container" class="image-container hidden">
         <div class="close" id="close-stream">×</div>
@@ -689,14 +970,22 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             <section id="buttons">
                 <table>
                   <tr><td colspan="3">IP: <input type="text" id="ip" value=""></td></tr>
-                  <tr><td colspan="3"><button id="get-still">get-still</button><button id="toggle-stream" style="display:none"></button><button id="face_enroll" style="display:none" class="disabled" disabled="disabled"></button></td></tr>
-                  <tr><td>Flash</td><td colspan="2"><input type="range" id="flash" min="0" max="255" value="0" onchange="try{fetch(document.getElementById('ip').value+'/control?var=flash&val='+this.value);}catch(e){}"></td></tr>
-                  <tr><td>SpeedR</td><td colspan="2"><input type="range" id="speedR" min="0" max="255" value="255" onchange="try{fetch(document.getElementById('ip').value+'/control?var=speedR&val='+this.value);}catch(e){}"></td></tr>
-                  <tr><td>SpeedL</td><td colspan="2"><input type="range" id="speedL" min="0" max="255" value="255" onchange="try{fetch(document.getElementById('ip').value+'/control?var=speedL&val='+this.value);}catch(e){}"></td></tr>
-                  <tr><td>Turn Decelerate<select onclick="try{fetch(document.getElementById('ip').value+'/control?var=decelerate&val='+this.value);}catch(e){}"><option value="100">100%</option><option value="90">90%</option><option value="80">80%</option><option value="70">70%</option><option value="60" selected="selected">60%</option><option value="50">50%</option><option value="40">40%</option><option value="30">30%</option><option value="10">20%</option><option value="10">10%</option><option value="0">0%</option></select></td><td><input type="checkbox" id="nostop" onclick="noStopControl();">No Stop</td><td><input type="checkbox" id="cellphone" onclick="noStopControl();">3-Axis Control</td></tr> 
-                  <tr><td align="center"><button onmousedown="try{fetch(document.getElementById('ip').value+'/control?var=car&val=6');}catch(e){}" onmouseup="noStopControl();" ontouchstart="event.preventDefault();try{fetch(document.getElementById('ip').value+'/control?var=car&val=6');}catch(e){}" ontouchend="noStopControl();">FrontLeft</button></td><td align="center"><button onmousedown="try{fetch(document.getElementById('ip').value+'/control?var=car&val=1');}catch(e){}" onmouseup="noStopControl();" ontouchstart="event.preventDefault();try{fetch(document.getElementById('ip').value+'/control?var=car&val=1');}catch(e){}" ontouchend="noStopControl();">Front</button></td><td align="center"><button onmousedown="try{fetch(document.getElementById('ip').value+'/control?var=car&val=7');}catch(e){}" onmouseup="noStopControl();" ontouchstart="event.preventDefault();try{fetch(document.getElementById('ip').value+'/control?var=car&val=7');}catch(e){}" ontouchend="noStopControl();">FrontRight</button></td></tr>
-                  <tr><td align="center"><button onmousedown="try{fetch(document.getElementById('ip').value+'/control?var=car&val=2');}catch(e){}" onmouseup="noStopControl();" ontouchstart="event.preventDefault();try{fetch(document.getElementById('ip').value+'/control?var=car&val=2');}catch(e){}" ontouchend="noStopControl();">Left</button></td><td align="center"><button onclick="try{fetch(document.getElementById('ip').value+'/control?var=car&val=3');}catch(e){}">Stop</button></td><td align="center"><button onmousedown="try{fetch(document.getElementById('ip').value+'/control?var=car&val=4');}catch(e){}" onmouseup="noStopControl();" ontouchstart="event.preventDefault();try{fetch(document.getElementById('ip').value+'/control?var=car&val=4');}catch(e){}" ontouchend="noStopControl();">Right</button></td></tr>
-                  <tr><td align="center"><button onmousedown="try{fetch(document.getElementById('ip').value+'/control?var=car&val=8');}catch(e){}" onmouseup="noStopControl();" ontouchstart="event.preventDefault();try{fetch(document.getElementById('ip').value+'/control?var=car&val=8');}catch(e){}" ontouchend="noStopControl();">LeftAfter</button></td><td align="center"><button onmousedown="try{fetch(document.getElementById('ip').value+'/control?var=car&val=5');}catch(e){}" onmouseup="noStopControl();" ontouchstart="event.preventDefault();try{fetch(document.getElementById('ip').value+'/control?var=car&val=5');}catch(e){}" ontouchend="noStopControl();">Back</button></td><td align="center"><button onmousedown="try{fetch(document.getElementById('ip').value+'/control?var=car&val=9');}catch(e){}" onmouseup="noStopControl();" ontouchstart="event.preventDefault();try{fetch(document.getElementById('ip').value+'/control?var=car&val=9');}catch(e){}" ontouchend="noStopControl();">RightAfter</button></td></tr>                   
+                  <tr><td align="left"><button id="restartButton">Restart</button></td><td align="center"><button id="get-still">get-still</button></td><td align="right"><button id="toggle-stream">Stream</button></td></tr>
+                  <tr><td colspan="3"><input type="checkbox" id="nostop" onclick="noStop();">No Stop<input type="checkbox" id="cellphone" onclick="noStop();">3-Axis Control</td></tr> 
+                  <tr bgcolor="#363636">
+                  <td align="center"><button onmousedown="car('/control?var=car&val=6');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=6');" ontouchend="noStop();">FrontLeft</button></td>
+                  <td align="center"><button onmousedown="car('/control?var=car&val=1');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=1');" ontouchend="noStop();">Front</button></td>
+                  <td align="center"><button onmousedown="car('/control?var=car&val=7');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=7');" ontouchend="noStop();">FrontRight</button></td>
+                  </tr>
+                  <tr bgcolor="#363636">
+                  <td align="center"><button onmousedown="car('/control?var=car&val=2');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=2');" ontouchend="noStop();">Left</button></td>
+                  <td align="center"><button onclick="car('/control?var=car&val=3');">Stop</button></td>
+                  <td align="center"><button onmousedown="car('/control?var=car&val=4');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=4');" ontouchend="noStop();">Right</button></td>
+                  </tr>
+                  <tr bgcolor="#363636"><td align="center"><button onmousedown="car('/control?var=car&val=8');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=8');" ontouchend="noStop();">LeftAfter</button></td>
+                  <td align="center"><button onmousedown="car('/control?var=car&val=5');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=5');" ontouchend="noStop();">Back</button></td>
+                  <td align="center"><button onmousedown="car('/control?var=car&val=9');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=9');" ontouchend="noStop();">RightAfter</button></td>
+                  </tr>            
                   <tr><td><span id="message" style="display:none"></span></td><td></td><td></td></tr> 
                   <tr style="display:none"><td colspan="3"><iframe id="ifr"></iframe></td></tr> 
                 </table>
@@ -707,7 +996,27 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             <div id="content">
                 <div id="sidebar">
                     <input type="checkbox" id="nav-toggle-cb">
-                    <nav id="menu">  
+                    <nav id="menu"> 
+
+                        <div class="input-group" id="speedR-group">
+                            <label for="speedR">speed R</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="speedR" min="0" max="255" value="255" class="default-action">
+                            <div class="range-max">255</div>
+                        </div>
+                        <div class="input-group" id="speedL-group">
+                            <label for="speedL">speed L</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="speedL" min="0" max="255" value="255" class="default-action">
+                            <div class="range-max">255</div>
+                        </div>                        
+                        <div class="input-group" id="decelerate-group">
+                            <label for="decelerate">Turn Decelerate(%)</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="decelerate" min="0" max="100" value="60" class="default-action">
+                            <div class="range-max">100</div>
+                        </div>
+                        
                         <div class="input-group" id="flash-group">
                             <label for="flash">Flash</label>
                             <div class="range-min">0</div>
@@ -717,7 +1026,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                         <div class="input-group" id="framesize-group">
                             <label for="framesize">Resolution</label>
                             <select id="framesize" class="default-action">
-                                <option value="4">QVGA(320x240)</option>
+                                <option value="10">UXGA(1600x1200)</option>
+                                <option value="9">SXGA(1280x1024)</option>
+                                <option value="8">XGA(1024x768)</option>
+                                <option value="7">SVGA(800x600)</option>
+                                <option value="6">VGA(640x480)</option>
+                                <option value="5">CIF(400x296)</option>
+                                <option value="4" selected="selected">QVGA(320x240)</option>
+                                <option value="3">HQVGA(240x176)</option>
+                                <option value="0">QQVGA(160x120)</option>
                             </select>
                         </div>
                         <div class="input-group" id="quality-group">
@@ -760,7 +1077,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       </body>
   </html>
   
-        <script>
+        <script>                
           document.addEventListener('DOMContentLoaded', function (event) {
             var baseHost = document.location.origin
             var streamUrl = baseHost + ':81'
@@ -818,18 +1135,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               }
           
               const query = `${baseHost}/control?var=${el.id}&val=${value}`
-              if (el.id=="servoH"||el.id=="servoV") {
-                var h = Number(document.getElementById('servoH').value);
-                var v = Number(document.getElementById('servoV').value);
-                if (h!="") {
-                  h = h*320/180;
-                  v = (180-v)*320/180;     
-                  context.fillStyle = "white";
-                  context.fillRect(0, 0, canvas.width, canvas.height);
-                  canvas_arc(context,2,h,v,30,0,2*Math.PI,true,1,"green",0,1);
-                  canvas_arc(context,2,h,v,35,0,2*Math.PI,true,0,"green",0,1);
-                }         
-              }
           
               fetch(query)
                 .then(response => {
@@ -846,6 +1151,10 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               })
           
             // read initial values
+            var speedR = document.getElementById('speedR');
+            var speedL = document.getElementById('speedL');
+            var decelerate = document.getElementById('decelerate');
+            
             fetch(`${baseHost}/status`)
               .then(function (response) {
                 return response.json()
@@ -854,7 +1163,30 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 document
                   .querySelectorAll('.default-action')
                   .forEach(el => {
-                    updateValue(el, state[el.id], false)
+                    if (el.id=="speedR") {
+                      speedR.value = 255;
+                      const query = `${baseHost}/control?var=speedR&val=255`
+                      fetch(query)
+                        .then(response => {
+                          console.log(`request to ${query} finished, status: ${response.status}`)
+                        })                      
+                    } else if (el.id=="speedL") {
+                      speedL.value = 255;
+                      const query = `${baseHost}/control?var=speedL&val=255`
+                      fetch(query)
+                        .then(response => {
+                          console.log(`request to ${query} finished, status: ${response.status}`)
+                        })                      
+                    } else if (el.id=="decelerate") {
+                      decelerate.value = 60;
+                      const query = `${baseHost}/control?var=decelerate&val=60`
+                      fetch(query)
+                        .then(response => {
+                          console.log(`request to ${query} finished, status: ${response.status}`)
+                        })                      
+                    } else {
+                      updateValue(el, state[el.id], false)
+                    }
                   })
               })
           
@@ -863,24 +1195,29 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             const stillButton = document.getElementById('get-still')
             const streamButton = document.getElementById('toggle-stream')
             const closeButton = document.getElementById('close-stream')
+            const restartButton = document.getElementById('restartButton')
           
             const stopStream = () => {
               window.stop();
               streamButton.innerHTML = 'Start Stream';
-              viewContainer.style.display = "none";
             }
           
             const startStream = () => {
               view.src = `${streamUrl}/stream`
+              show(viewContainer)
               streamButton.innerHTML = 'Stop Stream'
-              viewContainer.style.display = "block";
             }
+
+            //新增重啟電源按鈕點選事件 (自訂指令格式：http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9)
+            restartButton.onclick = () => {
+              fetch(baseHost+"/control?restart");
+            }            
           
             // Attach actions to buttons
             stillButton.onclick = () => {
               stopStream()
               view.src = `${baseHost}/capture?_cb=${Date.now()}`
-              viewContainer.style.display = "block";
+              show(viewContainer)
             }
           
             closeButton.onclick = () => {
@@ -910,10 +1247,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           
             framesize.onchange = () => {
               updateConfig(framesize)
-              if (framesize.value > 5) {
-                updateValue(detect, false)
-                updateValue(recognize, false)
-              }
             }
           })
         </script>
@@ -921,28 +1254,22 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <script>
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext("2d"); 
-    var stream = document.getElementById('stream');
     var message = document.getElementById('message');
     var result = document.getElementById('result');
-    var getStill = document.getElementById('get-still');
+    var ip = document.getElementById('ip');
     
-    function noStopControl() {
-      if (!document.getElementById('nostop').checked) {
-        try{
-          fetch(document.getElementById('ip').value+'/control?var=car&val=3');
-        }
-        catch(e){}
-      }
+    function car(query) {
+       query = "http:\/\/" + ip.value + query;
+       fetch(query)
+          .then(response => {
+            console.log(`request to ${query} finished, status: ${response.status}`)
+          })
     }
-   
-    stream.onload = function (event) {
-      try { 
-        document.createEvent("TouchEvent");
-        setTimeout(function(){getStill.click();},250);
+          
+    function noStop() {
+      if (!document.getElementById('nostop').checked) {
+        car('/control?var=car&val=3');
       }
-      catch(e) { 
-        setTimeout(function(){getStill.click();},150);
-      } 
     }
     
     if (window.DeviceOrientationEvent) {
@@ -982,9 +1309,17 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         result.innerHTML = state+"<br>alpha = "+event.alpha+"<br>beta = "+event.beta+"<br>gamma = "+event.gamma;                                                                                                               
         if (message.innerHTML==label) return;
         message.innerHTML=label;
-        //fetch(document.getElementById('ip').value+'/control?var=car&val='+label);
-        ifr.src = document.getElementById('ip').value+'/control?var=car&val='+label;
+        ifr.src = "http:\/\/"+ip.value+'/control?var=car&val='+label;
       }
+    }
+
+    //  網址/?192.168.1.38  可自動帶入?後參數IP值
+    var href=location.href;
+    if (href.indexOf("?")!=-1) {
+      ip.value = location.search.split("?")[1].replace(/http:\/\//g,"");
+    }
+    else if (href.indexOf("http")!=-1) {
+      ip.value = location.host;
     }
   </script>
 )rawliteral";
