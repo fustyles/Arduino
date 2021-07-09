@@ -1,5 +1,5 @@
 /*
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-3 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-9 22:00
 https://www.facebook.com/francefu
 
 Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
@@ -946,7 +946,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 display: none
             }
         </style>
-        <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
         <script>
           //This file is part of the JoyStick Project (https://github.com/bobboteck/JoyStick)
           var JoyStick=function(t,e){var i=void 0===(e=e||{}).title?"joystick":e.title,n=void 0===e.width?0:e.width,o=void 0===e.height?0:e.height,r=void 0===e.internalFillColor?"#00AA00":e.internalFillColor,h=void 0===e.internalLineWidth?2:e.internalLineWidth,a=void 0===e.internalStrokeColor?"#003300":e.internalStrokeColor,d=void 0===e.externalLineWidth?2:e.externalLineWidth,f=void 0===e.externalStrokeColor?"#008000":e.externalStrokeColor,l=void 0===e.autoReturnToCenter||e.autoReturnToCenter,s=document.getElementById(t),c=document.createElement("canvas");c.id=i,0===n&&(n=s.clientWidth),0===o&&(o=s.clientHeight),c.width=n,c.height=o,s.appendChild(c);var u=c.getContext("2d"),g=0,v=2*Math.PI,p=(c.width-(c.width/2+10))/2,C=p+5,w=p+30,m=c.width/2,L=c.height/2,E=c.width/10,P=-1*E,S=c.height/10,k=-1*S,W=m,T=L;function G(){u.beginPath(),u.arc(m,L,w,0,v,!1),u.lineWidth=d,u.strokeStyle=f,u.stroke()}function x(){u.beginPath(),W<p&&(W=C),W+p>c.width&&(W=c.width-C),T<p&&(T=C),T+p>c.height&&(T=c.height-C),u.arc(W,T,p,0,v,!1);var t=u.createRadialGradient(m,L,5,m,L,200);t.addColorStop(0,r),t.addColorStop(1,a),u.fillStyle=t,u.fill(),u.lineWidth=h,u.strokeStyle=a,u.stroke()}"ontouchstart"in document.documentElement?(c.addEventListener("touchstart",function(t){g=1},!1),c.addEventListener("touchmove",function(t){t.preventDefault(),1===g&&t.targetTouches[0].target===c&&(W=t.targetTouches[0].pageX,T=t.targetTouches[0].pageY,"BODY"===c.offsetParent.tagName.toUpperCase()?(W-=c.offsetLeft,T-=c.offsetTop):(W-=c.offsetParent.offsetLeft,T-=c.offsetParent.offsetTop),u.clearRect(0,0,c.width,c.height),G(),x())},!1),c.addEventListener("touchend",function(t){g=0,l&&(W=m,T=L);u.clearRect(0,0,c.width,c.height),G(),x()},!1)):(c.addEventListener("mousedown",function(t){g=1},!1),c.addEventListener("mousemove",function(t){1===g&&(W=t.pageX,T=t.pageY,"BODY"===c.offsetParent.tagName.toUpperCase()?(W-=c.offsetLeft,T-=c.offsetTop):(W-=c.offsetParent.offsetLeft,T-=c.offsetParent.offsetTop),u.clearRect(0,0,c.width,c.height),G(),x())},!1),c.addEventListener("mouseup",function(t){g=0,l&&(W=m,T=L);u.clearRect(0,0,c.width,c.height),G(),x()},!1)),G(),x(),this.GetWidth=function(){return c.width},this.GetHeight=function(){return c.height},this.GetPosX=function(){return W},this.GetPosY=function(){return T},this.GetX=function(){return((W-m)/C*100).toFixed()},this.GetY=function(){return((T-L)/C*100*-1).toFixed()},this.GetDir=function(){var t="",e=W-m,i=T-L;return i>=k&&i<=S&&(t="C"),i<k&&(t="N"),i>S&&(t="S"),e<P&&("C"===t?t="W":t+="W"),e>E&&("C"===t?t="E":t+="E"),t}};
@@ -961,14 +960,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         </figure>
         <section id="buttons">
             <table>
+              <tr><td colspan="3">IP: <input type="text" id="ip" value=""><input type="button" value="Set" onclick="start();"></td></tr>
               <tr>
-              <td><button id="restart" onclick="try{fetch(document.location.origin+'/control?restart');}catch(e){}">Restart</button></td>
-              <td><button id="get-still">Get Still</button></td>
-              <td><button id="toggle-stream">Start Stream</button></td>
+              <td align="left"><button id="restartButton">Restart</button></td>
+              <td align="center"><button id="get-still">get-still</button></td>
+              <td align="right"><button id="toggle-stream">Start Stream</button></td>
               </tr>
+              <tr style="display:none"><td colspan="3"><iframe id="ifr"></iframe></td></tr>
             </table>
         </section>
-        <input type="checkbox" id="chkcanvas">Hide control panel
         <div id="joy3Div" style="width:200px;height:200px;margin:50px"></div>
         <section class="main">      
             <div id="logo">
@@ -977,7 +977,14 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             <div id="content">
                 <div id="sidebar">
                     <input type="checkbox" id="nav-toggle-cb">
-                    <nav id="menu">  
+                    <nav id="menu">
+                        <div class="input-group" id="panel-group">
+                            <label for="panel">Control Panel</label>
+                            <div class="switch">
+                                <input id="panel" type="checkbox" checked="checked">
+                                <label class="slider" for="panel"></label>
+                            </div>
+                        </div>                        
                         <div class="input-group" id="flash-group">
                             <label for="flash">Flash</label>
                             <div class="range-min">0</div>
@@ -1048,8 +1055,10 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         </section>
         
         <script>
-          document.addEventListener('DOMContentLoaded', function (event) {
-            var baseHost = document.location.origin
+          function start() {
+            window.stop();
+            
+            var baseHost = 'http://'+document.getElementById("ip").value;  //var baseHost = document.location.origin
             var streamUrl = baseHost + ':81'
           
             const hide = el => {
@@ -1103,7 +1112,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 default:
                   return
               }
-          
+
               const query = `${baseHost}/control?var=${el.id}&val=${value}`
           
               fetch(query)
@@ -1138,24 +1147,30 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             const stillButton = document.getElementById('get-still')
             const streamButton = document.getElementById('toggle-stream')
             const closeButton = document.getElementById('close-stream')
+            const restartButton = document.getElementById('restartButton')
           
             const stopStream = () => {
               window.stop();
               streamButton.innerHTML = 'Start Stream';
-              viewContainer.style.display = "none";
+              hide(viewContainer)
             }
           
             const startStream = () => {
               view.src = `${streamUrl}/stream`
+              show(viewContainer)
               streamButton.innerHTML = 'Stop Stream'
-              viewContainer.style.display = "block";
             }
+
+            //新增重啟電源按鈕點選事件 (自訂指令格式：http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9)
+            restartButton.onclick = () => {
+              fetch(baseHost+"/control?restart");
+            }            
           
             // Attach actions to buttons
             stillButton.onclick = () => {
               stopStream()
               view.src = `${baseHost}/capture?_cb=${Date.now()}`
-              viewContainer.style.display = "block";
+              show(viewContainer)
             }
           
             closeButton.onclick = () => {
@@ -1185,22 +1200,22 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           
             framesize.onchange = () => {
               updateConfig(framesize)
-              if (framesize.value > 5) {
-                updateValue(detect, false)
-                updateValue(recognize, false)
-              }
             }
-          })
-        </script>
-         
-        <script type="text/javascript">
+
+            streamButton.innerHTML = 'Start Stream';
+            hide(viewContainer);            
+          }
+
+          var ifr = document.getElementById('ifr');
+          var ip = document.getElementById('ip');
+          
           var joy3Param = { "title": "joystick3" };
           var Joy3 = new JoyStick('joy3Div', joy3Param);
           var carState = "";
           var runState = 0;
 
-          chkcanvas.onchange = function(e){  
-            if (chkcanvas.checked)
+          panel.onchange = function(e){  
+            if (!panel.checked)
               joy3Div.style.display = "none";
             else
               joy3Div.style.display = "block";
@@ -1232,11 +1247,21 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           function controlCar(state, value) {
               carState=state;
               runState = 1;
-              var cmd = document.location.origin+'/control?var=car&val='+value;
-              //console.log(cmd);
-              $.ajax({url: cmd, async: false});
+              ifr.src = "http:\/\/"+ip.value+'/control?var=car&val='+value;
               runState = 0;
           }
+            
+          
+          //  網址/?192.168.1.38  可自動帶入?後參數IP值
+          var href=location.href;
+          if (href.indexOf("?")!=-1) {
+            ip.value = location.search.split("?")[1].replace(/http:\/\//g,"");
+            start();
+          }
+          else if (href.indexOf("http")!=-1) {
+            ip.value = location.host;
+            start();
+          }     
         </script>       
     
     </body>
