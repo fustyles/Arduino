@@ -1,6 +1,14 @@
 /*
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-3 22:00
+ESP32-CAM tfjs coco-ssd
+
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-10 20:00
 https://www.facebook.com/francefu
+
+Motor Driver IC -> PWM1(IO12, IO13), PWM2(IO14, IO15)
+Don't use L9110S.
+
+物件類別
+https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
 http://192.168.xxx.xxx:81/stream   //取得串流影像       <img src="http://192.168.xxx.xxx:81/stream">
@@ -23,8 +31,7 @@ http://192.168.xxx.xxx/control?digitalread=pin         //數位讀取
 http://192.168.xxx.xxx/control?analogread=pin          //類比讀取
 http://192.168.xxx.xxx/control?touchread=pin           //觸碰讀取
 http://192.168.xxx.xxx/control?resetwifi=ssid;password   //重設Wi-Fi網路
-http://192.168.xxx.xxx/control?flash=value             //內建閃光燈 value= 0~255
-http://192.168.xxx.xxx/control?serial=String             //Serial.println();
+http://192.168.xxx.xxx/control?flash=value               //內建閃光燈 value= 0-255
 
 官方指令格式 http://192.168.xxx.xxx/control?var=***&val=***
 http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
@@ -33,30 +40,26 @@ http://192.168.xxx.xxx/control?var=brightness&val=value   // value = -2 ~ 2
 http://192.168.xxx.xxx/control?var=contrast&val=value     // value = -2 ~ 2
 http://192.168.xxx.xxx/control?var=hmirror&val=value      // value = 0 or 1 
 http://192.168.xxx.xxx/control?var=vflip&val=value        // value = 0 or 1 
-http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255   
-      
-查詢Client端IP：
-查詢IP：http://192.168.4.1/?ip
-重設網路：http://192.168.4.1/?resetwifi=ssid;password
+http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255 
 */
 
 //輸入WIFI連線帳號密碼
-const char* ssid     = "*****";   //your network SSID
-const char* password = "*****";   //your network password
+const char* ssid = "teacher";
+const char* password = "87654321";
 
-//輸入AP端連線帳號密碼
-const char* apssid = "ESP32-CAM";
-const char* appassword = "12345678";         //AP密碼至少要8個字元以上
+//輸入AP端連線帳號密碼  http://192.168.4.1
+const char* apssid = "esp32-cam";
+const char* appassword = "12345678";         //AP密碼至少要8個字元以上 
 
 #include <WiFi.h>
-#include <esp32-hal-ledc.h>      //用於控制伺服馬達
 #include "soc/soc.h"             //用於電源不穩不重開機 
 #include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機
+#include <esp32-hal-ledc.h>      //用於控制伺服馬達 
 
 //官方函式庫
-#include "esp_camera.h"          //視訊函式庫
-#include "esp_http_server.h"     //HTTP Server函式庫
-#include "img_converters.h"      //影像格式轉換函式庫
+#include "esp_http_server.h"
+#include "esp_camera.h"
+#include "img_converters.h"
 
 String Feedback="";   //自訂指令回傳客戶端訊息
 
@@ -175,16 +178,29 @@ void setup() {
     s->set_brightness(s, 1); // up the brightness just a bit
     s->set_saturation(s, -2); // lower the saturation
   }
-  // drop down frame size for higher initial frame rate
-  s->set_framesize(s, FRAMESIZE_QVGA);    //解析度 UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768), SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120), QXGA(2048x1564 for OV3660)
+  
+  //可動態改變視訊框架大小(解析度大小)
+  s->set_framesize(s, FRAMESIZE_QVGA);  //程式內定使用QVGA(320x240)，不可改此設定
 
+  //鏡像
+  //s->set_hmirror(s, 1);
   //s->set_vflip(s, 1);  //垂直翻轉
-  //s->set_hmirror(s, 1);  //水平鏡像
   
   //閃光燈(GPIO4)
   ledcAttachPin(4, 4);  
   ledcSetup(4, 5000, 8);
-  
+
+  //馬達驅動IC
+  ledcAttachPin(12, 5);
+  ledcSetup(5, 2000, 8);      
+  ledcAttachPin(13, 6);
+  ledcSetup(6, 2000, 8);
+  ledcWrite(6, 0);  //gpio13初始化呈高電位，改設定為低電位
+  ledcAttachPin(15, 7);
+  ledcSetup(7, 2000, 8);      
+  ledcAttachPin(14, 8);
+  ledcSetup(8, 2000, 8); 
+        
   WiFi.mode(WIFI_AP_STA);  //其他模式 WiFi.mode(WIFI_AP); WiFi.mode(WIFI_STA);
 
   //指定Client端靜態IP
@@ -364,6 +380,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     buf_len = httpd_req_get_url_query_len(req) + 1;
     if (buf_len > 1) {
         buf = (char*)malloc(buf_len);
+        
         if(!buf){
             httpd_resp_send_500(req);
             return ESP_FAIL;
@@ -376,7 +393,6 @@ static esp_err_t cmd_handler(httpd_req_t *req){
             myCmd = String(buf);   //如果非官方格式不含var, val，則為自訂指令格式
           }
         }
-        free(buf);
     } else {
         httpd_resp_send_404(req);
         return ESP_FAIL;
@@ -401,45 +417,35 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       if (cmd=="your cmd") {
         // You can do anything
         // Feedback="<font color=\"red\">Hello World</font>";   //可為一般文字或HTML語法
-      }
-      else if (cmd=="ip") {  //查詢APIP, STAIP
+      } else if (cmd=="ip") {  //查詢APIP, STAIP
         Feedback="AP IP: "+WiFi.softAPIP().toString();    
         Feedback+="<br>";
         Feedback+="STA IP: "+WiFi.localIP().toString();
-      }  
-      else if (cmd=="mac") {  //查詢MAC位址
+      } else if (cmd=="mac") {  //查詢MAC位址
         Feedback="STA MAC: "+WiFi.macAddress();
-      }  
-      else if (cmd=="restart") {
+      } else if (cmd=="restart") {
         ESP.restart();
-      }  
-      else if (cmd=="digitalwrite") {
+      } else if (cmd=="digitalwrite") {
         ledcDetachPin(P1.toInt());
         pinMode(P1.toInt(), OUTPUT);
         digitalWrite(P1.toInt(), P2.toInt());
-      }   
-      else if (cmd=="digitalread") {
+      } else if (cmd=="digitalread") {
         Feedback=String(digitalRead(P1.toInt()));
-      }
-      else if (cmd=="analogwrite") {   
+      } else if (cmd=="analogwrite") {   
         if (P1=="4") {
           ledcAttachPin(4, 4);  
           ledcSetup(4, 5000, 8);
           ledcWrite(4,P2.toInt());     
-        }
-        else {
+        } else {
           ledcAttachPin(P1.toInt(), 9);
           ledcSetup(9, 5000, 8);
           ledcWrite(9,P2.toInt());
         }
-      }       
-      else if (cmd=="analogread") {
+      } else if (cmd=="analogread") {
         Feedback=String(analogRead(P1.toInt()));
-      }
-      else if (cmd=="touchread") {
+      } else if (cmd=="touchread") {
         Feedback=String(touchRead(P1.toInt()));
-      }   
-      else if (cmd=="resetwifi") {  //重設網路連線  
+      } else if (cmd=="resetwifi") {  //重設網路連線  
         for (int i=0;i<2;i++) {
           WiFi.begin(P1.c_str(), P2.c_str());
           Serial.print("Connecting to ");
@@ -464,17 +470,16 @@ static esp_err_t cmd_handler(httpd_req_t *req){
             break;
           }
         }
-      }
-      else if (cmd=="flash") {  //控制內建閃光燈
+      } else if (cmd=="flash") {  //控制內建閃光燈
         ledcAttachPin(4, 4);  
         ledcSetup(4, 5000, 8);   
         int val = P1.toInt();
         ledcWrite(4,val);  
-      }
-      else if (cmd=="serial") {
-        Serial.println(P1); 
-      }      
-      else {
+      } else if (cmd=="serial") { 
+        if (P1!=""&P1!="stop") Serial.println(P1);
+        if (P2!=""&P2!="stop") Serial.println(P2);
+        Serial.println();
+      } else {
         Feedback="Command is not defined";
       }
 
@@ -484,8 +489,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       httpd_resp_set_type(req, "text/html");  //設定回傳資料格式
       httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");  //允許跨網域讀取
       return httpd_resp_send(req, resp, strlen(resp));
-    } 
-    else {
+    } else {
       //官方指令區塊，也可在此自訂指令  http://192.168.xxx.xxx/control?var=xxx&val=xxx
       int val = atoi(value);
       sensor_t * s = esp_camera_sensor_get();
@@ -503,9 +507,8 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if(!strcmp(variable, "flash")) {
         ledcAttachPin(4, 4);  
         ledcSetup(4, 5000, 8);        
-        ledcWrite(4,val);
-      } 
-      else {
+        ledcWrite(4,val); 
+      } else {
           res = -1;
       }
   
@@ -519,8 +522,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         httpd_resp_set_type(req, "text/html");
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         return httpd_resp_send(req, resp, strlen(resp));  //回傳參數字串
-      }
-      else {
+      } else {
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         return httpd_resp_send(req, NULL, 0);
       }
@@ -534,7 +536,7 @@ static esp_err_t status_handler(httpd_req_t *req){
     sensor_t * s = esp_camera_sensor_get();
     char * p = json_response;
     *p++ = '{';
-    p+=sprintf(p, "\"flash\":%d,", 0);
+    p+=sprintf(p, "\"flash\":%d,", 0);   
     p+=sprintf(p, "\"framesize\":%u,", s->status.framesize);
     p+=sprintf(p, "\"quality\":%u,", s->status.quality);
     p+=sprintf(p, "\"brightness\":%d,", s->status.brightness);
@@ -549,49 +551,442 @@ static esp_err_t status_handler(httpd_req_t *req){
 }
 
 //自訂網頁首頁
-static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
+static const char PROGMEM INDEX_HTML[] = R"rawliteral(
+<!DOCTYPE html>
 <html>
+<head>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
-        <meta http-equiv="Access-Control-Allow-Headers" content="Origin, X-Requested-With, Content-Type, Accept">
-        <meta http-equiv="Access-Control-Allow-Methods" content="GET,POST,PUT,DELETE,OPTIONS">
-        <meta http-equiv="Access-Control-Allow-Origin" content="*">
-        <title>CocoSSD</title>
+        <title>ESP32 OV2460</title>
         <style>
-          body{font-family:Arial,Helvetica,sans-serif;background:#181818;color:#EFEFEF;font-size:16px}h2{font-size:18px}section.main{display:flex}#menu,section.main{flex-direction:column}#menu{display:flex;flex-wrap:nowrap;min-width:340px;background:#363636;padding:8px;border-radius:4px;margin-top:-10px;margin-right:10px}#content{display:flex;flex-wrap:wrap;align-items:stretch}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}figure img{display:block;width:100%;height:auto;border-radius:4px;margin-top:8px}@media (min-width: 800px) and (orientation:landscape){#content{display:flex;flex-wrap:nowrap;align-items:stretch}figure img{display:block;max-width:100%;max-height:calc(100vh - 40px);width:auto;height:auto}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}}section#buttons{display:flex;flex-wrap:nowrap;justify-content:space-between}#nav-toggle{cursor:pointer;display:block}#nav-toggle-cb{outline:0;opacity:0;width:0;height:0}#nav-toggle-cb:checked+#menu{display:none}.input-group{display:flex;flex-wrap:nowrap;line-height:22px;margin:5px 0}.input-group>label{display:inline-block;padding-right:10px;min-width:47%}.input-group input,.input-group select{flex-grow:1}.range-max,.range-min{display:inline-block;padding:0 5px}button{display:block;margin:5px;padding:0 12px;border:0;line-height:28px;cursor:pointer;color:#fff;background:#ff3034;border-radius:5px;font-size:16px;outline:0}button:hover{background:#ff494d}button:active{background:#f21c21}button.disabled{cursor:default;background:#a0a0a0}input[type=range]{-webkit-appearance:none;width:100%;height:22px;background:#363636;cursor:pointer;margin:0}input[type=range]:focus{outline:0}input[type=range]::-webkit-slider-runnable-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-webkit-slider-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;-webkit-appearance:none;margin-top:-11.5px}input[type=range]:focus::-webkit-slider-runnable-track{background:#EFEFEF}input[type=range]::-moz-range-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-moz-range-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer}input[type=range]::-ms-track{width:100%;height:2px;cursor:pointer;background:0 0;border-color:transparent;color:transparent}input[type=range]::-ms-fill-lower{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-fill-upper{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;height:2px}input[type=range]:focus::-ms-fill-lower{background:#EFEFEF}input[type=range]:focus::-ms-fill-upper{background:#363636}.switch{display:block;position:relative;line-height:22px;font-size:16px;height:22px}.switch input{outline:0;opacity:0;width:0;height:0}.slider{width:50px;height:22px;border-radius:22px;cursor:pointer;background-color:grey}.slider,.slider:before{display:inline-block;transition:.4s}.slider:before{position:relative;content:"";border-radius:50%;height:16px;width:16px;left:4px;top:3px;background-color:#fff}input:checked+.slider{background-color:#ff3034}input:checked+.slider:before{-webkit-transform:translateX(26px);transform:translateX(26px)}select{border:1px solid #363636;font-size:14px;height:22px;outline:0;border-radius:5px}.image-container{position:relative;min-width:160px}.close{position:absolute;right:5px;top:5px;background:#ff3034;width:16px;height:16px;border-radius:100px;color:#fff;text-align:center;line-height:18px;cursor:pointer}.hidden{display:none}
-        </style>
-        <script src="https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
-        <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"> </script>
-        <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.1.0"> </script>          
+            body {
+                font-family: Arial,Helvetica,sans-serif;
+                background: #181818;
+                color: #EFEFEF;
+                font-size: 16px
+            }
+            h2 {
+                font-size: 18px
+            }
+            section.main {
+                display: flex
+            }
+            #menu,section.main {
+                flex-direction: column
+            }
+            #menu {
+                display: none;
+                flex-wrap: nowrap;
+                min-width: 340px;
+                background: #363636;
+                padding: 8px;
+                border-radius: 4px;
+                margin-top: -10px;
+                margin-right: 10px;
+            }
+            #content {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: stretch
+            }
+            figure {
+                padding: 0px;
+                margin: 0;
+                -webkit-margin-before: 0;
+                margin-block-start: 0;
+                -webkit-margin-after: 0;
+                margin-block-end: 0;
+                -webkit-margin-start: 0;
+                margin-inline-start: 0;
+                -webkit-margin-end: 0;
+                margin-inline-end: 0
+            }
+            figure img {
+                display: block;
+                width: 100%;
+                height: auto;
+                border-radius: 4px;
+                margin-top: 8px;
+            }
+            @media (min-width: 800px) and (orientation:landscape) {
+                #content {
+                    display:flex;
+                    flex-wrap: nowrap;
+                    align-items: stretch
+                }
+                figure img {
+                    display: block;
+                    max-width: 100%;
+                    max-height: calc(100vh - 40px);
+                    width: auto;
+                    height: auto
+                }
+                figure {
+                    padding: 0 0 0 0px;
+                    margin: 0;
+                    -webkit-margin-before: 0;
+                    margin-block-start: 0;
+                    -webkit-margin-after: 0;
+                    margin-block-end: 0;
+                    -webkit-margin-start: 0;
+                    margin-inline-start: 0;
+                    -webkit-margin-end: 0;
+                    margin-inline-end: 0
+                }
+            }
+            section#buttons {
+                display: flex;
+                flex-wrap: nowrap;
+                justify-content: space-between
+            }
+            #nav-toggle {
+                cursor: pointer;
+                display: block
+            }
+            #nav-toggle-cb {
+                outline: 0;
+                opacity: 0;
+                width: 0;
+                height: 0
+            }
+            #nav-toggle-cb:checked+#menu {
+                display: flex
+            }
+            .input-group {
+                display: flex;
+                flex-wrap: nowrap;
+                line-height: 22px;
+                margin: 5px 0
+            }
+            .input-group>label {
+                display: inline-block;
+                padding-right: 10px;
+                min-width: 47%
+            }
+            .input-group input,.input-group select {
+                flex-grow: 1
+            }
+            .range-max,.range-min {
+                display: inline-block;
+                padding: 0 5px
+            }
+            button {
+                display: block;
+                margin: 5px;
+                padding: 0 12px;
+                border: 0;
+                line-height: 28px;
+                cursor: pointer;
+                color: #fff;
+                background: #ff3034;
+                border-radius: 5px;
+                font-size: 16px;
+                outline: 0
+            }
+            button:hover {
+                background: #ff494d
+            }
+            button:active {
+                background: #f21c21
+            }
+            button.disabled {
+                cursor: default;
+                background: #a0a0a0
+            }
+            input[type=range] {
+                -webkit-appearance: none;
+                width: 100%;
+                height: 22px;
+                background: #363636;
+                cursor: pointer;
+                margin: 0
+            }
+            input[type=range]:focus {
+                outline: 0
+            }
+            input[type=range]::-webkit-slider-runnable-track {
+                width: 100%;
+                height: 2px;
+                cursor: pointer;
+                background: #EFEFEF;
+                border-radius: 0;
+                border: 0 solid #EFEFEF
+            }
+            input[type=range]::-webkit-slider-thumb {
+                border: 1px solid rgba(0,0,30,0);
+                height: 22px;
+                width: 22px;
+                border-radius: 50px;
+                background: #ff3034;
+                cursor: pointer;
+                -webkit-appearance: none;
+                margin-top: -11.5px
+            }
+            input[type=range]:focus::-webkit-slider-runnable-track {
+                background: #EFEFEF
+            }
+            input[type=range]::-moz-range-track {
+                width: 100%;
+                height: 2px;
+                cursor: pointer;
+                background: #EFEFEF;
+                border-radius: 0;
+                border: 0 solid #EFEFEF
+            }
+            input[type=range]::-moz-range-thumb {
+                border: 1px solid rgba(0,0,30,0);
+                height: 22px;
+                width: 22px;
+                border-radius: 50px;
+                background: #ff3034;
+                cursor: pointer
+            }
+            input[type=range]::-ms-track {
+                width: 100%;
+                height: 2px;
+                cursor: pointer;
+                background: 0 0;
+                border-color: transparent;
+                color: transparent
+            }
+            input[type=range]::-ms-fill-lower {
+                background: #EFEFEF;
+                border: 0 solid #EFEFEF;
+                border-radius: 0
+            }
+            input[type=range]::-ms-fill-upper {
+                background: #EFEFEF;
+                border: 0 solid #EFEFEF;
+                border-radius: 0
+            }
+            input[type=range]::-ms-thumb {
+                border: 1px solid rgba(0,0,30,0);
+                height: 22px;
+                width: 22px;
+                border-radius: 50px;
+                background: #ff3034;
+                cursor: pointer;
+                height: 2px
+            }
+            input[type=range]:focus::-ms-fill-lower {
+                background: #EFEFEF
+            }
+            input[type=range]:focus::-ms-fill-upper {
+                background: #363636
+            }
+            .switch {
+                display: block;
+                position: relative;
+                line-height: 22px;
+                font-size: 16px;
+                height: 22px
+            }
+            .switch input {
+                outline: 0;
+                opacity: 0;
+                width: 0;
+                height: 0
+            }
+            .slider {
+                width: 50px;
+                height: 22px;
+                border-radius: 22px;
+                cursor: pointer;
+                background-color: grey
+            }
+            .slider,.slider:before {
+                display: inline-block;
+                transition: .4s
+            }
+            .slider:before {
+                position: relative;
+                content: "";
+                border-radius: 50%;
+                height: 16px;
+                width: 16px;
+                left: 4px;
+                top: 3px;
+                background-color: #fff
+            }
+            input:checked+.slider {
+                background-color: #ff3034
+            }
+            input:checked+.slider:before {
+                -webkit-transform: translateX(26px);
+                transform: translateX(26px)
+            }
+            select {
+                border: 1px solid #363636;
+                font-size: 14px;
+                height: 22px;
+                outline: 0;
+                border-radius: 5px
+            }
+            .image-container {
+                position: relative;
+                min-width: 160px
+            }
+            .close {
+                position: absolute;
+                right: 5px;
+                top: 5px;
+                background: #ff3034;
+                width: 16px;
+                height: 16px;
+                border-radius: 100px;
+                color: #fff;
+                text-align: center;
+                line-height: 18px;
+                cursor: pointer
+            }
+            .hidden {
+                display: none
+            }
+        </style>   
+         <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"> </script>
+        <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.1.0"> </script>      
     </head>
-    <body>
+    <figure>
+      <div id="stream-container" class="image-container hidden">
+        <div class="close" id="close-stream">×</div>
+        <img id="stream" src="" crossorigin="anonymous">
+        <canvas id="canvas" width="320" height="240" style="display:none">
+      </div>
+    </figure> 
         <section class="main">
             <section id="buttons">
-                <table>
-                <tr><td colspan="3"><canvas id="canvas" width="0" height="0"></canvas></td></tr>
-                <tr><td><button id="restart" onclick="try{fetch(document.location.origin+'/control?restart');}catch(e){}">Restart</button></td><td><button id="get-still">Get Still</button></td><td style="display:none"><button id="toggle-stream"></button></td></tr>
-                </table>
-            </section>
-            <figure>
-              <div id="stream-container" class="image-container hidden">
-                <div class="close" id="close-stream" style="display:none">×</div>
-                <img id="stream" src="" style="display:none" crossorigin="anonymous">
-              </div>
-            </figure>         
+              <table>
+                <tr><td colspan="3">IP: <input type="text" id="ip" value=""><input type="button" value="Set" onclick="start();"></td></tr>
+                <tr>
+                <td align="left"><button id="restartButton">Restart</button></td>
+                <td align="center"><button id="get-still">get-still</button></td>
+                <td align="right"><button id="toggle-stream">Start Stream</button></td>
+                </tr>
+              </table>             
+            </section>         
             <div id="logo">
                 <label for="nav-toggle-cb" id="nav-toggle">&#9776;&nbsp;&nbsp;Toggle settings</label>
             </div>
             <div id="content">
                 <div id="sidebar">
                     <input type="checkbox" id="nav-toggle-cb">
-                    <nav id="menu"> 
+                    <nav id="menu">
+                        <div class="input-group" id="detectState-group">
+                            <label for="detectState">Start Detect</label>
+                            <div class="switch">
+                                <input id="detectState" type="checkbox">
+                                <label class="slider" for="detectState"></label>
+                            </div>
+                        </div>                     
+                        <div class="input-group" id="object-group">
+                            <label for="object">Track Object</label>
+                            <select id="object">
+                              <option value="">　</option>
+                              <option value="person">person</option>
+                              <option value="bicycle">bicycle</option>
+                              <option value="car">car</option>
+                              <option value="motorcycle">motorcycle</option>
+                              <option value="airplane">airplane</option>
+                              <option value="bus">bus</option>
+                              <option value="train">train</option>
+                              <option value="truck">truck</option>
+                              <option value="boat">boat</option>
+                              <option value="traffic light">traffic light</option>
+                              <option value="fire hydrant">fire hydrant</option>
+                              <option value="stop sign">stop sign</option>
+                              <option value="parking meter">parking meter</option>
+                              <option value="bench">bench</option>
+                              <option value="bird">bird</option>
+                              <option value="cat">cat</option>
+                              <option value="dog">dog</option>
+                              <option value="horse">horse</option>
+                              <option value="sheep">sheep</option>
+                              <option value="cow">cow</option>
+                              <option value="elephant">elephant</option>
+                              <option value="bear">bear</option>
+                              <option value="zebra">zebra</option>
+                              <option value="giraffe">giraffe</option>
+                              <option value="backpack">backpack</option>
+                              <option value="umbrella">umbrella</option>
+                              <option value="handbag">handbag</option>
+                              <option value="tie">tie</option>
+                              <option value="suitcase">suitcase</option>
+                              <option value="frisbee">frisbee</option>
+                              <option value="skis">skis</option>
+                              <option value="snowboard">snowboard</option>
+                              <option value="sports ball">sports ball</option>
+                              <option value="kite">kite</option>
+                              <option value="baseball bat">baseball bat</option>
+                              <option value="baseball glove">baseball glove</option>
+                              <option value="skateboard">skateboard</option>
+                              <option value="surfboard">surfboard</option>
+                              <option value="tennis racket">tennis racket</option>
+                              <option value="bottle">bottle</option>
+                              <option value="wine glass">wine glass</option>
+                              <option value="cup">cup</option>
+                              <option value="fork">fork</option>
+                              <option value="knife">knife</option>
+                              <option value="spoon">spoon</option>
+                              <option value="bowl">bowl</option>
+                              <option value="banana">banana</option>
+                              <option value="apple">apple</option>
+                              <option value="sandwich">sandwich</option>
+                              <option value="orange">orange</option>
+                              <option value="broccoli">broccoli</option>
+                              <option value="carrot">carrot</option>
+                              <option value="hot dog">hot dog</option>
+                              <option value="pizza">pizza</option>
+                              <option value="donut">donut</option>
+                              <option value="cake">cake</option>
+                              <option value="chair">chair</option>
+                              <option value="couch">couch</option>
+                              <option value="potted plant">potted plant</option>
+                              <option value="bed">bed</option>
+                              <option value="dining table">dining table</option>
+                              <option value="toilet">toilet</option>
+                              <option value="tv">tv</option>
+                              <option value="laptop">laptop</option>
+                              <option value="mouse">mouse</option>
+                              <option value="remote">remote</option>
+                              <option value="keyboard">keyboard</option>
+                              <option value="cell phone">cell phone</option>
+                              <option value="microwave">microwave</option>
+                              <option value="oven">oven</option>
+                              <option value="toaster">toaster</option>
+                              <option value="sink">sink</option>
+                              <option value="refrigerator">refrigerator</option>
+                              <option value="book">book</option>
+                              <option value="clock">clock</option>
+                              <option value="vase">vase</option>
+                              <option value="scissors">scissors</option>
+                              <option value="teddy bear">teddy bear</option>
+                              <option value="hair drier">hair drier</option>
+                              <option value="toothbrush">toothbrush</option>
+                            </select>
+                        </div>
+                        <div class="input-group" id="score-group">
+                            <label for="scoret">Score Limit</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="score" min="0" max="1" value="0" step="0.1">
+                            <div class="range-max">1</div>
+                        </div>               
+                        <div class="input-group" id="mark-group">
+                            <label for="mark">Position</label>
+                            <select id="mark">
+                              <option value="center">center</option>                
+                              <option value="upper">upper</option>
+                              <option value="lower">lower</option>
+                              <option value="left">left</option>
+                              <option value="right">right</option>
+                            </select>
+                        </div>
                         <div class="input-group" id="flash-group">
                             <label for="flash">Flash</label>
                             <div class="range-min">0</div>
                             <input type="range" id="flash" min="0" max="255" value="0" class="default-action">
                             <div class="range-max">255</div>
-                        </div>          
+                        </div>
                         <div class="input-group" id="framesize-group">
                             <label for="framesize">Resolution</label>
                             <select id="framesize" class="default-action">
@@ -600,8 +995,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                                 <option value="8">XGA(1024x768)</option>
                                 <option value="7">SVGA(800x600)</option>
                                 <option value="6">VGA(640x480)</option>
-                                <option value="5" selected="selected">CIF(400x296)</option>
-                                <option value="4">QVGA(320x240)</option>
+                                <option value="5">CIF(400x296)</option>
+                                <option value="4" selected="selected">QVGA(320x240)</option>
                                 <option value="3">HQVGA(240x176)</option>
                                 <option value="0">QQVGA(160x120)</option>
                             </select>
@@ -642,27 +1037,43 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 </div>
             </div>
         </section>
-        <br>
-        <div id="result" style="color:red">Please wait for loading model.<div>
-        
-        <script>
-          document.addEventListener('DOMContentLoaded', function (event) {
-            var baseHost = document.location.origin
+        <div id="result" style="color:yellow"></div> 
+      </body>
+  </html>
+  
+        <script> 
+          //  網址/?192.168.1.38  可自動帶入?後參數IP值
+          var href=location.href;
+          if (href.indexOf("?")!=-1) {
+            document.getElementById("ip").value = location.search.split("?")[1].replace(/http:\/\//g,"");
+          }
+          else if (href.indexOf("http")!=-1) {
+            document.getElementById("ip").value = location.host;
+          } 
+
+          function start() {
+            window.stop();
+            
+            var baseHost = 'http://'+document.getElementById("ip").value;  //var baseHost = document.location.origin
             var streamUrl = baseHost + ':81'
+          
             const hide = el => {
               el.classList.add('hidden')
             }
             const show = el => {
               el.classList.remove('hidden')
             }
+          
             const disable = el => {
               el.classList.add('disabled')
               el.disabled = true
             }
+          
             const enable = el => {
               el.classList.remove('disabled')
               el.disabled = false
             }
+          
             const updateValue = (el, value, updateRemote) => {
               updateRemote = updateRemote == null ? true : updateRemote
               let initialValue
@@ -674,10 +1085,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 initialValue = el.value
                 el.value = value
               }
+          
               if (updateRemote && initialValue !== value) {
                 updateConfig(el);
               }
             }
+          
             function updateConfig (el) {
               let value
               switch (el.type) {
@@ -695,12 +1108,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 default:
                   return
               }
+          
               const query = `${baseHost}/control?var=${el.id}&val=${value}`
+          
               fetch(query)
                 .then(response => {
                   console.log(`request to ${query} finished, status: ${response.status}`)
                 })
             }
+          
             document
               .querySelectorAll('.close')
               .forEach(el => {
@@ -708,6 +1124,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                   hide(el.parentNode)
                 }
               })
+          
             // read initial values
             fetch(`${baseHost}/status`)
               .then(function (response) {
@@ -717,39 +1134,46 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 document
                   .querySelectorAll('.default-action')
                   .forEach(el => {
-                    updateValue(el, state[el.id], false)
+                      updateValue(el, state[el.id], false)
                   })
               })
+          
             const view = document.getElementById('stream')
             const viewContainer = document.getElementById('stream-container')
             const stillButton = document.getElementById('get-still')
             const streamButton = document.getElementById('toggle-stream')
             const closeButton = document.getElementById('close-stream')
+            const restartButton = document.getElementById('restartButton')
+          
             const stopStream = () => {
               //window.stop();
-              view.src="";
-              streamButton.innerHTML = 'Start Stream'
+              streamButton.innerHTML = 'Start Stream';
+              hide(viewContainer)
             }
+          
             const startStream = () => {
               view.src = `${streamUrl}/stream`
               show(viewContainer)
               streamButton.innerHTML = 'Stop Stream'
             }
+
+            //新增重啟電源按鈕點選事件 (自訂指令格式：http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9)
+            restartButton.onclick = () => {
+              fetch(baseHost+"/control?restart");
+            }            
+          
             // Attach actions to buttons
             stillButton.onclick = () => {
               stopStream()
-              try{
-                view.src = `${baseHost}/capture?_cb=${Date.now()}`
-              }
-              catch(e) {
-                view.src = `${baseHost}/capture?_cb=${Date.now()}`  
-              }
+              view.src = `${baseHost}/capture?_cb=${Date.now()}`
               show(viewContainer)
             }
+          
             closeButton.onclick = () => {
               stopStream()
               hide(viewContainer)
             }
+          
             streamButton.onclick = () => {
               const streamEnabled = streamButton.innerHTML === 'Stop Stream'
               if (streamEnabled) {
@@ -758,95 +1182,150 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 startStream()
               }
             }
+          
             // Attach default on change action
             document
               .querySelectorAll('.default-action')
               .forEach(el => {
                 el.onchange = () => updateConfig(el)
               })
-          })
-        </script>
           
-    <script>
-    var restart = document.getElementById('restart');
-    var getStill = document.getElementById('get-still');
-    var ShowImage = document.getElementById('stream');
-    var canvas = document.getElementById("canvas");
-    var context = canvas.getContext("2d");  
-    var result = document.getElementById('result');
-    var Model;
-    
-    function LoadModel() {
-      result.innerHTML = "Please wait for loading model.";
-      cocoSsd.load().then(cocoSsd_Model => {
-      Model = cocoSsd_Model;
-      result.innerHTML = "";
-      getStill.style.display = "block";
-      getStill.click();
-      }); 
-    }
-    function DetectImage() {
-      canvas.setAttribute("width", ShowImage.width);
-      canvas.setAttribute("height", ShowImage.height);
-      context.drawImage(ShowImage, 0, 0, ShowImage.width, ShowImage.height);  
-
-      Model.detect(canvas).then(Predictions => {
-      var s = (ShowImage.width>ShowImage.height)?ShowImage.width:ShowImage.height;
-      
-      //console.log('Predictions: ', Predictions);
-      if (Predictions.length>0) {
-        result.innerHTML = "";
-        for (var i=0;i<Predictions.length;i++) {
-        const x = Predictions[i].bbox[0];
-        const y = Predictions[i].bbox[1];
-        const width = Predictions[i].bbox[2];
-        const height = Predictions[i].bbox[3];
-        context.lineWidth = Math.round(s/200);
-        context.strokeStyle = "#00FFFF";
-        context.beginPath();
-        context.rect(x, y, width, height);
-        context.stroke(); 
-        context.lineWidth = "2";
-        context.fillStyle = "red";
-        context.font = Math.round(s/30) + "px Arial";
-        context.fillText(Predictions[i].class, x, y);
-        //context.fillText(i, x, y);
-        result.innerHTML+= "[ "+i+" ] "+Predictions[i].class+", "+Math.round(Predictions[i].score*100)+"%, "+Math.round(x)+", "+Math.round(y)+", "+Math.round(width)+", "+Math.round(height)+"<br>";
-        }
-        
-        //偵測到物件時在此區塊作處理
-        for (var j=0;j<Predictions.length;j++) {
-        //https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
-        if (Predictions[j].class=="person"&&Predictions[j].score>=0.5) {   
-          try{
-            // $.ajax({url: document.location.origin+'/control?flash=10', async: false});  //Control flash
-            $.ajax({url: document.location.origin+'/control?serial='+Predictions[j].class, async: false});  //Serial.println();
-          break;
+            // Custom actions
+          
+            const framesize = document.getElementById('framesize')
+          
+            framesize.onchange = () => {
+              updateConfig(framesize)
+            }                                 
           }
-          catch(e){}
-        }    
-        }
-      }
-      else
-        result.innerHTML = "Unrecognizable";
-      getStill.click();
-      });   
-    }
-    ShowImage.onload = function (event) {
-      if (Model) {
-      try { 
-        document.createEvent("TouchEvent");
-        setTimeout(function(){DetectImage();},250);
-      }
-      catch(e) { 
-        DetectImage();
-      } 
-      }
-    }
-    window.onload = function () { LoadModel(); }
-    </script>
-    </body>
-</html>)rawliteral";
+
+
+          //法蘭斯影像辨識
+          const aiView = document.getElementById('stream');
+          const aiStill = document.getElementById('get-still')
+          const canvas = document.getElementById('canvas');     
+          var context = canvas.getContext("2d");
+          const detectState = document.getElementById('detectState');
+          const object = document.getElementById('object');
+          const message = document.getElementById('message');
+          const result = document.getElementById('result');
+          const ifr = document.getElementById('ifr');
+          const ip = document.getElementById('ip'); 
+          var Model;
+
+          function executeCommand(query) {
+             query = "http:\/\/" + ip.value + query;
+             fetch(query)
+                .then(response => {
+                  console.log(`request to ${query} finished, status: ${response.status}`)
+                })
+          }
+
+          detectState.onclick = () => {
+            if (detectState.checked == true) {
+              aiView.style.display = "none";
+              canvas.style.display = "block";
+              aiStill.click();
+            } else {
+              aiView.style.display = "block";
+              canvas.style.display = "none";
+            }
+          }
+            
+          function stopDetection() {
+            detectState.checked = false;
+            aiView.style.display = "block";
+            canvas.style.display = "none";           
+            message.innerHTML = "";
+          }
+
+          aiView.onload = function (event) {
+            if (detectState.checked == false) return;   
+            canvas.setAttribute("width", aiView.width);
+            canvas.setAttribute("height", aiView.height);
+            context.drawImage(aiView, 0, 0, aiView.width, aiView.height);
+            if (Model)          
+              DetectImage();      
+          }  
+
+          result.innerHTML = "Please wait for loading model.";
+          cocoSsd.load().then(cocoSsd_Model => {
+            Model = cocoSsd_Model;
+            result.innerHTML = "";
+            start();
+          }); 
+          
+          function DetectImage() {
+            Model.detect(canvas).then(Predictions => {    
+              var s = (canvas.width>canvas.height)?canvas.width:canvas.height;
+              var x, y, width, height;
+              var objectCount = 0;
+              //console.log('Predictions: ', Predictions);
+              if (Predictions.length>0) {
+                result.innerHTML = "";
+                for (var i=0;i<Predictions.length;i++) {
+                  const x = Predictions[i].bbox[0];
+                  const y = Predictions[i].bbox[1];
+                  const width = Predictions[i].bbox[2];
+                  const height = Predictions[i].bbox[3];
+                  var color = "#00FFFF";
+
+                  if (Predictions[i].class==object.value&&Predictions[i].score>=score.value) {
+                    objectCount++;   //符合物件條件計數
+                    var mark_x = 0;
+                    var mark_y = 0;
+                    if (mark.value=="upper") {
+                      mark_x = x + width/2;
+                      mark_y = y;
+                    } else if (mark.value=="lower") {
+                      mark_x = x + width/2;
+                      mark_y = y + height;
+                    } else if (mark.value=="left") {
+                      mark_x = x;
+                      mark_y = y + height/2;
+                    } else if (mark.value=="right") {
+                      mark_x = x + width;
+                      mark_y = y + height/2;
+                    } else if (mark.value=="center") {
+                      mark_x = x + width/2;
+                      mark_y = y + height/2;
+                    }
+                    /*
+                    context.fillStyle="white";        
+                    context.beginPath();
+                    context.arc(mark_x, mark_y, 5, 0, Math.PI*2, true);
+                    context.fill();
+                    context.closePath();
+                    */
+                    color = "#FF0000";
+                  }
+
+                  context.lineWidth = Math.round(s/200);
+                  context.strokeStyle = color;
+                  context.beginPath();
+                  context.rect(x, y, width, height);
+                  context.stroke(); 
+                  
+                  context.lineWidth = "3";
+                  context.fillStyle = color;
+                  context.font = Math.round(s/20) + "px Arial";
+                  context.fillText(Predictions[i].class, x, y-(s/40));
+                  
+                  result.innerHTML+= "[ "+i+" ] "+Predictions[i].class+", "+Math.round(Predictions[i].score*100)+"%, "+Math.round(x)+", "+Math.round(y)+", "+Math.round(width)+", "+Math.round(height);
+                }
+              }
+              
+              try { 
+                document.createEvent("TouchEvent");
+                setTimeout(function(){aiStill.click();},250);
+              }
+              catch(e) { 
+                setTimeout(function(){aiStill.click();},150);
+              } 
+            });
+          }                  
+  </script>
+)rawliteral";
 
 //網頁首頁   http://192.168.xxx.xxx
 static esp_err_t index_handler(httpd_req_t *req){
