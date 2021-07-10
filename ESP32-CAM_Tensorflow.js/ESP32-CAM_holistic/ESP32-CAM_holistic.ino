@@ -1182,7 +1182,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
         holistic.onResults(onResults);  
         
         aiView.onload = function (event) {
-          DetectImage();
+          DetectImage();   //若無法取得畫面可能是硬體效能不足，可改此行程式碼，依硬體效能變更等待時間毫秒數  setTimeout(function(){DetectImage();},250);
         }
 
         window.onload = function() {
