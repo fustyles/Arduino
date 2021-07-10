@@ -1,5 +1,6 @@
 /*
 ESP32-CAM Tracking Car (tfjs coco-ssd) 
+預設使用解析度QVGA(320*240)，否則將會定位出錯。
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-10 20:00
 https://www.facebook.com/francefu
@@ -189,7 +190,7 @@ void setup() {
   }
   
   //可動態改變視訊框架大小(解析度大小)
-  s->set_framesize(s, FRAMESIZE_CIF);  //程式內定使用QVGA(320x240)，不可改此設定
+  s->set_framesize(s, FRAMESIZE_QVGA);  //程式內定使用QVGA(320x240)，不可改此設定
 
   //鏡像
   //s->set_hmirror(s, 1);
@@ -1119,12 +1120,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                                 <label class="slider" for="detectState"></label>
                             </div>
                         </div>                     
-                        <div class="input-group" id="trackobject-group">
-                            <label for="trackobject">Track Object</label>
-                            <div class="switch" style="display:none">
-                                <input id="trackobject" type="checkbox">
-                                <label class="slider" for="trackobject"></label>
-                            </div>
+                        <div class="input-group" id="object-group">
+                            <label for="object">Track Object</label>
                             <select id="object">
                               <option value="person" selected="selected">person</option>
                               <option value="bicycle">bicycle</option>
@@ -1529,6 +1526,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 
           detectState.onclick = () => {
             if (detectState.checked == true) {
+              car('/control?var=framesize&val=4');
               aiView.style.display = "none";
               canvas.style.display = "block";
               aiStill.click();
@@ -1576,16 +1574,18 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                     const y = Predictions[i].bbox[1];
                     const width = Predictions[i].bbox[2];
                     const height = Predictions[i].bbox[3];
+                    
                     context.lineWidth = Math.round(s/200);
                     context.strokeStyle = "#00FFFF";
                     context.beginPath();
                     context.rect(x, y, width, height);
                     context.stroke(); 
-                    context.lineWidth = "2";
-                    context.fillStyle = "red";
-                    context.font = Math.round(s/30) + "px Arial";
-                    context.fillText(Predictions[i].class, x, y);
-                    //context.fillText(i, x, y);
+                    
+                    context.lineWidth = "3";
+                    context.fillStyle = "#00FFFF";
+                    context.font = Math.round(s/20) + "px Arial";
+                    context.fillText(Predictions[i].class, x, y-(s/40));
+                   
                     result.innerHTML+= "[ "+i+" ] "+Predictions[i].class+", "+Math.round(Predictions[i].score*100)+"%, "+Math.round(x)+", "+Math.round(y)+", "+Math.round(width)+", "+Math.round(height);
                   
                     var midX = Math.round(x)+Math.round(width)/2;  //第一個偵測物件中心點X值
