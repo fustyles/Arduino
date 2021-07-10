@@ -1,12 +1,13 @@
 /*
-ESP32-CAM Remote Tracking Car (tfjs coco-ssd) 
-Open the page in Chrome.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-3 22:00
+ESP32-CAM Tracking Car (tfjs coco-ssd) 
+
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-10 20:00
 https://www.facebook.com/francefu
 
-//If you use Motor Driver IC L9110(s), it can't work well.
-Servo(垂直旋轉) -> gpio2 (伺服馬達與ESP32-CAM共地外接電源)
-Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
+Motor Driver IC -> PWM1(IO12, IO13), PWM2(IO14, IO15)
+Don't use L9110S.
+
+Servo -> IO2 (伺服馬達與ESP32-CAM共地外接電源)
 
 物件類別
 https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts
@@ -32,8 +33,8 @@ http://192.168.xxx.xxx/control?digitalread=pin         //數位讀取
 http://192.168.xxx.xxx/control?analogread=pin          //類比讀取
 http://192.168.xxx.xxx/control?touchread=pin           //觸碰讀取
 http://192.168.xxx.xxx/control?resetwifi=ssid;password   //重設Wi-Fi網路
-http://192.168.xxx.xxx/control?flash=value             //內建閃光燈 value= 0~255
-http://192.168.xxx.xxx/control?servo=value        // value = 0 ~ 180
+http://192.168.xxx.xxx/control?flash=value               //內建閃光燈 value= 0-255
+http://192.168.xxx.xxx/control?servo=value               //伺服馬達 value = 0-180
 
 官方指令格式 http://192.168.xxx.xxx/control?var=***&val=***
 http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
@@ -43,10 +44,6 @@ http://192.168.xxx.xxx/control?var=contrast&val=value     // value = -2 ~ 2
 http://192.168.xxx.xxx/control?var=hmirror&val=value      // value = 0 or 1 
 http://192.168.xxx.xxx/control?var=vflip&val=value        // value = 0 or 1 
 http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255 
-      
-查詢Client端IP：
-查詢IP：http://192.168.4.1/?ip
-重設網路：http://192.168.4.1/?resetwifi=ssid;password
 */
 
 //輸入WIFI連線帳號密碼
@@ -57,17 +54,16 @@ const char* password = "87654321";
 const char* apssid = "esp32-cam";
 const char* appassword = "12345678";         //AP密碼至少要8個字元以上 
 
-int pinServo = 2;  //Servo Pin
-int angleValue = 30;   //伺服馬達初始角度
-int speedR = 160;  //紀錄右輪初始轉速 (gpio12, gpio13)
-int speedL = 160;  //紀錄左輪初始轉速 (gpio14, gpio15)
-double decelerate = 60;  //紀錄轉彎減速為 原速*百分比
+int pinServo = 2;      //伺服馬達腳位
+int servoAngle = 30;   //伺服馬達初始角度
+int speedR = 255;  //You can adjust the speed of the wheel. (IO12, IO13)
+int speedL = 255;  //You can adjust the speed of the wheel. (IO14, IO15)
+float decelerate = 0.6;   // value = 0-1
 
 #include <WiFi.h>
-#include <esp32-hal-ledc.h>      //用於控制伺服馬達
-#include "esp_camera.h"          //視訊函式
 #include "soc/soc.h"             //用於電源不穩不重開機 
-#include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機 
+#include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機
+#include <esp32-hal-ledc.h>      //用於控制伺服馬達 
 
 //官方函式庫
 #include "esp_http_server.h"
@@ -193,15 +189,16 @@ void setup() {
   }
   
   //可動態改變視訊框架大小(解析度大小)
-  s->set_framesize(s, FRAMESIZE_QVGA);  //程式內定使用QVGA(320x240)，不可改此設定
+  s->set_framesize(s, FRAMESIZE_CIF);  //程式內定使用QVGA(320x240)，不可改此設定
 
   //鏡像
-  s->set_hmirror(s, 1);
+  //s->set_hmirror(s, 1);
   //s->set_vflip(s, 1);  //垂直翻轉
-  
+
+  //伺服馬達
   ledcAttachPin(pinServo, 3);  
   ledcSetup(3, 50, 16);  
-  servo_rotate(3, angleValue);   
+  servo_rotate(3, servoAngle);    
   
   //閃光燈(GPIO4)
   ledcAttachPin(4, 4);  
@@ -518,11 +515,6 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         if (P2!=""&P2!="stop") Serial.println(P2);
         Serial.println();
       }
-      else if (cmd=="decelerate") {  //轉彎減速為原速的百分比
-        int val = P1.toInt();      
-        decelerate = val;
-        Serial.println("Decelerate = " + String(val)); 
-      } 
       else if (cmd=="car") {  //自走車運動狀態
         int val = P1.toInt(); 
         if (val==1) {  //前進 http://192.168.xxx.xxx/control?car=1
@@ -534,10 +526,10 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         }
         else if (val==2) {  //左轉 http://192.168.xxx.xxx/control?car=2
           Serial.println("Left");     
-          ledcWrite(5,speedR*decelerate/100);
+          ledcWrite(5,speedR*decelerate);
           ledcWrite(6,0);
           ledcWrite(7,0);
-          ledcWrite(8,speedL*decelerate/100);  
+          ledcWrite(8,speedL*decelerate);  
         }
         else if (val==3) {  //停止 http://192.168.xxx.xxx/control?car=3
           Serial.println("Stop");      
@@ -549,8 +541,8 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         else if (val==4) {  //右轉 http://192.168.xxx.xxx/control?car=4
           Serial.println("Right");
           ledcWrite(5,0);
-          ledcWrite(6,speedR*decelerate/100);
-          ledcWrite(7,speedL*decelerate/100);
+          ledcWrite(6,speedR*decelerate);
+          ledcWrite(7,speedL*decelerate);
           ledcWrite(8,0);          
         }
         else if (val==5) {  //後退 http://192.168.xxx.xxx/control?car=5
@@ -564,12 +556,12 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           Serial.println("FrontLeft");     
           ledcWrite(5,speedR);
           ledcWrite(6,0);
-          ledcWrite(7,speedL*decelerate/100);
+          ledcWrite(7,speedL*decelerate);
           ledcWrite(8,0);   
         }
         else if (val==7) {  //右前進 http://192.168.xxx.xxx/control?car=7
           Serial.println("FrontRight");     
-          ledcWrite(5,speedR*decelerate/100);
+          ledcWrite(5,speedR*decelerate);
           ledcWrite(6,0);
           ledcWrite(7,speedL);
           ledcWrite(8,0);   
@@ -579,25 +571,25 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           ledcWrite(5,0);
           ledcWrite(6,speedR);
           ledcWrite(7,0);
-          ledcWrite(8,speedL*decelerate/100);
+          ledcWrite(8,speedL*decelerate);
         } 
         else if (val==9) {  //右後退 http://192.168.xxx.xxx/control?car=9
           Serial.println("RightAfter");      
           ledcWrite(5,0);
-          ledcWrite(6,speedR*decelerate/100);
+          ledcWrite(6,speedR*decelerate);
           ledcWrite(7,0);
           ledcWrite(8,speedL);
         }  
         if (P2!="") {
-          Serial.println("delay "+P2+" ms"); 
+          //Serial.println("delay "+P2+" ms"); 
           delay(P2.toInt()); 
           Serial.println("Stop");     
           ledcWrite(5,0);
           ledcWrite(6,0);
           ledcWrite(7,0);
           ledcWrite(8,0);         
-        }
-      }      
+        } 
+      }
       else {
         Feedback="Command is not defined";
       }
@@ -628,8 +620,8 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         ledcAttachPin(4, 4);  
         ledcSetup(4, 5000, 8);        
         ledcWrite(4,val);
-      }
-      else if(!strcmp(variable, "speedL")) {  //左輪車速
+      } 
+      else if(!strcmp(variable, "speedL")) {
         if (val > 255)
            val = 255;
         else if (val < 0)
@@ -637,7 +629,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         speedL = val;
         Serial.println("LeftSpeed = " + String(val)); 
       }  
-      else if(!strcmp(variable, "speedR")) {  //右輪車速
+      else if(!strcmp(variable, "speedR")) {
         if (val > 255)
            val = 255;
         else if (val < 0)
@@ -645,15 +637,84 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         speedR = val;
         Serial.println("RightSpeed = " + String(val)); 
       }  
+      else if(!strcmp(variable, "decelerate")) {       
+        decelerate = String(value).toFloat();
+        Serial.println("Decelerate = " + String(decelerate));  
+      }
       else if(!strcmp(variable, "servo")) {  //伺服馬達
-        angleValue = val;
+        servoAngle = val;
         ledcAttachPin(pinServo, 3);
         ledcSetup(3, 50, 16);
-        servo_rotate(3, angleValue);
+        servo_rotate(3, servoAngle);
         delay(100);
         
-        Serial.println("servoH="+String(angleValue));
-      } 
+        Serial.println("servo = "+String(servoAngle));
+      }
+      else if(!strcmp(variable, "car")) {  //自走車運動狀態
+        if (val==1) {  //前進 http://192.168.xxx.xxx/control?car=1
+          Serial.println("Front");     
+          ledcWrite(5,speedR);
+          ledcWrite(6,0);
+          ledcWrite(7,speedL);
+          ledcWrite(8,0);   
+        }
+        else if (val==2) {  //左轉 http://192.168.xxx.xxx/control?car=2
+          Serial.println("Left");     
+          ledcWrite(5,speedR);
+          ledcWrite(6,0);
+          ledcWrite(7,0);
+          ledcWrite(8,speedL);  
+        }
+        else if (val==3) {  //停止 http://192.168.xxx.xxx/control?car=3
+          Serial.println("Stop");      
+          ledcWrite(5,0);
+          ledcWrite(6,0);
+          ledcWrite(7,0);
+          ledcWrite(8,0);    
+        }
+        else if (val==4) {  //右轉 http://192.168.xxx.xxx/control?car=4
+          Serial.println("Right");
+          ledcWrite(5,0);
+          ledcWrite(6,speedR);
+          ledcWrite(7,speedL);
+          ledcWrite(8,0);          
+        }
+        else if (val==5) {  //後退 http://192.168.xxx.xxx/control?car=5
+          Serial.println("Back");      
+          ledcWrite(5,0);
+          ledcWrite(6,speedR);
+          ledcWrite(7,0);
+          ledcWrite(8,speedL);
+        }  
+        else if (val==6) {  //左前進 http://192.168.xxx.xxx/control?car=6
+          Serial.println("FrontLeft");     
+          ledcWrite(5,speedR);
+          ledcWrite(6,0);
+          ledcWrite(7,speedL*decelerate);
+          ledcWrite(8,0);   
+        }
+        else if (val==7) {  //右前進 http://192.168.xxx.xxx/control?car=7
+          Serial.println("FrontRight");     
+          ledcWrite(5,speedR*decelerate);
+          ledcWrite(6,0);
+          ledcWrite(7,speedL);
+          ledcWrite(8,0);   
+        }  
+        else if (val==8) {  //左後退 http://192.168.xxx.xxx/control?car=8
+          Serial.println("LeftAfter");      
+          ledcWrite(5,0);
+          ledcWrite(6,speedR);
+          ledcWrite(7,0);
+          ledcWrite(8,speedL*decelerate);
+        } 
+        else if (val==9) {  //右後退 http://192.168.xxx.xxx/control?car=9
+          Serial.println("RightAfter");      
+          ledcWrite(5,0);
+          ledcWrite(6,speedR*decelerate);
+          ledcWrite(7,0);
+          ledcWrite(8,speedL);
+        }    
+      }                        
       else {
           res = -1;
       }
@@ -686,7 +747,8 @@ static esp_err_t status_handler(httpd_req_t *req){
     p+=sprintf(p, "\"flash\":%d,", 0);
     p+=sprintf(p, "\"speedL\":%d,", speedL);
     p+=sprintf(p, "\"speedR\":%d,", speedR);
-    p+=sprintf(p, "\"servo\":%d,", angleValue);    
+    p+=sprintf(p, "\"decelerate\":%.1f,", decelerate);
+    p+=sprintf(p, "\"servo\":%d,", servoAngle);        
     p+=sprintf(p, "\"framesize\":%u,", s->status.framesize);
     p+=sprintf(p, "\"quality\":%u,", s->status.quality);
     p+=sprintf(p, "\"brightness\":%d,", s->status.brightness);
@@ -702,136 +764,338 @@ static esp_err_t status_handler(httpd_req_t *req){
 
 //自訂網頁首頁
 static const char PROGMEM INDEX_HTML[] = R"rawliteral(
-<!doctype html>
+<!DOCTYPE html>
 <html>
+<head>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <title>ESP32 OV2460</title>
         <style>
-          body{font-family:Arial,Helvetica,sans-serif;background:#181818;color:#EFEFEF;font-size:16px}h2{font-size:18px}section.main{display:flex}#menu,section.main{flex-direction:column}#menu{display:none;flex-wrap:nowrap;min-width:340px;background:#363636;padding:8px;border-radius:4px;margin-top:-10px;margin-right:10px}#content{display:flex;flex-wrap:wrap;align-items:stretch}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}figure img{display:block;width:100%;height:auto;border-radius:4px;margin-top:8px}@media (min-width: 800px) and (orientation:landscape){#content{display:flex;flex-wrap:nowrap;align-items:stretch}figure img{display:block;max-width:100%;max-height:calc(100vh - 40px);width:auto;height:auto}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}}section#buttons{display:flex;flex-wrap:nowrap;justify-content:space-between}#nav-toggle{cursor:pointer;display:block}#nav-toggle-cb{outline:0;opacity:0;width:0;height:0}#nav-toggle-cb:checked+#menu{display:flex}.input-group{display:flex;flex-wrap:nowrap;line-height:22px;margin:5px 0}.input-group>label{display:inline-block;padding-right:10px;min-width:47%}.input-group input,.input-group select{flex-grow:1}.range-max,.range-min{display:inline-block;padding:0 5px}button{display:block;margin:5px;padding:0 12px;border:0;line-height:28px;cursor:pointer;color:#fff;background:#ff3034;border-radius:5px;font-size:16px;outline:0}button:hover{background:#ff494d}button:active{background:#f21c21}button.disabled{cursor:default;background:#a0a0a0}input[type=range]{-webkit-appearance:none;width:100%;height:22px;background:#363636;cursor:pointer;margin:0}input[type=range]:focus{outline:0}input[type=range]::-webkit-slider-runnable-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-webkit-slider-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;-webkit-appearance:none;margin-top:-11.5px}input[type=range]:focus::-webkit-slider-runnable-track{background:#EFEFEF}input[type=range]::-moz-range-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-moz-range-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer}input[type=range]::-ms-track{width:100%;height:2px;cursor:pointer;background:0 0;border-color:transparent;color:transparent}input[type=range]::-ms-fill-lower{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-fill-upper{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;height:2px}input[type=range]:focus::-ms-fill-lower{background:#EFEFEF}input[type=range]:focus::-ms-fill-upper{background:#363636}.switch{display:block;position:relative;line-height:22px;font-size:16px;height:22px}.switch input{outline:0;opacity:0;width:0;height:0}.slider{width:50px;height:22px;border-radius:22px;cursor:pointer;background-color:grey}.slider,.slider:before{display:inline-block;transition:.4s}.slider:before{position:relative;content:"";border-radius:50%;height:16px;width:16px;left:4px;top:3px;background-color:#fff}input:checked+.slider{background-color:#ff3034}input:checked+.slider:before{-webkit-transform:translateX(26px);transform:translateX(26px)}select{border:1px solid #363636;font-size:14px;height:22px;outline:0;border-radius:5px}.image-container{position:relative;min-width:160px}.close{position:absolute;right:5px;top:5px;background:#ff3034;width:16px;height:16px;border-radius:100px;color:#fff;text-align:center;line-height:18px;cursor:pointer}.hidden{display:none}
-        </style>
-        <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"> </script>
+            body {
+                font-family: Arial,Helvetica,sans-serif;
+                background: #181818;
+                color: #EFEFEF;
+                font-size: 16px
+            }
+            h2 {
+                font-size: 18px
+            }
+            section.main {
+                display: flex
+            }
+            #menu,section.main {
+                flex-direction: column
+            }
+            #menu {
+                display: none;
+                flex-wrap: nowrap;
+                min-width: 340px;
+                background: #363636;
+                padding: 8px;
+                border-radius: 4px;
+                margin-top: -10px;
+                margin-right: 10px;
+            }
+            #content {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: stretch
+            }
+            figure {
+                padding: 0px;
+                margin: 0;
+                -webkit-margin-before: 0;
+                margin-block-start: 0;
+                -webkit-margin-after: 0;
+                margin-block-end: 0;
+                -webkit-margin-start: 0;
+                margin-inline-start: 0;
+                -webkit-margin-end: 0;
+                margin-inline-end: 0
+            }
+            figure img {
+                display: block;
+                width: 100%;
+                height: auto;
+                border-radius: 4px;
+                margin-top: 8px;
+            }
+            @media (min-width: 800px) and (orientation:landscape) {
+                #content {
+                    display:flex;
+                    flex-wrap: nowrap;
+                    align-items: stretch
+                }
+                figure img {
+                    display: block;
+                    max-width: 100%;
+                    max-height: calc(100vh - 40px);
+                    width: auto;
+                    height: auto
+                }
+                figure {
+                    padding: 0 0 0 0px;
+                    margin: 0;
+                    -webkit-margin-before: 0;
+                    margin-block-start: 0;
+                    -webkit-margin-after: 0;
+                    margin-block-end: 0;
+                    -webkit-margin-start: 0;
+                    margin-inline-start: 0;
+                    -webkit-margin-end: 0;
+                    margin-inline-end: 0
+                }
+            }
+            section#buttons {
+                display: flex;
+                flex-wrap: nowrap;
+                justify-content: space-between
+            }
+            #nav-toggle {
+                cursor: pointer;
+                display: block
+            }
+            #nav-toggle-cb {
+                outline: 0;
+                opacity: 0;
+                width: 0;
+                height: 0
+            }
+            #nav-toggle-cb:checked+#menu {
+                display: flex
+            }
+            .input-group {
+                display: flex;
+                flex-wrap: nowrap;
+                line-height: 22px;
+                margin: 5px 0
+            }
+            .input-group>label {
+                display: inline-block;
+                padding-right: 10px;
+                min-width: 47%
+            }
+            .input-group input,.input-group select {
+                flex-grow: 1
+            }
+            .range-max,.range-min {
+                display: inline-block;
+                padding: 0 5px
+            }
+            button {
+                display: block;
+                margin: 5px;
+                padding: 0 12px;
+                border: 0;
+                line-height: 28px;
+                cursor: pointer;
+                color: #fff;
+                background: #ff3034;
+                border-radius: 5px;
+                font-size: 16px;
+                outline: 0
+            }
+            button:hover {
+                background: #ff494d
+            }
+            button:active {
+                background: #f21c21
+            }
+            button.disabled {
+                cursor: default;
+                background: #a0a0a0
+            }
+            input[type=range] {
+                -webkit-appearance: none;
+                width: 100%;
+                height: 22px;
+                background: #363636;
+                cursor: pointer;
+                margin: 0
+            }
+            input[type=range]:focus {
+                outline: 0
+            }
+            input[type=range]::-webkit-slider-runnable-track {
+                width: 100%;
+                height: 2px;
+                cursor: pointer;
+                background: #EFEFEF;
+                border-radius: 0;
+                border: 0 solid #EFEFEF
+            }
+            input[type=range]::-webkit-slider-thumb {
+                border: 1px solid rgba(0,0,30,0);
+                height: 22px;
+                width: 22px;
+                border-radius: 50px;
+                background: #ff3034;
+                cursor: pointer;
+                -webkit-appearance: none;
+                margin-top: -11.5px
+            }
+            input[type=range]:focus::-webkit-slider-runnable-track {
+                background: #EFEFEF
+            }
+            input[type=range]::-moz-range-track {
+                width: 100%;
+                height: 2px;
+                cursor: pointer;
+                background: #EFEFEF;
+                border-radius: 0;
+                border: 0 solid #EFEFEF
+            }
+            input[type=range]::-moz-range-thumb {
+                border: 1px solid rgba(0,0,30,0);
+                height: 22px;
+                width: 22px;
+                border-radius: 50px;
+                background: #ff3034;
+                cursor: pointer
+            }
+            input[type=range]::-ms-track {
+                width: 100%;
+                height: 2px;
+                cursor: pointer;
+                background: 0 0;
+                border-color: transparent;
+                color: transparent
+            }
+            input[type=range]::-ms-fill-lower {
+                background: #EFEFEF;
+                border: 0 solid #EFEFEF;
+                border-radius: 0
+            }
+            input[type=range]::-ms-fill-upper {
+                background: #EFEFEF;
+                border: 0 solid #EFEFEF;
+                border-radius: 0
+            }
+            input[type=range]::-ms-thumb {
+                border: 1px solid rgba(0,0,30,0);
+                height: 22px;
+                width: 22px;
+                border-radius: 50px;
+                background: #ff3034;
+                cursor: pointer;
+                height: 2px
+            }
+            input[type=range]:focus::-ms-fill-lower {
+                background: #EFEFEF
+            }
+            input[type=range]:focus::-ms-fill-upper {
+                background: #363636
+            }
+            .switch {
+                display: block;
+                position: relative;
+                line-height: 22px;
+                font-size: 16px;
+                height: 22px
+            }
+            .switch input {
+                outline: 0;
+                opacity: 0;
+                width: 0;
+                height: 0
+            }
+            .slider {
+                width: 50px;
+                height: 22px;
+                border-radius: 22px;
+                cursor: pointer;
+                background-color: grey
+            }
+            .slider,.slider:before {
+                display: inline-block;
+                transition: .4s
+            }
+            .slider:before {
+                position: relative;
+                content: "";
+                border-radius: 50%;
+                height: 16px;
+                width: 16px;
+                left: 4px;
+                top: 3px;
+                background-color: #fff
+            }
+            input:checked+.slider {
+                background-color: #ff3034
+            }
+            input:checked+.slider:before {
+                -webkit-transform: translateX(26px);
+                transform: translateX(26px)
+            }
+            select {
+                border: 1px solid #363636;
+                font-size: 14px;
+                height: 22px;
+                outline: 0;
+                border-radius: 5px
+            }
+            .image-container {
+                position: relative;
+                min-width: 160px
+            }
+            .close {
+                position: absolute;
+                right: 5px;
+                top: 5px;
+                background: #ff3034;
+                width: 16px;
+                height: 16px;
+                border-radius: 100px;
+                color: #fff;
+                text-align: center;
+                line-height: 18px;
+                cursor: pointer
+            }
+            .hidden {
+                display: none
+            }
+        </style>   
+         <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"> </script>
         <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.1.0"> </script>      
     </head>
-    <body>
     <figure>
       <div id="stream-container" class="image-container hidden">
         <div class="close" id="close-stream">×</div>
-        <img id="stream" src="" crossorigin="anonymous" style="background-color:#000000;display:none;">
-        <canvas id="canvas" width="320" height="240">
+        <img id="stream" src="" crossorigin="anonymous">
+        <canvas id="canvas" width="320" height="240" style="display:none">
       </div>
     </figure>
+      <section id="buttons">
+              <table>
+                <tr><td colspan="3">IP: <input type="text" id="ip" value=""><input type="button" value="Set" onclick="start();"></td></tr>
+                <tr>
+                <td align="left"><button id="restartButton">Restart</button></td>
+                <td align="center"><button id="get-still">get-still</button></td>
+                <td align="right"><button id="toggle-stream">Start Stream</button></td>
+                </tr>
+              </table>                  
+      </section>    
         <section class="main">
             <section id="buttons">
-                <table>
-                <tr><td><button id="restart" onclick="try{fetch(document.location.origin+'/control?restart');}catch(e){}">Restart</button></td><td><button id="toggle-stream" style="display:none"></button></td><td><button id="face_enroll" style="display:none" class="disabled" disabled="disabled"></button><button id="get-still">get-still</button></td></tr>
-                <tr><td colspan="2">Turn Decelerate<select onclick="try{fetch(document.location.origin+'/control?decelerate='+this.value);}catch(e){}"><option value="100">100%</option><option value="90">90%</option><option value="80">80%</option><option value="70">70%</option><option value="60" selected="selected">60%</option><option value="50">50%</option><option value="40">40%</option><option value="30">30%</option><option value="10">20%</option><option value="10">10%</option><option value="0">0%</option></select></td><td><input type="checkbox" id="nostop" onclick="noStopControl();">No Stop</td></tr> 
-                <tr><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=6');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=6');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">FrontLeft</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=1');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=1');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Front</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=7');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=7');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">FrontRight</button></td></tr>
-                <tr><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=2');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=2');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Left</button></td><td align="center"><button onclick="try{stopDetection();fetch(document.location.origin+'/control?car=3');}catch(e){}">Stop</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=4');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=4');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Right</button></td></tr>
-                <tr><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=8');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=8');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">LeftAfter</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=5');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=5');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Back</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=9');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=9');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">RightAfter</button></td></tr>                   
-                <tr>  
-                  <td colspan="3">
-                      Object<select id="object">
-                        <option value="person" selected="selected">person</option>
-                        <option value="bicycle">bicycle</option>
-                        <option value="car">car</option>
-                        <option value="motorcycle">motorcycle</option>
-                        <option value="airplane">airplane</option>
-                        <option value="bus">bus</option>
-                        <option value="train">train</option>
-                        <option value="truck">truck</option>
-                        <option value="boat">boat</option>
-                        <option value="traffic light">traffic light</option>
-                        <option value="fire hydrant">fire hydrant</option>
-                        <option value="stop sign">stop sign</option>
-                        <option value="parking meter">parking meter</option>
-                        <option value="bench">bench</option>
-                        <option value="bird">bird</option>
-                        <option value="cat">cat</option>
-                        <option value="dog">dog</option>
-                        <option value="horse">horse</option>
-                        <option value="sheep">sheep</option>
-                        <option value="cow">cow</option>
-                        <option value="elephant">elephant</option>
-                        <option value="bear">bear</option>
-                        <option value="zebra">zebra</option>
-                        <option value="giraffe">giraffe</option>
-                        <option value="backpack">backpack</option>
-                        <option value="umbrella">umbrella</option>
-                        <option value="handbag">handbag</option>
-                        <option value="tie">tie</option>
-                        <option value="suitcase">suitcase</option>
-                        <option value="frisbee">frisbee</option>
-                        <option value="skis">skis</option>
-                        <option value="snowboard">snowboard</option>
-                        <option value="sports ball">sports ball</option>
-                        <option value="kite">kite</option>
-                        <option value="baseball bat">baseball bat</option>
-                        <option value="baseball glove">baseball glove</option>
-                        <option value="skateboard">skateboard</option>
-                        <option value="surfboard">surfboard</option>
-                        <option value="tennis racket">tennis racket</option>
-                        <option value="bottle">bottle</option>
-                        <option value="wine glass">wine glass</option>
-                        <option value="cup">cup</option>
-                        <option value="fork">fork</option>
-                        <option value="knife">knife</option>
-                        <option value="spoon">spoon</option>
-                        <option value="bowl">bowl</option>
-                        <option value="banana">banana</option>
-                        <option value="apple">apple</option>
-                        <option value="sandwich">sandwich</option>
-                        <option value="orange">orange</option>
-                        <option value="broccoli">broccoli</option>
-                        <option value="carrot">carrot</option>
-                        <option value="hot dog">hot dog</option>
-                        <option value="pizza">pizza</option>
-                        <option value="donut">donut</option>
-                        <option value="cake">cake</option>
-                        <option value="chair">chair</option>
-                        <option value="couch">couch</option>
-                        <option value="potted plant">potted plant</option>
-                        <option value="bed">bed</option>
-                        <option value="dining table">dining table</option>
-                        <option value="toilet">toilet</option>
-                        <option value="tv">tv</option>
-                        <option value="laptop">laptop</option>
-                        <option value="mouse">mouse</option>
-                        <option value="remote">remote</option>
-                        <option value="keyboard">keyboard</option>
-                        <option value="cell phone">cell phone</option>
-                        <option value="microwave">microwave</option>
-                        <option value="oven">oven</option>
-                        <option value="toaster">toaster</option>
-                        <option value="sink">sink</option>
-                        <option value="refrigerator">refrigerator</option>
-                        <option value="book">book</option>
-                        <option value="clock">clock</option>
-                        <option value="vase">vase</option>
-                        <option value="scissors">scissors</option>
-                        <option value="teddy bear">teddy bear</option>
-                        <option value="hair drier">hair drier</option>
-                        <option value="toothbrush">toothbrush</option>
-                      </select>
-                      ScoreLimit<select id="score">
-                      <option value="1.0">1</option>
-                      <option value="0.9">0.9</option>
-                      <option value="0.8">0.8</option>
-                      <option value="0.7">0.7</option>
-                      <option value="0.6">0.6</option>
-                      <option value="0.5">0.5</option>
-                      <option value="0.4">0.4</option>
-                      <option value="0.3">0.3</option>
-                      <option value="0.2">0.2</option>
-                      <option value="0.1">0.1</option>
-                      <option value="0" selected="selected">0</option>
-                    </select>
-                  </td>
-                </tr>
-                <tr><td colspan="3">Auto<input type="checkbox" id="motorState">Control Motor<input type="checkbox" id="servoState">Control Servo</td></tr> 
-                <tr><td><span id="message" style="display:none"></span></td><td></td><td></td></tr> 
-                <tr style="display:none"><td colspan="3"></td></tr> 
+                <table id="buttonPanel" style="display:none">
+                  <tr><td colspan="3"><input type="checkbox" id="nostop" onclick="noStop();">No Stop</td></tr> 
+                  <tr bgcolor="#363636">
+                  <td align="center"><button onmousedown="stopDetection();car('/control?var=car&val=6');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=6');" ontouchend="noStop();">FrontLeft</button></td>
+                  <td align="center"><button onmousedown="stopDetection();car('/control?var=car&val=1');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=1');" ontouchend="noStop();">Front</button></td>
+                  <td align="center"><button onmousedown="stopDetection();car('/control?var=car&val=7');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=7');" ontouchend="noStop();">FrontRight</button></td>
+                  </tr>
+                  <tr bgcolor="#363636">
+                  <td align="center"><button onmousedown="stopDetection();car('/control?var=car&val=2');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=2');" ontouchend="noStop();">Left</button></td>
+                  <td align="center"><button onclick="stopDetection();car('/control?var=car&val=3');">Stop</button></td>
+                  <td align="center"><button onmousedown="stopDetection();car('/control?var=car&val=4');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=4');" ontouchend="noStop();">Right</button></td>
+                  </tr>
+                  <tr bgcolor="#363636"><td align="center"><button onmousedown="stopDetection();car('/control?var=car&val=8');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=8');" ontouchend="noStop();">LeftAfter</button></td>
+                  <td align="center"><button onmousedown="stopDetection();car('/control?var=car&val=5');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=5');" ontouchend="noStop();">Back</button></td>
+                  <td align="center"><button onmousedown="stopDetection();car('/control?var=car&val=9');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=9');" ontouchend="noStop();">RightAfter</button></td>
+                  </tr>            
+                  <tr><td><span id="message" style="display:none"></span></td><td></td><td></td></tr> 
+                  <tr style="display:none"><td colspan="3"><iframe id="ifr"></iframe></td></tr> 
                 </table>
             </section>         
             <div id="logo">
@@ -840,13 +1104,137 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             <div id="content">
                 <div id="sidebar">
                     <input type="checkbox" id="nav-toggle-cb">
-                    <nav id="menu">                        
-                        <div class="input-group" id="servo-group">
-                            <label for="servo">Servo</label>
-                            <div class="range-min">0</div>
-                            <input type="range" id="servo" min="0" max="180" value="90" class="default-action">
-                            <div class="range-max">180</div>
+                    <nav id="menu">
+                        <div class="input-group" id="panel-group">
+                            <label for="panel">Button Panel</label>
+                            <div class="switch">
+                                <input id="panel" type="checkbox">
+                                <label class="slider" for="panel"></label>
+                            </div>
+                        </div>                    
+                        <div class="input-group" id="detectState-group">
+                            <label for="detectState">Start Detect</label>
+                            <div class="switch">
+                                <input id="detectState" type="checkbox">
+                                <label class="slider" for="detectState"></label>
+                            </div>
+                        </div>                     
+                        <div class="input-group" id="trackobject-group">
+                            <label for="trackobject">Track Object</label>
+                            <div class="switch" style="display:none">
+                                <input id="trackobject" type="checkbox">
+                                <label class="slider" for="trackobject"></label>
+                            </div>
+                            <select id="object">
+                              <option value="person" selected="selected">person</option>
+                              <option value="bicycle">bicycle</option>
+                              <option value="car">car</option>
+                              <option value="motorcycle">motorcycle</option>
+                              <option value="airplane">airplane</option>
+                              <option value="bus">bus</option>
+                              <option value="train">train</option>
+                              <option value="truck">truck</option>
+                              <option value="boat">boat</option>
+                              <option value="traffic light">traffic light</option>
+                              <option value="fire hydrant">fire hydrant</option>
+                              <option value="stop sign">stop sign</option>
+                              <option value="parking meter">parking meter</option>
+                              <option value="bench">bench</option>
+                              <option value="bird">bird</option>
+                              <option value="cat">cat</option>
+                              <option value="dog">dog</option>
+                              <option value="horse">horse</option>
+                              <option value="sheep">sheep</option>
+                              <option value="cow">cow</option>
+                              <option value="elephant">elephant</option>
+                              <option value="bear">bear</option>
+                              <option value="zebra">zebra</option>
+                              <option value="giraffe">giraffe</option>
+                              <option value="backpack">backpack</option>
+                              <option value="umbrella">umbrella</option>
+                              <option value="handbag">handbag</option>
+                              <option value="tie">tie</option>
+                              <option value="suitcase">suitcase</option>
+                              <option value="frisbee">frisbee</option>
+                              <option value="skis">skis</option>
+                              <option value="snowboard">snowboard</option>
+                              <option value="sports ball">sports ball</option>
+                              <option value="kite">kite</option>
+                              <option value="baseball bat">baseball bat</option>
+                              <option value="baseball glove">baseball glove</option>
+                              <option value="skateboard">skateboard</option>
+                              <option value="surfboard">surfboard</option>
+                              <option value="tennis racket">tennis racket</option>
+                              <option value="bottle">bottle</option>
+                              <option value="wine glass">wine glass</option>
+                              <option value="cup">cup</option>
+                              <option value="fork">fork</option>
+                              <option value="knife">knife</option>
+                              <option value="spoon">spoon</option>
+                              <option value="bowl">bowl</option>
+                              <option value="banana">banana</option>
+                              <option value="apple">apple</option>
+                              <option value="sandwich">sandwich</option>
+                              <option value="orange">orange</option>
+                              <option value="broccoli">broccoli</option>
+                              <option value="carrot">carrot</option>
+                              <option value="hot dog">hot dog</option>
+                              <option value="pizza">pizza</option>
+                              <option value="donut">donut</option>
+                              <option value="cake">cake</option>
+                              <option value="chair">chair</option>
+                              <option value="couch">couch</option>
+                              <option value="potted plant">potted plant</option>
+                              <option value="bed">bed</option>
+                              <option value="dining table">dining table</option>
+                              <option value="toilet">toilet</option>
+                              <option value="tv">tv</option>
+                              <option value="laptop">laptop</option>
+                              <option value="mouse">mouse</option>
+                              <option value="remote">remote</option>
+                              <option value="keyboard">keyboard</option>
+                              <option value="cell phone">cell phone</option>
+                              <option value="microwave">microwave</option>
+                              <option value="oven">oven</option>
+                              <option value="toaster">toaster</option>
+                              <option value="sink">sink</option>
+                              <option value="refrigerator">refrigerator</option>
+                              <option value="book">book</option>
+                              <option value="clock">clock</option>
+                              <option value="vase">vase</option>
+                              <option value="scissors">scissors</option>
+                              <option value="teddy bear">teddy bear</option>
+                              <option value="hair drier">hair drier</option>
+                              <option value="toothbrush">toothbrush</option>
+                            </select>
                         </div>
+                        <div class="input-group" id="score-group">
+                            <label for="scoret">Score Limit</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="score" min="0" max="1" value="0" step="0.1">
+                            <div class="range-max">1</div>
+                        </div>                        
+                        <div class="input-group" id="motorState-group">
+                            <label for="motorState">Control Motor</label>
+                            <div class="switch">
+                                <input id="motorState" type="checkbox">
+                                <label class="slider" for="motorState"></label>
+                            </div>
+                        </div>
+                        <div class="input-group" id="servoState-group">
+                            <label for="servoState">Control Servo</label>
+                            <div class="switch">
+                                <input id="servoState" type="checkbox">
+                                <label class="slider" for="servoState"></label>
+                            </div>
+                        </div>
+                        <div class="input-group" id="autodetect-group">
+                            <label for="autodetect">Auto Detect</label>
+                            <div class="switch">
+                                <input id="autodetect" type="checkbox">
+                                <label class="slider" for="autodetect"></label>
+                            </div>
+                        </div>                        
                         <div class="input-group" id="speedR-group">
                             <label for="speedR">speed R</label>
                             <div class="range-min">0</div>
@@ -854,11 +1242,23 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                             <div class="range-max">255</div>
                         </div>
                         <div class="input-group" id="speedL-group">
-                            <label for="speedL">Speed L</label>
+                            <label for="speedL">speed L</label>
                             <div class="range-min">0</div>
                             <input type="range" id="speedL" min="0" max="255" value="255" class="default-action">
                             <div class="range-max">255</div>
-                        </div>  
+                        </div>                        
+                        <div class="input-group" id="decelerate-group">
+                            <label for="decelerate">Turn Decelerate</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="decelerate" min="0" max="1" value="0.6" step="0.1" class="default-action">
+                            <div class="range-max">1</div>
+                        </div>
+                        <div class="input-group" id="servo-group">
+                            <label for="servo">Servo</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="servo" min="0" max="180" value="90" class="default-action">
+                            <div class="range-max">180</div>
+                        </div>                        
                         <div class="input-group" id="flash-group">
                             <label for="flash">Flash</label>
                             <div class="range-min">0</div>
@@ -868,7 +1268,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                         <div class="input-group" id="framesize-group">
                             <label for="framesize">Resolution</label>
                             <select id="framesize" class="default-action">
-                                <option value="4">QVGA(320x240)</option>
+                                <option value="10">UXGA(1600x1200)</option>
+                                <option value="9">SXGA(1280x1024)</option>
+                                <option value="8">XGA(1024x768)</option>
+                                <option value="7">SVGA(800x600)</option>
+                                <option value="6">VGA(640x480)</option>
+                                <option value="5">CIF(400x296)</option>
+                                <option value="4" selected="selected">QVGA(320x240)</option>
+                                <option value="3">HQVGA(240x176)</option>
+                                <option value="0">QQVGA(160x120)</option>
                             </select>
                         </div>
                         <div class="input-group" id="quality-group">
@@ -907,25 +1315,43 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 </div>
             </div>
         </section>
-        <div id="result" style="color:red">Please wait for loading model.</div>        
-        <script>
-          document.addEventListener('DOMContentLoaded', function (event) {
-            var baseHost = document.location.origin
+        <div id="result" style="color:yellow"></div> 
+      </body>
+  </html>
+  
+        <script> 
+          //  網址/?192.168.1.38  可自動帶入?後參數IP值
+          var href=location.href;
+          if (href.indexOf("?")!=-1) {
+            document.getElementById("ip").value = location.search.split("?")[1].replace(/http:\/\//g,"");
+          }
+          else if (href.indexOf("http")!=-1) {
+            document.getElementById("ip").value = location.host;
+          } 
+
+          function start() {
+            window.stop();
+            
+            var baseHost = 'http://'+document.getElementById("ip").value;  //var baseHost = document.location.origin
             var streamUrl = baseHost + ':81'
+          
             const hide = el => {
               el.classList.add('hidden')
             }
             const show = el => {
               el.classList.remove('hidden')
             }
+          
             const disable = el => {
               el.classList.add('disabled')
               el.disabled = true
             }
+          
             const enable = el => {
               el.classList.remove('disabled')
               el.disabled = false
             }
+          
             const updateValue = (el, value, updateRemote) => {
               updateRemote = updateRemote == null ? true : updateRemote
               let initialValue
@@ -937,10 +1363,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 initialValue = el.value
                 el.value = value
               }
+          
               if (updateRemote && initialValue !== value) {
                 updateConfig(el);
-              } 
+              }
             }
+          
             function updateConfig (el) {
               let value
               switch (el.type) {
@@ -958,12 +1386,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 default:
                   return
               }
+          
               const query = `${baseHost}/control?var=${el.id}&val=${value}`
+          
               fetch(query)
                 .then(response => {
                   console.log(`request to ${query} finished, status: ${response.status}`)
                 })
             }
+          
             document
               .querySelectorAll('.close')
               .forEach(el => {
@@ -971,6 +1402,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   hide(el.parentNode)
                 }
               })
+          
             // read initial values
             fetch(`${baseHost}/status`)
               .then(function (response) {
@@ -980,38 +1412,46 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 document
                   .querySelectorAll('.default-action')
                   .forEach(el => {
-                    updateValue(el, state[el.id], false)
+                      updateValue(el, state[el.id], false)
                   })
               })
+          
             const view = document.getElementById('stream')
             const viewContainer = document.getElementById('stream-container')
             const stillButton = document.getElementById('get-still')
             const streamButton = document.getElementById('toggle-stream')
             const closeButton = document.getElementById('close-stream')
+            const restartButton = document.getElementById('restartButton')
+          
             const stopStream = () => {
               //window.stop();
-              streamButton.innerHTML = 'Start Stream'
+              streamButton.innerHTML = 'Start Stream';
+              hide(viewContainer)
             }
+          
             const startStream = () => {
               view.src = `${streamUrl}/stream`
               show(viewContainer)
               streamButton.innerHTML = 'Stop Stream'
             }
+
+            //新增重啟電源按鈕點選事件 (自訂指令格式：http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9)
+            restartButton.onclick = () => {
+              fetch(baseHost+"/control?restart");
+            }            
+          
             // Attach actions to buttons
             stillButton.onclick = () => {
               stopStream()
-              try{
-                view.src = `${baseHost}/capture?_cb=${Date.now()}`
-              }
-              catch(e) {
-                view.src = `${baseHost}/capture?_cb=${Date.now()}`  
-              }
+              view.src = `${baseHost}/capture?_cb=${Date.now()}`
               show(viewContainer)
             }
+          
             closeButton.onclick = () => {
               stopStream()
               hide(viewContainer)
             }
+          
             streamButton.onclick = () => {
               const streamEnabled = streamButton.innerHTML === 'Stop Stream'
               if (streamEnabled) {
@@ -1020,82 +1460,106 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 startStream()
               }
             }
+          
             // Attach default on change action
             document
               .querySelectorAll('.default-action')
               .forEach(el => {
                 el.onchange = () => updateConfig(el)
               })
-          })
-        </script>
-        <script>
-          function noStopControl() {
-            
-            if (!document.getElementById('nostop').checked) {
-              try{
-                fetch(document.location.origin+'/control?car=3');
-              }
-              catch(e){}
-            }
+          
+            // Custom actions
+          
+            const framesize = document.getElementById('framesize')
+          
+            framesize.onchange = () => {
+              updateConfig(framesize)
+            }                                 
           }
 
-          function stopDetection() {
-            document.getElementById('message').innerHTML = "";
-          }
-        </script>
-        <script>
-          var canvas = document.getElementById('canvas');
-          var context = canvas.getContext("2d"); 
-          var ShowImage = document.getElementById('stream');
-          var example = document.getElementById('example');
-          var result = document.getElementById('result');
-          var count = document.getElementById('count');
-          var getStill = document.getElementById('get-still');
-          var motorState = document.getElementById('motorState');
-          var servoState = document.getElementById('servoState');
-          var servo = document.getElementById('servo');
-          var myTimer;  
-          var restartCount=0;     
+
+          //法蘭斯影像辨識
+          const aiView = document.getElementById('stream');
+          const aiStill = document.getElementById('get-still')
+          const canvas = document.getElementById('canvas');     
+          var context = canvas.getContext("2d");
+          const nostop = document.getElementById('nostop');
+          const detectState = document.getElementById('detectState');
+          const autodetect = document.getElementById('autodetect');
+          const object = document.getElementById('object');
+          const motorState = document.getElementById('motorState');
+          const servoState = document.getElementById('servoState');
+          const servo = document.getElementById('servo');
+          const panel = document.getElementById('panel');
+          const message = document.getElementById('message');
+          const result = document.getElementById('result');
+          const ifr = document.getElementById('ifr');
+          const ip = document.getElementById('ip');
+          
           var Model;
-          var angleValue = 30;
-          var lastValue = 0;          
+          var servoAngle = 30;
+          var nearMax = 150;
+          var nearMin = 100;
+          var farMax = 100;
+          var farMin = 50;            
+          var servoLastValue = servo.value;
+          var lastDirection = "";
+          var nobodycount = 0;
 
-          getStill.onclick = function (event) { 
-            clearInterval(myTimer);   
-            myTimer = setInterval(function(){error_handle();},5000);
-            ShowImage.src=location.origin+'/?getstill='+Math.random();
-          }
-      
-          function error_handle() {
-            restartCount++;
-            clearInterval(myTimer);
-            if (restartCount<=2) {
-              result.innerHTML = "Get still error. Restart ESP32-CAM "+restartCount+" times.";
-              myTimer = setInterval(function(){getStill.click();},10000);
-            }
+          panel.onchange = function(e){  
+            if (!panel.checked)
+              buttonPanel.style.display = "none";
             else
-              result.innerHTML = "Get still error. Please check ESP32-CAM and reload the page.";
-          }     
-      
-          ShowImage.onload = function (event) {
-            clearInterval(myTimer);
-            restartCount=0;      
-            canvas.setAttribute("width", ShowImage.width);
-            canvas.setAttribute("height", ShowImage.height);
-            context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height);
-            if (Model)
+              buttonPanel.style.display = "block";
+          }                       
+          
+          function car(query) {
+             query = "http:\/\/" + ip.value + query;
+             fetch(query)
+                .then(response => {
+                  console.log(`request to ${query} finished, status: ${response.status}`)
+                })
+          }
+                
+          function noStop() {
+            if (!nostop.checked) {
+              car('/control?var=car&val=3');
+            }
+          }
+
+          detectState.onclick = () => {
+            if (detectState.checked == true) {
+              aiView.style.display = "none";
+              canvas.style.display = "block";
+              aiStill.click();
+            } else {
+              aiView.style.display = "block";
+              canvas.style.display = "none";
+            }
+          }
+            
+          function stopDetection() {
+            detectState.checked = false;
+            aiView.style.display = "block";
+            canvas.style.display = "none";           
+            message.innerHTML = "";
+          }
+
+          aiView.onload = function (event) {
+            if (detectState.checked == false) return;   
+            canvas.setAttribute("width", aiView.width);
+            canvas.setAttribute("height", aiView.height);
+            context.drawImage(aiView, 0, 0, aiView.width, aiView.height);
+            if (Model)          
               DetectImage();      
           }  
 
-          function loadModel() {
-            result.innerHTML = "Please wait for loading model.";
-            cocoSsd.load().then(cocoSsd_Model => {
-              Model = cocoSsd_Model;
-              result.innerHTML = "";
-              getStill.style.display = "block";
-              getStill.click();
-            }); 
-          }
+          result.innerHTML = "Please wait for loading model.";
+          cocoSsd.load().then(cocoSsd_Model => {
+            Model = cocoSsd_Model;
+            result.innerHTML = "";
+            start();
+          }); 
           
           function DetectImage() {
             Model.detect(canvas).then(Predictions => {    
@@ -1122,88 +1586,117 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                     context.font = Math.round(s/30) + "px Arial";
                     context.fillText(Predictions[i].class, x, y);
                     //context.fillText(i, x, y);
-
                     result.innerHTML+= "[ "+i+" ] "+Predictions[i].class+", "+Math.round(Predictions[i].score*100)+"%, "+Math.round(x)+", "+Math.round(y)+", "+Math.round(width)+", "+Math.round(height);
                   
                     var midX = Math.round(x)+Math.round(width)/2;  //第一個偵測物件中心點X值
                     if (motorState.checked) {
                       if (midX<(320/2)-40) {
-                        if (midX<60)  //物件中心點偏左程度
-                          delay=200;
-                        else
-                          delay=150; 
-                        fetch(document.location.origin+'/control?car=7;'+delay);  //左前進
-                        lastValue = 3;
+                        if (midX<60) {  //物件中心點偏左程度
+                          if (width>160)
+                            delay=nearMax;
+                          else
+                            delay=nearMin;
+                        } else {
+                          if (width>160)
+                            delay=farMax;
+                          else
+                            delay=farMin;
+                        } 
+                        if (!hmirror.checked) {  //鏡像
+                          car('/control?car=6;'+delay);  //左前進
+                          lastDirection = "left";
+                        }
+                        else {                
+                          car('/control?car=7;'+delay);  //右前進
+                          lastDirection = "right";
+                        }
                       }
                       else if (midX>(320/2+40)) {
                         var delay=0;
-                        if (midX>260) //物件中心點偏右程度
-                          delay=200;
-                        else
-                          delay=150;
-                        fetch(document.location.origin+'/control?car=6;'+delay);  //右前進
-                        lastValue = 3;
+                        if (midX>260) { //物件中心點偏右程度
+                          if (width>160)
+                            delay=nearMax;
+                          else
+                            delay=nearMin;
+                        } else {
+                          if (width>160)
+                            delay=farMax;
+                          else
+                            delay=farMin;
+                        }
+                        if (!hmirror.checked) {  //鏡像
+                          car('/control?car=7;'+delay);  //右前進
+                          lastDirection = "right";
+                        }
+                        else {                           
+                          car('/control?car=6;'+delay);  //左前進
+                          lastDirection = "left";
+                        }
                       }                    
                       else if (midX>=(320/2-40)&&midX<=(320/2+40)) {  //物件中心點在正中心自訂區域120~200中則前進
-                        if (lastValue!=1)
-                          fetch(document.location.origin+'/control?car=1;;stop');
-                        lastValue = 1;
-                      } 
+                        car('/control?car=1;200;stop');  //前進
+                      }
                     }
                       
                     var midY = Math.round(y)+Math.round(height)/2;  //第一個偵測物件中心點Y值
                     if (servoState.checked) {
                       if (midY>(240/2+30)) {
                         if (midY>195) {  //物件中心點偏下程度
-                          angleValue-=5;
+                          servoAngle-=5;
                         } else {
-                          angleValue-=3; 
+                          servoAngle-=3; 
                         }
-                        if (angleValue <0) angleValue = 0;
-                        if (angleValue >180) angleValue = 180;                  
-                        fetch(document.location.origin+'/control?var=servo&val='+angleValue); 
+                        if (servoAngle <0) servoAngle = 0;
+                        if (servoAngle >180) servoAngle = 180;                  
+                        car('/control?var=servo&val='+servoAngle); 
                       }
                       else if (midY<(240/2)-30) {
                         if (midY<45) {  //物件中心點偏上程度
-                          angleValue+=5;
+                          servoAngle+=5;
                         } else {
-                          angleValue+=3;   
+                          servoAngle+=3;   
                         }
-                        if (angleValue <0) angleValue = 0;
-                        if (angleValue >180) angleValue = 180;                  
-                        fetch(document.location.origin+'/control?var=servo&val='+angleValue);  
+                        if (servoAngle <0) servoAngle = 0;
+                        if (servoAngle >180) servoAngle = 180;                  
+                        car('/control?var=servo&val='+servoAngle);  
                       }
-                      servo.value = angleValue;
-                    }    
+                      
+                      if (servoAngle!=servoLastValue) {
+                        servo.value = servoAngle;
+                        servoLastValue = servoAngle;
+                      }
+                    }
+                    nobodycount = 0;    
                     break;
                   }
                 }
               }
-              else
-                result.innerHTML = "Unrecognizable";
+              else {
+                result.innerHTML = "Unrecognizable";                             
+              }
                 
               if (objectCount==0) {
-                if (motorState.checked) {
-                  fetch(document.location.origin+'/control?car=3;;stop');  //停止
-                  lastValue = 3;
+                nobodycount++;
+                if (autodetect.checked&&nobodycount>=3) {
+                  if (lastDirection == "right")
+                    car('/control?car=4;100');  //右轉
+                  else
+                    car('/control?car=2;100');  //左轉
+                  setTimeout(function(){aiStill.click();},1000);
+                  return;
                 }
-              }
+              } 
               
               try { 
                 document.createEvent("TouchEvent");
-                setTimeout(function(){getStill.click();},250);
+                setTimeout(function(){aiStill.click();},250);
               }
               catch(e) { 
-                setTimeout(function(){getStill.click();},150);
+                setTimeout(function(){aiStill.click();},150);
               } 
             });
-          }
-      
-          window.onload = function () { loadModel(); }            
-        </script>
-
-    </body>
-</html>        
+          }                  
+  </script>
 )rawliteral";
 
 //網頁首頁   http://192.168.xxx.xxx
