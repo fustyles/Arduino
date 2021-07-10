@@ -1,12 +1,10 @@
 /*
+ESP32-CAM Remote Control Car (Use Joystick)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-9 22:00
 https://www.facebook.com/francefu
 
 Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
-
-If you output PWM to GPIO 15 using ledcWrite and the wheel loses control, you could use the codes.
-https://github.com/fustyles/Arduino/tree/master/ESP32-CAM_CAR_2digitalwrite
-https://github.com/fustyles/Arduino/tree/master/ESP32-CAM_CAR_1pwm1digitalwrite
+Don't use L9110S.
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
 http://192.168.xxx.xxx:81/stream   //取得串流影像       <img src="http://192.168.xxx.xxx:81/stream">
@@ -39,10 +37,6 @@ http://192.168.xxx.xxx/control?var=contrast&val=value     // value = -2 ~ 2
 http://192.168.xxx.xxx/control?var=hmirror&val=value      // value = 0 or 1 
 http://192.168.xxx.xxx/control?var=vflip&val=value        // value = 0 or 1 
 http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255   
-      
-查詢Client端IP：
-查詢IP：http://192.168.4.1/?ip
-重設網路：http://192.168.4.1/?resetwifi=ssid;password
 */
 
 //輸入WIFI連線帳號密碼
@@ -55,6 +49,7 @@ const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 
 int speedR = 255;  //You can adjust the speed of the wheel. (gpio12, gpio13)
 int speedL = 255;  //You can adjust the speed of the wheel. (gpio14, gpio15)
+float decelerate = 0.6;   // value = 0-1
 
 #include <WiFi.h>
 #include "soc/soc.h"             //用於電源不穩不重開機 
@@ -184,8 +179,12 @@ void setup() {
   }
 
   //可動態改變視訊框架大小(解析度大小)
-  s->set_framesize(s, FRAMESIZE_QVGA);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+  s->set_framesize(s, FRAMESIZE_CIF);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 
+  //鏡像
+  //s->set_hmirror(s, 1);
+  //s->set_vflip(s, 1);  //垂直翻轉
+  
   //閃光燈(GPIO4)
   ledcAttachPin(4, 4);  
   ledcSetup(4, 5000, 8);
@@ -539,11 +538,14 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           val = 0;       
         speedR = val;
         Serial.println("Right Speed = " + String(val));       
-      }                   
-      else if(!strcmp(variable, "car")) { 
-        float d = 0.3; 
+      }
+      else if(!strcmp(variable, "decelerate")) {       
+        decelerate = String(value).toFloat();
+        Serial.println("Decelerate = " + String(decelerate)); 
+      }                          
+      else if(!strcmp(variable, "car")) {
         if (val==1) {
-          Serial.println("Forward");     
+          Serial.println("Front");     
           ledcWrite(5,speedR);
           ledcWrite(6,0);
           ledcWrite(7,speedL);
@@ -554,7 +556,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           ledcWrite(5,speedR);
           ledcWrite(6,0);
           ledcWrite(7,0);
-          ledcWrite(8,speedL);   
+          ledcWrite(8,speedL);  
         }
         else if (val==3) {
           Serial.println("Stop");      
@@ -568,42 +570,42 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           ledcWrite(5,0);
           ledcWrite(6,speedR);
           ledcWrite(7,speedL);
-          ledcWrite(8,0);        
+          ledcWrite(8,0);          
         }
         else if (val==5) {
-          Serial.println("Backward");      
+          Serial.println("Back");      
           ledcWrite(5,0);
           ledcWrite(6,speedR);
           ledcWrite(7,0);
-          ledcWrite(8,speedL);    
-        }    
+          ledcWrite(8,speedL);
+        }  
         else if (val==6) {
-          Serial.println("Left-Forward");     
+          Serial.println("FrontLeft");     
           ledcWrite(5,speedR);
           ledcWrite(6,0);
-          ledcWrite(7,speedL*d);
+          ledcWrite(7,speedL*decelerate);
           ledcWrite(8,0);   
         }
         else if (val==7) {
-          Serial.println("Right-Forward");          
-          ledcWrite(5,speedR*d);
+          Serial.println("FrontRight");     
+          ledcWrite(5,speedR*decelerate);
           ledcWrite(6,0);
           ledcWrite(7,speedL);
-          ledcWrite(8,0);    
-        }
+          ledcWrite(8,0);   
+        }  
         else if (val==8) {
-          Serial.println("Left-Backward");      
+          Serial.println("LeftAfter");      
           ledcWrite(5,0);
           ledcWrite(6,speedR);
           ledcWrite(7,0);
-          ledcWrite(8,speedL*d);        
-        }
+          ledcWrite(8,speedL*decelerate);
+        } 
         else if (val==9) {
-          Serial.println("Right-Backward");      
+          Serial.println("RightAfter");      
           ledcWrite(5,0);
-          ledcWrite(6,speedR*d);
+          ledcWrite(6,speedR*decelerate);
           ledcWrite(7,0);
-          ledcWrite(8,speedL);   
+          ledcWrite(8,speedL);
         }         
       }        
       else {
@@ -636,8 +638,9 @@ static esp_err_t status_handler(httpd_req_t *req){
     char * p = json_response;
     *p++ = '{';
     p+=sprintf(p, "\"flash\":%d,", 0);
-    p+=sprintf(p, "\"speedR\":%d,", speedR);
     p+=sprintf(p, "\"speedL\":%d,", speedL);
+    p+=sprintf(p, "\"speedR\":%d,", speedR);
+    p+=sprintf(p, "\"decelerate\":%.1f,", decelerate); 
     p+=sprintf(p, "\"framesize\":%u,", s->status.framesize);
     p+=sprintf(p, "\"quality\":%u,", s->status.quality);
     p+=sprintf(p, "\"brightness\":%d,", s->status.brightness);
@@ -678,7 +681,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 flex-direction: column
             }
             #menu {
-                display: block;
+                display: flex;
                 flex-wrap: nowrap;
                 min-width: 340px;
                 background: #363636;
@@ -959,17 +962,34 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           </div>
         </figure>
         <section id="buttons">
-            <table>
-              <tr><td colspan="3">IP: <input type="text" id="ip" value=""><input type="button" value="Set" onclick="start();"></td></tr>
-              <tr>
-              <td align="left"><button id="restartButton">Restart</button></td>
-              <td align="center"><button id="get-still">get-still</button></td>
-              <td align="right"><button id="toggle-stream">Start Stream</button></td>
-              </tr>
-              <tr style="display:none"><td colspan="3"><iframe id="ifr"></iframe></td></tr>
-            </table>
+                <table>
+                  <tr><td colspan="3">IP: <input type="text" id="ip" value=""><input type="button" value="Set" onclick="start();"></td></tr>
+                  <tr>
+                  <td align="left"><button id="restartButton">Restart</button></td>
+                  <td align="center"><button id="get-still">get-still</button></td>
+                  <td align="right"><button id="toggle-stream">Start Stream</button></td>
+                  </tr>
+                </table>                  
         </section>
-        <div id="joy3Div" style="width:200px;height:200px;margin:50px"></div>
+        <table id="buttonPanel" style="display:none">
+          <tr><td colspan="3"><input type="checkbox" id="nostop" onclick="noStop();">No Stop</td></tr> 
+          <tr bgcolor="#363636">
+          <td align="center"><button onmousedown="car('/control?var=car&val=6');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=6');" ontouchend="noStop();">FrontLeft</button></td>
+          <td align="center"><button onmousedown="car('/control?var=car&val=1');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=1');" ontouchend="noStop();">Front</button></td>
+          <td align="center"><button onmousedown="car('/control?var=car&val=7');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=7');" ontouchend="noStop();">FrontRight</button></td>
+          </tr>
+          <tr bgcolor="#363636">
+          <td align="center"><button onmousedown="car('/control?var=car&val=2');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=2');" ontouchend="noStop();">Left</button></td>
+          <td align="center"><button onclick="car('/control?var=car&val=3');">Stop</button></td>
+          <td align="center"><button onmousedown="car('/control?var=car&val=4');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=4');" ontouchend="noStop();">Right</button></td>
+          </tr>
+          <tr bgcolor="#363636"><td align="center"><button onmousedown="car('/control?var=car&val=8');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=8');" ontouchend="noStop();">LeftAfter</button></td>
+          <td align="center"><button onmousedown="car('/control?var=car&val=5');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=5');" ontouchend="noStop();">Back</button></td>
+          <td align="center"><button onmousedown="car('/control?var=car&val=9');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=9');" ontouchend="noStop();">RightAfter</button></td>
+          </tr>            
+          <tr style="display:none"><td colspan="3"><iframe id="ifr"></iframe></td></tr> 
+        </table>        
+        <div id="joy3Div" style="width:200px;height:200px;margin:50px;"></div>
         <section class="main">      
             <div id="logo">
                 <label for="nav-toggle-cb" id="nav-toggle">&#9776;&nbsp;&nbsp;Toggle settings</label>
@@ -979,30 +999,36 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                     <input type="checkbox" id="nav-toggle-cb">
                     <nav id="menu">
                         <div class="input-group" id="panel-group">
-                            <label for="panel">Control Panel</label>
+                            <label for="panel">Button Panel</label>
                             <div class="switch">
-                                <input id="panel" type="checkbox" checked="checked">
+                                <input id="panel" type="checkbox">
                                 <label class="slider" for="panel"></label>
                             </div>
-                        </div>                        
-                        <div class="input-group" id="flash-group">
-                            <label for="flash">Flash</label>
-                            <div class="range-min">0</div>
-                            <input type="range" id="flash" min="0" max="255" value="0" class="default-action">
-                            <div class="range-max">255</div>
                         </div>
                         <div class="input-group" id="speedR-group">
                             <label for="speedR">Right Speed</label>
                             <div class="range-min">0</div>
-                            <input type="range" id="speedR" min="0" max="255" value="0" class="default-action">
+                            <input type="range" id="speedR" min="0" max="255" value="255" class="default-action">
                             <div class="range-max">255</div>
                         </div>
                         <div class="input-group" id="speedL-group">
                             <label for="speedL">Left Speed</label>
                             <div class="range-min">0</div>
-                            <input type="range" id="speedL" min="0" max="255" value="0" class="default-action">
+                            <input type="range" id="speedL" min="0" max="255" value="255" class="default-action">
                             <div class="range-max">255</div>
                         </div>
+                        <div class="input-group" id="decelerate-group">
+                            <label for="decelerate">Turn Decelerate</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="decelerate" min="0" max="1" value="0.6" step="0.1" class="default-action">
+                            <div class="range-max">1</div>
+                        </div>                                               
+                        <div class="input-group" id="flash-group">
+                            <label for="flash">Flash</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="flash" min="0" max="255" value="0" class="default-action">
+                            <div class="range-max">255</div>
+                        </div>                       
                         <div class="input-group" id="framesize-group">
                             <label for="framesize">Resolution</label>
                             <select id="framesize" class="default-action">
@@ -1053,6 +1079,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 </div>
             </div>
         </section>
+        <div id="result" style="color:yellow"></div> 
         
         <script>
           function start() {
@@ -1208,7 +1235,21 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
 
           var ifr = document.getElementById('ifr');
           var ip = document.getElementById('ip');
-          
+
+          function car(query) {
+             query = "http:\/\/" + ip.value + query;
+             fetch(query)
+                .then(response => {
+                  console.log(`request to ${query} finished, status: ${response.status}`)
+                })
+          }
+                
+          function noStop() {
+            if (!document.getElementById('nostop').checked) {
+              car('/control?var=car&val=3');
+            }
+          }
+              
           var joy3Param = { "title": "joystick3" };
           var Joy3 = new JoyStick('joy3Div', joy3Param);
           var carState = "";
@@ -1216,9 +1257,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
 
           panel.onchange = function(e){  
             if (!panel.checked)
-              joy3Div.style.display = "none";
+              buttonPanel.style.display = "none";
             else
-              joy3Div.style.display = "block";
+              buttonPanel.style.display = "block";
           }
           
           setInterval(function(){
@@ -1250,7 +1291,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
               ifr.src = "http:\/\/"+ip.value+'/control?var=car&val='+value;
               runState = 0;
           }
-            
           
           //  網址/?192.168.1.38  可自動帶入?後參數IP值
           var href=location.href;
