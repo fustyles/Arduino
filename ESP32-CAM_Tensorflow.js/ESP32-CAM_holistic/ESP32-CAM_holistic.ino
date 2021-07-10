@@ -1127,7 +1127,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
         async function DetectImage() {
           holistic.send({image: aiView}).then(res => {
             message.innerHTML = "";
-            aiStill.click();
+            setTimeout(function(){aiStill.click();},100);   //若無法取得畫面可能是硬體效能不足，可改此行程式碼，依硬體效能變更等待時間毫秒數 
           }); 
         }
         
@@ -1182,7 +1182,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
         holistic.onResults(onResults);  
         
         aiView.onload = function (event) {
-          setTimeout(function(){DetectImage();},100);   //若無法取得畫面可能是硬體效能不足，可改此行程式碼，依硬體效能變更等待時間毫秒數
+          DetectImage();
         }
 
         window.onload = function() {
