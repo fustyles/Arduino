@@ -6,6 +6,7 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-9 22:00
 https://www.facebook.com/francefu
 
 Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
+Don't use L9110S.
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
 http://192.168.xxx.xxx:81/stream   //取得串流影像       <img src="http://192.168.xxx.xxx:81/stream">
@@ -28,7 +29,7 @@ http://192.168.xxx.xxx/control?digitalread=pin         //數位讀取
 http://192.168.xxx.xxx/control?analogread=pin          //類比讀取
 http://192.168.xxx.xxx/control?touchread=pin           //觸碰讀取
 http://192.168.xxx.xxx/control?resetwifi=ssid;password   //重設Wi-Fi網路
-http://192.168.xxx.xxx/control?flash=value             //內建閃光燈 value= 0~255
+http://192.168.xxx.xxx/control?flash=value               //內建閃光燈 value= 0~255
 
 官方指令格式 http://192.168.xxx.xxx/control?var=***&val=***
 http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
@@ -38,15 +39,7 @@ http://192.168.xxx.xxx/control?var=contrast&val=value     // value = -2 ~ 2
 http://192.168.xxx.xxx/control?var=hmirror&val=value      // value = 0 or 1 
 http://192.168.xxx.xxx/control?var=vflip&val=value        // value = 0 or 1 
 http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255 
-      
-查詢Client端IP：
-查詢IP：http://192.168.4.1/?ip
-重設網路：http://192.168.4.1/?resetwifi=ssid;password
 */
-
-int speedR = 255;  //You can adjust the speed of the wheel. (gpio12, gpio13)
-int speedL = 255;  //You can adjust the speed of the wheel. (gpio14, gpio15)
-double decelerate = 60;
 
 //輸入WIFI連線帳號密碼
 const char* ssid = "teacher";
@@ -56,8 +49,11 @@ const char* password = "87654321";
 const char* apssid = "esp32-cam";
 const char* appassword = "12345678";         //AP密碼至少要8個字元以上 
 
+int speedR = 255;  //You can adjust the speed of the wheel. (gpio12, gpio13)
+int speedL = 255;  //You can adjust the speed of the wheel. (gpio14, gpio15)
+float decelerate = 0.6;   // value = 0-1
+
 #include <WiFi.h>
-#include "esp_camera.h"          //視訊函式
 #include "soc/soc.h"             //用於電源不穩不重開機 
 #include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機 
 
@@ -185,10 +181,10 @@ void setup() {
   }
   
   //可動態改變視訊框架大小(解析度大小)
-  s->set_framesize(s, FRAMESIZE_QVGA);  //程式內定使用QVGA(320x240)，不可改此設定
+  s->set_framesize(s, FRAMESIZE_CIF);  //程式內定使用QVGA(320x240)，不可改此設定
 
   //鏡像
-  s->set_hmirror(s, 1);
+  //s->set_hmirror(s, 1);
   //s->set_vflip(s, 1);  //垂直翻轉
   
   //閃光燈(GPIO4)
@@ -269,16 +265,6 @@ void setup() {
 
 void loop() {
 
-}
-
-int transferAngle(int angle, String side) {     
-  if (angle > 180)
-     angle = 180;
-  else if (angle < 0)
-    angle = 0;
-  if (side="right")
-    angle = 180 - angle;     
-  return angle*6300/180+1700;
 }
 
 static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size_t len){
@@ -550,8 +536,8 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         Serial.println("RightSpeed = " + String(val)); 
       }  
       else if(!strcmp(variable, "decelerate")) {       
-        decelerate = val;
-        Serial.println("Decelerate = " + String(val)); 
+        decelerate = String(value).toFloat();
+        Serial.println("Decelerate = " + String(decelerate));  
       }       
       else if(!strcmp(variable, "car")) {  
         if (val==1) {
@@ -563,10 +549,10 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         }
         else if (val==2) {
           Serial.println("Left");     
-          ledcWrite(5,speedR*decelerate/100);
+          ledcWrite(5,speedR);
           ledcWrite(6,0);
           ledcWrite(7,0);
-          ledcWrite(8,speedL*decelerate/100);  
+          ledcWrite(8,speedL);  
         }
         else if (val==3) {
           Serial.println("Stop");      
@@ -578,8 +564,8 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         else if (val==4) {
           Serial.println("Right");
           ledcWrite(5,0);
-          ledcWrite(6,speedR*decelerate/100);
-          ledcWrite(7,speedL*decelerate/100);
+          ledcWrite(6,speedR);
+          ledcWrite(7,speedL);
           ledcWrite(8,0);          
         }
         else if (val==5) {
@@ -593,12 +579,12 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           Serial.println("FrontLeft");     
           ledcWrite(5,speedR);
           ledcWrite(6,0);
-          ledcWrite(7,speedL*decelerate/100);
+          ledcWrite(7,speedL*decelerate);
           ledcWrite(8,0);   
         }
         else if (val==7) {
           Serial.println("FrontRight");     
-          ledcWrite(5,speedR*decelerate/100);
+          ledcWrite(5,speedR*decelerate);
           ledcWrite(6,0);
           ledcWrite(7,speedL);
           ledcWrite(8,0);   
@@ -608,12 +594,12 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           ledcWrite(5,0);
           ledcWrite(6,speedR);
           ledcWrite(7,0);
-          ledcWrite(8,speedL*decelerate/100);
+          ledcWrite(8,speedL*decelerate);
         } 
         else if (val==9) {
           Serial.println("RightAfter");      
           ledcWrite(5,0);
-          ledcWrite(6,speedR*decelerate/100);
+          ledcWrite(6,speedR*decelerate);
           ledcWrite(7,0);
           ledcWrite(8,speedL);
         }       
@@ -648,8 +634,9 @@ static esp_err_t status_handler(httpd_req_t *req){
     char * p = json_response;
     *p++ = '{';
     p+=sprintf(p, "\"flash\":%d,", 0);
-    p+=sprintf(p, "\"speedL\":%d,", 160);
-    p+=sprintf(p, "\"speedR\":%d,", 160);
+    p+=sprintf(p, "\"speedL\":%d,", speedL);
+    p+=sprintf(p, "\"speedR\":%d,", speedR);
+    p+=sprintf(p, "\"decelerate\":%.1f,", decelerate);    
     p+=sprintf(p, "\"framesize\":%u,", s->status.framesize);
     p+=sprintf(p, "\"quality\":%u,", s->status.quality);
     p+=sprintf(p, "\"brightness\":%d,", s->status.brightness);
@@ -969,9 +956,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <section class="main">
             <section id="buttons">
                 <table>
-                  <tr><td colspan="3">IP: <input type="text" id="ip" value=""></td></tr>
-                  <tr><td align="left"><button id="restartButton">Restart</button></td><td align="center"><button id="get-still">get-still</button></td><td align="right"><button id="toggle-stream">Stream</button></td></tr>
-                  <tr><td colspan="3"><input type="checkbox" id="nostop" onclick="noStop();">No Stop<input type="checkbox" id="cellphone" onclick="noStop();">3-Axis Control</td></tr> 
+                  <tr><td colspan="3">IP: <input type="text" id="ip" value=""><input type="button" value="Set" onclick="start();"></td></tr>
+                  <tr>
+                  <td align="left"><button id="restartButton">Restart</button></td>
+                  <td align="center"><button id="get-still">get-still</button></td>
+                  <td align="right"><button id="toggle-stream">Start Stream</button></td>
+                  </tr>
+                  <tr><td colspan="3"><input type="checkbox" id="nostop" onclick="noStop();">No Stop</td></tr> 
                   <tr bgcolor="#363636">
                   <td align="center"><button onmousedown="car('/control?var=car&val=6');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=6');" ontouchend="noStop();">FrontLeft</button></td>
                   <td align="center"><button onmousedown="car('/control?var=car&val=1');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=1');" ontouchend="noStop();">Front</button></td>
@@ -997,7 +988,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <div id="sidebar">
                     <input type="checkbox" id="nav-toggle-cb">
                     <nav id="menu"> 
-
+                        <div class="input-group" id="cellphone-group">
+                            <label for="cellphone">3-Axis Control</label>
+                            <div class="switch">
+                                <input id="cellphone" type="checkbox">
+                                <label class="slider" for="cellphone"></label>
+                            </div>
+                        </div>
                         <div class="input-group" id="speedR-group">
                             <label for="speedR">speed R</label>
                             <div class="range-min">0</div>
@@ -1011,12 +1008,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                             <div class="range-max">255</div>
                         </div>                        
                         <div class="input-group" id="decelerate-group">
-                            <label for="decelerate">Turn Decelerate(%)</label>
+                            <label for="decelerate">Turn Decelerate</label>
                             <div class="range-min">0</div>
-                            <input type="range" id="decelerate" min="0" max="100" value="60" class="default-action">
-                            <div class="range-max">100</div>
+                            <input type="range" id="decelerate" min="0" max="1" value="0.6" step="0.1" class="default-action">
+                            <div class="range-max">1</div>
                         </div>
-                        
                         <div class="input-group" id="flash-group">
                             <label for="flash">Flash</label>
                             <div class="range-min">0</div>
@@ -1073,13 +1069,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 </div>
             </div>
         </section>
-        <div id="result" style="color:red"></div> 
+        <div id="result" style="color:yellow"></div> 
       </body>
   </html>
   
         <script>                
-          document.addEventListener('DOMContentLoaded', function (event) {
-            var baseHost = document.location.origin
+          function start() {
+            window.stop();
+            
+            var baseHost = 'http://'+document.getElementById("ip").value;  //var baseHost = document.location.origin
             var streamUrl = baseHost + ':81'
           
             const hide = el => {
@@ -1151,10 +1149,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               })
           
             // read initial values
-            var speedR = document.getElementById('speedR');
-            var speedL = document.getElementById('speedL');
-            var decelerate = document.getElementById('decelerate');
-            
             fetch(`${baseHost}/status`)
               .then(function (response) {
                 return response.json()
@@ -1163,30 +1157,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 document
                   .querySelectorAll('.default-action')
                   .forEach(el => {
-                    if (el.id=="speedR") {
-                      speedR.value = 255;
-                      const query = `${baseHost}/control?var=speedR&val=255`
-                      fetch(query)
-                        .then(response => {
-                          console.log(`request to ${query} finished, status: ${response.status}`)
-                        })                      
-                    } else if (el.id=="speedL") {
-                      speedL.value = 255;
-                      const query = `${baseHost}/control?var=speedL&val=255`
-                      fetch(query)
-                        .then(response => {
-                          console.log(`request to ${query} finished, status: ${response.status}`)
-                        })                      
-                    } else if (el.id=="decelerate") {
-                      decelerate.value = 60;
-                      const query = `${baseHost}/control?var=decelerate&val=60`
-                      fetch(query)
-                        .then(response => {
-                          console.log(`request to ${query} finished, status: ${response.status}`)
-                        })                      
-                    } else {
                       updateValue(el, state[el.id], false)
-                    }
                   })
               })
           
@@ -1200,6 +1171,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             const stopStream = () => {
               window.stop();
               streamButton.innerHTML = 'Start Stream';
+              hide(viewContainer)
             }
           
             const startStream = () => {
@@ -1248,79 +1220,82 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             framesize.onchange = () => {
               updateConfig(framesize)
             }
-          })
+          }
         </script>
-
-  <script>
-    var canvas = document.getElementById('canvas');
-    var context = canvas.getContext("2d"); 
-    var message = document.getElementById('message');
-    var result = document.getElementById('result');
-    var ip = document.getElementById('ip');
-    
-    function car(query) {
-       query = "http:\/\/" + ip.value + query;
-       fetch(query)
-          .then(response => {
-            console.log(`request to ${query} finished, status: ${response.status}`)
-          })
-    }
+      
+        <script>
+          var canvas = document.getElementById('canvas');
+          var context = canvas.getContext("2d"); 
+          var message = document.getElementById('message');
+          var result = document.getElementById('result');
+          var cellphone = document.getElementById('cellphone');
+          var ifr = document.getElementById('ifr');
+          var ip = document.getElementById('ip');
           
-    function noStop() {
-      if (!document.getElementById('nostop').checked) {
-        car('/control?var=car&val=3');
-      }
-    }
+          function car(query) {
+             query = "http:\/\/" + ip.value + query;
+             fetch(query)
+                .then(response => {
+                  console.log(`request to ${query} finished, status: ${response.status}`)
+                })
+          }
+                
+          function noStop() {
+            if (!document.getElementById('nostop').checked) {
+              car('/control?var=car&val=3');
+            }
+          }
+          
+          if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', deviceOrientationHandler, false);
+          }
+          else
+            result.innerHTML = "No DeviceOrientationEvent";
+          
+          function deviceOrientationHandler(event) {
+            if (!cellphone.checked) return;
+            var alpha = Number(event.alpha);
+            var beta = Number(event.beta);
+            var gamma = Number(event.gamma);
+            
+            var label = "";
+            var state = "";
+            var angle = 20;
+            if ((beta<=-angle)&&(gamma<angle&&gamma>-angle)) 
+              {label="1";state="Front";}
+            else if ((beta<angle&&beta>-angle)&&(gamma<=-angle)) 
+              {label="2";state="Left";}
+            else if ((beta<angle&&beta>-angle)&&(gamma<angle&&gamma>-angle)) 
+              {label="3";state="Stop";}
+            else if ((beta<angle&&beta>-angle)&&(gamma>=angle)) 
+              {label="4";state="Right";}
+            else if ((beta>=angle)&&(gamma<angle&&gamma>-angle)) 
+              {label="5";state="Back";}
+            else if ((beta<=-angle)&&(gamma<=-angle)) 
+              {label="6";state="FrontLeft";}
+            else if ((beta<=-angle)&&(gamma>=angle)) 
+              {label="7";state="FrontRight";}
+            else if ((beta>=angle)&&(gamma<=-angle)) 
+              {label="8";state="LeftAfter";}
+            else if ((beta>=angle)&&(gamma>=angle)) 
+              {label="9";state="RightAfter";}
     
-    if (window.DeviceOrientationEvent) {
-      window.addEventListener('deviceorientation', deviceOrientationHandler, false);
-    }
-    else
-      result.innerHTML = "No DeviceOrientationEvent";
-    
-    function deviceOrientationHandler(event) {
-      if (document.getElementById('cellphone').checked) {
-        var alpha = Number(event.alpha);
-        var beta = Number(event.beta);
-        var gamma = Number(event.gamma);
-        
-        var label = "";
-        var state = "";
-        var angle = 20;
-        if ((beta<=-angle)&&(gamma<angle&&gamma>-angle)) 
-          {label="1";state="Front";}
-        else if ((beta<angle&&beta>-angle)&&(gamma<=-angle)) 
-          {label="2";state="Left";}
-        else if ((beta<angle&&beta>-angle)&&(gamma<angle&&gamma>-angle)) 
-          {label="3";state="Stop";}
-        else if ((beta<angle&&beta>-angle)&&(gamma>=angle)) 
-          {label="4";state="Right";}
-        else if ((beta>=angle)&&(gamma<angle&&gamma>-angle)) 
-          {label="5";state="Back";}
-        else if ((beta<=-angle)&&(gamma<=-angle)) 
-          {label="6";state="FrontLeft";}
-        else if ((beta<=-angle)&&(gamma>=angle)) 
-          {label="7";state="FrontRight";}
-        else if ((beta>=angle)&&(gamma<=-angle)) 
-          {label="8";state="LeftAfter";}
-        else if ((beta>=angle)&&(gamma>=angle)) 
-          {label="9";state="RightAfter";}
-
-        result.innerHTML = state+"<br>alpha = "+event.alpha+"<br>beta = "+event.beta+"<br>gamma = "+event.gamma;                                                                                                               
-        if (message.innerHTML==label) return;
-        message.innerHTML=label;
-        ifr.src = "http:\/\/"+ip.value+'/control?var=car&val='+label;
-      }
-    }
-
-    //  網址/?192.168.1.38  可自動帶入?後參數IP值
-    var href=location.href;
-    if (href.indexOf("?")!=-1) {
-      ip.value = location.search.split("?")[1].replace(/http:\/\//g,"");
-    }
-    else if (href.indexOf("http")!=-1) {
-      ip.value = location.host;
-    }
+            result.innerHTML = state+"<br>alpha = "+event.alpha+"<br>beta = "+event.beta+"<br>gamma = "+event.gamma;                                                                                                               
+            if (message.innerHTML==label) return;
+            message.innerHTML=label;
+            ifr.src = "http:\/\/"+ip.value+'/control?var=car&val='+label;
+          }
+      
+          //  網址/?192.168.1.38  可自動帶入?後參數IP值
+          var href=location.href;
+          if (href.indexOf("?")!=-1) {
+            ip.value = location.search.split("?")[1].replace(/http:\/\//g,"");
+            start();
+          }
+          else if (href.indexOf("http")!=-1) {
+            ip.value = location.host;
+            start();
+          }
   </script>
 )rawliteral";
 
