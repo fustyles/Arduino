@@ -1095,7 +1095,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   <td align="center"><button onmousedown="stopDetection();car('/control?var=car&val=9');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=9');" ontouchend="noStop();">RightAfter</button></td>
                   </tr>            
                   <tr><td><span id="message" style="display:none"></span></td><td></td><td></td></tr> 
-                  <tr style="display:none"><td colspan="3"><iframe id="ifr"></iframe></td></tr> 
                 </table>
             </section>         
             <div id="logo">
@@ -1530,7 +1529,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           const panel = document.getElementById('panel');
           const message = document.getElementById('message');
           const result = document.getElementById('result');
-          const ifr = document.getElementById('ifr');
           const ip = document.getElementById('ip');
           const setip = document.getElementById('setip');
 
