@@ -1071,24 +1071,24 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
         <script src="https:\/\/cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>  
         <script src="https:\/\/cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>        
-    </head>
-    <figure>
-      <div id="stream-container" class="image-container hidden">
-        <div class="close" id="close-stream">×</div>
-        <img id="stream" src="" crossorigin="anonymous">
-        <canvas id="canvas" width="320" height="240" style="display:none">
-      </div>
-    </figure>
-      <section id="buttons">
-              <table>
-                <tr><td colspan="3">IP: <input type="text" id="ip" value="">&nbsp;&nbsp;<input type="button" id="setip" value="Set IP" onclick="start();"></td></tr>
-                <tr>
-                <td align="left"><button id="restartButton">Restart</button></td>
-                <td align="center"><button id="get-still">get-still</button></td>
-                <td align="right"><button id="toggle-stream">Start Stream</button></td>
-                </tr>
-              </table>                  
-      </section>    
+        </head>
+        <figure>
+          <div id="stream-container" class="image-container hidden">
+            <div class="close" id="close-stream">×</div>
+            <img id="stream" src="" crossorigin="anonymous">
+            <canvas id="canvas" width="320" height="240" style="display:none">
+          </div>
+        </figure>
+        <section id="buttons">
+          <table>
+            <tr><td colspan="3">IP: <input type="text" id="ip" value="">&nbsp;&nbsp;<input type="button" id="setip" value="Set IP" onclick="start();"></td></tr>
+            <tr>
+            <td align="left"><button id="restartButton">Restart</button></td>
+            <td align="center"><button id="get-still">get-still</button></td>
+            <td align="right"><button id="toggle-stream">Start Stream</button></td>
+            </tr>
+          </table>                  
+        </section>    
         <section class="main">
             <section id="buttons">
                 <table id="buttonPanel" style="display:none">
@@ -1131,7 +1131,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                             <label for="btnModel"></label>
                             <button type="button" id="btnModel" onclick="loadModel();">Load Model</button>
                         </div>
-            <div class="input-group" id="delayTime-group">
+                        <div class="input-group" id="delayTime-group">
                             <label for="delayTime">Delay Time</label>
                             <div class="range-min">10</div>
                             <input type="range" id="delayTime" min="10" max="5000" value="300" step="10" class="my-action">
@@ -1286,7 +1286,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 initialValue = el.value
                 el.value = value
               }
-        el.title = value;
+              el.title = value;
           
               if (updateRemote && initialValue !== value) {
                 updateConfig(el);
@@ -1312,7 +1312,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               }
           
               const query = `${baseHost}/control?var=${el.id}&val=${value}`
-        el.title = value;
+              el.title = value;
           
               fetch(query)
                 .then(response => {
@@ -1339,16 +1339,16 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   .forEach(el => {
                       updateValue(el, state[el.id], false)
                   })
-        result.innerHTML = "Connection successful<br>";
-        result.innerHTML += "<br>Class: 1  ->  Front";     
-        result.innerHTML += "<br>Class: 2  ->  Left";     
-        result.innerHTML += "<br>Class: 3  ->  Stop";      
-        result.innerHTML += "<br>Class: 4  ->  Right";
-        result.innerHTML += "<br>Class: 5  ->  Back";      
-        result.innerHTML += "<br>Class: 6  ->  FrontLeft";    
-        result.innerHTML += "<br>Class: 7  ->  FrontRight";     
-        result.innerHTML += "<br>Class: 8  ->  LeftAfter";     
-        result.innerHTML += "<br>Class: 9  ->  RightAfter";
+                  result.innerHTML = "Connection successful<br>";
+                  result.innerHTML += "<br>Class: 1  ->  Front";     
+                  result.innerHTML += "<br>Class: 2  ->  Left";     
+                  result.innerHTML += "<br>Class: 3  ->  Stop";      
+                  result.innerHTML += "<br>Class: 4  ->  Right";
+                  result.innerHTML += "<br>Class: 5  ->  Back";      
+                  result.innerHTML += "<br>Class: 6  ->  FrontLeft";    
+                  result.innerHTML += "<br>Class: 7  ->  FrontRight";     
+                  result.innerHTML += "<br>Class: 8  ->  LeftAfter";     
+                  result.innerHTML += "<br>Class: 9  ->  RightAfter";
               })
           
             const view = document.getElementById('stream')
@@ -1403,11 +1403,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 el.onchange = () => updateConfig(el)
               })
         
-      // 自訂類別my-action, title屬性顯示數值
+            // 自訂類別my-action, title屬性顯示數值
             document
               .querySelectorAll('.my-action')
               .forEach(el => {
-        el.title = el.value;
+                el.title = el.value;
                 el.onchange = () => el.title = el.value;
               })        
           
@@ -1419,7 +1419,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               updateConfig(framesize)
             }
 
-      loadModel();
+            loadModel();
           }
 
 
@@ -1437,10 +1437,10 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           const ip = document.getElementById('ip');
           const setip = document.getElementById('setip');
           const delayTime = document.getElementById('delayTime');
-      var modelType = document.getElementById('modelType');
+          var modelType = document.getElementById('modelType');
           var modelPath = document.getElementById('modelPath');
           var probabilityLimit = document.getElementById('probabilityLimit');
-      var Model;
+          var Model;
       
           panel.onchange = function(e){  
             if (!panel.checked)
@@ -1490,31 +1490,31 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               DetectImage();      
           }  
       
-      async function loadModel() {
-      if (modelPath.value=="") {
-        result.innerHTML = "Please input model path.";
-      } else {      
-        result.innerHTML = "Please wait for loading model.";
-
-        const URL = modelPath.value;
-        const modelURL = URL + "model.json";
-        const metadataURL = URL + "metadata.json";
-        if (modelType.value=="image") {
-          Model = await tmImage.load(modelURL, metadataURL);
-        } else if (modelType.value=="pose") {
-          Model = await tmPose.load(modelURL, metadataURL);
-        }
-        maxPredictions = Model.getTotalClasses();
-        result.innerHTML = "";
-        
-        if (Model)          
-          aiStill.click();
-        else {
-          modelPath.value="";
-          result.innerHTML = "Please input model path.";
-        }
-      }
-      }
+          async function loadModel() {
+            if (modelPath.value=="") {
+              result.innerHTML = "Please input model path.";
+            } else {      
+              result.innerHTML = "Please wait for loading model.";
+      
+              const URL = modelPath.value;
+              const modelURL = URL + "model.json";
+              const metadataURL = URL + "metadata.json";
+              if (modelType.value=="image") {
+                Model = await tmImage.load(modelURL, metadataURL);
+              } else if (modelType.value=="pose") {
+                Model = await tmPose.load(modelURL, metadataURL);
+              }
+              maxPredictions = Model.getTotalClasses();
+              result.innerHTML = "";
+              
+              if (Model)          
+                aiStill.click();
+              else {
+                modelPath.value="";
+                result.innerHTML = "Please input model path.";
+              }
+            }
+          }
           
           async function DetectImage() {
             var data = "";
@@ -1532,45 +1532,33 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               if (maxPredictions>0) {
                 for (let i = 0; i < maxPredictions; i++) {
                   if (i==0) {
-            maxClassName = prediction[i].className;
-            maxProbability = prediction[i].probability;
+                    maxClassName = prediction[i].className;
+                    maxProbability = prediction[i].probability;
                   } else {
-            if (prediction[i].probability>maxProbability) {
-            maxClassName = prediction[i].className;
-            maxProbability = prediction[i].probability;
-            }
+                    if (prediction[i].probability>maxProbability) {
+                      maxClassName = prediction[i].className;
+                      maxProbability = prediction[i].probability;
+                    }
                   }
                   data += prediction[i].className + "," + prediction[i].probability.toFixed(2) + "<br>";
                 }
                 result.innerHTML = data + "<br>Result:<br>" + maxClassName + "<br>" + maxProbability; 
+                // 1-Front, 2-Left, 3-Stop, 4-Right, 5-Back, 6-FrontLeft, 7-FrontRight, 8-LeftAfter, 9-RightAfter
                 
-                //影像辨識依predict.label回傳參數至ESP32-CAM改變運動狀態
                 if (motorState.checked&&maxProbability>=probabilityLimit.value) {
-                  /*
-          訓練分類名稱設為1~9的數字
-          Class: 1  ->  Front     
-          Class: 2  ->  Left     
-          Class: 3  ->  Stop      
-          Class: 4  ->  Right
-          Class: 5  ->  Back      
-          Class: 6  ->  FrontLeft    
-          Class: 7  ->  FrontRight     
-          Class: 8  ->  LeftAfter     
-          Class: 9  ->  RightAfter
-          */
-          car('/control?car='+maxClassName+';'+delayTime.value);  //網址參數格式 http://192.168.xxx.xxx/control?car=value
+                  car('/control?car='+maxClassName+';'+delayTime.value);  //網址參數格式 http://192.168.xxx.xxx/control?car=value
                 }
               } else {
                 result.innerHTML = "Unrecognizable";                             
               }
             }
-      try { 
-        document.createEvent("TouchEvent");
-        setTimeout(function(){aiStill.click();},250);
-      } catch(e) { 
-        setTimeout(function(){aiStill.click();},150);
-      }       
-          }                  
+        try { 
+          document.createEvent("TouchEvent");
+          setTimeout(function(){aiStill.click();},250);
+        } catch(e) { 
+          setTimeout(function(){aiStill.click();},150);
+        }       
+      }                  
   </script>
 )rawliteral";
 

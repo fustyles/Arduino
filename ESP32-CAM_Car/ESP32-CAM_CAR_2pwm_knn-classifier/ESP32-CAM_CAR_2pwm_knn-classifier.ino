@@ -1056,24 +1056,24 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
         <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
         <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow-models/knn-classifier"></script>         
-    </head>
-    <figure>
-      <div id="stream-container" class="image-container hidden">
-        <div class="close" id="close-stream">×</div>
-        <img id="stream" src="" crossorigin="anonymous">
-        <canvas id="canvas" width="320" height="240" style="display:none">
-        <img id="example" width="320" height="240" style="display:none">
-      </div>
-    </figure>
+      </head>
+      <figure>
+        <div id="stream-container" class="image-container hidden">
+          <div class="close" id="close-stream">×</div>
+          <img id="stream" src="" crossorigin="anonymous">
+          <canvas id="canvas" width="320" height="240" style="display:none">
+          <img id="example" width="320" height="240" style="display:none">
+        </div>
+      </figure>
       <section id="buttons">
-              <table>
-                <tr><td colspan="3">IP: <input type="text" id="ip" value="">&nbsp;&nbsp;<input type="button" id="setip" value="Set IP" onclick="start();"></td></tr>
-                <tr>
-                <td align="left"><button id="restartButton">Restart</button></td>
-                <td align="center"><button id="get-still">get-still</button></td>
-                <td align="right"><button id="toggle-stream">Start Stream</button></td>
-                </tr>
-              </table>                  
+        <table>
+          <tr><td colspan="3">IP: <input type="text" id="ip" value="">&nbsp;&nbsp;<input type="button" id="setip" value="Set IP" onclick="start();"></td></tr>
+          <tr>
+          <td align="left"><button id="restartButton">Restart</button></td>
+          <td align="center"><button id="get-still">get-still</button></td>
+          <td align="right"><button id="toggle-stream">Start Stream</button></td>
+          </tr>
+        </table>                  
       </section>    
         <section class="main">
             <section id="buttons">
@@ -1112,33 +1112,33 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                         <div class="input-group">
                             <label for="Class">Train Classes</label>
                             <select id="Class">
-                <option value="1">Front</option>
-                <option value="2">Left</option>
-                <option value="3">Stop</option>
-                <option value="4">Right</option>
-                <option value="5">Back</option>
-                <option value="6">FrontLeft</option>
-                <option value="7">FrontRight</option>
-                <option value="8">LeftAfter</option>
-                <option value="9">RightAfter</option>
+                              <option value="1">Front</option>
+                              <option value="2">Left</option>
+                              <option value="3">Stop</option>
+                              <option value="4">Right</option>
+                              <option value="5">Back</option>
+                              <option value="6">FrontLeft</option>
+                              <option value="7">FrontRight</option>
+                              <option value="8">LeftAfter</option>
+                              <option value="9">RightAfter</option>
                             </select>
-              <span id="count" style="color:red">0</span>
+                            <span id="count" style="color:red">0</span>
                         </div>
                         <div class="input-group">
                             <label for="addExample"></label>
                             <button id="addExample">Train</button>
                         </div>            
-            <div class="input-group">
+                        <div class="input-group">
                           <label for="getModel">Load Model</label>
-              <input type="file" id="getModel" style="width:100px"></input>
+                          <input type="file" id="getModel" style="width:100px"></input>
                         </div>            
-            <div class="input-group">
+                        <div class="input-group">
                           <label for="clearAllClasses">Clear Classes</label>
-              <button id="clearAllClasses">Clear</button>
+                          <button id="clearAllClasses">Clear</button>
                         </div>
-            <div class="input-group">
+                        <div class="input-group">
                           <label for="save">Save Model</label>
-              <button id="save" onclick="saveModel();">Save</button><br>
+                          <button id="save" onclick="saveModel();">Save</button><br>
                         </div>            
                         <div class="input-group" id="framesize-group">
                             <label for="probabilityLimit">Probability Limit</label>
@@ -1149,7 +1149,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                               <option value="0.9" selected="selected">0.9</option>
                             </select>
                         </div>            
-            <div class="input-group" id="delayTime-group">
+                        <div class="input-group" id="delayTime-group">
                             <label for="delayTime">Delay Time</label>
                             <div class="range-min">10</div>
                             <input type="range" id="delayTime" min="10" max="5000" value="300" step="10" class="my-action">
@@ -1291,7 +1291,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 initialValue = el.value
                 el.value = value
               }
-        el.title = value;
+              el.title = value;
           
               if (updateRemote && initialValue !== value) {
                 updateConfig(el);
@@ -1317,7 +1317,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               }
           
               const query = `${baseHost}/control?var=${el.id}&val=${value}`
-        el.title = value;
+              el.title = value;
           
               fetch(query)
                 .then(response => {
@@ -1398,11 +1398,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 el.onchange = () => updateConfig(el)
               })
         
-      // 自訂類別my-action, title屬性顯示數值
+            // 自訂類別my-action, title屬性顯示數值
             document
               .querySelectorAll('.my-action')
               .forEach(el => {
-        el.title = el.value;
+                el.title = el.value;
                 el.onchange = () => el.title = el.value;
               })        
           
@@ -1414,7 +1414,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               updateConfig(framesize)
             }
 
-      loadModel();
+            loadModel();
           }
 
 
@@ -1438,10 +1438,10 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           var example = document.getElementById('example');
           var Class = document.getElementById('Class');
           var probabilityLimit = document.getElementById('probabilityLimit');
-      var count = document.getElementById('count');
-      var getModel = document.getElementById('getModel');
-      var classifier;
-      var Model;
+          var count = document.getElementById('count');
+          var getModel = document.getElementById('getModel');
+          var classifier;
+          var Model;
       
           panel.onchange = function(e){  
             if (!panel.checked)
@@ -1521,18 +1521,19 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             classifier.addExample(logits, index);
           }     
       
-      function loadModel() {
-        result.innerHTML = "Please wait for loading model.";
-        
-        // Create the classifier.
-        classifier = knnClassifier.create();
-        
-        // Load mobilenet.
-        mobilenet.load().then(Module => {
-        Model = Module;
-        result.innerHTML = "";    
-        }); 
-      }          
+          function loadModel() {
+            result.innerHTML = "Please wait for loading model.";
+            
+            // Create the classifier.
+            classifier = knnClassifier.create();
+            
+            // Load mobilenet.
+            mobilenet.load().then(Module => {
+            Model = Module;
+            result.innerHTML = "";    
+            }); 
+          }       
+             
           function saveModel() {
             let dataset = classifier.getClassifierDataset();
             let myDataset = {}
@@ -1568,42 +1569,43 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             }
       
         async function DetectImage() {
-      if (!detectState.checked) return;
-      
-      try {
-        const Image = tf.browser.fromPixels(aiView);
-        const xlogits = Model.infer(Image, 'conv_preds');
-        const predict = await classifier.predictClass(xlogits);
-
-        //console.log(predict);
-        if (predict.label) {
-          var msg = "";
-          var MaxProbability = 0;
-          for (i=0;i<Class.length;i++) {
-            if (predict.confidences[i.toString()]>=0) msg += "[class "+i+"] " + predict.confidences[i.toString()] + "<br>";
-            if (i==predict.label) MaxProbability = Number(predict.confidences[i.toString()]);    //取得可能性最大的Class
+          if (!detectState.checked) return;
+          
+          try {
+            const Image = tf.browser.fromPixels(aiView);
+            const xlogits = Model.infer(Image, 'conv_preds');
+            const predict = await classifier.predictClass(xlogits);
+            
+            //console.log(predict);
+            // 1-Front, 2-Left, 3-Stop, 4-Right, 5-Back, 6-FrontLeft, 7-FrontRight, 8-LeftAfter, 9-RightAfter
+            if (predict.label) {
+              var msg = "";
+              var MaxProbability = 0;
+              for (i=0;i<Class.length;i++) {
+                if (predict.confidences[i.toString()]>=0) msg += "[class "+i+"] " + predict.confidences[i.toString()] + "<br>";
+                if (i==predict.label) MaxProbability = Number(predict.confidences[i.toString()]);    //取得可能性最大的Class
+              }
+              if (MaxProbability>=probabilityLimit.value) {   //若辨識結果可能性大於等於設定的底限則畫面顯示結果
+                result.innerHTML = "<font color='red'>Result : class " + predict.label + "</font><br><br>"+msg;
+                if (motorState.checked)
+                  car('/control?car='+predict.label+';'+delayTime.value);  //執行辨識的動作        
+              }
+              else
+                result.innerHTML = ""; 
+            }
           }
-          if (MaxProbability>=probabilityLimit.value) {   //若辨識結果可能性大於等於設定的底限則畫面顯示結果
-            result.innerHTML = "<font color='red'>Result : class " + predict.label + "</font><br><br>"+msg;
-            if (motorState.checked)
-              car('/control?car='+predict.label+';'+delayTime.value);  //執行辨識的動作        
-          }
-          else
-            result.innerHTML = ""; 
-        }
-      }
-      catch(e) {}
-      
-      if (Model) {
-        try { 
-          document.createEvent("TouchEvent");
-          setTimeout(function(){aiStill.click();},250);
-        }
-          catch(e) { 
-          setTimeout(function(){aiStill.click();},150);
-        } 
-      }     
-    }                  
+          catch(e) {}
+          
+          if (Model) {
+            try { 
+              document.createEvent("TouchEvent");
+              setTimeout(function(){aiStill.click();},250);
+            }
+              catch(e) { 
+              setTimeout(function(){aiStill.click();},150);
+            } 
+          }     
+        }                  
   </script>
 )rawliteral";
 
