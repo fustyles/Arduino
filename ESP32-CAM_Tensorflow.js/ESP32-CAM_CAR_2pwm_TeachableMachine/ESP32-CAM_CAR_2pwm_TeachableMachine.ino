@@ -1138,7 +1138,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                             <div class="range-max">5000</div>
                         </div>
                         <div class="input-group" id="probabilityLimit-group">
-                            <label for="probabilityLimitt">Probability Limit</label>
+                            <label for="probabilityLimit">Probability Limit</label>
                             <div class="range-min">0</div>
                             <input type="range" id="probabilityLimit" min="0" max="1" value="0.5" step="0.1" class="my-action">
                             <div class="range-max">1</div>
