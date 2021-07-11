@@ -1,7 +1,6 @@
 /*
 ESP32-CAM Mediapipe Holistic 
-Change your hair.
-利用臉部標記點換算與頭髮去倍圖比例換算與定位
+頭部三軸轉動角度
 
 https://google.github.io/mediapipe/solutions/holistic.html
 
@@ -950,8 +949,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                 display: none
             }
         </style>
-        <script src="https:\/\/cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js" crossorigin="anonymous"></script>
-        <script src="https:\/\/fustyles.github.io/webduino/GameElements_20190131/gameelements.js"></script>    
+        <script src="https:\/\/cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js" crossorigin="anonymous"></script>      
     </head>
     <body>
     ESP32-CAM IP：<input type="text" id="ip" size="20" value="192.168.">&nbsp;&nbsp;<input type="button" value="Set" onclick="start();">
@@ -1117,28 +1115,6 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
     const lefthandResult = document.getElementById('lefthandResult');
     const righthandResult = document.getElementById('righthandResult');
     
-    //戴假髮
-    var hairImageWidth;
-    var hairImageHeight;
-    var hairFaceWidth;
-    var hairFaceTopHeight;
-    var hairFaceCenterX;
-    var hairFaceCenterY;
-    var faceWidth;
-    var faceTopHeight;
-    var faceCenterX;
-    var faceCenterY;
-    var hairFaceCenterX_resize;
-    var hairFaceCenterY_resize;
-    hairImageWidth = 357;
-    hairImageHeight = 352;
-    hairFaceWidth = 268;
-    hairFaceTopHeight = 119;
-    hairFaceCenterX = 178;
-    hairFaceCenterY = 280;
-    image_create('', 'https://fustyles.github.io/webduino/Tracking_20190917/image/hair_boy_002.png', hairImageWidth, hairImageHeight, 0, 0, 999, false);
-    
-    
     async function DetectImage() {
       holistic.send({image: aiView}).then(res => {
       message.innerHTML = "";
@@ -1182,33 +1158,43 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
       }
       context.restore();
       
+      message.innerHTML = "";
       
-      faceWidth = (holistic_distance((holistic_face_position(Number(128) - 1, "x")), (holistic_face_position(Number(128) - 1, "y")), (holistic_face_position(Number(265) - 1, "x")), (holistic_face_position(Number(265) - 1, "y"))));
-      faceTopHeight = (holistic_distance((holistic_face_position(Number(196) - 1, "x")), (holistic_face_position(Number(196) - 1, "y")), (holistic_face_position(Number(11) - 1, "x")), (holistic_face_position(Number(11) - 1, "y"))));
-      faceCenterX = ((holistic_face_position(Number(128) - 1, "x")) + (holistic_face_position(Number(265) - 1, "x"))) / 2;
-      faceCenterY = ((holistic_face_position(Number(128) - 1, "y")) + (holistic_face_position(Number(265) - 1, "y"))) / 2;
-      image_set('', "width", (hairImageWidth * (faceWidth / hairFaceWidth)));
-      image_set('', "height", (hairImageHeight * (faceTopHeight / hairFaceTopHeight)));
-      hairFaceCenterX_resize = hairFaceCenterX * (faceWidth / hairFaceWidth);
-      hairFaceCenterY_resize = hairFaceCenterY * (faceTopHeight / hairFaceTopHeight);
-      var canvasPosition = getPos(canvas);
-      image_set('', "left", (faceCenterX - hairFaceCenterX_resize + canvasPosition.x));
-      image_set('', "top", (faceCenterY - hairFaceCenterY_resize + canvasPosition.y));
-      
-    }
-    
-    function getPos(el){
-      var x=0;
-      var y=0;
-      while(true){
-        x += el.offsetLeft;
-        y += el.offsetTop;
-        if(el.offsetParent === null){
-          break;
-        }
-        el = el.offsetParent;
+      //臉部x軸上下點頭
+      var faceX11y = (holistic_face_position("11", "y"));
+      var faceX11z = (holistic_face_position("11", "z"));
+      var faceX153y = (holistic_face_position("153", "y"));
+      var faceX153z = (holistic_face_position("153", "z"));
+      var rotateAngleX = (holistic_angle(faceX153y, faceX153z, faceX11y, faceX11z));
+      if (rotateAngleX) {
+      var valX = rotateAngleX-70;
+      if (valX<0) valX+=360
+      message.innerHTML += "rotateX = " + valX + "<br>";
+      }  
+
+          //臉部y軸左右轉動
+      var faceY163x = (holistic_face_position("163", "x"));
+      var faceY163z = (holistic_face_position("163", "z"));
+      var faceY390x = (holistic_face_position("390", "x"));
+      var faceY390z = (holistic_face_position("390", "z"));
+      var rotateAngleY = (holistic_angle(faceY163x, faceY163z, faceY390x, faceY390z));
+      if (rotateAngleY) {
+      var valY = rotateAngleY-90;
+      if (valY<0) valY+=360
+      message.innerHTML += "rotateY = " + valY + "<br>";
       }
-      return { x: x, y: y };
+      
+          //臉部z軸左右擺動
+      var faceZ11x = (holistic_face_position("11", "x"));
+      var faceZ11y = (holistic_face_position("11", "y"));
+      var faceZ153x = (holistic_face_position("153", "x"));
+      var faceZ153y = (holistic_face_position("153", "y"));
+      var rotateAngleZ = (holistic_angle(faceZ153x, faceZ153y, faceZ11x, faceZ11y));
+      if (rotateAngleZ) {
+      valZ = rotateAngleZ-160;
+      if (valZ<0) valZ+=360
+      message.innerHTML += "rotateZ = " + valZ + "<br>";
+      }     
     }
     
     const holistic = new Holistic({locateFile: (file) => {
@@ -1385,10 +1371,6 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
             } else if (el.id =="uart") {  //新增uart自訂指令
               return;
             } else if (el.id =="face") {  //新增face自訂指令
-        if (el.checked == true)
-        image_set('', "display", false);
-        else
-         image_set('', "display", true);
               return;
             } else if (el.id =="pose") {  //新增pose自訂指令
               return;  
