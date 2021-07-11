@@ -1209,7 +1209,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           const object = document.getElementById('object');
           const message = document.getElementById('message');
           const result = document.getElementById('result');
-          const ifr = document.getElementById('ifr');
           const ip = document.getElementById('ip'); 
           var Model;
 
