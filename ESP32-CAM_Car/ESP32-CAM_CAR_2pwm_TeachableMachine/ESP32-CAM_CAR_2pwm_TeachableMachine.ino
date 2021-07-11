@@ -1,8 +1,13 @@
 /*
-ESP32-CAM Machine Learning Car (Teachable Machine) 
-Open the page in Chrome.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-3 22:00
+ESP32-CAM Machine Learning Car (Teachable Machine)
+
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-11 16:00
 https://www.facebook.com/francefu
+
+Motor Driver IC -> PWM1(IO12, IO13), PWM2(IO14, IO15)
+Don't use L9110S.
+
+Servo -> IO2 (伺服馬達與ESP32-CAM共地外接電源)
 
 Google Teachable Machine
 https://teachablemachine.withgoogle.com/train
@@ -18,7 +23,6 @@ Class: 7  ->  FrontRight
 Class: 8  ->  LeftAfter     
 Class: 9  ->  RightAfter
 
-Motor Driver IC -> PWM1(gpio12, gpio13), PWM2(gpio14, gpio15)
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
 http://192.168.xxx.xxx:81/stream   //取得串流影像       <img src="http://192.168.xxx.xxx:81/stream">
@@ -41,9 +45,8 @@ http://192.168.xxx.xxx/control?digitalread=pin         //數位讀取
 http://192.168.xxx.xxx/control?analogread=pin          //類比讀取
 http://192.168.xxx.xxx/control?touchread=pin           //觸碰讀取
 http://192.168.xxx.xxx/control?resetwifi=ssid;password   //重設Wi-Fi網路
-http://192.168.xxx.xxx/control?flash=value             //內建閃光燈 value= 0~255
-http://192.168.xxx.xxx/control?servo=value             //value = 0 ~ 180
-http://192.168.xxx.xxx/control?car=value               //value = 1(Front), 2(Left), 3(Stop), 4(Right), 5(Back), 6(FrontLeft), 7(FrontRight), 8(LeftAfter), 9(RightAfter)
+http://192.168.xxx.xxx/control?flash=value               //內建閃光燈 value= 0-255
+http://192.168.xxx.xxx/control?servo=value               //伺服馬達 value = 0-180
 
 官方指令格式 http://192.168.xxx.xxx/control?var=***&val=***
 http://192.168.xxx.xxx/control?var=framesize&val=value    // value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120)
@@ -53,10 +56,6 @@ http://192.168.xxx.xxx/control?var=contrast&val=value     // value = -2 ~ 2
 http://192.168.xxx.xxx/control?var=hmirror&val=value      // value = 0 or 1 
 http://192.168.xxx.xxx/control?var=vflip&val=value        // value = 0 or 1 
 http://192.168.xxx.xxx/control?var=flash&val=value        // value = 0 ~ 255 
-      
-查詢Client端IP：
-查詢IP：http://192.168.4.1/?ip
-重設網路：http://192.168.4.1/?resetwifi=ssid;password
 */
 
 //輸入WIFI連線帳號密碼
@@ -67,17 +66,16 @@ const char* password = "87654321";
 const char* apssid = "esp32-cam";
 const char* appassword = "12345678";         //AP密碼至少要8個字元以上 
 
-int pinServo = 2;  //Servo Pin
-int angleValue = 30;   //伺服馬達初始角度
-int speedR = 160;  //紀錄右輪初始轉速 (gpio12, gpio13)
-int speedL = 160;  //紀錄左輪初始轉速 (gpio14, gpio15)
-double decelerate = 60;  //紀錄轉彎減速為 原速*百分比
+int pinServo = 2;      //伺服馬達腳位
+int servoAngle = 30;   //伺服馬達初始角度
+int speedR = 255;  //You can adjust the speed of the wheel. (IO12, IO13)
+int speedL = 255;  //You can adjust the speed of the wheel. (IO14, IO15)
+float decelerate = 0.4;   // value = 0-1
 
 #include <WiFi.h>
-#include <esp32-hal-ledc.h>      //用於控制伺服馬達
-#include "esp_camera.h"          //視訊函式
 #include "soc/soc.h"             //用於電源不穩不重開機 
-#include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機 
+#include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機
+#include <esp32-hal-ledc.h>      //用於控制伺服馬達 
 
 //官方函式庫
 #include "esp_http_server.h"
@@ -203,15 +201,16 @@ void setup() {
   }
   
   //可動態改變視訊框架大小(解析度大小)
-  s->set_framesize(s, FRAMESIZE_QVGA);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
+  s->set_framesize(s, FRAMESIZE_QVGA);  //程式內定使用QVGA(320x240)，不可改此設定
 
   //鏡像
-  s->set_hmirror(s, 1);
+  //s->set_hmirror(s, 1);
   //s->set_vflip(s, 1);  //垂直翻轉
-  
+
+  //伺服馬達
   ledcAttachPin(pinServo, 3);  
   ledcSetup(3, 50, 16);  
-  servo_rotate(3, angleValue);   
+  servo_rotate(3, servoAngle);    
   
   //閃光燈(GPIO4)
   ledcAttachPin(4, 4);  
@@ -288,7 +287,6 @@ void setup() {
   pinMode(4, OUTPUT);
   digitalWrite(4, LOW); 
 }
-
 
 void loop() {
 
@@ -528,13 +526,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         if (P1!=""&P1!="stop") Serial.println(P1);
         if (P2!=""&P2!="stop") Serial.println(P2);
         Serial.println();
-      }       
-      else if (cmd=="decelerate") {  //轉彎減速為原速的百分比
-        int val = P1.toInt();      
-        decelerate = val;
-        Serial.println("Decelerate = " + String(val)); 
-      }   
-      //自走車運動狀態控制            
+      }
       else if (cmd=="car") {  //自走車運動狀態
         int val = P1.toInt(); 
         if (val==1) {  //前進 http://192.168.xxx.xxx/control?car=1
@@ -546,10 +538,10 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         }
         else if (val==2) {  //左轉 http://192.168.xxx.xxx/control?car=2
           Serial.println("Left");     
-          ledcWrite(5,speedR*decelerate/100);
+          ledcWrite(5,speedR*decelerate);
           ledcWrite(6,0);
           ledcWrite(7,0);
-          ledcWrite(8,speedL*decelerate/100);  
+          ledcWrite(8,speedL*decelerate);  
         }
         else if (val==3) {  //停止 http://192.168.xxx.xxx/control?car=3
           Serial.println("Stop");      
@@ -561,8 +553,8 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         else if (val==4) {  //右轉 http://192.168.xxx.xxx/control?car=4
           Serial.println("Right");
           ledcWrite(5,0);
-          ledcWrite(6,speedR*decelerate/100);
-          ledcWrite(7,speedL*decelerate/100);
+          ledcWrite(6,speedR*decelerate);
+          ledcWrite(7,speedL*decelerate);
           ledcWrite(8,0);          
         }
         else if (val==5) {  //後退 http://192.168.xxx.xxx/control?car=5
@@ -576,12 +568,12 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           Serial.println("FrontLeft");     
           ledcWrite(5,speedR);
           ledcWrite(6,0);
-          ledcWrite(7,speedL*decelerate/100);
+          ledcWrite(7,speedL*decelerate);
           ledcWrite(8,0);   
         }
         else if (val==7) {  //右前進 http://192.168.xxx.xxx/control?car=7
           Serial.println("FrontRight");     
-          ledcWrite(5,speedR*decelerate/100);
+          ledcWrite(5,speedR*decelerate);
           ledcWrite(6,0);
           ledcWrite(7,speedL);
           ledcWrite(8,0);   
@@ -591,16 +583,25 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           ledcWrite(5,0);
           ledcWrite(6,speedR);
           ledcWrite(7,0);
-          ledcWrite(8,speedL*decelerate/100);
+          ledcWrite(8,speedL*decelerate);
         } 
         else if (val==9) {  //右後退 http://192.168.xxx.xxx/control?car=9
           Serial.println("RightAfter");      
           ledcWrite(5,0);
-          ledcWrite(6,speedR*decelerate/100);
+          ledcWrite(6,speedR*decelerate);
           ledcWrite(7,0);
           ledcWrite(8,speedL);
-        }       
-      }      
+        }  
+        if (P2!="") {
+          //Serial.println("delay "+P2+" ms"); 
+          delay(P2.toInt()); 
+          Serial.println("Stop");     
+          ledcWrite(5,0);
+          ledcWrite(6,0);
+          ledcWrite(7,0);
+          ledcWrite(8,0);         
+        } 
+      }
       else {
         Feedback="Command is not defined";
       }
@@ -632,7 +633,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         ledcSetup(4, 5000, 8);        
         ledcWrite(4,val);
       } 
-      else if(!strcmp(variable, "speedL")) {  //左輪車速
+      else if(!strcmp(variable, "speedL")) {
         if (val > 255)
            val = 255;
         else if (val < 0)
@@ -640,7 +641,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         speedL = val;
         Serial.println("LeftSpeed = " + String(val)); 
       }  
-      else if(!strcmp(variable, "speedR")) {  //右輪車速
+      else if(!strcmp(variable, "speedR")) {
         if (val > 255)
            val = 255;
         else if (val < 0)
@@ -648,15 +649,84 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         speedR = val;
         Serial.println("RightSpeed = " + String(val)); 
       }  
+      else if(!strcmp(variable, "decelerate")) {       
+        decelerate = String(value).toFloat();
+        Serial.println("Decelerate = " + String(decelerate));  
+      }
       else if(!strcmp(variable, "servo")) {  //伺服馬達
-        angleValue = val;
+        servoAngle = val;
         ledcAttachPin(pinServo, 3);
         ledcSetup(3, 50, 16);
-        servo_rotate(3, angleValue);
+        servo_rotate(3, servoAngle);
         delay(100);
         
-        Serial.println("servoH="+String(angleValue));
-      } 
+        Serial.println("servo = "+String(servoAngle));
+      }
+      else if(!strcmp(variable, "car")) {  //自走車運動狀態
+        if (val==1) {  //前進 http://192.168.xxx.xxx/control?car=1
+          Serial.println("Front");     
+          ledcWrite(5,speedR);
+          ledcWrite(6,0);
+          ledcWrite(7,speedL);
+          ledcWrite(8,0);   
+        }
+        else if (val==2) {  //左轉 http://192.168.xxx.xxx/control?car=2
+          Serial.println("Left");     
+          ledcWrite(5,speedR);
+          ledcWrite(6,0);
+          ledcWrite(7,0);
+          ledcWrite(8,speedL);  
+        }
+        else if (val==3) {  //停止 http://192.168.xxx.xxx/control?car=3
+          Serial.println("Stop");      
+          ledcWrite(5,0);
+          ledcWrite(6,0);
+          ledcWrite(7,0);
+          ledcWrite(8,0);    
+        }
+        else if (val==4) {  //右轉 http://192.168.xxx.xxx/control?car=4
+          Serial.println("Right");
+          ledcWrite(5,0);
+          ledcWrite(6,speedR);
+          ledcWrite(7,speedL);
+          ledcWrite(8,0);          
+        }
+        else if (val==5) {  //後退 http://192.168.xxx.xxx/control?car=5
+          Serial.println("Back");      
+          ledcWrite(5,0);
+          ledcWrite(6,speedR);
+          ledcWrite(7,0);
+          ledcWrite(8,speedL);
+        }  
+        else if (val==6) {  //左前進 http://192.168.xxx.xxx/control?car=6
+          Serial.println("FrontLeft");     
+          ledcWrite(5,speedR);
+          ledcWrite(6,0);
+          ledcWrite(7,speedL*decelerate);
+          ledcWrite(8,0);   
+        }
+        else if (val==7) {  //右前進 http://192.168.xxx.xxx/control?car=7
+          Serial.println("FrontRight");     
+          ledcWrite(5,speedR*decelerate);
+          ledcWrite(6,0);
+          ledcWrite(7,speedL);
+          ledcWrite(8,0);   
+        }  
+        else if (val==8) {  //左後退 http://192.168.xxx.xxx/control?car=8
+          Serial.println("LeftAfter");      
+          ledcWrite(5,0);
+          ledcWrite(6,speedR);
+          ledcWrite(7,0);
+          ledcWrite(8,speedL*decelerate);
+        } 
+        else if (val==9) {  //右後退 http://192.168.xxx.xxx/control?car=9
+          Serial.println("RightAfter");      
+          ledcWrite(5,0);
+          ledcWrite(6,speedR*decelerate);
+          ledcWrite(7,0);
+          ledcWrite(8,speedL);
+        }    
+      }                        
       else {
           res = -1;
       }
@@ -689,7 +759,8 @@ static esp_err_t status_handler(httpd_req_t *req){
     p+=sprintf(p, "\"flash\":%d,", 0);
     p+=sprintf(p, "\"speedL\":%d,", speedL);
     p+=sprintf(p, "\"speedR\":%d,", speedR);
-    p+=sprintf(p, "\"servo\":%d,", angleValue); 
+    p+=sprintf(p, "\"decelerate\":%.1f,", decelerate);
+    p+=sprintf(p, "\"servo\":%d,", servoAngle);        
     p+=sprintf(p, "\"framesize\":%u,", s->status.framesize);
     p+=sprintf(p, "\"quality\":%u,", s->status.quality);
     p+=sprintf(p, "\"brightness\":%d,", s->status.brightness);
@@ -705,39 +776,337 @@ static esp_err_t status_handler(httpd_req_t *req){
 
 //自訂網頁首頁
 static const char PROGMEM INDEX_HTML[] = R"rawliteral(
-<!doctype html>
+<!DOCTYPE html>
 <html>
+<head>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <title>ESP32 OV2460</title>
         <style>
-          body{font-family:Arial,Helvetica,sans-serif;background:#181818;color:#EFEFEF;font-size:16px}h2{font-size:18px}section.main{display:flex}#menu,section.main{flex-direction:column}#menu{display:none;flex-wrap:nowrap;min-width:340px;background:#363636;padding:8px;border-radius:4px;margin-top:-10px;margin-right:10px}#content{display:flex;flex-wrap:wrap;align-items:stretch}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}figure img{display:block;width:100%;height:auto;border-radius:4px;margin-top:8px}@media (min-width: 800px) and (orientation:landscape){#content{display:flex;flex-wrap:nowrap;align-items:stretch}figure img{display:block;max-width:100%;max-height:calc(100vh - 40px);width:auto;height:auto}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}}section#buttons{display:flex;flex-wrap:nowrap;justify-content:space-between}#nav-toggle{cursor:pointer;display:block}#nav-toggle-cb{outline:0;opacity:0;width:0;height:0}#nav-toggle-cb:checked+#menu{display:flex}.input-group{display:flex;flex-wrap:nowrap;line-height:22px;margin:5px 0}.input-group>label{display:inline-block;padding-right:10px;min-width:47%}.input-group input,.input-group select{flex-grow:1}.range-max,.range-min{display:inline-block;padding:0 5px}button{display:block;margin:5px;padding:0 12px;border:0;line-height:28px;cursor:pointer;color:#fff;background:#ff3034;border-radius:5px;font-size:16px;outline:0}button:hover{background:#ff494d}button:active{background:#f21c21}button.disabled{cursor:default;background:#a0a0a0}input[type=range]{-webkit-appearance:none;width:100%;height:22px;background:#363636;cursor:pointer;margin:0}input[type=range]:focus{outline:0}input[type=range]::-webkit-slider-runnable-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-webkit-slider-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;-webkit-appearance:none;margin-top:-11.5px}input[type=range]:focus::-webkit-slider-runnable-track{background:#EFEFEF}input[type=range]::-moz-range-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-moz-range-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer}input[type=range]::-ms-track{width:100%;height:2px;cursor:pointer;background:0 0;border-color:transparent;color:transparent}input[type=range]::-ms-fill-lower{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-fill-upper{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;height:2px}input[type=range]:focus::-ms-fill-lower{background:#EFEFEF}input[type=range]:focus::-ms-fill-upper{background:#363636}.switch{display:block;position:relative;line-height:22px;font-size:16px;height:22px}.switch input{outline:0;opacity:0;width:0;height:0}.slider{width:50px;height:22px;border-radius:22px;cursor:pointer;background-color:grey}.slider,.slider:before{display:inline-block;transition:.4s}.slider:before{position:relative;content:"";border-radius:50%;height:16px;width:16px;left:4px;top:3px;background-color:#fff}input:checked+.slider{background-color:#ff3034}input:checked+.slider:before{-webkit-transform:translateX(26px);transform:translateX(26px)}select{border:1px solid #363636;font-size:14px;height:22px;outline:0;border-radius:5px}.image-container{position:relative;min-width:160px}.close{position:absolute;right:5px;top:5px;background:#ff3034;width:16px;height:16px;border-radius:100px;color:#fff;text-align:center;line-height:18px;cursor:pointer}.hidden{display:none}
-        </style>
+            body {
+                font-family: Arial,Helvetica,sans-serif;
+                background: #181818;
+                color: #EFEFEF;
+                font-size: 16px
+            }
+            h2 {
+                font-size: 18px
+            }
+            section.main {
+                display: flex
+            }
+            #menu,section.main {
+                flex-direction: column
+            }
+            #menu {
+                display: none;
+                flex-wrap: nowrap;
+                min-width: 340px;
+                background: #363636;
+                padding: 8px;
+                border-radius: 4px;
+                margin-top: -10px;
+                margin-right: 10px;
+            }
+            #content {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: stretch
+            }
+            figure {
+                padding: 0px;
+                margin: 0;
+                -webkit-margin-before: 0;
+                margin-block-start: 0;
+                -webkit-margin-after: 0;
+                margin-block-end: 0;
+                -webkit-margin-start: 0;
+                margin-inline-start: 0;
+                -webkit-margin-end: 0;
+                margin-inline-end: 0
+            }
+            figure img {
+                display: block;
+                width: 100%;
+                height: auto;
+                border-radius: 4px;
+                margin-top: 8px;
+            }
+            @media (min-width: 800px) and (orientation:landscape) {
+                #content {
+                    display:flex;
+                    flex-wrap: nowrap;
+                    align-items: stretch
+                }
+                figure img {
+                    display: block;
+                    max-width: 100%;
+                    max-height: calc(100vh - 40px);
+                    width: auto;
+                    height: auto
+                }
+                figure {
+                    padding: 0 0 0 0px;
+                    margin: 0;
+                    -webkit-margin-before: 0;
+                    margin-block-start: 0;
+                    -webkit-margin-after: 0;
+                    margin-block-end: 0;
+                    -webkit-margin-start: 0;
+                    margin-inline-start: 0;
+                    -webkit-margin-end: 0;
+                    margin-inline-end: 0
+                }
+            }
+            section#buttons {
+                display: flex;
+                flex-wrap: nowrap;
+                justify-content: space-between
+            }
+            #nav-toggle {
+                cursor: pointer;
+                display: block
+            }
+            #nav-toggle-cb {
+                outline: 0;
+                opacity: 0;
+                width: 0;
+                height: 0
+            }
+            #nav-toggle-cb:checked+#menu {
+                display: flex
+            }
+            .input-group {
+                display: flex;
+                flex-wrap: nowrap;
+                line-height: 22px;
+                margin: 5px 0
+            }
+            .input-group>label {
+                display: inline-block;
+                padding-right: 10px;
+                min-width: 47%
+            }
+            .input-group input,.input-group select {
+                flex-grow: 1
+            }
+            .range-max,.range-min {
+                display: inline-block;
+                padding: 0 5px
+            }
+            button {
+                display: block;
+                margin: 5px;
+                padding: 0 12px;
+                border: 0;
+                line-height: 28px;
+                cursor: pointer;
+                color: #fff;
+                background: #ff3034;
+                border-radius: 5px;
+                font-size: 16px;
+                outline: 0
+            }
+            button:hover {
+                background: #ff494d
+            }
+            button:active {
+                background: #f21c21
+            }
+            button.disabled {
+                cursor: default;
+                background: #a0a0a0
+            }
+            input[type=range] {
+                -webkit-appearance: none;
+                width: 100%;
+                height: 22px;
+                background: #363636;
+                cursor: pointer;
+                margin: 0
+            }
+            input[type=range]:focus {
+                outline: 0
+            }
+            input[type=range]::-webkit-slider-runnable-track {
+                width: 100%;
+                height: 2px;
+                cursor: pointer;
+                background: #EFEFEF;
+                border-radius: 0;
+                border: 0 solid #EFEFEF
+            }
+            input[type=range]::-webkit-slider-thumb {
+                border: 1px solid rgba(0,0,30,0);
+                height: 22px;
+                width: 22px;
+                border-radius: 50px;
+                background: #ff3034;
+                cursor: pointer;
+                -webkit-appearance: none;
+                margin-top: -11.5px
+            }
+            input[type=range]:focus::-webkit-slider-runnable-track {
+                background: #EFEFEF
+            }
+            input[type=range]::-moz-range-track {
+                width: 100%;
+                height: 2px;
+                cursor: pointer;
+                background: #EFEFEF;
+                border-radius: 0;
+                border: 0 solid #EFEFEF
+            }
+            input[type=range]::-moz-range-thumb {
+                border: 1px solid rgba(0,0,30,0);
+                height: 22px;
+                width: 22px;
+                border-radius: 50px;
+                background: #ff3034;
+                cursor: pointer
+            }
+            input[type=range]::-ms-track {
+                width: 100%;
+                height: 2px;
+                cursor: pointer;
+                background: 0 0;
+                border-color: transparent;
+                color: transparent
+            }
+            input[type=range]::-ms-fill-lower {
+                background: #EFEFEF;
+                border: 0 solid #EFEFEF;
+                border-radius: 0
+            }
+            input[type=range]::-ms-fill-upper {
+                background: #EFEFEF;
+                border: 0 solid #EFEFEF;
+                border-radius: 0
+            }
+            input[type=range]::-ms-thumb {
+                border: 1px solid rgba(0,0,30,0);
+                height: 22px;
+                width: 22px;
+                border-radius: 50px;
+                background: #ff3034;
+                cursor: pointer;
+                height: 2px
+            }
+            input[type=range]:focus::-ms-fill-lower {
+                background: #EFEFEF
+            }
+            input[type=range]:focus::-ms-fill-upper {
+                background: #363636
+            }
+            .switch {
+                display: block;
+                position: relative;
+                line-height: 22px;
+                font-size: 16px;
+                height: 22px
+            }
+            .switch input {
+                outline: 0;
+                opacity: 0;
+                width: 0;
+                height: 0
+            }
+            .slider {
+                width: 50px;
+                height: 22px;
+                border-radius: 22px;
+                cursor: pointer;
+                background-color: grey
+            }
+            .slider,.slider:before {
+                display: inline-block;
+                transition: .4s
+            }
+            .slider:before {
+                position: relative;
+                content: "";
+                border-radius: 50%;
+                height: 16px;
+                width: 16px;
+                left: 4px;
+                top: 3px;
+                background-color: #fff
+            }
+            input:checked+.slider {
+                background-color: #ff3034
+            }
+            input:checked+.slider:before {
+                -webkit-transform: translateX(26px);
+                transform: translateX(26px)
+            }
+            select {
+                border: 1px solid #363636;
+                font-size: 14px;
+                height: 22px;
+                outline: 0;
+                border-radius: 5px
+            }
+            .image-container {
+                position: relative;
+                min-width: 160px
+            }
+            .close {
+                position: absolute;
+                right: 5px;
+                top: 5px;
+                background: #ff3034;
+                width: 16px;
+                height: 16px;
+                border-radius: 100px;
+                color: #fff;
+                text-align: center;
+                line-height: 18px;
+                cursor: pointer
+            }
+            .hidden {
+                display: none
+            }
+        </style>   
         <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
         <script src="https:\/\/cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>  
         <script src="https:\/\/cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>        
     </head>
-    <body>
     <figure>
       <div id="stream-container" class="image-container hidden">
         <div class="close" id="close-stream">×</div>
         <img id="stream" src="" crossorigin="anonymous">
-        <canvas id="canvas" width="320" height="240" style="background-color:#000000;display:none;">
-        <img id="example" width="320" height="240" style="display:none">
+        <canvas id="canvas" width="320" height="240" style="display:none">
       </div>
     </figure>
+      <section id="buttons">
+              <table>
+                <tr><td colspan="3">IP: <input type="text" id="ip" value="">&nbsp;&nbsp;<input type="button" id="setip" value="Set IP" onclick="start();"></td></tr>
+                <tr>
+                <td align="left"><button id="restartButton">Restart</button></td>
+                <td align="center"><button id="get-still">get-still</button></td>
+                <td align="right"><button id="toggle-stream">Start Stream</button></td>
+                </tr>
+              </table>                  
+      </section>    
         <section class="main">
             <section id="buttons">
-                <table>
-                <tr><td><button id="restart" onclick="try{fetch(document.location.origin+'/control?restart');}catch(e){}">Restart</button></td><td><button id="toggle-stream" style="display:none"></button></td><td><button id="face_enroll" style="display:none" class="disabled" disabled="disabled"></button><button id="get-still" style="display:none">get-still</button></td></tr>
-                <tr><td colspan="2">Turn Decelerate<select onclick="try{fetch(document.location.origin+'/control?decelerate='+this.value);}catch(e){}"><option value="100">100%</option><option value="90">90%</option><option value="80">80%</option><option value="70">70%</option><option value="60" selected="selected">60%</option><option value="50">50%</option><option value="40">40%</option><option value="30">30%</option><option value="10">20%</option><option value="10">10%</option><option value="0">0%</option></select></td><td><input type="checkbox" id="nostop" onclick="noStopControl();">No Stop</td></tr> 
-                <tr><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=6');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=6');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">FrontLeft</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=1');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=1');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Front</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=7');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=7');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">FrontRight</button></td></tr>
-                <tr><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=2');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=2');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Left</button></td><td align="center"><button onclick="try{stopDetection();fetch(document.location.origin+'/control?car=3');}catch(e){}">Stop</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=4');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=4');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Right</button></td></tr>
-                <tr><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=8');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=8');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">LeftAfter</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=5');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=5');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">Back</button></td><td align="center"><button onmousedown="stopDetection();try{fetch(document.location.origin+'/control?car=9');}catch(e){}" ontouchstart="stopDetection();event.preventDefault();try{fetch(document.location.origin+'/control?car=9');}catch(e){}" onmouseup="noStopControl();" ontouchend="noStopControl();">RightAfter</button></td></tr>                   
-                <tr><td colspan="3">Probability Limit&nbsp;&nbsp;<select id="probabilityLimit"><option value="0">0</option><option value="0.1">0.1</option><option value="0.2">0.2</option><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6" selected="selected">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option></select>&nbsp;&nbsp;&nbsp;&nbsp;Start Detection<input type="checkbox" id="startdetection"></td></tr>
-                <tr><td><span id="message" style="display:none"></span></td><td></td><td></td></tr> 
-                <tr style="display:none"><td colspan="3"></td></tr> 
+                <table id="buttonPanel" style="display:none">
+                  <tr><td colspan="3"><input type="checkbox" id="nostop" onclick="noStop();">No Stop</td></tr> 
+                  <tr bgcolor="#363636">
+                  <td align="center"><button onmousedown="stopDetection();car('/control?var=car&val=6');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=6');" ontouchend="noStop();">FrontLeft</button></td>
+                  <td align="center"><button onmousedown="stopDetection();car('/control?var=car&val=1');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=1');" ontouchend="noStop();">Front</button></td>
+                  <td align="center"><button onmousedown="stopDetection();car('/control?var=car&val=7');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=7');" ontouchend="noStop();">FrontRight</button></td>
+                  </tr>
+                  <tr bgcolor="#363636">
+                  <td align="center"><button onmousedown="stopDetection();car('/control?var=car&val=2');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=2');" ontouchend="noStop();">Left</button></td>
+                  <td align="center"><button onclick="stopDetection();car('/control?var=car&val=3');">Stop</button></td>
+                  <td align="center"><button onmousedown="stopDetection();car('/control?var=car&val=4');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=4');" ontouchend="noStop();">Right</button></td>
+                  </tr>
+                  <tr bgcolor="#363636"><td align="center"><button onmousedown="stopDetection();car('/control?var=car&val=8');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=8');" ontouchend="noStop();">LeftAfter</button></td>
+                  <td align="center"><button onmousedown="stopDetection();car('/control?var=car&val=5');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=5');" ontouchend="noStop();">Back</button></td>
+                  <td align="center"><button onmousedown="stopDetection();car('/control?var=car&val=9');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=9');" ontouchend="noStop();">RightAfter</button></td>
+                  </tr>            
                 </table>
             </section>         
             <div id="logo">
@@ -748,8 +1117,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                     <input type="checkbox" id="nav-toggle-cb">
                     <nav id="menu">
                         <div class="input-group">
-                          <label for="kind">Model Type</label>
-                          <select id="kind">
+                          <label for="modelType">Model Type</label>
+                          <select id="modelType">
                             <option value="image">image</option>
                             <option value="pose">pose</option>
                           </select>
@@ -760,14 +1129,34 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                         </div>
                         <div class="input-group">
                             <label for="btnModel"></label>
-                            <button type="button" id="btnModel" onclick="LoadModel();">Load model</button>
+                            <button type="button" id="btnModel" onclick="loadModel();">Load Model</button>
                         </div>
-                        <div class="input-group" id="servo-group">
-                            <label for="servo">Servo</label>
+            <div class="input-group" id="delayTime-group">
+                            <label for="delayTime">Delay Time</label>
+                            <div class="range-min">10</div>
+                            <input type="range" id="delayTime" min="10" max="5000" value="300" step="10" class="my-action">
+                            <div class="range-max">5000</div>
+                        </div>
+                        <div class="input-group" id="probabilityLimit-group">
+                            <label for="probabilityLimit">Probability Limit</label>
                             <div class="range-min">0</div>
-                            <input type="range" id="servo" min="0" max="180" value="90" class="default-action">
-                            <div class="range-max">180</div>
+                            <input type="range" id="probabilityLimit" min="0" max="1" value="0.5" step="0.1" class="my-action">
+                            <div class="range-max">1</div>
+                        </div>                        
+                        <div class="input-group" id="motorState-group">
+                            <label for="motorState">Control Motor</label>
+                            <div class="switch">
+                                <input id="motorState" type="checkbox">
+                                <label class="slider" for="motorState"></label>
+                            </div>
                         </div>
+                        <div class="input-group" id="detectState-group">
+                            <label for="detectState">Start Detect</label>
+                            <div class="switch">
+                                <input id="detectState" type="checkbox">
+                                <label class="slider" for="detectState"></label>
+                            </div>
+                        </div>                       
                         <div class="input-group" id="speedR-group">
                             <label for="speedR">speed R</label>
                             <div class="range-min">0</div>
@@ -775,17 +1164,30 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                             <div class="range-max">255</div>
                         </div>
                         <div class="input-group" id="speedL-group">
-                            <label for="speedL">Speed L</label>
+                            <label for="speedL">speed L</label>
                             <div class="range-min">0</div>
                             <input type="range" id="speedL" min="0" max="255" value="255" class="default-action">
                             <div class="range-max">255</div>
-                        </div>                                               
+                        </div>
+                        <div class="input-group" id="servo-group">
+                            <label for="servo">Servo</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="servo" min="0" max="180" value="90" class="default-action">
+                            <div class="range-max">180</div>
+                        </div>
                         <div class="input-group" id="flash-group">
                             <label for="flash">Flash</label>
                             <div class="range-min">0</div>
                             <input type="range" id="flash" min="0" max="255" value="0" class="default-action">
                             <div class="range-max">255</div>
                         </div>
+                        <div class="input-group" id="panel-group">
+                            <label for="panel">Button Panel</label>
+                            <div class="switch">
+                                <input id="panel" type="checkbox">
+                                <label class="slider" for="panel"></label>
+                            </div>
+                        </div>            
                         <div class="input-group" id="framesize-group">
                             <label for="framesize">Resolution</label>
                             <select id="framesize" class="default-action">
@@ -794,8 +1196,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                                 <option value="8">XGA(1024x768)</option>
                                 <option value="7">SVGA(800x600)</option>
                                 <option value="6">VGA(640x480)</option>
-                                <option value="5" selected="selected">CIF(400x296)</option>
-                                <option value="4">QVGA(320x240)</option>
+                                <option value="5">CIF(400x296)</option>
+                                <option value="4" selected="selected">QVGA(320x240)</option>
                                 <option value="3">HQVGA(240x176)</option>
                                 <option value="0">QQVGA(160x120)</option>
                             </select>
@@ -836,25 +1238,43 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 </div>
             </div>
         </section>
-        <div id="result" style="color:red">Please input model path.</div>        
-        <script>
-          document.addEventListener('DOMContentLoaded', function (event) {
-            var baseHost = document.location.origin
+        <div id="result" style="color:yellow"></div> 
+      </body>
+  </html>
+  
+        <script> 
+          //  網址/?192.168.1.38  可自動帶入?後參數IP值
+          var href=location.href;
+          if (href.indexOf("?")!=-1) {
+            document.getElementById("ip").value = location.search.split("?")[1].replace(/http:\/\//g,"");
+          }
+          else if (href.indexOf("http")!=-1) {
+            document.getElementById("ip").value = location.host;
+          } 
+
+          function start() {
+            window.stop();
+            
+            var baseHost = 'http://'+document.getElementById("ip").value;  //var baseHost = document.location.origin
             var streamUrl = baseHost + ':81'
+          
             const hide = el => {
               el.classList.add('hidden')
             }
             const show = el => {
               el.classList.remove('hidden')
             }
+          
             const disable = el => {
               el.classList.add('disabled')
               el.disabled = true
             }
+          
             const enable = el => {
               el.classList.remove('disabled')
               el.disabled = false
             }
+          
             const updateValue = (el, value, updateRemote) => {
               updateRemote = updateRemote == null ? true : updateRemote
               let initialValue
@@ -866,10 +1286,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 initialValue = el.value
                 el.value = value
               }
+        el.title = value;
+          
               if (updateRemote && initialValue !== value) {
                 updateConfig(el);
-              } 
+              }
             }
+          
             function updateConfig (el) {
               let value
               switch (el.type) {
@@ -887,12 +1310,16 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 default:
                   return
               }
+          
               const query = `${baseHost}/control?var=${el.id}&val=${value}`
+        el.title = value;
+          
               fetch(query)
                 .then(response => {
                   console.log(`request to ${query} finished, status: ${response.status}`)
                 })
             }
+          
             document
               .querySelectorAll('.close')
               .forEach(el => {
@@ -900,6 +1327,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   hide(el.parentNode)
                 }
               })
+          
             // read initial values
             fetch(`${baseHost}/status`)
               .then(function (response) {
@@ -909,38 +1337,56 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 document
                   .querySelectorAll('.default-action')
                   .forEach(el => {
-                    updateValue(el, state[el.id], false)
+                      updateValue(el, state[el.id], false)
                   })
+        result.innerHTML = "Connection successful<br>";
+        result.innerHTML += "<br>Class: 1  ->  Front";     
+        result.innerHTML += "<br>Class: 2  ->  Left";     
+        result.innerHTML += "<br>Class: 3  ->  Stop";      
+        result.innerHTML += "<br>Class: 4  ->  Right";
+        result.innerHTML += "<br>Class: 5  ->  Back";      
+        result.innerHTML += "<br>Class: 6  ->  FrontLeft";    
+        result.innerHTML += "<br>Class: 7  ->  FrontRight";     
+        result.innerHTML += "<br>Class: 8  ->  LeftAfter";     
+        result.innerHTML += "<br>Class: 9  ->  RightAfter";
               })
+          
             const view = document.getElementById('stream')
             const viewContainer = document.getElementById('stream-container')
             const stillButton = document.getElementById('get-still')
             const streamButton = document.getElementById('toggle-stream')
             const closeButton = document.getElementById('close-stream')
+            const restartButton = document.getElementById('restartButton')
+          
             const stopStream = () => {
               //window.stop();
-              streamButton.innerHTML = 'Start Stream'
+              streamButton.innerHTML = 'Start Stream';
+              hide(viewContainer)
             }
+          
             const startStream = () => {
               view.src = `${streamUrl}/stream`
               show(viewContainer)
               streamButton.innerHTML = 'Stop Stream'
             }
+
+            //新增重啟電源按鈕點選事件 (自訂指令格式：http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9)
+            restartButton.onclick = () => {
+              fetch(baseHost+"/control?restart");
+            }            
+          
             // Attach actions to buttons
             stillButton.onclick = () => {
               stopStream()
-              try{
-                view.src = `${baseHost}/capture?_cb=${Date.now()}`
-              }
-              catch(e) {
-                view.src = `${baseHost}/capture?_cb=${Date.now()}`  
-              }
+              view.src = `${baseHost}/capture?_cb=${Date.now()}`
               show(viewContainer)
             }
+          
             closeButton.onclick = () => {
               stopStream()
               hide(viewContainer)
             }
+          
             streamButton.onclick = () => {
               const streamEnabled = streamButton.innerHTML === 'Stop Stream'
               if (streamEnabled) {
@@ -949,83 +1395,136 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 startStream()
               }
             }
+          
             // Attach default on change action
             document
               .querySelectorAll('.default-action')
               .forEach(el => {
                 el.onchange = () => updateConfig(el)
               })
-          })
-        </script>
-        <script>
-          function noStopControl() {
-            
-            if (!document.getElementById('nostop').checked) {
-              try{
-                fetch(document.location.origin+'/control?car=3');
-              }
-              catch(e){}
+        
+      // 自訂類別my-action, title屬性顯示數值
+            document
+              .querySelectorAll('.my-action')
+              .forEach(el => {
+        el.title = el.value;
+                el.onchange = () => el.title = el.value;
+              })        
+          
+            // Custom actions
+          
+            const framesize = document.getElementById('framesize')
+          
+            framesize.onchange = () => {
+              updateConfig(framesize)
+            }
+
+      loadModel();
+          }
+
+
+          //法蘭斯影像辨識
+          const aiView = document.getElementById('stream');
+          const aiStill = document.getElementById('get-still')
+          const canvas = document.getElementById('canvas');     
+          var context = canvas.getContext("2d");
+          const nostop = document.getElementById('nostop');
+          const detectState = document.getElementById('detectState');
+          const motorState = document.getElementById('motorState');
+          const servo = document.getElementById('servo');
+          const panel = document.getElementById('panel');
+          const result = document.getElementById('result');
+          const ip = document.getElementById('ip');
+          const setip = document.getElementById('setip');
+          const delayTime = document.getElementById('delayTime');
+      var modelType = document.getElementById('modelType');
+          var modelPath = document.getElementById('modelPath');
+          var probabilityLimit = document.getElementById('probabilityLimit');
+      var Model;
+      
+          panel.onchange = function(e){  
+            if (!panel.checked)
+              buttonPanel.style.display = "none";
+            else
+              buttonPanel.style.display = "block";
+          }                       
+          
+          function car(query) {
+             query = "http:\/\/" + ip.value + query;
+             fetch(query)
+                .then(response => {
+                  console.log(`request to ${query} finished, status: ${response.status}`)
+                })
+          }
+                
+          function noStop() {
+            if (!nostop.checked) {
+              car('/control?var=car&val=3');
             }
           }
 
-          function stopDetection() {
-            document.getElementById('startdetection').checked = false;
-            document.getElementById('message').innerHTML = "";
-          }
-        </script>
-        <script>
-          var canvas = document.getElementById('canvas');
-          var context = canvas.getContext("2d"); 
-          var stream = document.getElementById('stream');
-          var result = document.getElementById('result');
-          var count = document.getElementById('count');
-          var getStill = document.getElementById('get-still');
-          var getModel = document.getElementById('getModel');
-          var kind = document.getElementById('kind');
-          var modelPath = document.getElementById('modelPath');
-          var probabilityLimit = document.getElementById('probabilityLimit');
-          let Model;
-          var lastValue = 0;
-        </script>
-        
-        <script>
-          async function LoadModel() {
-            if (modelPath.value=="") {
-              result.innerHTML = "Please input model path.";
-              return;
+          detectState.onclick = function (event) {
+            if (detectState.checked == true) {
+              aiView.style.display = "none";
+              canvas.style.display = "block";
+              aiStill.click();
+            } else {
+              aiView.style.display = "block";
+              canvas.style.display = "none";
             }
-      
-            result.innerHTML = "Please wait for loading model.";
+          }
             
-            const URL = modelPath.value;
-            const modelURL = URL + "model.json";
-            const metadataURL = URL + "metadata.json";
-            if (kind.value=="image") {
-              Model = await tmImage.load(modelURL, metadataURL);
-            }
-            else if (kind.value=="pose") {
-              Model = await tmPose.load(modelURL, metadataURL);
-            }
-            maxPredictions = Model.getTotalClasses();
+          function stopDetection() {
+            detectState.checked = false;
+            aiView.style.display = "block";
+            canvas.style.display = "none";           
             result.innerHTML = "";
-      
-            getStill.style.display = "block";
-            getStill.click();
           }
+
+          aiView.onload = function (event) {
+            if (detectState.checked == false) return;   
+            canvas.setAttribute("width", aiView.width);
+            canvas.setAttribute("height", aiView.height);
+            context.drawImage(aiView, 0, 0, aiView.width, aiView.height);
+            if (Model)          
+              DetectImage();      
+          }  
+      
+      async function loadModel() {
+      if (modelPath.value=="") {
+        result.innerHTML = "Please input model path.";
+      } else {      
+        result.innerHTML = "Please wait for loading model.";
+
+        const URL = modelPath.value;
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+        if (modelType.value=="image") {
+          Model = await tmImage.load(modelURL, metadataURL);
+        } else if (modelType.value=="pose") {
+          Model = await tmPose.load(modelURL, metadataURL);
+        }
+        maxPredictions = Model.getTotalClasses();
+        result.innerHTML = "";
+        
+        if (Model)          
+          aiStill.click();
+        else {
+          modelPath.value="";
+          result.innerHTML = "Please input model path.";
+        }
+      }
+      }
           
-          async function predict() {
+          async function DetectImage() {
             var data = "";
             var maxClassName = "";
             var maxProbability = "";
-      
-            canvas.setAttribute("width", stream.width);
-            canvas.setAttribute("height", stream.height);
-            context.drawImage(stream, 0, 0, stream.width, stream.height); 
-
-            if (document.getElementById('startdetection').checked) {
-              if (kind.value=="image")
+       
+            if (detectState.checked) {
+              if (modelType.value=="image")
                 var prediction = await Model.predict(canvas);
-              else if (kind.value=="pose") {
+              else if (modelType.value=="pose") {
                 var { pose, posenetOutput } = await Model.estimatePose(canvas);
                 var prediction = await Model.predict(posenetOutput);
               }
@@ -1033,50 +1532,46 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               if (maxPredictions>0) {
                 for (let i = 0; i < maxPredictions; i++) {
                   if (i==0) {
-                  maxClassName = prediction[i].className;
-                  maxProbability = prediction[i].probability;
-                  }
-                  else {
-                  if (prediction[i].probability>maxProbability) {
-                    maxClassName = prediction[i].className;
-                    maxProbability = prediction[i].probability;
-                  }
+            maxClassName = prediction[i].className;
+            maxProbability = prediction[i].probability;
+                  } else {
+            if (prediction[i].probability>maxProbability) {
+            maxClassName = prediction[i].className;
+            maxProbability = prediction[i].probability;
+            }
                   }
                   data += prediction[i].className + "," + prediction[i].probability.toFixed(2) + "<br>";
                 }
-                result.innerHTML = data;
-                result.innerHTML += "<br>Result: " + maxClassName + ", " + maxProbability; 
+                result.innerHTML = data + "<br>Result:<br>" + maxClassName + "<br>" + maxProbability; 
                 
                 //影像辨識依predict.label回傳參數至ESP32-CAM改變運動狀態
-                if (lastValue!=maxClassName&&maxProbability>=probabilityLimit.value) {
-                  fetch(document.location.origin+'/control?car='+maxClassName+';stop');  //網址參數格式 http://192.168.xxx.xxx/control?car=value                            
-                  lastValue = maxClassName;
+                if (motorState.checked&&maxProbability>=probabilityLimit.value) {
+                  /*
+          訓練分類名稱設為1~9的數字
+          Class: 1  ->  Front     
+          Class: 2  ->  Left     
+          Class: 3  ->  Stop      
+          Class: 4  ->  Right
+          Class: 5  ->  Back      
+          Class: 6  ->  FrontLeft    
+          Class: 7  ->  FrontRight     
+          Class: 8  ->  LeftAfter     
+          Class: 9  ->  RightAfter
+          */
+          car('/control?car='+maxClassName+';'+delayTime.value);  //網址參數格式 http://192.168.xxx.xxx/control?car=value
                 }
+              } else {
+                result.innerHTML = "Unrecognizable";                             
               }
-              else
-                result.innerHTML = "";
             }
-            else
-              result.innerHTML = "";
-              
-            getStill.click();
-          }
-
-          stream.onload = function (event) {
-            if (Model) {
-              try { 
-                document.createEvent("TouchEvent");
-                setTimeout(function(){predict();},100);  //可將時間間隔調整，若太小效能差的手機有可能因此當機。
-              }
-              catch(e) { 
-                predict();
-              }  
-            }
-          }
-        </script>
-
-    </body>
-</html>        
+      try { 
+        document.createEvent("TouchEvent");
+        setTimeout(function(){aiStill.click();},250);
+      } catch(e) { 
+        setTimeout(function(){aiStill.click();},150);
+      }       
+          }                  
+  </script>
 )rawliteral";
 
 //網頁首頁   http://192.168.xxx.xxx
