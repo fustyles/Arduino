@@ -1,8 +1,7 @@
 /*
-ESP32-CAM Tracking Car (tfjs coco-ssd) 
-預設使用解析度QVGA(320*240)，否則將會定位出錯。
+ESP32-CAM Tracking Object Car (tfjs coco-ssd) 
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-10 20:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-11 16:00
 https://www.facebook.com/francefu
 
 Motor Driver IC -> PWM1(IO12, IO13), PWM2(IO14, IO15)
@@ -59,7 +58,7 @@ int pinServo = 2;      //伺服馬達腳位
 int servoAngle = 30;   //伺服馬達初始角度
 int speedR = 255;  //You can adjust the speed of the wheel. (IO12, IO13)
 int speedL = 255;  //You can adjust the speed of the wheel. (IO14, IO15)
-float decelerate = 0.6;   // value = 0-1
+float decelerate = 0.4;   // value = 0-1
 
 #include <WiFi.h>
 #include "soc/soc.h"             //用於電源不穩不重開機 
@@ -1069,7 +1068,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     </figure>
       <section id="buttons">
               <table>
-                <tr><td colspan="3">IP: <input type="text" id="ip" value=""><input type="button" value="Set" onclick="start();"></td></tr>
+                <tr><td colspan="3">IP: <input type="text" id="ip" value="">&nbsp;&nbsp;<input type="button" id="setip" value="Set IP" onclick="start();"></td></tr>
                 <tr>
                 <td align="left"><button id="restartButton">Restart</button></td>
                 <td align="center"><button id="get-still">get-still</button></td>
@@ -1105,21 +1104,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             <div id="content">
                 <div id="sidebar">
                     <input type="checkbox" id="nav-toggle-cb">
-                    <nav id="menu">
-                        <div class="input-group" id="panel-group">
-                            <label for="panel">Button Panel</label>
-                            <div class="switch">
-                                <input id="panel" type="checkbox">
-                                <label class="slider" for="panel"></label>
-                            </div>
-                        </div>                    
-                        <div class="input-group" id="detectState-group">
-                            <label for="detectState">Start Detect</label>
-                            <div class="switch">
-                                <input id="detectState" type="checkbox">
-                                <label class="slider" for="detectState"></label>
-                            </div>
-                        </div>                     
+                    <nav id="menu">                                        
                         <div class="input-group" id="object-group">
                             <label for="object">Track Object</label>
                             <select id="object">
@@ -1208,7 +1193,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                         <div class="input-group" id="score-group">
                             <label for="scoret">Score Limit</label>
                             <div class="range-min">0</div>
-                            <input type="range" id="score" min="0" max="1" value="0" step="0.1">
+                            <input type="range" id="score" min="0" max="1" value="0" step="0.1" class="my-action">
                             <div class="range-max">1</div>
                         </div>                        
                         <div class="input-group" id="motorState-group">
@@ -1225,6 +1210,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                                 <label class="slider" for="servoState"></label>
                             </div>
                         </div>
+                        <div class="input-group" id="detectState-group">
+                            <label for="detectState">Start Detect</label>
+                            <div class="switch">
+                                <input id="detectState" type="checkbox">
+                                <label class="slider" for="detectState"></label>
+                            </div>
+                        </div>            
                         <div class="input-group" id="autodetect-group">
                             <label for="autodetect">Auto Detect</label>
                             <div class="switch">
@@ -1250,18 +1242,55 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                             <input type="range" id="decelerate" min="0" max="1" value="0.6" step="0.1" class="default-action">
                             <div class="range-max">1</div>
                         </div>
+                        <div class="input-group" id="turnDelayMax-group">
+                            <label for="turnDelayMax">Turn Delay Max</label>
+                            <div class="range-min">10</div>
+                            <input type="range" id="turnDelayMax" min="10" max="1000" value="150" step="10" class="my-action">
+                            <div class="range-max">1000</div>
+                        </div>
+                        <div class="input-group" id="turnFarDelayMax-group">
+                            <label for="turnFarDelayMax">Turn Delay Max(Far)</label>
+                            <div class="range-min">10</div>
+                            <input type="range" id="turnFarDelayMax" min="10" max="1000" value="100" step="10" class="my-action">
+                            <div class="range-max">1000</div>
+                        </div>            
+                        <div class="input-group" id="turnDelayMin-group">
+                            <label for="turnDelayMin">Turn Delay Min</label>
+                            <div class="range-min">10</div>
+                            <input type="range" id="turnDelayMin" min="10" max="1000" value="100" step="10" class="my-action">
+                            <div class="range-max">1000</div>
+                        </div>
+                        <div class="input-group" id="turnFarDelayMin-group">
+                            <label for="turnFarDelayMin">Turn Delay Min(Far)</label>
+                            <div class="range-min">10</div>
+                            <input type="range" id="turnFarDelayMin" min="10" max="1000" value="50" step="10" class="my-action">
+                            <div class="range-max">1000</div>
+                        </div>            
+                        <div class="input-group" id="forwardDelay-group">
+                            <label for="forwardDelay">Forward Delay</label>
+                            <div class="range-min">10</div>
+                            <input type="range" id="forwardDelay" min="10" max="1000" value="200" step="10" class="my-action">
+                            <div class="range-max">1000</div>
+                        </div>
                         <div class="input-group" id="servo-group">
                             <label for="servo">Servo</label>
                             <div class="range-min">0</div>
                             <input type="range" id="servo" min="0" max="180" value="90" class="default-action">
                             <div class="range-max">180</div>
-                        </div>                        
+                        </div>
                         <div class="input-group" id="flash-group">
                             <label for="flash">Flash</label>
                             <div class="range-min">0</div>
                             <input type="range" id="flash" min="0" max="255" value="0" class="default-action">
                             <div class="range-max">255</div>
                         </div>
+                        <div class="input-group" id="panel-group">
+                            <label for="panel">Button Panel</label>
+                            <div class="switch">
+                                <input id="panel" type="checkbox">
+                                <label class="slider" for="panel"></label>
+                            </div>
+                        </div>            
                         <div class="input-group" id="framesize-group">
                             <label for="framesize">Resolution</label>
                             <select id="framesize" class="default-action">
@@ -1360,6 +1389,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 initialValue = el.value
                 el.value = value
               }
+        el.title = value;
           
               if (updateRemote && initialValue !== value) {
                 updateConfig(el);
@@ -1385,6 +1415,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               }
           
               const query = `${baseHost}/control?var=${el.id}&val=${value}`
+        el.title = value;
           
               fetch(query)
                 .then(response => {
@@ -1411,6 +1442,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   .forEach(el => {
                       updateValue(el, state[el.id], false)
                   })
+        result.innerHTML = "Connection successful";
               })
           
             const view = document.getElementById('stream')
@@ -1464,6 +1496,14 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               .forEach(el => {
                 el.onchange = () => updateConfig(el)
               })
+        
+      // 自訂類別my-action, title屬性顯示數值
+            document
+              .querySelectorAll('.my-action')
+              .forEach(el => {
+        el.title = el.value;
+                el.onchange = () => el.title = el.value;
+              })        
           
             // Custom actions
           
@@ -1492,17 +1532,19 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           const result = document.getElementById('result');
           const ifr = document.getElementById('ifr');
           const ip = document.getElementById('ip');
-          
-          var Model;
-          var servoAngle = 30;
-          var nearMax = 150;
-          var nearMin = 100;
-          var farMax = 100;
-          var farMin = 50;            
-          var servoLastValue = servo.value;
-          var lastDirection = "";
-          var nobodycount = 0;
+          const setip = document.getElementById('setip');
 
+      const turnDelayMax = document.getElementById('turnDelayMax');     //近處物件遠離時迴轉時間
+      const turnDelayMin = document.getElementById('turnDelayMin');     //近處物件偏離時迴轉時間
+      const turnFarDelayMax = document.getElementById('turnDelayMax');  //遠處物件遠離時迴轉時間
+      const turnFarDelayMin = document.getElementById('turnDelayMin');  //遠處物件偏離時迴轉時間     
+      const forwardDelay = document.getElementById('forwardDelay');     //前進時持續時間
+          var servoAngle = servo.value;  //伺服馬達預設位置
+          var lastDirection = "";  //記錄前一動作行進方向
+          var nobodycount = 0;  //累計辨識不到物件次數
+      var lastServoAngle = servoAngle;
+          var Model;
+      
           panel.onchange = function(e){  
             if (!panel.checked)
               buttonPanel.style.display = "none";
@@ -1553,10 +1595,12 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           }  
 
           result.innerHTML = "Please wait for loading model.";
+      setip.disabled=true;
           cocoSsd.load().then(cocoSsd_Model => {
             Model = cocoSsd_Model;
             result.innerHTML = "";
-            start();
+            setip.disabled=false;
+      //if (ip.value!="") start();
           }); 
           
           function DetectImage() {
@@ -1567,6 +1611,17 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               //console.log('Predictions: ', Predictions);
               if (Predictions.length>0) {
                 result.innerHTML = "";
+        
+        //辨識影像大小
+        var imageWidth = aiView.width;
+        var imageHeight = aiView.height;
+          
+        //中心區域座標
+        var x_Left = aiView.width*3/8;
+        var x_Right = aiView.width*5/8;
+        var y_Top = aiView.height*3/8;
+        var y_Bottom = aiView.height*5/8;
+          
                 for (var i=0;i<Predictions.length;i++) {
                   if (Predictions[i].class==object.value&&Predictions[i].score>=score.value) {
                     objectCount++;   
@@ -1590,17 +1645,17 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   
                     var midX = Math.round(x)+Math.round(width)/2;  //第一個偵測物件中心點X值
                     if (motorState.checked) {
-                      if (midX<(320/2)-40) {
-                        if (midX<60) {  //物件中心點偏左程度
-                          if (width>160)
-                            delay=nearMax;
+                      if (midX < x_Left) {
+                        if (midX < x_Left/2) {  //物件中心點偏左程度
+                          if (width>imageWidth/2)
+                            delay = turnDelayMax.value;
                           else
-                            delay=nearMin;
+                            delay = turnDelayMin.value;
                         } else {
-                          if (width>160)
-                            delay=farMax;
+                          if (width>imageWidth/2)
+                            delay = turnFarDelayMax.value;
                           else
-                            delay=farMin;
+                            delay = turnFarDelayMin.value;
                         } 
                         if (!hmirror.checked) {  //鏡像
                           car('/control?car=6;'+delay);  //左前進
@@ -1611,18 +1666,18 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                           lastDirection = "right";
                         }
                       }
-                      else if (midX>(320/2+40)) {
+                      else if (midX > x_Right) {
                         var delay=0;
-                        if (midX>260) { //物件中心點偏右程度
-                          if (width>160)
-                            delay=nearMax;
+                        if (midX > (x_Right+imageWidth)/2) { //物件中心點偏右程度
+                          if (width>imageWidth/2)
+                            delay = turnDelayMax.value;
                           else
-                            delay=nearMin;
+                            delay = turnDelayMin.value;
                         } else {
-                          if (width>160)
-                            delay=farMax;
+                          if (width>imageWidth/2)
+                            delay = turnFarDelayMax.value;
                           else
-                            delay=farMin;
+                            delay = turnFarDelayMin.value;
                         }
                         if (!hmirror.checked) {  //鏡像
                           car('/control?car=7;'+delay);  //右前進
@@ -1633,38 +1688,37 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                           lastDirection = "left";
                         }
                       }                    
-                      else if (midX>=(320/2-40)&&midX<=(320/2+40)) {  //物件中心點在正中心自訂區域120~200中則前進
-                        car('/control?car=1;200;stop');  //前進
+                      else if (midX>=x_Left&&midX<=x_Right) {  //物件中心點在正中心自訂區域120~200中則前進
+                        car('/control?car=1;' + forwardDelay.value + ';stop');  //前進
                       }
                     }
                       
                     var midY = Math.round(y)+Math.round(height)/2;  //第一個偵測物件中心點Y值
                     if (servoState.checked) {
-                      if (midY>(240/2+30)) {
-                        if (midY>195) {  //物件中心點偏下程度
+                      if (midY>y_Bottom) {
+                        if (midY>(y_Bottom+imageHeight)/2) {  //物件中心點偏下程度
                           servoAngle-=5;
                         } else {
                           servoAngle-=3; 
                         }
                         if (servoAngle <0) servoAngle = 0;
-                        if (servoAngle >180) servoAngle = 180;                  
-                        car('/control?var=servo&val='+servoAngle); 
+                        if (servoAngle >180) servoAngle = 180;
                       }
-                      else if (midY<(240/2)-30) {
-                        if (midY<45) {  //物件中心點偏上程度
+                      else if (midY<y_Top) {
+                        if (midY<y_Top/2) {  //物件中心點偏上程度
                           servoAngle+=5;
                         } else {
                           servoAngle+=3;   
                         }
                         if (servoAngle <0) servoAngle = 0;
-                        if (servoAngle >180) servoAngle = 180;                  
-                        car('/control?var=servo&val='+servoAngle);  
+                        if (servoAngle >180) servoAngle = 180; 
                       }
-                      
-                      if (servoAngle!=servoLastValue) {
-                        servo.value = servoAngle;
-                        servoLastValue = servoAngle;
-                      }
+            
+            if (lastServoAngle!=servoAngle) {
+              servo.value = servoAngle;
+              car('/control?var=servo&val='+servoAngle);
+              lastServoAngle = servoAngle;
+            }
                     }
                     nobodycount = 0;    
                     break;
@@ -1677,11 +1731,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 
               if (objectCount==0) {
                 nobodycount++;
-                if (autodetect.checked&&nobodycount>=3) {
+                if (autodetect.checked&&nobodycount>=3) {  //累計三次以上偵測不到物件則開始原地轉動
                   if (lastDirection == "right")
-                    car('/control?car=4;100');  //右轉
+                    car('/control?car=4;' + turnFarDelayMax.value);  //右轉
                   else
-                    car('/control?car=2;100');  //左轉
+                    car('/control?car=2;' + turnFarDelayMax.value);  //左轉
                   setTimeout(function(){aiStill.click();},1000);
                   return;
                 }
