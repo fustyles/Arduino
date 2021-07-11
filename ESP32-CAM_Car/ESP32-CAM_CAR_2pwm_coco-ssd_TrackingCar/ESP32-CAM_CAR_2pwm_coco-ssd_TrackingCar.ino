@@ -1058,15 +1058,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         </style>   
          <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"> </script>
         <script src="https:\/\/cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.1.0"> </script>      
-    </head>
-    <figure>
-      <div id="stream-container" class="image-container hidden">
-        <div class="close" id="close-stream">×</div>
-        <img id="stream" src="" crossorigin="anonymous">
-        <canvas id="canvas" width="320" height="240" style="display:none">
-      </div>
-    </figure>
-      <section id="buttons">
+        </head>
+        <figure>
+          <div id="stream-container" class="image-container hidden">
+            <div class="close" id="close-stream">×</div>
+            <img id="stream" src="" crossorigin="anonymous">
+            <canvas id="canvas" width="320" height="240" style="display:none">
+          </div>
+        </figure>
+        <section id="buttons">
               <table>
                 <tr><td colspan="3">IP: <input type="text" id="ip" value="">&nbsp;&nbsp;<input type="button" id="setip" value="Set IP" onclick="start();"></td></tr>
                 <tr>
@@ -1075,7 +1075,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <td align="right"><button id="toggle-stream">Start Stream</button></td>
                 </tr>
               </table>                  
-      </section>    
+        </section>    
         <section class="main">
             <section id="buttons">
                 <table id="buttonPanel" style="display:none">
@@ -1388,7 +1388,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 initialValue = el.value
                 el.value = value
               }
-        el.title = value;
+              el.title = value;
           
               if (updateRemote && initialValue !== value) {
                 updateConfig(el);
@@ -1414,7 +1414,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               }
           
               const query = `${baseHost}/control?var=${el.id}&val=${value}`
-        el.title = value;
+              el.title = value;
           
               fetch(query)
                 .then(response => {
@@ -1441,7 +1441,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   .forEach(el => {
                       updateValue(el, state[el.id], false)
                   })
-        result.innerHTML = "Connection successful";
+                  result.innerHTML = "Connection successful";
               })
           
             const view = document.getElementById('stream')
@@ -1496,11 +1496,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 el.onchange = () => updateConfig(el)
               })
         
-      // 自訂類別my-action, title屬性顯示數值
+            // 自訂類別my-action, title屬性顯示數值
             document
               .querySelectorAll('.my-action')
               .forEach(el => {
-        el.title = el.value;
+                el.title = el.value;
                 el.onchange = () => el.title = el.value;
               })        
           
@@ -1532,15 +1532,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           const ip = document.getElementById('ip');
           const setip = document.getElementById('setip');
 
-      const turnDelayMax = document.getElementById('turnDelayMax');     //近處物件遠離時迴轉時間
-      const turnDelayMin = document.getElementById('turnDelayMin');     //近處物件偏離時迴轉時間
-      const turnFarDelayMax = document.getElementById('turnDelayMax');  //遠處物件遠離時迴轉時間
-      const turnFarDelayMin = document.getElementById('turnDelayMin');  //遠處物件偏離時迴轉時間     
-      const forwardDelay = document.getElementById('forwardDelay');     //前進時持續時間
+          const turnDelayMax = document.getElementById('turnDelayMax');     //近處物件遠離時迴轉時間
+          const turnDelayMin = document.getElementById('turnDelayMin');     //近處物件偏離時迴轉時間
+          const turnFarDelayMax = document.getElementById('turnDelayMax');  //遠處物件遠離時迴轉時間
+          const turnFarDelayMin = document.getElementById('turnDelayMin');  //遠處物件偏離時迴轉時間     
+          const forwardDelay = document.getElementById('forwardDelay');     //前進時持續時間
           var servoAngle = servo.value;  //伺服馬達預設位置
           var lastDirection = "";  //記錄前一動作行進方向
           var nobodycount = 0;  //累計辨識不到物件次數
-      var lastServoAngle = servoAngle;
+          var lastServoAngle = servoAngle;
           var Model;
       
           panel.onchange = function(e){  
@@ -1592,32 +1592,32 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           }  
 
           result.innerHTML = "Please wait for loading model.";
-      setip.disabled=true;
+          setip.disabled=true;
           cocoSsd.load().then(cocoSsd_Model => {
             Model = cocoSsd_Model;
             result.innerHTML = "";
             setip.disabled=false;
-      //if (ip.value!="") start();
+            //if (ip.value!="") start();
           }); 
           
           function DetectImage() {
             Model.detect(canvas).then(Predictions => {    
-              var s = (canvas.width>canvas.height)?canvas.width:canvas.height;
-              var x, y, width, height;
-              var objectCount = 0;
-              //console.log('Predictions: ', Predictions);
-              if (Predictions.length>0) {
-                result.innerHTML = "";
-        
-        //辨識影像大小
-        var imageWidth = aiView.width;
-        var imageHeight = aiView.height;
+                var s = (canvas.width>canvas.height)?canvas.width:canvas.height;
+                var x, y, width, height;
+                var objectCount = 0;
+                //console.log('Predictions: ', Predictions);
+                if (Predictions.length>0) {
+                  result.innerHTML = "";
           
-        //中心區域座標
-        var x_Left = aiView.width*3/8;
-        var x_Right = aiView.width*5/8;
-        var y_Top = aiView.height*3/8;
-        var y_Bottom = aiView.height*5/8;
+                //辨識影像大小
+                var imageWidth = aiView.width;
+                var imageHeight = aiView.height;
+                  
+                //中心區域座標
+                var x_Left = aiView.width*3/8;
+                var x_Right = aiView.width*5/8;
+                var y_Top = aiView.height*3/8;
+                var y_Bottom = aiView.height*5/8;
           
                 for (var i=0;i<Predictions.length;i++) {
                   if (Predictions[i].class==object.value&&Predictions[i].score>=score.value) {
@@ -1639,7 +1639,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                     context.fillText(Predictions[i].class, x, y-(s/40));
                    
                     result.innerHTML+= "[ "+i+" ] "+Predictions[i].class+", "+Math.round(Predictions[i].score*100)+"%, "+Math.round(x)+", "+Math.round(y)+", "+Math.round(width)+", "+Math.round(height);
-                  
+
+                    // 1-Front, 2-Left, 3-Stop, 4-Right, 5-Back, 6-FrontLeft, 7-FrontRight, 8-LeftAfter, 9-RightAfter
                     var midX = Math.round(x)+Math.round(width)/2;  //第一個偵測物件中心點X值
                     if (motorState.checked) {
                       if (midX < x_Left) {
@@ -1711,11 +1712,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                         if (servoAngle >180) servoAngle = 180; 
                       }
             
-            if (lastServoAngle!=servoAngle) {
-              servo.value = servoAngle;
-              car('/control?var=servo&val='+servoAngle);
-              lastServoAngle = servoAngle;
-            }
+                      if (lastServoAngle!=servoAngle) {
+                        servo.value = servoAngle;
+                        car('/control?var=servo&val='+servoAngle);
+                        lastServoAngle = servoAngle;
+                      }
                     }
                     nobodycount = 0;    
                     break;
