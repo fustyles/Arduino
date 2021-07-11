@@ -1568,7 +1568,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 
           detectState.onclick = () => {
             if (detectState.checked == true) {
-              car('/control?var=framesize&val=4');
               aiView.style.display = "none";
               canvas.style.display = "block";
               aiStill.click();
