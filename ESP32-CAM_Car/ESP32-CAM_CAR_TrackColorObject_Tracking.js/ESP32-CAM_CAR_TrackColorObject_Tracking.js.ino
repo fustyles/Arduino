@@ -1138,7 +1138,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                             <input type="range" id="Bmax" min="0" max="255" value="0" step="1" class="my-action">
                             <div class="range-max">255</div>
                         </div>
-            <div class="input-group" id="pixel-group">
+                        <div class="input-group" id="pixel-group">
                             <label for="pixel">Pixel Map</label>
                             <div class="switch">
                                 <input id="pixel" type="checkbox">
@@ -1221,7 +1221,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                             <input type="range" id="forwardDelay" min="10" max="1000" value="200" step="10" class="my-action">
                             <div class="range-max">1000</div>
                         </div>
-            <div class="input-group" id="panel-group">
+                        <div class="input-group" id="panel-group">
                             <label for="panel">Button Panel</label>
                             <div class="switch">
                                 <input id="panel" type="checkbox">
@@ -1338,7 +1338,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 initialValue = el.value
                 el.value = value
               }
-        el.title = value;
+              el.title = value;
           
               if (updateRemote && initialValue !== value) {
                 updateConfig(el);
@@ -1364,7 +1364,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
               }
           
               const query = `${baseHost}/control?var=${el.id}&val=${value}`
-        el.title = value;
+              el.title = value;
         
               fetch(query)
                 .then(response => {
@@ -1391,7 +1391,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   .forEach(el => {
                       updateValue(el, state[el.id], false)
                   })
-        result.innerHTML = "Connection successful";
+                  result.innerHTML = "Connection successful";
               })
           
             const view = document.getElementById('stream')
@@ -1446,11 +1446,11 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 el.onchange = () => updateConfig(el)
               })
         
-      // 自訂類別my-action, title屬性顯示數值
+            // 自訂類別my-action, title屬性顯示數值
             document
               .querySelectorAll('.my-action')
               .forEach(el => {
-        el.title = el.value;
+                el.title = el.value;
                 el.onchange = () => el.title = el.value;
               })        
           
@@ -1469,8 +1469,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           const aiStill = document.getElementById('get-still')
           const canvas = document.getElementById('canvas');     
           var context = canvas.getContext("2d");
-      const canvas_pixel = document.getElementById('canvas_pixel');
-      var context_pixel = canvas_pixel.getContext('2d');      
+          const canvas_pixel = document.getElementById('canvas_pixel');
+          var context_pixel = canvas_pixel.getContext('2d');      
           const nostop = document.getElementById('nostop');
           const detectState = document.getElementById('detectState');
           const autodetect = document.getElementById('autodetect');
@@ -1481,25 +1481,25 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           const result = document.getElementById('result');
           const ip = document.getElementById('ip');
       
-      const pixelState = document.getElementById('pixel');
-      const Rmin = document.getElementById('Rmin');
-      const Rmax = document.getElementById('Rmax');
-      const Gmin = document.getElementById('Gmin');
-      const Gmax = document.getElementById('Gmax');
-      const Bmin = document.getElementById('Bmin');
-      const Bmax = document.getElementById('Bmax');
-      
-      const turnDelayMax = document.getElementById('turnDelayMax');     //近處物件遠離時迴轉時間
-      const turnDelayMin = document.getElementById('turnDelayMin');     //近處物件偏離時迴轉時間
-      const turnFarDelayMax = document.getElementById('turnDelayMax');  //遠處物件遠離時迴轉時間
-      const turnFarDelayMin = document.getElementById('turnDelayMin');  //遠處物件偏離時迴轉時間     
-      const forwardDelay = document.getElementById('forwardDelay');     //前進時持續時間
+          const pixelState = document.getElementById('pixel');
+          const Rmin = document.getElementById('Rmin');
+          const Rmax = document.getElementById('Rmax');
+          const Gmin = document.getElementById('Gmin');
+          const Gmax = document.getElementById('Gmax');
+          const Bmin = document.getElementById('Bmin');
+          const Bmax = document.getElementById('Bmax');
+          
+          const turnDelayMax = document.getElementById('turnDelayMax');     //近處物件遠離時迴轉時間
+          const turnDelayMin = document.getElementById('turnDelayMin');     //近處物件偏離時迴轉時間
+          const turnFarDelayMax = document.getElementById('turnDelayMax');  //遠處物件遠離時迴轉時間
+          const turnFarDelayMin = document.getElementById('turnDelayMin');  //遠處物件偏離時迴轉時間     
+          const forwardDelay = document.getElementById('forwardDelay');     //前進時持續時間
           var servoAngle = servo.value;  //伺服馬達預設位置
           var lastDirection = "";  //記錄前一動作行進方向
           var nobodycount = 0;  //累計辨識不到物件次數
-      var lastServoAngle = servoAngle;
+          var lastServoAngle = servoAngle;
       
-      const tracker = new tracking.ColorTracker();
+          const tracker = new tracking.ColorTracker();
 
           panel.onchange = function(e){  
             if (!panel.checked)
@@ -1533,7 +1533,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             }
           }
       
-      pixel.onclick = function() {
+          pixel.onclick = function() {
             if (pixelState.checked == true) {
               canvas_pixel.style.display = "block";
             } else {
@@ -1548,190 +1548,187 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           }
 
           aiView.onload = function (event) {
-      if (detectState.checked == false) return;
-      
-      canvas.setAttribute("width", aiView.width);
-      canvas.setAttribute("height", aiView.height);
-      canvas_pixel.setAttribute("width", aiView.width);
-      canvas_pixel.setAttribute("height", aiView.height);  
-      context.drawImage(aiView,0,0,aiView.width,aiView.height);
-         
-      var imgData=context.getImageData(0,0,canvas.width,canvas.height);
-
-      for (var i=0;i<imgData.data.length;i+=4) {
-        var r=0;
-        var g=0;
-        var b=0;
-        if ((imgData.data[i]>=Rmin.value&&imgData.data[i]<=Rmax.value)&&(imgData.data[i+1]>=Gmin.value&&imgData.data[i+1]<=Gmax.value)&&(imgData.data[i+2]>=Bmin.value&&imgData.data[i+2]<=Bmax.value)) {
-          r=255;
-        }
-
-        imgData.data[i]=r;
-        imgData.data[i+1]=g;
-        imgData.data[i+2]=b;
-        imgData.data[i+3]=255;
-      }
-      context_pixel.putImageData(imgData,0,0);
-
-      tracking.track('#canvas_pixel', tracker);
-          }  
-
-    tracking.ColorTracker.registerColor('red', function(r, g, b) {
-      if ((r==255)&&(g==0)&&(b==0)) {
-      return true;
-      }     
-      return false;
-    });
-   
-    var trackedColors = {
-      custom: true
-    };
-    
-    Object.keys(tracking.ColorTracker.knownColors_).forEach(function(color) {
-      trackedColors[color] = true;
-    });
-    
-    var colors = [];
-    for (var color in trackedColors) {
-      if (trackedColors[color]) {
-      colors.push(color);
-      }
-    }
-    tracker.setColors(colors);
-    
-    tracker.on('track', function(event) {
-    
-      //辨識影像大小
-      var imageWidth = aiView.width;
-      var imageHeight = aiView.height;
-        
-      //中心區域座標
-      var x_Left = aiView.width*3/8;
-      var x_Right = aiView.width*5/8;
-      var y_Top = aiView.height*3/8;
-      var y_Bottom = aiView.height*5/8;
-    
-      event.data.forEach(function(rect) {
-      context.strokeStyle = rect.color;
-      context.strokeRect(rect.x, rect.y, rect.width, rect.height);
-      //context.font = '11px Helvetica';
-      //context.fillStyle = "#fff";
-      //context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
-      //context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
-
-      //result.innerHTML+= rect.color+","+rect.x+","+rect.y+","+rect.width+","+rect.height+"<br>";
-      
-      if (rect.color=="red"&&motorState.checked) {
-      
-          const x = rect.x;
-                    const y = rect.y;
-                    const width = rect.width;
-                    const height = rect.height;
-      
-                    var midX = Math.round(x)+Math.round(width)/2;  //第一個偵測物件中心點X值
-                    if (motorState.checked) {
-                      if (midX < x_Left) {
-                        if (midX < x_Left/2) {  //物件中心點偏左程度
-                          if (width>imageWidth/2)
-                            delay = turnDelayMax.value;
-                          else
-                            delay = turnDelayMin.value;
-                        } else {
-                          if (width>imageWidth/2)
-                            delay = turnFarDelayMax.value;
-                          else
-                            delay = turnFarDelayMin.value;
-                        } 
-                        if (!hmirror.checked) {  //鏡像
-                          car('/control?car=6;'+delay);  //左前進
-                          lastDirection = "left";
-                        }
-                        else {                
-                          car('/control?car=7;'+delay);  //右前進
-                          lastDirection = "right";
-                        }
-                      }
-                      else if (midX > x_Right) {
-                        var delay=0;
-                        if (midX > (x_Right+imageWidth)/2) { //物件中心點偏右程度
-                          if (width>imageWidth/2)
-                            delay = turnDelayMax.value;
-                          else
-                            delay = turnDelayMin.value;
-                        } else {
-                          if (width>imageWidth/2)
-                            delay = turnFarDelayMax.value;
-                          else
-                            delay = turnFarDelayMin.value;
-                        }
-                        if (!hmirror.checked) {  //鏡像
-                          car('/control?car=7;'+delay);  //右前進
-                          lastDirection = "right";
-                        }
-                        else {                           
-                          car('/control?car=6;'+delay);  //左前進
-                          lastDirection = "left";
-                        }
-                      }                    
-                      else if (midX>=x_Left&&midX<=x_Right) {  //物件中心點在正中心自訂區域120~200中則前進
-                        car('/control?car=1;' + forwardDelay.value + ';stop');  //前進
-                      }
-                    }
-                      
-                    var midY = Math.round(y)+Math.round(height)/2;  //第一個偵測物件中心點Y值
-                    if (servoState.checked) {
-                      if (midY>y_Bottom) {
-                        if (midY>(y_Bottom+imageHeight)/2) {  //物件中心點偏下程度
-                          servoAngle-=5;
-                        } else {
-                          servoAngle-=3; 
-                        }
-                        if (servoAngle <0) servoAngle = 0;
-                        if (servoAngle >180) servoAngle = 180;
-                      }
-                      else if (midY<y_Top) {
-                        if (midY<y_Top/2) {  //物件中心點偏上程度
-                          servoAngle+=5;
-                        } else {
-                          servoAngle+=3;   
-                        }
-                        if (servoAngle <0) servoAngle = 0;
-                        if (servoAngle >180) servoAngle = 180; 
-                      }
+            if (detectState.checked == false) return;
             
-            if (lastServoAngle!=servoAngle) {
-              servo.value = servoAngle;
-              car('/control?var=servo&val='+servoAngle);
-              lastServoAngle = servoAngle;
+            canvas.setAttribute("width", aiView.width);
+            canvas.setAttribute("height", aiView.height);
+            canvas_pixel.setAttribute("width", aiView.width);
+            canvas_pixel.setAttribute("height", aiView.height);  
+            context.drawImage(aiView,0,0,aiView.width,aiView.height);
+         
+            var imgData=context.getImageData(0,0,canvas.width,canvas.height);
+      
+            for (var i=0;i<imgData.data.length;i+=4) {
+              var r=0;
+              var g=0;
+              var b=0;
+              if ((imgData.data[i]>=Rmin.value&&imgData.data[i]<=Rmax.value)&&(imgData.data[i+1]>=Gmin.value&&imgData.data[i+1]<=Gmax.value)&&(imgData.data[i+2]>=Bmin.value&&imgData.data[i+2]<=Bmax.value)) {
+                r=255;
+              }
+      
+              imgData.data[i]=r;
+              imgData.data[i+1]=g;
+              imgData.data[i+2]=b;
+              imgData.data[i+3]=255;
             }
+            context_pixel.putImageData(imgData,0,0);
+      
+            tracking.track('#canvas_pixel', tracker);
+          }  
+      
+          tracking.ColorTracker.registerColor('red', function(r, g, b) {
+            if ((r==255)&&(g==0)&&(b==0)) {
+            return true;
+            }     
+            return false;
+          });
+         
+          var trackedColors = {
+            custom: true
+          };
+          
+          Object.keys(tracking.ColorTracker.knownColors_).forEach(function(color) {
+            trackedColors[color] = true;
+          });
+          
+          var colors = [];
+          for (var color in trackedColors) {
+            if (trackedColors[color]) {
+            colors.push(color);
+            }
+          }
+          tracker.setColors(colors);
+          
+          tracker.on('track', function(event) {
+          
+            //辨識影像大小
+            var imageWidth = aiView.width;
+            var imageHeight = aiView.height;
+              
+            //中心區域座標
+            var x_Left = aiView.width*3/8;
+            var x_Right = aiView.width*5/8;
+            var y_Top = aiView.height*3/8;
+            var y_Bottom = aiView.height*5/8;
+          
+            event.data.forEach(function(rect) {
+            context.strokeStyle = rect.color;
+            context.strokeRect(rect.x, rect.y, rect.width, rect.height);
+            //context.font = '11px Helvetica';
+            //context.fillStyle = "#fff";
+            //context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
+            //context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
+      
+            //result.innerHTML+= rect.color+","+rect.x+","+rect.y+","+rect.width+","+rect.height+"<br>";
+            // 1-Front, 2-Left, 3-Stop, 4-Right, 5-Back, 6-FrontLeft, 7-FrontRight, 8-LeftAfter, 9-RightAfter
+            
+            if (rect.color=="red"&&motorState.checked) {
+                const x = rect.x;
+                const y = rect.y;
+                const width = rect.width;
+                const height = rect.height;
+  
+                var midX = Math.round(x)+Math.round(width)/2;  //第一個偵測物件中心點X值
+                if (motorState.checked) {
+                  if (midX < x_Left) {
+                    if (midX < x_Left/2) {  //物件中心點偏左程度
+                      if (width>imageWidth/2)
+                        delay = turnDelayMax.value;
+                      else
+                        delay = turnDelayMin.value;
+                    } else {
+                      if (width>imageWidth/2)
+                        delay = turnFarDelayMax.value;
+                      else
+                        delay = turnFarDelayMin.value;
+                    } 
+                    if (!hmirror.checked) {  //鏡像
+                      car('/control?car=6;'+delay);  //左前進
+                      lastDirection = "left";
                     }
-      
-          nobodycount = 0; 
-      
-          return;
-      }
-      
-    });
+                    else {                
+                      car('/control?car=7;'+delay);  //右前進
+                      lastDirection = "right";
+                    }
+                  }
+                  else if (midX > x_Right) {
+                    var delay=0;
+                    if (midX > (x_Right+imageWidth)/2) { //物件中心點偏右程度
+                      if (width>imageWidth/2)
+                        delay = turnDelayMax.value;
+                      else
+                        delay = turnDelayMin.value;
+                    } else {
+                      if (width>imageWidth/2)
+                        delay = turnFarDelayMax.value;
+                      else
+                        delay = turnFarDelayMin.value;
+                    }
+                    if (!hmirror.checked) {  //鏡像
+                      car('/control?car=7;'+delay);  //右前進
+                      lastDirection = "right";
+                    }
+                    else {                           
+                      car('/control?car=6;'+delay);  //左前進
+                      lastDirection = "left";
+                    }
+                  }                    
+                  else if (midX>=x_Left&&midX<=x_Right) {  //物件中心點在正中心自訂區域120~200中則前進
+                    car('/control?car=1;' + forwardDelay.value + ';stop');  //前進
+                  }
+                }
+                  
+                var midY = Math.round(y)+Math.round(height)/2;  //第一個偵測物件中心點Y值
+                if (servoState.checked) {
+                  if (midY>y_Bottom) {
+                    if (midY>(y_Bottom+imageHeight)/2) {  //物件中心點偏下程度
+                      servoAngle-=5;
+                    } else {
+                      servoAngle-=3; 
+                    }
+                    if (servoAngle <0) servoAngle = 0;
+                    if (servoAngle >180) servoAngle = 180;
+                  }
+                  else if (midY<y_Top) {
+                    if (midY<y_Top/2) {  //物件中心點偏上程度
+                      servoAngle+=5;
+                    } else {
+                      servoAngle+=3;   
+                    }
+                    if (servoAngle <0) servoAngle = 0;
+                    if (servoAngle >180) servoAngle = 180; 
+                  }
+                  
+                  if (lastServoAngle!=servoAngle) {
+                    servo.value = servoAngle;
+                    car('/control?var=servo&val='+servoAngle);
+                    lastServoAngle = servoAngle;
+                  }
+                }
+            
+                nobodycount = 0; 
+                return;
+            }
+          });
     
-    
-    nobodycount++;
-    if (autodetect.checked&&motorState.checked&&nobodycount>=3) {  //累計三次以上偵測不到物件則開始原地轉動
-      if (lastDirection == "right")
-      car('/control?car=4;' + turnFarDelayMax.value);  //右轉
-      else
-      car('/control?car=2;' + turnFarDelayMax.value);  //左轉
-      setTimeout(function(){aiStill.click();},1000);
-      return;
-    }
-
-    try { 
-      document.createEvent("TouchEvent");
-      setTimeout(function(){aiStill.click();},250);
-    }
-    catch(e) { 
-      setTimeout(function(){aiStill.click();},150);
-    }     
-  });            
+          nobodycount++;
+          if (autodetect.checked&&motorState.checked&&nobodycount>=3) {  //累計三次以上偵測不到物件則開始原地轉動
+            if (lastDirection == "right")
+            car('/control?car=4;' + turnFarDelayMax.value);  //右轉
+            else
+            car('/control?car=2;' + turnFarDelayMax.value);  //左轉
+            setTimeout(function(){aiStill.click();},1000);
+            return;
+          }
+      
+          try { 
+            document.createEvent("TouchEvent");
+            setTimeout(function(){aiStill.click();},250);
+          }
+          catch(e) { 
+            setTimeout(function(){aiStill.click();},150);
+          }     
+        });            
   </script>
 )rawliteral";
 
