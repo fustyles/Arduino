@@ -1731,7 +1731,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 
               if (objectCount==0) {
                 nobodycount++;
-                if (autodetect.checked&&nobodycount>=3) {  //累計三次以上偵測不到物件則開始原地轉動
+                if (autodetect.checked&&nobodycount>=3&&motorState.checked) {  //累計三次以上偵測不到物件則開始原地轉動
                   if (lastDirection == "right")
                     car('/control?car=4;' + turnFarDelayMax.value);  //右轉
                   else
