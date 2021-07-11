@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Time Lapse
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-1 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-12 00:00
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
@@ -709,19 +709,16 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                             <button id="resetfilename">Start with 1</button>
                             </section>
                         </div>                         
-                        <div class="input-group" id="timelapse-group">
-                            <label for="contrast">Interval(s)</label>
+                        <div class="input-group" id="interval-group">
+                            <label for="interval">Interval(s)</label>
                             <div class="range-min">0.1</div>
-                            <div class="tooltip">
-                            <input type="range" id="interval" min="0.1" max="60" step="0.1" value="5" class="default-action">
-                            <span id="interval_tip" class="tooltiptext">60</span>
-                            </div>
+                            <input type="range" id="interval" min="0.1" max="60" step="0.1" value="5" class="my-action">
                             <div class="range-max">60</div>
                         </div>                         
                         <div class="input-group" id="timelapse-group">
                             <label for="timelapse">Start TimeLapse</label>
                             <div class="switch">
-                                <input id="timelapse" type="checkbox" class="default-action">
+                                <input id="timelapse" type="checkbox">
                                 <label class="slider" for="timelapse"></label>
                             </div>
                         </div>
@@ -729,7 +726,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 </div>
             </div>
         </section>
-        <iframe id="ifr" style="width:350px;height:40px;background: #FFFFFF;"></iframe>
+        <div id="result" style="width:350px;height:40px;color:yellow"></div>
         
         <script>
           document.addEventListener('DOMContentLoaded', function (event) {
@@ -820,9 +817,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                     if (el.id=="flash") {  //新增flash設定預設值0
                       flash.value=0;
                       fetch(baseHost+"/control?flash=0");
-                    } else if (el.id=="interval") {  //新增interval設定預設值5
-                      interval.value=5;
-                      interval_tip.innerHTML = interval.value;
                     } else {                          
                       updateValue(el, state[el.id], false)
                     }
@@ -881,43 +875,51 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
               .forEach(el => {
                 el.onchange = () => updateConfig(el)
               })
+
+            // 自訂類別my-action, title屬性顯示數值
+            document
+              .querySelectorAll('.my-action')
+              .forEach(el => {
+                el.title = el.value;
+                el.onchange = () => el.title = el.value;
+              })              
           
             // Custom actions
             const resetfilename = document.getElementById('resetfilename')
             const framesize = document.getElementById('framesize')
             const timelapse = document.getElementById('timelapse')
-            const interval_tip = document.getElementById('interval_tip')
             const range = document.getElementById('range')
-            const ifr = document.getElementById('ifr')
+            
             var myTimer;
             resetfilename.onclick = () => {
-              ifr.src =  document.location.origin+'/control?resetfilename';
+              urlCommand(document.location.origin+'/control?resetfilename');
             }            
           
             framesize.onchange = () => {
               updateConfig(framesize)
             }
             
-            interval.onchange = () => {
-              interval_tip.innerHTML = interval.value;
+            saveImage();
+
+            function saveImage() {
               if (timelapse.checked) {
-                clearInterval(myTimer);
-                ifr.src =  document.location.origin+'/control?saveimage';
-                myTimer = setInterval(function(){
-                  ifr.src =  document.location.origin+'/control?saveimage';
-                }, Number(interval.value)*1000);
-              }             
-            }            
-          
-            timelapse.onchange = () => {
-              clearInterval(myTimer);
-              if (timelapse.checked) {
-                ifr.src =  document.location.origin+'/control?saveimage';
-                myTimer = setInterval(function(){
-                  ifr.src =  document.location.origin+'/control?saveimage';
-                }, Number(interval.value)*1000);
-              } 
-            }            
+                var query = document.location.origin+'/control?saveimage';
+                fetch(query)
+                  .then(function (response) {
+                    return response.text()
+                  })
+                  .then(function (text) {
+                    result.innerHTML = text;
+                    setTimeout(function(){ saveImage(); },  Number(interval.value)*1000);
+                  })
+                  .catch(function (error) {
+                    result.innerHTML = error;
+                    setTimeout(function(){ saveImage(); },  Number(interval.value)*1000);
+                  })
+              }
+              else
+                setTimeout(function(){ saveImage(); },  Number(interval.value)*1000);
+            }
           })
         </script>
     </body>
