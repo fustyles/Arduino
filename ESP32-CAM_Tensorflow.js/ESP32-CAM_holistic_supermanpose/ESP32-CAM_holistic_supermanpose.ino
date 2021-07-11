@@ -1,6 +1,12 @@
 /*
 ESP32-CAM Mediapipe Holistic 
-利用拇指尖與食指尖的距離控制閃光燈亮度。一開始先張開到兩指尖最大距離，程式會自動記錄最大距離當換算比率分母。
+超人起飛動作開燈
+
+打開: 拉弓動作.右手腕在肩膀右上，左手腕在左胸，兩手腕連線傾斜角度20~60度
+Turn on: Superman starts flying. Your right hand must be above your nose. Your wrists are tilted on a 45 degree axis.
+關閉: 兩手腕垂直高舉
+Turn off: Raise your two hands above your nose
+
 https://google.github.io/mediapipe/solutions/holistic.html
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-7 00:30
@@ -955,7 +961,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
     <figure>
       <div id="stream-container" class="image-container hidden">
         <div class="close" id="close-stream">×</div>
-        <img id="stream" src="" style="display:none" >
+        <img id="stream" src="" style="display:none" crossorigin="anonymous">
         <canvas id="canvas"></canvas>
       </div>
     </figure>
@@ -980,21 +986,21 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                                 <label class="slider" for="face"></label>
                             </div>
                         </div>
-                        <div class="input-group" id="uart-group">
+                        <div class="input-group" id="pose-group">
                             <label for="pose">Pose</label>
                             <div class="switch">
                                 <input id="pose" type="checkbox" class="default-action" checked="checked">
                                 <label class="slider" for="pose"></label>
                             </div>
                         </div>
-                        <div class="input-group" id="uart-group">
+                        <div class="input-group" id="lefthand-group">
                             <label for="lefthand">Left Hand</label>
                             <div class="switch">
                                 <input id="lefthand" type="checkbox" class="default-action" checked="checked">
                                 <label class="slider" for="lefthand"></label>
                             </div>
                         </div>
-                        <div class="input-group" id="uart-group">
+                        <div class="input-group" id="righthand-group">
                             <label for="righthand">Right Hand</label>
                             <div class="switch">
                                 <input id="righthand" type="checkbox" class="default-action" checked="checked">
@@ -1090,211 +1096,216 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                 </div>
             </div>
         </section>
-        <div id="message" style="color:red"><div>
-        <div id="faceResult" style="color:red;display:none;"><div>
-        <div id="poseResult" style="color:red;display:none;"><div>
-        <div id="lefthandResult" style="color:red;display:none;"><div>
-        <div id="righthandResult" style="color:red;display:none;"><div>
+        <div id="message" style="color:yellow">Please wait for loading model.<div>
+        <div id="faceResult" style="color:yellow;display:none;"><div>
+        <div id="poseResult" style="color:yellow;display:none;"><div>
+        <div id="lefthandResult" style="color:yellow;display:none;"><div>
+        <div id="righthandResult" style="color:yellow;display:none;"><div>
                         
         <script>
-        //法蘭斯影像辨識
-        const ip = document.getElementById('ip');
-        const aiView = document.getElementById('stream');
-        const aiStill = document.getElementById('get-still')
-        const canvas = document.getElementById('canvas');     
-        var context = canvas.getContext("2d");  
-        const message = document.getElementById('message');
-        const uart = document.getElementById('uart');
-        const face = document.getElementById('face');
-        const pose = document.getElementById('pose');
-        const lefthand = document.getElementById('lefthand');
-        const righthand = document.getElementById('righthand');
-        const faceResult = document.getElementById('faceResult');
-        const poseResult = document.getElementById('poseResult');
-        const lefthandResult = document.getElementById('lefthandResult');
-        const righthandResult = document.getElementById('righthandResult');
-        var query_last = "";  
-        var maxValue = 0;
-        
-        async function DetectImage() {
-          holistic.send({image: aiView}).then(res => {
-            message.innerHTML = "";
-            aiStill.click();
-          }); 
-        }
-        
-        function onResults(results) {
-          canvas.setAttribute("width", results.image.width);
-          canvas.setAttribute("height", results.image.height);
-          context.save();
-          context.clearRect(0, 0, canvas.width, canvas.height);
-          context.drawImage(results.image, 0, 0, canvas.width, canvas.height);
+    //法蘭斯影像辨識
+    const ip = document.getElementById('ip');
+    const aiView = document.getElementById('stream');
+    const aiStill = document.getElementById('get-still')
+    const canvas = document.getElementById('canvas');     
+    var context = canvas.getContext("2d");  
+    const message = document.getElementById('message');
+    const uart = document.getElementById('uart');
+    const face = document.getElementById('face');
+    const pose = document.getElementById('pose');
+    const lefthand = document.getElementById('lefthand');
+    const righthand = document.getElementById('righthand');
+    const faceResult = document.getElementById('faceResult');
+    const poseResult = document.getElementById('poseResult');
+    const lefthandResult = document.getElementById('lefthandResult');
+    const righthandResult = document.getElementById('righthandResult');
+    var query_flash = "";
+    var query_last = "";
+    
+    async function DetectImage() {
+      holistic.send({image: aiView}).then(res => {
+      message.innerHTML = "";
+      setTimeout(function(){aiStill.click();},100);   //若無法取得畫面可能是硬體效能不足，可改此行程式碼，依硬體效能變更等待時間毫秒數 
+      }); 
+    }
+    
+    function onResults(results) {
+      canvas.setAttribute("width", results.image.width);
+      canvas.setAttribute("height", results.image.height);
+      context.save();
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(results.image, 0, 0, canvas.width, canvas.height);
 
-          faceResult.innerHTML = JSON.stringify(results.faceLandmarks);
-          poseResult.innerHTML = JSON.stringify(results.poseLandmarks); 
-          lefthandResult.innerHTML = JSON.stringify(results.leftHandLandmarks);
-          righthandResult.innerHTML = JSON.stringify(results.rightHandLandmarks);
-          
-          if (face.checked) {
-            drawConnectors(context, results.faceLandmarks, FACEMESH_TESSELATION, {color: '#C0C0C070', lineWidth: 1});
-            //console.log(JSON.stringify(results.faceLandmarks));
-          }
-          
-          if (pose.checked) {
-            drawConnectors(context, results.poseLandmarks, POSE_CONNECTIONS, {color: '#00CCCC', lineWidth: 2});
-            drawLandmarks(context, results.poseLandmarks, {color: '#FFFF00', lineWidth: 2});
-            //console.log(JSON.stringify(results.poseLandmarks));
-          }
-          
-          if (lefthand.checked) {
-            drawConnectors(context, results.leftHandLandmarks, HAND_CONNECTIONS, {color: '#CC0000', lineWidth: 2});
-            drawLandmarks(context, results.leftHandLandmarks, {color: '#00FF00', lineWidth: 2});
-            //console.log(JSON.stringify(results.leftHandLandmarks));
-          }
-          
-          if (righthand.checked) {
-            drawConnectors(context, results.rightHandLandmarks, HAND_CONNECTIONS, {color: '#00CC00', lineWidth: 2});
-            drawLandmarks(context, results.rightHandLandmarks, {color: '#FF0000', lineWidth: 2});
-            //console.log(JSON.stringify(results.rightHandLandmarks));
-          }
-          context.restore();
+      faceResult.innerHTML = JSON.stringify(results.faceLandmarks);
+      poseResult.innerHTML = JSON.stringify(results.poseLandmarks); 
+      lefthandResult.innerHTML = JSON.stringify(results.leftHandLandmarks);
+      righthandResult.innerHTML = JSON.stringify(results.rightHandLandmarks);
+      
+      if (face.checked) {
+      drawConnectors(context, results.faceLandmarks, FACEMESH_TESSELATION, {color: '#C0C0C070', lineWidth: 1});
+      //console.log(JSON.stringify(results.faceLandmarks));
+      }
+      
+      if (pose.checked) {
+      drawConnectors(context, results.poseLandmarks, POSE_CONNECTIONS, {color: '#00CCCC', lineWidth: 2});
+      drawLandmarks(context, results.poseLandmarks, {color: '#FFFF00', lineWidth: 2});
+      //console.log(JSON.stringify(results.poseLandmarks));
+      }
+      
+      if (lefthand.checked) {
+      drawConnectors(context, results.leftHandLandmarks, HAND_CONNECTIONS, {color: '#CC0000', lineWidth: 2});
+      drawLandmarks(context, results.leftHandLandmarks, {color: '#00FF00', lineWidth: 2});
+      //console.log(JSON.stringify(results.leftHandLandmarks));
+      }
+      
+      if (righthand.checked) {
+      drawConnectors(context, results.rightHandLandmarks, HAND_CONNECTIONS, {color: '#00CC00', lineWidth: 2});
+      drawLandmarks(context, results.rightHandLandmarks, {color: '#FF0000', lineWidth: 2});
+      //console.log(JSON.stringify(results.rightHandLandmarks));
+      }
+      context.restore();
+      
+          //超人起飛動作開燈(右手在上左手在下傾斜20-60度左右)，超人投降關燈(雙手高舉)
+      leftWristx = (holistic_pose_position("15", "x"));
+      leftWristy = (holistic_pose_position("15", "y"));
+      rightWristx = (holistic_pose_position("16", "x"));
+      rightWristy = (holistic_pose_position("16", "y"));
+      nosex = (holistic_pose_position("0", "x"));
+      nosey = (holistic_pose_position("0", "y"));
+      rightShoulderx = (holistic_pose_position("12", "x"));
+      rightShouldery = (holistic_pose_position("12", "y"));
+      leftShoulderx = (holistic_pose_position("11", "x"));
+      leftShouldery = (holistic_pose_position("11", "y"));
+      wristAngle = (holistic_angle(leftWristx, leftWristy, rightWristy, rightWristx));
+      if (wristAngle) {
+        if (wristAngle <= 60 && wristAngle >= 20 && leftWristx > nosex && leftWristy > nosey && rightWristx < nosex && rightWristy < nosey && ((leftWristy - leftShouldery) / (leftShouldery - nosey) >= -0.5) && ((leftWristy - leftShouldery) / (leftShouldery - nosey) <= 1)) {
+        query_flash = "http:\/\/"+ip.value+"/control?flash=10";
+        //var query_flash = "http:\/\/"+ip.value+"/control?servo=2;180";     //control servo (IO2)
+        } else if (rightWristy < nosey && leftWristy < nosey) {
+        query_flash = "http:\/\/"+ip.value+"/control?flash=0";
+        //var query_flash = "http:\/\/"+ip.value+"/control?servo=2;0";     //control servo (IO2)
+        }
+      } else {
+        query_flash = "http:\/\/"+ip.value+"/control?flash=0";
+        //var query_flash = "http:\/\/"+ip.value+"/control?servo=2;0";     //control servo (IO2)
+      }
+      if (query_last!=query_flash) {
+        query_last=query_flash;             
+        fetch(query_flash)
+          .then(response => {
+            console.log(`request to ${query_flash} finished, status: ${response.status}`)
+          })
+      }
+    }
+    
+    const holistic = new Holistic({locateFile: (file) => {
+      return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
+    }});
+    
+    holistic.setOptions({
+      modelComplexity: 1,
+      smoothLandmarks: true,
+      minDetectionConfidence: 0.5,
+      minTrackingConfidence: 0.5
+    });
+    
+    holistic.onResults(onResults);  
+    
+    aiView.onload = function (event) {
+      DetectImage();
+    }
 
-          //自訂拇指尖與食指尖距離條件判斷
-          var thumb4x = (holistic_lefthand_position("4", "x"));
-          var thumb4y = (holistic_lefthand_position("4", "y"));
-          var forefinger4x = (holistic_lefthand_position("8", "x"));
-          var forefinger4y = (holistic_lefthand_position("8", "y"));
-          var distance4 = (holistic_distance(thumb4x, thumb4y, forefinger4x, forefinger4y));
+    window.onload = function() {
+      message.innerHTML = "";
+    }
 
-          if (distance4) {
-            if (distance4 > maxValue) {
-              maxValue = distance4;
-            }                       
-            var val = Math.floor((distance4/maxValue)*255);
-            val= Math.floor(val/((maxValue-distance4)*0.1+1));
-            if (val<3) val=0;
-            var query_flash = "http:\/\/"+ip.value+"/control?flash=" + val;
-            //var query_flash = "http:\/\/"+ip.value+"/control?servo=2;" + Math.floor((distance4 / maxValue) * 180);     //control servo
-          } else {
-            var query_flash = "http:\/\/"+ip.value+"/control?flash=0";
-            //var query_flash = "http:\/\/"+ip.value+"/control?servo=2;0";     //control servo
-          }
-          if (query_last!=query_flash) {
-            query_last=query_flash;             
-            fetch(query_flash)
-                .then(response => {
-                  console.log(`request to ${query_flash} finished, status: ${response.status}`)
-                })
-          }          
-        }
-        
-        const holistic = new Holistic({locateFile: (file) => {
-          return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
-        }});
-        
-        holistic.setOptions({
-          modelComplexity: 1,
-          smoothLandmarks: true,
-          minDetectionConfidence: 0.5,
-          minTrackingConfidence: 0.5
-        });
-        
-        holistic.onResults(onResults);  
-        
-        aiView.onload = function (event) {
-          DetectImage();
-        }
+    function holistic_distance(input_x0,input_y0,input_x1,input_y1) {
+      return Math.sqrt(Math.pow((input_x1-input_x0), 2) + Math.pow((input_y1-input_y0), 2));
+    }   
+    
+    function holistic_angle(input_x0,input_y0,input_x1,input_y1) {
+      var angle = (Math.atan((input_y1-input_y0)/(input_x1-input_x0)) / Math.PI) * 180;
+      if (angle<0) angle = 180 + angle;
+      if (input_y0<input_y1) angle = 180 + angle;
+      return angle;
+    }
 
-        window.onload = function() {
-          aiStill.click();
-        }
+    function holistic_face_position(input_index, input_data){
+      var json = faceResult.innerHTML;
+      if (json!=""&&json!="undefined") {
+      var result = JSON.parse('{"data":'+json+'}');
+      if (result["data"].length>0) {
+        if (input_data=="x")
+        return Number(result["data"][input_index].x)*Number(canvas.width);
+        else if (input_data=="y")
+        return Number(result["data"][input_index].y)*Number(canvas.height);
+        else if (input_data=="z")
+        return Number(result["data"][input_index].z)*Number(canvas.width);
+      }
+      }
+      return "";
+    }
+    
+    function holistic_pose_position(input_index, input_data){
+      var json = poseResult.innerHTML;
+      if (json!=""&&json!="undefined") {
+      var result = JSON.parse('{"data":'+json+'}');
+      if (result["data"].length>0) {
+        if (input_data=="x")
+        return Number(result["data"][input_index].x)*Number(canvas.width);
+        else if (input_data=="y")
+        return Number(result["data"][input_index].y)*Number(canvas.height);
+        else if (input_data=="z")
+        return Number(result["data"][input_index].z)*Number(canvas.width);
+      }
+      }
+      return "";
+    }
+    
+    function holistic_lefthand_position(input_index, input_data){
+      var json = lefthandResult.innerHTML;
+      if (json!=""&&json!="undefined") {
+      var result = JSON.parse('{"data":'+json+'}');
+      if (result["data"].length>0) {
+        if (input_data=="x")
+        return Number(result["data"][input_index].x)*Number(canvas.width);
+        else if (input_data=="y")
+        return Number(result["data"][input_index].y)*Number(canvas.height);
+        else if (input_data=="z")
+        return Number(result["data"][input_index].z)*Number(canvas.width);
+      }
+      }
+      return "";
+    }
+    
+    function holistic_righthand_position(input_index, input_data){
+      var json = righthandResult.innerHTML;
+      if (json!=""&&json!="undefined") {
+      var result = JSON.parse('{"data":'+json+'}');
+      if (result["data"].length>0) {
+        if (input_data=="x")
+        return Number(result["data"][input_index].x)*Number(canvas.width);
+        else if (input_data=="y")
+        return Number(result["data"][input_index].y)*Number(canvas.height);
+        else if (input_data=="z")
+        return Number(result["data"][input_index].z)*Number(canvas.width);
+      }
+      }
+      return "";
+    }
 
-        function holistic_distance(input_x0,input_y0,input_x1,input_y1) {
-            return Math.sqrt(Math.pow((input_x1-input_x0), 2) + Math.pow((input_y1-input_y0), 2));
-        }   
-        
-        function holistic_angle(input_x0,input_y0,input_x1,input_y1) {
-          var angle = (Math.atan((input_y1-input_y0)/(input_x1-input_x0)) / Math.PI) * 180;
-          if (angle<0) angle = 180 + angle;
-          if (input_y0<input_y1) angle = 180 + angle;
-          return angle;
-        }
+    function h(a){var c=0;return function(){return c<a.length?{done:!1,value:a[c++]}:{done:!0}}}var l="function"==typeof Object.defineProperties?Object.defineProperty:function(a,c,b){if(a==Array.prototype||a==Object.prototype)return a;a[c]=b.value;return a};
+    function m(a){a=["object"==typeof globalThis&&globalThis,a,"object"==typeof window&&window,"object"==typeof self&&self,"object"==typeof global&&global];for(var c=0;c<a.length;++c){var b=a[c];if(b&&b.Math==Math)return b}throw Error("Cannot find global object");}var n=m(this);function p(a,c){if(c)a:{var b=n;a=a.split(".");for(var d=0;d<a.length-1;d++){var e=a[d];if(!(e in b))break a;b=b[e]}a=a[a.length-1];d=b[a];c=c(d);c!=d&&null!=c&&l(b,a,{configurable:!0,writable:!0,value:c})}}
+    function q(a){var c="undefined"!=typeof Symbol&&Symbol.iterator&&a[Symbol.iterator];return c?c.call(a):{next:h(a)}}var r="function"==typeof Object.assign?Object.assign:function(a,c){for(var b=1;b<arguments.length;b++){var d=arguments[b];if(d)for(var e in d)Object.prototype.hasOwnProperty.call(d,e)&&(a[e]=d[e])}return a};p("Object.assign",function(a){return a||r});
+    p("Array.prototype.fill",function(a){return a?a:function(c,b,d){var e=this.length||0;0>b&&(b=Math.max(0,e+b));if(null==d||d>e)d=e;d=Number(d);0>d&&(d=Math.max(0,e+d));for(b=Number(b||0);b<d;b++)this[b]=c;return this}});function t(a){return a?a:Array.prototype.fill}p("Int8Array.prototype.fill",t);p("Uint8Array.prototype.fill",t);p("Uint8ClampedArray.prototype.fill",t);p("Int16Array.prototype.fill",t);p("Uint16Array.prototype.fill",t);p("Int32Array.prototype.fill",t);
+    p("Uint32Array.prototype.fill",t);p("Float32Array.prototype.fill",t);p("Float64Array.prototype.fill",t);var u=this||self;function v(a,c){a=a.split(".");var b=u;a[0]in b||"undefined"==typeof b.execScript||b.execScript("var "+a[0]);for(var d;a.length&&(d=a.shift());)a.length||void 0===c?b[d]&&b[d]!==Object.prototype[d]?b=b[d]:b=b[d]={}:b[d]=c};var w={color:"white",lineWidth:4,radius:2,visibilityMin:.5};function x(a){a=a||{};return Object.assign(Object.assign(Object.assign({},w),{fillColor:a.color}),a)}function y(a,c){return a instanceof Function?a(c):a}function z(a,c,b){return Math.max(Math.min(c,b),Math.min(Math.max(c,b),a))}v("clamp",z);
+    v("drawLandmarks",function(a,c,b){if(c){b=x(b);a.save();var d=a.canvas,e=0;c=q(c);for(var f=c.next();!f.done;f=c.next())if(f=f.value,void 0!==f&&(void 0===f.visibility||f.visibility>b.visibilityMin)){a.fillStyle=y(b.fillColor,{index:e,from:f});a.strokeStyle=y(b.color,{index:e,from:f});a.lineWidth=y(b.lineWidth,{index:e,from:f});var g=new Path2D;g.arc(f.x*d.width,f.y*d.height,y(b.radius,{index:e,from:f}),0,2*Math.PI);a.fill(g);a.stroke(g);++e}a.restore()}});
+    v("drawConnectors",function(a,c,b,d){if(c&&b){d=x(d);a.save();var e=a.canvas,f=0;b=q(b);for(var g=b.next();!g.done;g=b.next()){var k=g.value;a.beginPath();g=c[k[0]];k=c[k[1]];g&&k&&(void 0===g.visibility||g.visibility>d.visibilityMin)&&(void 0===k.visibility||k.visibility>d.visibilityMin)&&(a.strokeStyle=y(d.color,{index:f,from:g,to:k}),a.lineWidth=y(d.lineWidth,{index:f,from:g,to:k}),a.moveTo(g.x*e.width,g.y*e.height),a.lineTo(k.x*e.width,k.y*e.height));++f;a.stroke()}a.restore()}});
+    v("drawRectangle",function(a,c,b){b=x(b);a.save();var d=a.canvas;a.beginPath();a.lineWidth=y(b.lineWidth,{});a.strokeStyle=y(b.color,{});a.fillStyle=y(b.fillColor,{});a.translate(c.xCenter*d.width,c.yCenter*d.height);a.rotate(c.rotation*Math.PI/180);a.rect(-c.width/2*d.width,-c.height/2*d.height,c.width*d.width,c.height*d.height);a.translate(-c.xCenter*d.width,-c.yCenter*d.height);a.stroke();a.fill();a.restore()});v("lerp",function(a,c,b,d,e){return z(d*(1-(a-c)/(b-c))+e*(1-(b-a)/(b-c)),d,e)})
+    
 
-        function holistic_face_position(input_index, input_data){
-          var json = faceResult.innerHTML;
-          if (json!=""&&json!="undefined") {
-          var result = JSON.parse('{"data":'+json+'}');
-          if (result["data"].length>0) {
-            if (input_data=="x")
-            return Number(result["data"][input_index].x)*Number(canvas.width);
-            else if (input_data=="y")
-            return Number(result["data"][input_index].y)*Number(canvas.height);
-            else if (input_data=="z")
-            return Number(result["data"][input_index].z)*Number(canvas.width);
-          }
-          }
-          return "";
-        }
-        
-        function holistic_pose_position(input_index, input_data){
-          var json = poseResult.innerHTML;
-          if (json!=""&&json!="undefined") {
-          var result = JSON.parse('{"data":'+json+'}');
-          if (result["data"].length>0) {
-            if (input_data=="x")
-            return Number(result["data"][input_index].x)*Number(canvas.width);
-            else if (input_data=="y")
-            return Number(result["data"][input_index].y)*Number(canvas.height);
-            else if (input_data=="z")
-            return Number(result["data"][input_index].z)*Number(canvas.width);
-          }
-          }
-          return "";
-        }
-        
-        function holistic_lefthand_position(input_index, input_data){
-          var json = lefthandResult.innerHTML;
-          if (json!=""&&json!="undefined") {
-          var result = JSON.parse('{"data":'+json+'}');
-          if (result["data"].length>0) {
-            if (input_data=="x")
-            return Number(result["data"][input_index].x)*Number(canvas.width);
-            else if (input_data=="y")
-            return Number(result["data"][input_index].y)*Number(canvas.height);
-            else if (input_data=="z")
-            return Number(result["data"][input_index].z)*Number(canvas.width);
-          }
-          }
-          return "";
-        }
-        
-        function holistic_righthand_position(input_index, input_data){
-          var json = righthandResult.innerHTML;
-          if (json!=""&&json!="undefined") {
-          var result = JSON.parse('{"data":'+json+'}');
-          if (result["data"].length>0) {
-            if (input_data=="x")
-            return Number(result["data"][input_index].x)*Number(canvas.width);
-            else if (input_data=="y")
-            return Number(result["data"][input_index].y)*Number(canvas.height);
-            else if (input_data=="z")
-            return Number(result["data"][input_index].z)*Number(canvas.width);
-          }
-          }
-          return "";
-        }
-
-        function h(a){var c=0;return function(){return c<a.length?{done:!1,value:a[c++]}:{done:!0}}}var l="function"==typeof Object.defineProperties?Object.defineProperty:function(a,c,b){if(a==Array.prototype||a==Object.prototype)return a;a[c]=b.value;return a};
-        function m(a){a=["object"==typeof globalThis&&globalThis,a,"object"==typeof window&&window,"object"==typeof self&&self,"object"==typeof global&&global];for(var c=0;c<a.length;++c){var b=a[c];if(b&&b.Math==Math)return b}throw Error("Cannot find global object");}var n=m(this);function p(a,c){if(c)a:{var b=n;a=a.split(".");for(var d=0;d<a.length-1;d++){var e=a[d];if(!(e in b))break a;b=b[e]}a=a[a.length-1];d=b[a];c=c(d);c!=d&&null!=c&&l(b,a,{configurable:!0,writable:!0,value:c})}}
-        function q(a){var c="undefined"!=typeof Symbol&&Symbol.iterator&&a[Symbol.iterator];return c?c.call(a):{next:h(a)}}var r="function"==typeof Object.assign?Object.assign:function(a,c){for(var b=1;b<arguments.length;b++){var d=arguments[b];if(d)for(var e in d)Object.prototype.hasOwnProperty.call(d,e)&&(a[e]=d[e])}return a};p("Object.assign",function(a){return a||r});
-        p("Array.prototype.fill",function(a){return a?a:function(c,b,d){var e=this.length||0;0>b&&(b=Math.max(0,e+b));if(null==d||d>e)d=e;d=Number(d);0>d&&(d=Math.max(0,e+d));for(b=Number(b||0);b<d;b++)this[b]=c;return this}});function t(a){return a?a:Array.prototype.fill}p("Int8Array.prototype.fill",t);p("Uint8Array.prototype.fill",t);p("Uint8ClampedArray.prototype.fill",t);p("Int16Array.prototype.fill",t);p("Uint16Array.prototype.fill",t);p("Int32Array.prototype.fill",t);
-        p("Uint32Array.prototype.fill",t);p("Float32Array.prototype.fill",t);p("Float64Array.prototype.fill",t);var u=this||self;function v(a,c){a=a.split(".");var b=u;a[0]in b||"undefined"==typeof b.execScript||b.execScript("var "+a[0]);for(var d;a.length&&(d=a.shift());)a.length||void 0===c?b[d]&&b[d]!==Object.prototype[d]?b=b[d]:b=b[d]={}:b[d]=c};var w={color:"white",lineWidth:4,radius:2,visibilityMin:.5};function x(a){a=a||{};return Object.assign(Object.assign(Object.assign({},w),{fillColor:a.color}),a)}function y(a,c){return a instanceof Function?a(c):a}function z(a,c,b){return Math.max(Math.min(c,b),Math.min(Math.max(c,b),a))}v("clamp",z);
-        v("drawLandmarks",function(a,c,b){if(c){b=x(b);a.save();var d=a.canvas,e=0;c=q(c);for(var f=c.next();!f.done;f=c.next())if(f=f.value,void 0!==f&&(void 0===f.visibility||f.visibility>b.visibilityMin)){a.fillStyle=y(b.fillColor,{index:e,from:f});a.strokeStyle=y(b.color,{index:e,from:f});a.lineWidth=y(b.lineWidth,{index:e,from:f});var g=new Path2D;g.arc(f.x*d.width,f.y*d.height,y(b.radius,{index:e,from:f}),0,2*Math.PI);a.fill(g);a.stroke(g);++e}a.restore()}});
-        v("drawConnectors",function(a,c,b,d){if(c&&b){d=x(d);a.save();var e=a.canvas,f=0;b=q(b);for(var g=b.next();!g.done;g=b.next()){var k=g.value;a.beginPath();g=c[k[0]];k=c[k[1]];g&&k&&(void 0===g.visibility||g.visibility>d.visibilityMin)&&(void 0===k.visibility||k.visibility>d.visibilityMin)&&(a.strokeStyle=y(d.color,{index:f,from:g,to:k}),a.lineWidth=y(d.lineWidth,{index:f,from:g,to:k}),a.moveTo(g.x*e.width,g.y*e.height),a.lineTo(k.x*e.width,k.y*e.height));++f;a.stroke()}a.restore()}});
-        v("drawRectangle",function(a,c,b){b=x(b);a.save();var d=a.canvas;a.beginPath();a.lineWidth=y(b.lineWidth,{});a.strokeStyle=y(b.color,{});a.fillStyle=y(b.fillColor,{});a.translate(c.xCenter*d.width,c.yCenter*d.height);a.rotate(c.rotation*Math.PI/180);a.rect(-c.width/2*d.width,-c.height/2*d.height,c.width*d.width,c.height*d.height);a.translate(-c.xCenter*d.width,-c.yCenter*d.height);a.stroke();a.fill();a.restore()});v("lerp",function(a,c,b,d,e){return z(d*(1-(a-c)/(b-c))+e*(1-(b-a)/(b-c)),d,e)})
-        
-        //官方式函式
         function start() {
+      //官方式函式
           var baseHost = 'http://'+document.getElementById("ip").value;  //var baseHost = document.location.origin
           var streamUrl = baseHost + ':81';
         
@@ -1399,7 +1410,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
           const pinServo = document.getElementById('pinServo');               //新增servo pin變數
           const relay = document.getElementById('relay')                      //新增relay變數
           const pinRelay = document.getElementById('pinRelay');               //新增relay pin變數          
-          const uart = document.getElementById('uart')                        //新增uart變數
+          //const uart = document.getElementById('uart')                        //新增uart變數
           
           const stopStream = () => {
             window.stop();
@@ -1453,10 +1464,6 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
         
           framesize.onchange = () => {
             updateConfig(framesize)
-            if (framesize.value > 5) {
-              updateValue(detect, false)
-              updateValue(recognize, false)
-            }
           }
           
           // read initial values  
@@ -1507,6 +1514,8 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                 updateValue(el, state[el.id], false)
               }
             })
+      
+      aiStill.click();
           })
         }
         
