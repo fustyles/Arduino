@@ -1252,6 +1252,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           else
             result.innerHTML = "No DeviceOrientationEvent";
           
+          // 1-Front, 2-Left, 3-Stop, 4-Right, 5-Back, 6-FrontLeft, 7-FrontRight, 8-LeftAfter, 9-RightAfter
           function deviceOrientationHandler(event) {
             if (!cellphone.checked) return;
             var alpha = Number(event.alpha);
