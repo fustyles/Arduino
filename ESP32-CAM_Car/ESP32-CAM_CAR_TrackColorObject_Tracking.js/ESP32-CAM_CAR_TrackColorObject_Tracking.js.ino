@@ -1674,7 +1674,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                     }
                   }                    
                   else if (midX>=x_Left&&midX<=x_Right) {  //物件中心點在正中心自訂區域120~200中則前進
-                    car('/control?car=1;' + forwardDelay.value + ';stop');  //前進
+                    car('/control?car=1;' + forwardDelay.value);  //前進
                   }
                 }
                   

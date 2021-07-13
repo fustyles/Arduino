@@ -1688,7 +1688,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 lastDirection = "left";
               }
             } else if (position=="normal") {  //位於線上位置則前進
-              car('/control?car=1;' + forwardDelay.value + ';stop');
+              car('/control?car=1;' + forwardDelay.value);
             }
             return;
           }
