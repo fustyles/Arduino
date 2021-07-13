@@ -1262,6 +1262,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
               buttonPanel.style.display = "block";
           }
           
+          // 1-Front, 2-Left, 3-Stop, 4-Right, 5-Back, 6-FrontLeft, 7-FrontRight, 8-LeftAfter, 9-RightAfter
           setInterval(function(){
             if (runState == 1) return;
             
