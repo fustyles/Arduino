@@ -1056,7 +1056,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 display: none
             }
         </style>   
-        </head>
+            <script src="https:\/\/cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js" crossorigin="anonymous"></script>      
+    </head>
         <figure>
           <div id="stream-container" class="image-container hidden">
             <div class="close" id="close-stream">×</div>
@@ -1092,7 +1093,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   <td align="center"><button onmousedown="stopDetection();car('/control?var=car&val=5');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=5');" ontouchend="noStop();">Back</button></td>
                   <td align="center"><button onmousedown="stopDetection();car('/control?var=car&val=9');" onmouseup="noStop();" ontouchstart="event.preventDefault();car('/control?var=car&val=9');" ontouchend="noStop();">RightAfter</button></td>
                   </tr>            
-                  <tr><td><span id="message" style="display:none"></span></td><td></td><td></td></tr> 
                 </table>
             </section>         
             <div id="logo">
@@ -1101,98 +1101,14 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             <div id="content">
                 <div id="sidebar">
                     <input type="checkbox" id="nav-toggle-cb">
-                    <nav id="menu">                                        
-                        <div class="input-group" id="object-group">
-                            <label for="object">Track Object</label>
-                            <select id="object">
-                              <option value="person" selected="selected">person</option>
-                              <option value="bicycle">bicycle</option>
-                              <option value="car">car</option>
-                              <option value="motorcycle">motorcycle</option>
-                              <option value="airplane">airplane</option>
-                              <option value="bus">bus</option>
-                              <option value="train">train</option>
-                              <option value="truck">truck</option>
-                              <option value="boat">boat</option>
-                              <option value="traffic light">traffic light</option>
-                              <option value="fire hydrant">fire hydrant</option>
-                              <option value="stop sign">stop sign</option>
-                              <option value="parking meter">parking meter</option>
-                              <option value="bench">bench</option>
-                              <option value="bird">bird</option>
-                              <option value="cat">cat</option>
-                              <option value="dog">dog</option>
-                              <option value="horse">horse</option>
-                              <option value="sheep">sheep</option>
-                              <option value="cow">cow</option>
-                              <option value="elephant">elephant</option>
-                              <option value="bear">bear</option>
-                              <option value="zebra">zebra</option>
-                              <option value="giraffe">giraffe</option>
-                              <option value="backpack">backpack</option>
-                              <option value="umbrella">umbrella</option>
-                              <option value="handbag">handbag</option>
-                              <option value="tie">tie</option>
-                              <option value="suitcase">suitcase</option>
-                              <option value="frisbee">frisbee</option>
-                              <option value="skis">skis</option>
-                              <option value="snowboard">snowboard</option>
-                              <option value="sports ball">sports ball</option>
-                              <option value="kite">kite</option>
-                              <option value="baseball bat">baseball bat</option>
-                              <option value="baseball glove">baseball glove</option>
-                              <option value="skateboard">skateboard</option>
-                              <option value="surfboard">surfboard</option>
-                              <option value="tennis racket">tennis racket</option>
-                              <option value="bottle">bottle</option>
-                              <option value="wine glass">wine glass</option>
-                              <option value="cup">cup</option>
-                              <option value="fork">fork</option>
-                              <option value="knife">knife</option>
-                              <option value="spoon">spoon</option>
-                              <option value="bowl">bowl</option>
-                              <option value="banana">banana</option>
-                              <option value="apple">apple</option>
-                              <option value="sandwich">sandwich</option>
-                              <option value="orange">orange</option>
-                              <option value="broccoli">broccoli</option>
-                              <option value="carrot">carrot</option>
-                              <option value="hot dog">hot dog</option>
-                              <option value="pizza">pizza</option>
-                              <option value="donut">donut</option>
-                              <option value="cake">cake</option>
-                              <option value="chair">chair</option>
-                              <option value="couch">couch</option>
-                              <option value="potted plant">potted plant</option>
-                              <option value="bed">bed</option>
-                              <option value="dining table">dining table</option>
-                              <option value="toilet">toilet</option>
-                              <option value="tv">tv</option>
-                              <option value="laptop">laptop</option>
-                              <option value="mouse">mouse</option>
-                              <option value="remote">remote</option>
-                              <option value="keyboard">keyboard</option>
-                              <option value="cell phone">cell phone</option>
-                              <option value="microwave">microwave</option>
-                              <option value="oven">oven</option>
-                              <option value="toaster">toaster</option>
-                              <option value="sink">sink</option>
-                              <option value="refrigerator">refrigerator</option>
-                              <option value="book">book</option>
-                              <option value="clock">clock</option>
-                              <option value="vase">vase</option>
-                              <option value="scissors">scissors</option>
-                              <option value="teddy bear">teddy bear</option>
-                              <option value="hair drier">hair drier</option>
-                              <option value="toothbrush">toothbrush</option>
-                            </select>
-                        </div>
-                        <div class="input-group" id="score-group">
-                            <label for="scoret">Score Limit</label>
-                            <div class="range-min">0</div>
-                            <input type="range" id="score" min="0" max="1" value="0" step="0.1" class="my-action">
-                            <div class="range-max">1</div>
-                        </div>                        
+                    <nav id="menu">
+                        <div class="input-group" id="detectState-group">
+                            <label for="detectState">Start Detect</label>
+                            <div class="switch">
+                                <input id="detectState" type="checkbox">
+                                <label class="slider" for="detectState"></label>
+                            </div>
+                        </div>          
                         <div class="input-group" id="motorState-group">
                             <label for="motorState">Control Motor</label>
                             <div class="switch">
@@ -1200,27 +1116,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                                 <label class="slider" for="motorState"></label>
                             </div>
                         </div>
-                        <div class="input-group" id="servoState-group">
-                            <label for="servoState">Control Servo</label>
-                            <div class="switch">
-                                <input id="servoState" type="checkbox">
-                                <label class="slider" for="servoState"></label>
-                            </div>
-                        </div>
-                        <div class="input-group" id="detectState-group">
-                            <label for="detectState">Start Detect</label>
-                            <div class="switch">
-                                <input id="detectState" type="checkbox">
-                                <label class="slider" for="detectState"></label>
-                            </div>
-                        </div>            
-                        <div class="input-group" id="autodetect-group">
-                            <label for="autodetect">Auto Detect</label>
-                            <div class="switch">
-                                <input id="autodetect" type="checkbox">
-                                <label class="slider" for="autodetect"></label>
-                            </div>
-                        </div>                        
                         <div class="input-group" id="speedR-group">
                             <label for="speedR">speed R</label>
                             <div class="range-min">0</div>
@@ -1239,34 +1134,16 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                             <input type="range" id="decelerate" min="0" max="1" value="0.6" step="0.1" class="default-action">
                             <div class="range-max">1</div>
                         </div>
-                        <div class="input-group" id="turnDelayMax-group">
-                            <label for="turnDelayMax">Turn Delay Max</label>
+                        <div class="input-group" id="turnDelay-group">
+                            <label for="turnDelay">Turn Delay</label>
                             <div class="range-min">10</div>
-                            <input type="range" id="turnDelayMax" min="10" max="1000" value="150" step="10" class="my-action">
+                            <input type="range" id="turnDelay" min="10" max="1000" value="50" step="10" class="my-action">
                             <div class="range-max">1000</div>
-                        </div>
-                        <div class="input-group" id="turnFarDelayMax-group">
-                            <label for="turnFarDelayMax">Turn Delay Max(Far)</label>
-                            <div class="range-min">10</div>
-                            <input type="range" id="turnFarDelayMax" min="10" max="1000" value="100" step="10" class="my-action">
-                            <div class="range-max">1000</div>
-                        </div>            
-                        <div class="input-group" id="turnDelayMin-group">
-                            <label for="turnDelayMin">Turn Delay Min</label>
-                            <div class="range-min">10</div>
-                            <input type="range" id="turnDelayMin" min="10" max="1000" value="100" step="10" class="my-action">
-                            <div class="range-max">1000</div>
-                        </div>
-                        <div class="input-group" id="turnFarDelayMin-group">
-                            <label for="turnFarDelayMin">Turn Delay Min(Far)</label>
-                            <div class="range-min">10</div>
-                            <input type="range" id="turnFarDelayMin" min="10" max="1000" value="50" step="10" class="my-action">
-                            <div class="range-max">1000</div>
-                        </div>            
+                        </div>                       
                         <div class="input-group" id="forwardDelay-group">
                             <label for="forwardDelay">Forward Delay</label>
                             <div class="range-min">10</div>
-                            <input type="range" id="forwardDelay" min="10" max="1000" value="200" step="10" class="my-action">
+                            <input type="range" id="forwardDelay" min="10" max="1000" value="50" step="10" class="my-action">
                             <div class="range-max">1000</div>
                         </div>
                         <div class="input-group" id="servo-group">
@@ -1338,7 +1215,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 </div>
             </div>
         </section>
-        <div id="result" style="color:yellow"></div> 
+        <div id="message" style="color:yellow"><div>  
       </body>
   </html>
   
@@ -1439,7 +1316,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   .forEach(el => {
                       updateValue(el, state[el.id], false)
                   })
-                  result.innerHTML = "Connection successful";
+                  message.innerHTML = "Connection successful";
               })
           
             const view = document.getElementById('stream')
@@ -1519,24 +1396,17 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           var context = canvas.getContext("2d");
           const nostop = document.getElementById('nostop');
           const detectState = document.getElementById('detectState');
-          const autodetect = document.getElementById('autodetect');
-          const object = document.getElementById('object');
           const motorState = document.getElementById('motorState');
-          const servoState = document.getElementById('servoState');
           const servo = document.getElementById('servo');
           const panel = document.getElementById('panel');
           const message = document.getElementById('message');
-          const result = document.getElementById('result');
           const ip = document.getElementById('ip');
           const setip = document.getElementById('setip');
-
-          const turnDelayMax = document.getElementById('turnDelayMax');     //近處物件遠離時迴轉時間
-          const turnDelayMin = document.getElementById('turnDelayMin');     //近處物件偏離時迴轉時間
-          const turnFarDelayMax = document.getElementById('turnDelayMax');  //遠處物件遠離時迴轉時間
-          const turnFarDelayMin = document.getElementById('turnDelayMin');  //遠處物件偏離時迴轉時間     
-          const forwardDelay = document.getElementById('forwardDelay');     //前進時持續時間
+      
+          const turnDelay = document.getElementById('turnDelay');     //轉彎時間   
+          const forwardDelay = document.getElementById('forwardDelay');     //前進持續時間
+      
           var servoAngle = servo.value;  //伺服馬達預設位置
-          var lastServoAngle = servoAngle;
           var lastDirection = "";  //記錄前一動作行進方向
       
           panel.onchange = function(e){  
@@ -1587,21 +1457,24 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             DetectImage();      
           }  
 
-          
-          function DetectImage() {
-
-            if (motorState.checked == true) {
+          // 1-Front, 2-Left, 3-Stop, 4-Right, 5-Back, 6-FrontLeft, 7-FrontRight, 8-LeftAfter, 9-RightAfter
+          function DetectImage() 
+            if (motorState.checked) {
               car('/control?car=1;' + forwardDelay.value);  //前進
+              //car('/control?car=2;' + turnDelay.value);  //左轉
+              //car('/control?car=4;' + turnDelay.value);  //右轉
             }
-          
+
+            message.innerHTML = "";
             try { 
               document.createEvent("TouchEvent");
-              setTimeout(function(){aiStill.click();},250);
+              setTimeout(function(){aiStill.click();},200);
             }
             catch(e) { 
-              setTimeout(function(){aiStill.click();},150);
-            } 
+              setTimeout(function(){aiStill.click();},100);   //若無法取得畫面可能是硬體效能不足，可改此行程式碼，依硬體效能變更等待時間毫秒數
+            }   
           }  
+        }
   </script>
 )rawliteral";
 
