@@ -11,7 +11,7 @@ http://192.168.xxx.xxx             //網頁首頁管理介面
 http://192.168.xxx.xxx:81/stream   //取得串流影像        網頁語法 <img src="http://192.168.xxx.xxx:81/stream">
 http://192.168.xxx.xxx/capture     //取得影像           網頁語法 <img src="http://192.168.xxx.xxx/capture">
 http://192.168.xxx.xxx/status      //取得視訊參數值
-
+http://192.168.xxx.xxx/wifi        //自訂Wi-Fi設定網頁
 
 自訂指令格式 http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 
@@ -66,9 +66,6 @@ const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 //新增Preferences函式庫   https://github.com/espressif/arduino-esp32/blob/master/libraries/Preferences/src/Preferences.h
 #include <Preferences.h>
 Preferences preferences;
-
-String wifi_ssid ="";
-String wifi_password ="";
 
 #include "soc/soc.h"             //用於電源不穩不重開機 
 #include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機 
@@ -176,6 +173,9 @@ byte strState=1;
 byte questionstate=0;
 byte equalstate=0;
 byte semicolonstate=0;
+
+String wifi_ssid ="";
+String wifi_password ="";
 
 void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
