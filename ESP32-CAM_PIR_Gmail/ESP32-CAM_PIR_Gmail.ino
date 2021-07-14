@@ -42,7 +42,7 @@ const char* ssid     = "teacher";    //Wi-Fi帳號
 const char* password = "87654321";   //Wi-Fi密碼
 int pinPIR = 13;   //PIR人體移動感測器腳位
 String myScript = "/macros/s/**********ID**********/exec";    //設定Google Script路徑
-String myRecipient = "fu6625@gmail.com";  //不一定要Gmail收件人
+String myRecipient = "*****@*****.com";  //不一定要Gmail收件人
 String mySubject = "Welcom to Taiwan";
 
 #include <WiFi.h>
