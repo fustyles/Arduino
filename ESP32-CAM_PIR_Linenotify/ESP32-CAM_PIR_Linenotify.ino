@@ -14,7 +14,7 @@ Line Notify每小時最多能上傳50張影像，最高解析度為SVGA(800x600)
 const char* ssid     = "teacher";    //Wi-Fi帳號
 const char* password = "87654321";   //Wi-Fi密碼
 int pinPIR = 13;   //PIR人體移動感測器腳位
-String myToken = "Z7MsY5zqp1hALsBcTMO6fFlwX8KbfRbQC3jJDWqUb3C";    //Line Notify權杖
+String myToken = "";    //Line Notify權杖
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
