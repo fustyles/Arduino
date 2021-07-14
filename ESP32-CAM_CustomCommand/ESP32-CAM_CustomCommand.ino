@@ -753,14 +753,14 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if (cmd=="restart") {  //重啟電源
         ESP.restart();
       }         
-      else if (cmd=="flash") {  //閃光燈
-        ledcAttachPin(4, 4);  
+      else if (cmd=="flash") {  //閃光燈 IO4
+        ledcAttachPin(4, 4);  //使用channel 4
         ledcSetup(4, 5000, 8);   
         int val = P1.toInt();
         ledcWrite(4,val);  
       }
-      else if(cmd=="servo") {  //伺服馬達接於IO2 (SG90 1638-7864)
-        ledcAttachPin(2, 3);
+      else if(cmd=="servo") {  //伺服馬達 IO2 (0-180)
+        ledcAttachPin(2, 3);  //使用channel 3
         ledcSetup(3, 50, 16);
          
         int val = 7864-P1.toInt()*34.59; 
@@ -770,7 +770,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           val = 1638; 
         ledcWrite(3, val);
       }
-      else if (cmd=="relay") {  //繼電器接於IO13
+      else if (cmd=="relay") {  //繼電器 IO13
         pinMode(13, OUTPUT);  
         digitalWrite(13, P1.toInt());  
       }                   
@@ -830,7 +830,30 @@ static esp_err_t cmd_handler(httpd_req_t *req){
               detection_enabled = val;
           }
       }
-  
+      else if(!strcmp(variable, "restart")) {  //重啟電源
+        ESP.restart();
+      }       
+      else if(!strcmp(variable, "flash")) {  //閃光燈 IO4
+        ledcAttachPin(4, 4);  //使用channel 4
+        ledcSetup(4, 5000, 8);
+        ledcWrite(4,val);  
+      }
+      else if(!strcmp(variable, "servo")) {  //伺服馬達 IO2 (0-180)
+        ledcAttachPin(2, 3);  //使用channel 4
+        ledcSetup(3, 50, 16);
+         
+        val = 7864-val*34.59; 
+        if (val > 7864)
+           val = 7864;
+        else if (val < 1638)
+          val = 1638; 
+        ledcWrite(3, val);
+      }
+      else if(!strcmp(variable, "relay")) {  //繼電器 IO13
+        pinMode(13, OUTPUT);  
+        digitalWrite(13, val);  
+      } 
+      
       if(res){
           return httpd_resp_send_500(req);
       }
