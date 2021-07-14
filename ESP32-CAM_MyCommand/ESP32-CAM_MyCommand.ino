@@ -1,6 +1,6 @@
 /*
-ESP32-CAM Remove Face detection function
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-30 21:00
+ESP32-CAM
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-14 21:00
 https://www.facebook.com/francefu
 
 AP IP: 192.168.4.1
@@ -22,8 +22,8 @@ http://192.168.xxx.xxx/control?analogread=pin          //類比讀取
 http://192.168.xxx.xxx/control?touchread=pin           //觸碰讀取
 http://192.168.xxx.xxx/control?restart                 //重啟電源
 http://192.168.xxx.xxx/control?flash=value             //閃光燈 value= 0~255
-http://192.168.xxx.xxx/control?servo=value             //伺服馬達 value= 0~180
-http://192.168.xxx.xxx/control?relay=value             //繼電器 value = 0, 1
+http://192.168.xxx.xxx/control?servo=pin;value         //伺服馬達 value= 0~180
+http://192.168.xxx.xxx/control?relay=pin;value         //繼電器 value = 0, 1
 
 設定視訊參數(官方指令格式)  http://192.168.xxx.xxx/control?var=*****&val=*****
 
@@ -329,7 +329,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if (cmd=="mac") {  //查詢MAC位址
         Feedback="STA MAC: "+WiFi.macAddress();
       }  
-      else if (cmd=="restart") {  //重設WIFI連線
+      else if (cmd=="restart") {  //重啟電源
         ESP.restart();
       }  
       else if (cmd=="digitalwrite") {  //數位輸出
@@ -361,27 +361,27 @@ static esp_err_t cmd_handler(httpd_req_t *req){
      else if (cmd=="restart") {  //重啟電源
         ESP.restart();
       }         
-      else if (cmd=="flash") {  //閃光燈
+      else if (cmd=="flash") {  //閃光燈 IO4
         ledcAttachPin(4, 4);  
         ledcSetup(4, 5000, 8);   
         int val = P1.toInt();
         ledcWrite(4,val);  
       }
-      else if(cmd=="servo") {  //伺服馬達接於IO2 (SG90 1638-7864)
-        ledcAttachPin(2, 3);
+      else if(cmd=="servo") {  //伺服馬達 (0-180)
+        ledcAttachPin(P1.toInt(), 3);
         ledcSetup(3, 50, 16);
          
-        int val = 7864-P1.toInt()*34.59; 
+        int val = 7864-P2.toInt()*34.59; 
         if (val > 7864)
            val = 7864;
         else if (val < 1638)
           val = 1638; 
         ledcWrite(3, val);
       }
-      else if (cmd=="relay") {  //繼電器接於IO13
-        pinMode(13, OUTPUT);  
-        digitalWrite(13, P1.toInt());  
-      }     
+      else if (cmd=="relay") {  //繼電器
+        pinMode(P1.toInt(), OUTPUT);  
+        digitalWrite(13, P2.toInt());  
+      }    
       else if (cmd=="resetwifi") {  //重設網路連線  
         for (int i=0;i<2;i++) {
           WiFi.begin(P1.c_str(), P2.c_str());

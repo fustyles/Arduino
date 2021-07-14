@@ -1,6 +1,6 @@
 /*
 ESP32-CAM 自訂指令
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-4 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-14 22:00
 https://www.facebook.com/francefu
 
 首頁
@@ -325,7 +325,7 @@ void ExecuteCommand() {
     int val = P1.toInt();
     ledcWrite(4,val);  
   }
-  else if(cmd=="servo") {  //伺服馬達 (SG90 1638-7864)
+  else if(cmd=="servo") {  //伺服馬達 (0-180)
     ledcAttachPin(P1.toInt(), 3);
     ledcSetup(3, 50, 16);
      
