@@ -1164,7 +1164,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                             <div class="range-max">255</div>
                         </div>
                         <div class="input-group" id="rotateYmin-group">
-                            <label for="rotateYmin">rotateX min</label>
+                            <label for="rotateYmin">rotateY min</label>
                             <div class="range-min">0</div>
                             <input type="range" id="rotateYmin" min="0" max="180" value="70">
                             <div class="range-max">255</div>
