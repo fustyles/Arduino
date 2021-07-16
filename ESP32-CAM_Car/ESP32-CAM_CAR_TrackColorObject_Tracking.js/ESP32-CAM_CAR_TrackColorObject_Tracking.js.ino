@@ -1197,16 +1197,16 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                             <input type="range" id="turnDelayMax" min="10" max="1000" value="150" step="10" class="my-action">
                             <div class="range-max">1000</div>
                         </div>
-                        <div class="input-group" id="turnFarDelayMax-group">
-                            <label for="turnFarDelayMax">Turn Delay Max(Far)</label>
-                            <div class="range-min">10</div>
-                            <input type="range" id="turnFarDelayMax" min="10" max="1000" value="100" step="10" class="my-action">
-                            <div class="range-max">1000</div>
-                        </div>            
                         <div class="input-group" id="turnDelayMin-group">
                             <label for="turnDelayMin">Turn Delay Min</label>
                             <div class="range-min">10</div>
                             <input type="range" id="turnDelayMin" min="10" max="1000" value="100" step="10" class="my-action">
+                            <div class="range-max">1000</div>
+                        </div>                        
+                        <div class="input-group" id="turnFarDelayMax-group">
+                            <label for="turnFarDelayMax">Turn Delay Max(Far)</label>
+                            <div class="range-min">10</div>
+                            <input type="range" id="turnFarDelayMax" min="10" max="1000" value="100" step="10" class="my-action">
                             <div class="range-max">1000</div>
                         </div>
                         <div class="input-group" id="turnFarDelayMin-group">
