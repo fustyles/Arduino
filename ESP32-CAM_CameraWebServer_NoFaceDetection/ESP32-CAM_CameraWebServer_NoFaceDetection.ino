@@ -3,7 +3,7 @@ ESP32-CAM CameraWebServer (No face detection)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-1 00:00
 https://www.facebook.com/francefu
 
-Face recognition works well in v1.0.4, v1.0.5, v1.0.6 or above.
+Face recognition works well in v1.0.5, v1.0.6 or above.
 
 
 AP IP: 192.168.4.1
