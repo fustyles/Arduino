@@ -1167,7 +1167,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                             </div>
                         </div>
                         <div class="input-group" id="autodetect-group">
-                            <label for="autodetect">Auto Detect</label>
+                            <label for="autodetect">Auto Serach</label>
                             <div class="switch">
                                 <input id="autodetect" type="checkbox">
                                 <label class="slider" for="autodetect"></label>
