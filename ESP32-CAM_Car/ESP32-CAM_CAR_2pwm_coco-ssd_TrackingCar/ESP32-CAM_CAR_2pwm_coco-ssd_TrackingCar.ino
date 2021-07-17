@@ -1103,7 +1103,14 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             <div id="content">
                 <div id="sidebar">
                     <input type="checkbox" id="nav-toggle-cb">
-                    <nav id="menu">                                        
+                    <nav id="menu">
+                        <div class="input-group" id="detectState-group">
+                            <label for="detectState">Start Detect</label>
+                            <div class="switch">
+                                <input id="detectState" type="checkbox">
+                                <label class="slider" for="detectState"></label>
+                            </div>
+                        </div>                        
                         <div class="input-group" id="object-group">
                             <label for="object">Track Object</label>
                             <select id="object">
@@ -1208,14 +1215,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                                 <input id="servoState" type="checkbox">
                                 <label class="slider" for="servoState"></label>
                             </div>
-                        </div>
-                        <div class="input-group" id="detectState-group">
-                            <label for="detectState">Start Detect</label>
-                            <div class="switch">
-                                <input id="detectState" type="checkbox">
-                                <label class="slider" for="detectState"></label>
-                            </div>
-                        </div>            
+                        </div>        
                         <div class="input-group" id="autodetect-group">
                             <label for="autodetect">Auto Serach</label>
                             <div class="switch">
