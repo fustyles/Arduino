@@ -1056,7 +1056,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 display: none
             }
         </style>   
-            <script src="https:\/\/cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js" crossorigin="anonymous"></script>      
+            <script src="https:\/\/cdn.jsdelivr.net/npm/@mediapipe/holistic@0.4/holistic.js" crossorigin="anonymous"></script>      
     </head>
         <figure>
           <div id="stream-container" class="image-container hidden">
