@@ -950,7 +950,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                 display: none
             }
         </style>
-        <script src="https:\/\/cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js" crossorigin="anonymous"></script>
+        <script src="https:\/\/cdn.jsdelivr.net/npm/@mediapipe/holistic@0.4/holistic.js" crossorigin="anonymous"></script>
         <script src="https:\/\/fustyles.github.io/webduino/GameElements_20190131/gameelements.js"></script>    
     </head>
     <body>
