@@ -694,7 +694,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 display: none
             }
         </style>
-        <script src="https:\/\/cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js" crossorigin="anonymous"></script>      
+        <script src="https:\/\/cdn.jsdelivr.net/npm/@mediapipe/holistic@0.4/holistic.js" crossorigin="anonymous"></script>      
     </head>
     <body>
     ESP32-CAM IP：<input type="text" id="ip" size="20" value="192.168.">&nbsp;&nbsp;<input type="button" value="Set" onclick="start();">    
