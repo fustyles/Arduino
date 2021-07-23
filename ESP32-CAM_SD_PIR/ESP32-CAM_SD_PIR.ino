@@ -1,19 +1,17 @@
 /*
 ESP32-CAM PIR人體移動感測器觸發影像存檔於SD卡
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-30 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-23 00:00
 https://www.facebook.com/francefu
-
 PIR人體移動感測器 -> GND, IO13, 3.3V
 */
-
-int pinPIR = 13;
 
 #include <WiFi.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
-#include "esp_camera.h"
 #include "FS.h"
 #include "SD_MMC.h"
+#include "esp_camera.h"
+
 #include <Preferences.h>
 Preferences preferences;
 
@@ -105,9 +103,8 @@ void setup() {
   //s->set_vflip(s, 1);  //垂直翻轉
   //s->set_hmirror(s, 1);  //水平鏡像
   
-  //閃光燈(GPIO4)
-  ledcAttachPin(4, 4);  
-  ledcSetup(4, 5000, 8);
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);  
 
   //SD Card
   if(!SD_MMC.begin()){
@@ -129,18 +126,21 @@ void setup() {
   Serial.println();
   
   SD_MMC.end();
-  pinMode(pinPIR, INPUT_PULLUP); 
+
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);  
    
   /*
   //檔案流水號重設
   preferences.begin("SD", false);
   preferences.putUInt("number", 0);
   preferences.end(); 
-  */ 
+  */
 }
 
 void loop() {
-  int v = digitalRead(pinPIR);
+  pinMode(13, INPUT_PULLUP);
+  int v = digitalRead(13);
   Serial.println(v);
   if (v==1) {
     preferences.begin("SD", false);
@@ -149,10 +149,10 @@ void loop() {
     saveCapturedImage2SD(String(n+1));
     
     preferences.putUInt("number", (n+1));
-    preferences.end();
-    //delay(4000);
+    preferences.end();   
+    delay(5000);  //感測器延遲時間調至5秒
   }
-  delay(1000);
+  delay(100);
 }
 
 void saveCapturedImage2SD(String filename) {
@@ -222,159 +222,4 @@ void saveCapturedImage2SD(String filename) {
 
   pinMode(4, OUTPUT);
   digitalWrite(4, LOW);  
-}
-
-
-void listDir(fs::FS &fs, const char * dirname, uint8_t levels){
-    Serial.printf("Listing directory: %s\n", dirname);
-
-    File root = fs.open(dirname);
-    if(!root){
-        Serial.println("Failed to open directory");
-        return;
-    }
-    if(!root.isDirectory()){
-        Serial.println("Not a directory");
-        return;
-    }
-
-    File file = root.openNextFile();
-    while(file){
-        if(file.isDirectory()){
-            Serial.print("  DIR : ");
-            Serial.println(file.name());
-            if(levels){
-                listDir(fs, file.name(), levels -1);
-            }
-        } else {
-            Serial.print("  FILE: ");
-            Serial.print(file.name());
-            Serial.print("  SIZE: ");
-            Serial.println(file.size());
-        }
-        file = root.openNextFile();
-    }
-}
-
-void createDir(fs::FS &fs, const char * path){
-    Serial.printf("Creating Dir: %s\n", path);
-    if(fs.mkdir(path)){
-        Serial.println("Dir created");
-    } else {
-        Serial.println("mkdir failed");
-    }
-}
-
-void removeDir(fs::FS &fs, const char * path){
-    Serial.printf("Removing Dir: %s\n", path);
-    if(fs.rmdir(path)){
-        Serial.println("Dir removed");
-    } else {
-        Serial.println("rmdir failed");
-    }
-}
-
-void readFile(fs::FS &fs, const char * path){
-    Serial.printf("Reading file: %s\n", path);
-
-    File file = fs.open(path);
-    if(!file){
-        Serial.println("Failed to open file for reading");
-        return;
-    }
-
-    Serial.print("Read from file: ");
-    while(file.available()){
-        Serial.write(file.read());
-    }
-}
-
-void writeFile(fs::FS &fs, const char * path, const char * message){
-    Serial.printf("Writing file: %s\n", path);
-
-    File file = fs.open(path, FILE_WRITE);
-    if(!file){
-        Serial.println("Failed to open file for writing");
-        return;
-    }
-    if(file.print(message)){
-        Serial.println("File written");
-    } else {
-        Serial.println("Write failed");
-    }
-}
-
-void appendFile(fs::FS &fs, const char * path, const char * message){
-    Serial.printf("Appending to file: %s\n", path);
-
-    File file = fs.open(path, FILE_APPEND);
-    if(!file){
-        Serial.println("Failed to open file for appending");
-        return;
-    }
-    if(file.print(message)){
-        Serial.println("Message appended");
-    } else {
-        Serial.println("Append failed");
-    }
-}
-
-void renameFile(fs::FS &fs, const char * path1, const char * path2){
-    Serial.printf("Renaming file %s to %s\n", path1, path2);
-    if (fs.rename(path1, path2)) {
-        Serial.println("File renamed");
-    } else {
-        Serial.println("Rename failed");
-    }
-}
-
-void deleteFile(fs::FS &fs, const char * path){
-    Serial.printf("Deleting file: %s\n", path);
-    if(fs.remove(path)){
-        Serial.println("File deleted");
-    } else {
-        Serial.println("Delete failed");
-    }
-}
-
-void testFileIO(fs::FS &fs, const char * path){
-    File file = fs.open(path);
-    static uint8_t buf[512];
-    size_t len = 0;
-    uint32_t start = millis();
-    uint32_t end = start;
-    if(file){
-        len = file.size();
-        size_t flen = len;
-        start = millis();
-        while(len){
-            size_t toRead = len;
-            if(toRead > 512){
-                toRead = 512;
-            }
-            file.read(buf, toRead);
-            len -= toRead;
-        }
-        end = millis() - start;
-        Serial.printf("%u bytes read for %u ms\n", flen, end);
-        file.close();
-    } else {
-        Serial.println("Failed to open file for reading");
-    }
-
-
-    file = fs.open(path, FILE_WRITE);
-    if(!file){
-        Serial.println("Failed to open file for writing");
-        return;
-    }
-
-    size_t i;
-    start = millis();
-    for(i=0; i<2048; i++){
-        file.write(buf, 512);
-    }
-    end = millis() - start;
-    Serial.printf("%u bytes written for %u ms\n", 2048 * 512, end);
-    file.close();
 }
