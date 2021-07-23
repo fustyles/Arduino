@@ -103,8 +103,9 @@ void setup() {
   //s->set_vflip(s, 1);  //垂直翻轉
   //s->set_hmirror(s, 1);  //水平鏡像
   
-  pinMode(4, OUTPUT);
-  digitalWrite(4, LOW);  
+  //閃光燈(GPIO4)
+  ledcAttachPin(4, 4);  
+  ledcSetup(4, 5000, 8);
 
   //SD Card
   if(!SD_MMC.begin()){
@@ -125,8 +126,11 @@ void setup() {
   Serial.printf("Used space: %lluMB\n", SD_MMC.usedBytes() / (1024 * 1024));
   Serial.println();
   
-  SD_MMC.end();
-   
+  SD_MMC.end(); 
+
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);
+  
   /*
   //檔案流水號重設
   preferences.begin("SD", false);

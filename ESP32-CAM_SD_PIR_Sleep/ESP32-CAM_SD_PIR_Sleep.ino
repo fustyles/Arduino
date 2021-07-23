@@ -131,8 +131,7 @@ void setup() {
 
   pinMode(4, OUTPUT);
   digitalWrite(4, LOW);
-  rtc_gpio_hold_en(GPIO_NUM_4);      
-   
+  
   /*
   //檔案流水號重設
   preferences.begin("SD", false);
