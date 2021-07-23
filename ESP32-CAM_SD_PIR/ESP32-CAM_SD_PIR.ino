@@ -126,9 +126,6 @@ void setup() {
   Serial.println();
   
   SD_MMC.end();
-
-  pinMode(4, OUTPUT);
-  digitalWrite(4, LOW);  
    
   /*
   //檔案流水號重設
