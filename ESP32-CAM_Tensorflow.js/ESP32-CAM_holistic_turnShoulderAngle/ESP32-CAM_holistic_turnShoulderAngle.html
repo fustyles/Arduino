@@ -6,7 +6,7 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)   2021/7/7 20:00
 https://www.facebook.com/francefu
 
 Try it!
-https://fustyles.github.io/webduino/TensorFlow/Holistic_video/ESP32-CAM_holistic_turnHandyAngle.html
+https://fustyles.github.io/webduino/TensorFlow/Holistic_video/ESP32-CAM_holistic_turnShoulderAngle.html
 -->
 
 <!doctype html>
@@ -559,38 +559,38 @@ https://fustyles.github.io/webduino/TensorFlow/Holistic_video/ESP32-CAM_holistic
 		  }
 		  context.restore();
 		  
-		  //左手掌X軸旋轉角度
-		  var thumbX4y = (holistic_lefthand_position("4", "y"));
-		  var thumbX4z = (holistic_lefthand_position("4", "z"));
-		  var pinkyX4y = (holistic_lefthand_position("20", "y"));
-		  var pinkyX4z = (holistic_lefthand_position("20", "z"));
-		  var rotateAngleX = (holistic_angle(thumbX4y, thumbX4z, pinkyX4y, pinkyX4z));
+		  //肩膀X軸旋轉角度
+		  var rightShoulderX4y = (holistic_pose_position("12", "y"));
+		  var rightShoulderX4z = (holistic_pose_position("12", "z"));
+		  var leftShoulderX4y = (holistic_pose_position("11", "y"));
+		  var leftShoulderX4z = (holistic_pose_position("11", "z"));
+		  var rotateAngleX = (holistic_angle(rightShoulderX4y, rightShoulderX4z, leftShoulderX4y, leftShoulderX4z));
 		  if (rotateAngleX) {
 			var valX = rotateAngleX;
 			if (valX<0) valX+=360
 			message.innerHTML += "rotateX = " + valX + "<br>";
 		  }
 
-          //左手掌y軸旋轉
-		  thumbY4x = (holistic_lefthand_position("4", "x"));
-		  thumbY4z = (holistic_lefthand_position("4", "z"));
-		  pinkyY4x = (holistic_lefthand_position("20", "x"));
-		  pinkyY4z = (holistic_lefthand_position("20", "z"));
-		  rotateAngleY = (holistic_angle(thumbY4x, thumbY4z, pinkyY4x, pinkyY4z));
+          //肩膀y軸旋轉
+		  rightShoulderY4x = (holistic_pose_position("12", "x"));
+		  rightShoulderY4z = (holistic_pose_position("12", "z"));
+		  leftShoulderY4x = (holistic_pose_position("11", "x"));
+		  leftShoulderY4z = (holistic_pose_position("11", "z"));
+		  rotateAngleY = (holistic_angle(rightShoulderY4x, rightShoulderY4z, leftShoulderY4x, leftShoulderY4z));
 		  if (rotateAngleY) {
-			var valY = rotateAngleY;
-			if (valY<0) valY+=360
+			var valY = rotateAngleY-90;
+			if (valY<0) valY+=270
 			message.innerHTML += "rotateY = " + valY + "<br>";
 		  }
 		  
-          //左手掌z軸旋轉角度
-		  var thumbZ4x = (holistic_lefthand_position("4", "x"));
-		  var thumbZ4y = (holistic_lefthand_position("4", "y"));
-		  var pinkyZ4x = (holistic_lefthand_position("20", "x"));
-		  var pinkyZ4y = (holistic_lefthand_position("20", "y"));
-		  var rotateAngleZ = (holistic_angle(thumbZ4x, thumbZ4y, pinkyZ4x, pinkyZ4y));
+          //肩膀z軸旋轉角度
+		  var rightShoulderZ4x = (holistic_pose_position("12", "x"));
+		  var rightShoulderZ4y = (holistic_pose_position("12", "y"));
+		  var leftShoulderZ4x = (holistic_pose_position("11", "x"));
+		  var leftShoulderZ4y = (holistic_pose_position("11", "y"));
+		  var rotateAngleZ = (holistic_angle(rightShoulderZ4x, rightShoulderZ4y, leftShoulderZ4x, leftShoulderZ4y));
 		  if (rotateAngleZ) {
-			valZ = rotateAngleZ-200;
+			valZ = rotateAngleZ-90;
 			if (valZ<0) valZ+=360
 			message.innerHTML += "rotateZ = " + valZ + "<br>";
 		  }		
