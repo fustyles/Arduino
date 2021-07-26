@@ -1,0 +1,759 @@
+<!-- 
+Author : ChungYi Fu (Kaohsiung, Taiwan)   2021/6/8 9:30
+https://www.facebook.com/francefu
+
+Try it
+https://fustyles.github.io/webduino/CautionArea/ESP32-CAM_HolisticRecognition.html
+
+Chrome瀏覽器設定須更改：允許開啟不安全內容。否則http未加密連結會被阻擋無法串流！若將網頁下載到本機執行，則不用更改安全性設定。
+瀏覽器網址執行 chrome://settings/content/siteDetails?site=https://fustyles.github.io
+
+音效下載 (將音效剪輯長度成0.2秒再使用)
+https://taira-komori.jpn.org/freesoundtw.html
+
+線上音效剪輯
+https://mp3cut.net/tw/
+-->
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>ESP32-CAM 全身辨識</title>
+        <style>
+          body{font-family:Arial,Helvetica,sans-serif;background:#181818;color:#EFEFEF;font-size:16px}h2{font-size:18px}section.main{display:flex}#menu,section.main{flex-direction:column}#menu{display:none;flex-wrap:nowrap;min-width:340px;background:#363636;padding:8px;border-radius:4px;margin-top:-10px;margin-right:10px}#content{display:flex;flex-wrap:wrap;align-items:stretch}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}figure img{display:block;width:100%;height:auto;border-radius:4px;margin-top:8px}@media (min-width: 800px) and (orientation:landscape){#content{display:flex;flex-wrap:nowrap;align-items:stretch}figure img{display:block;max-width:100%;max-height:calc(100vh - 40px);width:auto;height:auto}figure{padding:0;margin:0;-webkit-margin-before:0;margin-block-start:0;-webkit-margin-after:0;margin-block-end:0;-webkit-margin-start:0;margin-inline-start:0;-webkit-margin-end:0;margin-inline-end:0}}section#buttons{display:flex;flex-wrap:nowrap;justify-content:space-between}#nav-toggle{cursor:pointer;display:block}#nav-toggle-cb{outline:0;opacity:0;width:0;height:0}#nav-toggle-cb:checked+#menu{display:flex}.input-group{display:flex;flex-wrap:nowrap;line-height:22px;margin:5px 0}.input-group>label{display:inline-block;padding-right:10px;min-width:47%}.input-group input,.input-group select{flex-grow:1}.range-max,.range-min{display:inline-block;padding:0 5px}button{display:block;margin:5px;padding:0 12px;border:0;line-height:28px;cursor:pointer;color:#fff;background:#ff3034;border-radius:5px;font-size:16px;outline:0}button:hover{background:#ff494d}button:active{background:#f21c21}button.disabled{cursor:default;background:#a0a0a0}input[type=range]{-webkit-appearance:none;width:100%;height:22px;background:#363636;cursor:pointer;margin:0}input[type=range]:focus{outline:0}input[type=range]::-webkit-slider-runnable-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-webkit-slider-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;-webkit-appearance:none;margin-top:-11.5px}input[type=range]:focus::-webkit-slider-runnable-track{background:#EFEFEF}input[type=range]::-moz-range-track{width:100%;height:2px;cursor:pointer;background:#EFEFEF;border-radius:0;border:0 solid #EFEFEF}input[type=range]::-moz-range-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer}input[type=range]::-ms-track{width:100%;height:2px;cursor:pointer;background:0 0;border-color:transparent;color:transparent}input[type=range]::-ms-fill-lower{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-fill-upper{background:#EFEFEF;border:0 solid #EFEFEF;border-radius:0}input[type=range]::-ms-thumb{border:1px solid rgba(0,0,30,0);height:22px;width:22px;border-radius:50px;background:#ff3034;cursor:pointer;height:2px}input[type=range]:focus::-ms-fill-lower{background:#EFEFEF}input[type=range]:focus::-ms-fill-upper{background:#363636}.switch{display:block;position:relative;line-height:22px;font-size:16px;height:22px}.switch input{outline:0;opacity:0;width:0;height:0}.slider{width:50px;height:22px;border-radius:22px;cursor:pointer;background-color:grey}.slider,.slider:before{display:inline-block;transition:.4s}.slider:before{position:relative;content:"";border-radius:50%;height:16px;width:16px;left:4px;top:3px;background-color:#fff}input:checked+.slider{background-color:#ff3034}input:checked+.slider:before{-webkit-transform:translateX(26px);transform:translateX(26px)}select{border:1px solid #363636;font-size:14px;height:22px;outline:0;border-radius:5px}.image-container{position:relative;min-width:160px}.close{position:absolute;right:5px;top:5px;background:#ff3034;width:16px;height:16px;border-radius:100px;color:#fff;text-align:center;line-height:18px;cursor:pointer}.hidden{display:none}
+        </style>
+        <script src="https:\/\/cdn.jsdelivr.net/npm/@mediapipe/holistic@0.4/holistic.js" crossorigin="anonymous"></script>      
+    </head>
+    <body>
+    <figure>
+	  ESP32-CAM IP：<input type="text" id="ip" size="12" value="192.168.">&nbsp;&nbsp;<input type="button" value="設定" onclick="start();">
+      <div id="stream-container" class="image-container">
+        <div class="close" id="close-stream">×</div>
+        <img id="stream" src="" style="display:none" crossorigin="anonymous">
+        <canvas id="canvas"></canvas>
+      </div>
+    </figure>
+        <section class="main">
+            <section id="buttons">
+                <table>
+				<tr bgcolor="gray"> 
+				<td><input type="checkbox" id="chk1">舉右手</td><td><input type="checkbox" id="chk2">舉左手</td><td><input type="checkbox" id="chk3">舉雙手</td>
+				</tr>					  
+				<tr bgcolor="gray">
+				<td><input type="checkbox" id="chk4">站立</td><td><input type="checkbox" id="chk5">躺著</td><td><input type="checkbox" id="chk6">轉頭</td>
+				</tr>					  
+				<tr bgcolor="gray">
+				<td><input type="checkbox" id="chk7">彎腰</td><td><input type="checkbox" id="chk8">趴睡</td><td><input type="checkbox" id="chk9">坐著</td>
+				</tr>
+				<tr bgcolor="gray">
+				<td><input type="checkbox" id="chk10"></td><td><input type="checkbox" id="chk11"></td><td><input type="checkbox" id="chk12"></td>
+				</tr>				
+				<tr>
+                  <td colspan="3">
+                    <table>
+                      <tr><td><input type="checkbox" id="chkAud">警示音效網址</td><td><input type="text" id="aud" size="20" value="https:\/\/fustyles.github.io/webduino/paino_c.mp3"></td></tr> 
+                      <tr><td><input type="checkbox" id="chkBuzzer">蜂鳴器(IO2)</td><td></td></tr>
+                      <tr><td colspan="2"><input type="checkbox" id="chkLine">Line通知權杖<input type="text" id="token" size="10" value=""><input type="button" value="傳送影像" onclick="SendCapturedImage();"></td></tr> 
+                    </table> 
+                  </td>
+                </tr>                
+                </table>
+            </section>         
+            <div id="logo">
+                <label for="nav-toggle-cb" id="nav-toggle">☰&nbsp;&nbsp;視訊設定</label>
+            </div>
+            <div id="content">
+                <div id="sidebar">
+                    <input type="checkbox" id="nav-toggle-cb">
+                    <nav id="menu">
+                        <section id="buttons">
+                            <button id="restart">重啟電源</button>
+                            <button id="stop-still">停止</button>
+                            <button id="get-still">取得截圖</button>
+                            <button id="toggle-stream" style="display:none">啟動串流</button>
+                        </section>					
+                        <div class="input-group" id="face-group">
+                            <label for="face">顯示臉部</label>
+                            <div class="switch">
+                                <input id="face" type="checkbox" class="default-action" checked="checked">
+                                <label class="slider" for="face"></label>
+                            </div>
+                        </div>
+                        <div class="input-group" id="pose-group">
+                            <label for="pose">顯示姿態</label>
+                            <div class="switch">
+                                <input id="pose" type="checkbox" class="default-action" checked="checked">
+                                <label class="slider" for="pose"></label>
+                            </div>
+                        </div>
+                        <div class="input-group" id="lefthand-group">
+                            <label for="lefthand">顯示左手掌</label>
+                            <div class="switch">
+                                <input id="lefthand" type="checkbox" class="default-action" checked="checked">
+                                <label class="slider" for="lefthand"></label>
+                            </div>
+                        </div>
+                        <div class="input-group" id="righthand-group">
+                            <label for="righthand">顯示右手掌</label>
+                            <div class="switch">
+                                <input id="righthand" type="checkbox" class="default-action" checked="checked">
+                                <label class="slider" for="righthand"></label>
+                            </div>
+                        </div>   					
+                        <div class="input-group" id="flash-group">
+                            <label for="flash">閃光燈</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="flash" min="0" max="255" value="0" class="default-action">
+                            <div class="range-max">255</div>
+                        </div>
+                        <div class="input-group" id="framesize-group">
+                            <label for="framesize">解析度</label>
+                            <select id="framesize" class="default-action">
+                              <option value="4">QVGA(320x240)</option>
+                            </select>
+                        </div>
+                        <div class="input-group" id="quality-group">
+                            <label for="quality">畫質</label>
+                            <div class="range-min">10</div>
+                            <input type="range" id="quality" min="10" max="63" value="10" class="default-action">
+                            <div class="range-max">63</div>
+                        </div>
+                        <div class="input-group" id="brightness-group">
+                            <label for="brightness">亮度</label>
+                            <div class="range-min">-2</div>
+                            <input type="range" id="brightness" min="-2" max="2" value="0" class="default-action">
+                            <div class="range-max">2</div>
+                        </div>
+                        <div class="input-group" id="contrast-group">
+                            <label for="contrast">對比</label>
+                            <div class="range-min">-2</div>
+                            <input type="range" id="contrast" min="-2" max="2" value="0" class="default-action">
+                            <div class="range-max">2</div>
+                        </div>
+                        <div class="input-group" id="hmirror-group">
+                            <label for="hmirror">鏡像</label>
+                            <div class="switch">
+                                <input id="hmirror" type="checkbox" class="default-action" checked="checked">
+                                <label class="slider" for="hmirror"></label>
+                            </div>
+                        </div>
+                        <div class="input-group" id="vflip-group">
+                            <label for="vflip">水平鏡像</label>
+                            <div class="switch">
+                                <input id="vflip" type="checkbox" class="default-action">
+                                <label class="slider" for="vflip"></label>
+                            </div>
+                        </div>
+                        <div class="input-group" id="servo-group">
+                            <label for="servo">伺服馬達</label>
+                            <div class="range-min">0</div>
+                            <input type="range" id="servo" min="0" max="180" value="90" class="default-action">
+                            <div class="range-max">180</div>
+                            <select id="pinServo" width="30"><option value="2" selected>IO2</option><option value="12">IO12</option><option value="13">IO13</option><option value="14">IO14</option><option value="15">IO15</option></select>
+                        </div>
+                        <div class="input-group" id="relay-group">
+                            <label for="relay">繼電器</label>
+                            <div class="switch">
+                                <input id="relay" type="checkbox" class="default-action" checked="checked">
+                                <label class="slider" for="relay"></label>
+                            </div>
+                            <select id="pinRelay" width="30"><option value="2">IO2</option><option value="12">IO12</option><option value="13" selected>IO13</option><option value="14">IO14</option><option value="15">IO15</option></select>
+                        </div>   						
+                    </nav>
+                </div>
+            </div>
+        </section>
+        <iframe id="ifr" style="display:none;position:absolute" src=""></iframe>
+        <div id="message" style="color:yellow"><div>
+        <div id="faceResult" style="color:yellow;display:none;"><div>
+        <div id="poseResult" style="color:yellow;display:none;"><div>
+        <div id="lefthandResult" style="color:yellow;display:none;"><div>
+        <div id="righthandResult" style="color:yellow;display:none;"><div>
+		
+		<div style="display:none">
+		<form id="myForm" action="https://script.google.com/macros/s/AKfycbyp1xvWg-UCSrLsL8zt-ba_0n96uNTpAFyRry9ifCnRbtK-vgg/exec" method="post" target="sendcapturedimage">
+		<input type="text" id="myFilename" name="myFilename" value="Caution Area" style="display:none">
+		<input type="text" id="myToken" name="myToken" value="" style="display:none">
+		<textarea id="myFile" name="myFile" rows="10" cols="50" style="display:none"></textarea><br>
+		</form>
+		<iframe id="sendcapturedimage" name="sendcapturedimage" style="display:none"></iframe>
+		</div>
+		
+        <script>
+
+
+		var ip = document.getElementById('ip');
+		var link = document.getElementById('link');
+		const aiView = document.getElementById('stream');
+		const aiStill = document.getElementById('get-still')
+		const canvas = document.getElementById('canvas');     
+		var context = canvas.getContext("2d");  
+		const message = document.getElementById('message');
+		const uart = document.getElementById('uart');
+		const face = document.getElementById('face');
+		const pose = document.getElementById('pose');
+		const lefthand = document.getElementById('lefthand');
+		const righthand = document.getElementById('righthand');
+		const faceResult = document.getElementById('faceResult');
+		const poseResult = document.getElementById('poseResult');
+		const lefthandResult = document.getElementById('lefthandResult');
+		const righthandResult = document.getElementById('righthandResult');
+		var ifr = document.getElementById('ifr');
+		  
+		var token = document.getElementById('token');         
+		var aud = document.getElementById('aud');
+		var chkAud = document.getElementById('chkAud');
+		var chkLine = document.getElementById('chkLine');
+		var chkBuzzer = document.getElementById('chkBuzzer');
+		var alarm = new Audio(aud.value);
+		var mark = document.getElementById('mark');
+		  
+		async function DetectImage() {
+		  message.innerHTML = "";
+		  holistic.send({image: aiView}).then(res => {
+			setTimeout(function(){aiStill.click();},100);   //若無法取得畫面可能是硬體效能不足，可改此行程式碼，依硬體效能變更等待時間毫秒數 
+		  }); 
+		}
+
+		function onResults(results) {
+		  canvas.setAttribute("width", results.image.width);
+		  canvas.setAttribute("height", results.image.height);
+		  context.save();
+		  context.clearRect(0, 0, canvas.width, canvas.height);
+		  context.drawImage(results.image, 0, 0, canvas.width, canvas.height);
+
+		  faceResult.innerHTML = JSON.stringify(results.faceLandmarks);
+		  poseResult.innerHTML = JSON.stringify(results.poseLandmarks); 
+		  lefthandResult.innerHTML = JSON.stringify(results.leftHandLandmarks);
+		  righthandResult.innerHTML = JSON.stringify(results.rightHandLandmarks);
+		  
+		  if (face.checked) {
+			drawConnectors(context, results.faceLandmarks, FACEMESH_TESSELATION, {color: '#C0C0C070', lineWidth: 1});
+			//console.log(JSON.stringify(results.faceLandmarks));
+		  }
+		  
+		  if (pose.checked) {
+			drawConnectors(context, results.poseLandmarks, POSE_CONNECTIONS, {color: '#00CCCC', lineWidth: 2});
+			drawLandmarks(context, results.poseLandmarks, {color: '#FFFF00', lineWidth: 2});
+			//console.log(JSON.stringify(results.poseLandmarks));
+		  }
+		  
+		  if (lefthand.checked) {
+			drawConnectors(context, results.leftHandLandmarks, HAND_CONNECTIONS, {color: '#CC0000', lineWidth: 2});
+			drawLandmarks(context, results.leftHandLandmarks, {color: '#00FF00', lineWidth: 2});
+			//console.log(JSON.stringify(results.leftHandLandmarks));
+		  }
+		  
+		  if (righthand.checked) {
+			drawConnectors(context, results.rightHandLandmarks, HAND_CONNECTIONS, {color: '#00CC00', lineWidth: 2});
+			drawLandmarks(context, results.rightHandLandmarks, {color: '#FF0000', lineWidth: 2});
+			//console.log(JSON.stringify(results.rightHandLandmarks));
+		  }
+		  context.restore();
+		  
+		  var chk1 = document.getElementById('chk1');
+		  var chk2 = document.getElementById('chk2');
+		  var chk3 = document.getElementById('chk3');
+		  var chk4 = document.getElementById('chk4');
+		  var chk5 = document.getElementById('chk5');
+		  var chk6 = document.getElementById('chk6');
+		  var chk7 = document.getElementById('chk7');
+		  var chk8 = document.getElementById('chk8');
+		  var chk9 = document.getElementById('chk9');
+		  var chk10 = document.getElementById('chk10');
+		  var chk11 = document.getElementById('chk11');
+		  var chk12 = document.getElementById('chk12');
+		  
+		  var actionState = false;
+		  
+		  //判斷動作的條件
+		  
+		  if (chk1.checked) {  //舉右手
+			if ((holistic_pose_position("12", "x")) && (holistic_pose_position("11", "x"))) {
+				if ((holistic_pose_position("16", "y")) < (holistic_pose_position("12", "y")) && (holistic_pose_position("15", "y")) > (holistic_pose_position("11", "y"))) {
+					message.innerHTML += "舉右手"+"<br>";
+					actionState = true;
+				}
+			}
+		  }
+		  if (chk2.checked) {  //舉左手
+			if ((holistic_pose_position("12", "x")) && (holistic_pose_position("11", "x"))) {
+				if ((holistic_pose_position("15", "y")) < (holistic_pose_position("11", "y")) && (holistic_pose_position("16", "y")) > (holistic_pose_position("12", "y"))) {
+					message.innerHTML += "舉左手"+"<br>";
+					actionState = true;
+				}
+			}
+		  }
+		  if (chk3.checked) {  //舉雙手
+			if ((holistic_pose_position("12", "x")) && (holistic_pose_position("11", "x"))) {
+				if ((holistic_pose_position("15", "y")) < (holistic_pose_position("11", "y")) && (holistic_pose_position("16", "y")) < (holistic_pose_position("12", "y"))) {
+					message.innerHTML += "舉雙手"+"<br>";
+					actionState = true;
+				}
+			}
+		  }
+		  if (chk4.checked) {  //站立
+			if ((holistic_pose_position("0", "x")) && ((holistic_pose_position("30", "x")) || (holistic_pose_position("29", "x")))) {
+				var stand1 = (holistic_angle((holistic_pose_position("0", "x")), (holistic_pose_position("0", "y")), (holistic_pose_position("30", "x")), (holistic_pose_position("30", "y"))));
+				var stand2 = (holistic_angle((holistic_pose_position("0", "x")), (holistic_pose_position("0", "y")), (holistic_pose_position("29", "x")), (holistic_pose_position("29", "y"))));
+				if (stand1 >= 250 && stand1 <= 290 || stand2 >= 250 && stand2 <= 290) {
+					message.innerHTML += "站立"+"<br>";
+					actionState = true;
+				}
+			}
+		  }
+		  if (chk5.checked) {  //躺著
+			if ((holistic_pose_position("0", "x")) && ((holistic_pose_position("30", "x")) || (holistic_pose_position("29", "x")))) {
+				var stand1 = (holistic_angle((holistic_pose_position("0", "x")), (holistic_pose_position("0", "y")), (holistic_pose_position("30", "x")), (holistic_pose_position("30", "y"))));
+				var stand2 = (holistic_angle((holistic_pose_position("0", "x")), (holistic_pose_position("0", "y")), (holistic_pose_position("29", "x")), (holistic_pose_position("29", "y"))));
+				if (stand1 >= 160 && stand1 <= 200 || stand2 >= 160 && stand2 <= 200) {
+					message.innerHTML += "躺著"+"<br>";
+					actionState = true;
+				} else if ((stand1 >= 340 || stand1 <= 20) || (stand2 >= 340 || stand2 <= 20)) {
+					message.innerHTML += "躺著"+"<br>";
+					actionState = true;
+				}				
+			}
+		  }
+		  if (chk6.checked) {  //轉頭
+			if ((holistic_face_position(Number(163) - 1, "x")) && (holistic_face_position(Number(390) - 1, "x"))) {
+				var turn = (holistic_angle((holistic_face_position(Number(163) - 1, "x")), (holistic_face_position(Number(163) - 1, "z")), (holistic_face_position(Number(390) - 1, "x")), (holistic_face_position(Number(390) - 1, "z"))));
+				turn = turn + -90;
+				if (turn <= 70) {
+					message.innerHTML += "右轉頭"+"<br>";
+					actionState = true;
+				} else if (turn >= 110) {
+					message.innerHTML += "左轉頭"+"<br>";
+					actionState = true;
+				}				
+			}
+		  }
+		  if (chk7.checked) {  //彎腰
+			if ((holistic_pose_position("0", "x")) && ((holistic_pose_position("24", "x")) && (holistic_pose_position("30", "x")))) {
+				var bendover1 = (holistic_angle((holistic_pose_position("0", "x")), (holistic_pose_position("0", "y")), (holistic_pose_position("24", "x")), (holistic_pose_position("24", "y"))));
+				var bendover2 = (holistic_angle((holistic_pose_position("30", "x")), (holistic_pose_position("30", "y")), (holistic_pose_position("24", "x")), (holistic_pose_position("24", "y"))));
+				var bendover = Math.abs(bendover1 - bendover2);
+				if (bendover > 180) {
+				  bendover = 360 - bendover;
+				}				
+				if (bendover >= 0 && bendover <= 160) {
+					message.innerHTML += "彎腰"+"<br>";
+					actionState = true;
+				}				
+			}
+		  }
+		  if (chk8.checked) {  //趴睡
+			if ((holistic_pose_position("0", "x")) && ((holistic_pose_position("24", "x")) && (holistic_pose_position("30", "x")))) {
+				var sleep1 = (holistic_angle((holistic_pose_position("0", "x")), (holistic_pose_position("0", "y")), (holistic_pose_position("12", "x")), (holistic_pose_position("12", "y"))));
+				var sleep2 = (holistic_angle((holistic_pose_position("24", "x")), (holistic_pose_position("24", "y")), (holistic_pose_position("12", "x")), (holistic_pose_position("12", "y"))));
+				var sleep = Math.abs(sleep1 - sleep2);
+				if (sleep > 180) {
+				  sleep = 360 - sleep;
+				}				
+				if (sleep >= 70 && sleep <= 120) {
+					message.innerHTML += "趴睡"+"<br>";
+					actionState = true;
+				}				
+			}
+		  }
+		  if (chk9.checked) {  //坐著
+			if ((holistic_pose_position("24", "x")) && ((holistic_pose_position("26", "x")) && (holistic_pose_position("30", "x")))) {
+				sit1 = (holistic_angle((holistic_pose_position("24", "x")), (holistic_pose_position("24", "y")), (holistic_pose_position("26", "x")), (holistic_pose_position("26", "y"))));
+				sit2 = (holistic_angle((holistic_pose_position("30", "x")), (holistic_pose_position("30", "y")), (holistic_pose_position("26", "x")), (holistic_pose_position("26", "y"))));
+				sit = Math.abs(sit1 - sit2);
+				if (sit > 180) {
+				  sit = 360 - sit;
+				}
+				if (sit >= 50 && sit <= 150) {
+					message.innerHTML += "坐著"+"<br>";
+					actionState = true;
+				}				
+			}
+		  }
+		  if (chk10.checked) {  //xxx
+			/*
+			if () {
+			
+				message.innerHTML += "xxx"+"<br>";
+				actionState = true;
+			}
+			*/
+		  }
+		  if (chk11.checked) {  //xxx
+			/*
+			if () {
+			
+				message.innerHTML += "xxx"+"<br>";
+				actionState = true;
+			}
+			*/
+		  }
+		  if (chk12.checked) {  //xxx
+			/*
+			if () {
+			
+				message.innerHTML += "xxx"+"<br>";
+				actionState = true;
+			}
+			*/
+		  }		  
+		  
+		  if (actionState==true) {
+			  if (chkAud.checked) {
+				alarm.src = aud.value;
+				alarm.play();
+			  }
+			  if (chkLine.checked)
+				ifr.src = 'http://linenotify.com/notify.php?token='+token.value+'&message=偵測到特定行為';                        
+			  if (chkBuzzer.checked) {
+				var query = 'http://'+ip.value+'/control?buzzer';
+			    fetch(query)
+					.then(response => {
+					  console.log(`request to ${query} finished, status: ${response.status}`)
+					})
+			  }
+		  }	  
+		}
+		
+		const holistic = new Holistic({locateFile: (file) => {
+		  return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
+		}});
+		
+		holistic.setOptions({
+		  modelComplexity: 1,
+		  smoothLandmarks: true,
+		  minDetectionConfidence: 0.5,
+		  minTrackingConfidence: 0.5
+		});
+		
+		holistic.onResults(onResults);  
+		
+		aiView.onload = function (event) {
+		  DetectImage();
+		}
+
+		window.onload = function() {
+		  message.innerHTML = "";
+		}
+
+		function holistic_distance(input_x0,input_y0,input_x1,input_y1) {
+			return Math.sqrt(Math.pow((input_x1-input_x0), 2) + Math.pow((input_y1-input_y0), 2));
+		}   
+		
+		function holistic_angle(input_x0,input_y0,input_x1,input_y1) {
+			var angle = (Math.atan((input_y1-input_y0)/(input_x1-input_x0)) / Math.PI) * 180;
+			if (angle<0) angle = 180 + angle;
+			if (input_y0<input_y1) angle = 180 + angle;
+			return angle;
+		}
+
+		function holistic_face_position(input_index, input_data){
+		  var json = faceResult.innerHTML;
+		  if (json!=""&&json!="undefined") {
+			var result = JSON.parse('{"data":'+json+'}');
+			if (result["data"].length>0) {
+			  if (input_data=="x")
+				return Number(result["data"][input_index].x)*Number(canvas.width);
+			  else if (input_data=="y")
+				return Number(result["data"][input_index].y)*Number(canvas.height);
+			  else if (input_data=="z")
+				return Number(result["data"][input_index].z)*Number(canvas.width);
+			}
+		  }
+		  return "";
+		}
+	  
+		function holistic_pose_position(input_index, input_data){
+		  var json = poseResult.innerHTML;
+		  if (json!=""&&json!="undefined") {
+			var result = JSON.parse('{"data":'+json+'}');
+			if (result["data"].length>0) {
+			  if (input_data=="x")
+				return Number(result["data"][input_index].x)*Number(canvas.width);
+			  else if (input_data=="y")
+				return Number(result["data"][input_index].y)*Number(canvas.height);
+			  else if (input_data=="z")
+				return Number(result["data"][input_index].z)*Number(canvas.width);
+			}
+		  }
+		  return "";
+		}
+		
+		function holistic_lefthand_position(input_index, input_data){
+		  var json = lefthandResult.innerHTML;
+		  if (json!=""&&json!="undefined") {
+			var result = JSON.parse('{"data":'+json+'}');
+			if (result["data"].length>0) {
+			  if (input_data=="x")
+				return Number(result["data"][input_index].x)*Number(canvas.width);
+			  else if (input_data=="y")
+				return Number(result["data"][input_index].y)*Number(canvas.height);
+			  else if (input_data=="z")
+				return Number(result["data"][input_index].z)*Number(canvas.width);
+			}
+		  }
+		  return "";
+		}
+	  
+		function holistic_righthand_position(input_index, input_data){
+		  var json = righthandResult.innerHTML;
+		  if (json!=""&&json!="undefined") {
+			var result = JSON.parse('{"data":'+json+'}');
+			if (result["data"].length>0) {
+			  if (input_data=="x")
+				return Number(result["data"][input_index].x)*Number(canvas.width);
+			  else if (input_data=="y")
+				return Number(result["data"][input_index].y)*Number(canvas.height);
+			  else if (input_data=="z")
+				return Number(result["data"][input_index].z)*Number(canvas.width);
+			}
+		  }
+		  return "";
+		}
+
+		function h(a){var c=0;return function(){return c<a.length?{done:!1,value:a[c++]}:{done:!0}}}var l="function"==typeof Object.defineProperties?Object.defineProperty:function(a,c,b){if(a==Array.prototype||a==Object.prototype)return a;a[c]=b.value;return a};
+		function m(a){a=["object"==typeof globalThis&&globalThis,a,"object"==typeof window&&window,"object"==typeof self&&self,"object"==typeof global&&global];for(var c=0;c<a.length;++c){var b=a[c];if(b&&b.Math==Math)return b}throw Error("Cannot find global object");}var n=m(this);function p(a,c){if(c)a:{var b=n;a=a.split(".");for(var d=0;d<a.length-1;d++){var e=a[d];if(!(e in b))break a;b=b[e]}a=a[a.length-1];d=b[a];c=c(d);c!=d&&null!=c&&l(b,a,{configurable:!0,writable:!0,value:c})}}
+		function q(a){var c="undefined"!=typeof Symbol&&Symbol.iterator&&a[Symbol.iterator];return c?c.call(a):{next:h(a)}}var r="function"==typeof Object.assign?Object.assign:function(a,c){for(var b=1;b<arguments.length;b++){var d=arguments[b];if(d)for(var e in d)Object.prototype.hasOwnProperty.call(d,e)&&(a[e]=d[e])}return a};p("Object.assign",function(a){return a||r});
+		p("Array.prototype.fill",function(a){return a?a:function(c,b,d){var e=this.length||0;0>b&&(b=Math.max(0,e+b));if(null==d||d>e)d=e;d=Number(d);0>d&&(d=Math.max(0,e+d));for(b=Number(b||0);b<d;b++)this[b]=c;return this}});function t(a){return a?a:Array.prototype.fill}p("Int8Array.prototype.fill",t);p("Uint8Array.prototype.fill",t);p("Uint8ClampedArray.prototype.fill",t);p("Int16Array.prototype.fill",t);p("Uint16Array.prototype.fill",t);p("Int32Array.prototype.fill",t);
+		p("Uint32Array.prototype.fill",t);p("Float32Array.prototype.fill",t);p("Float64Array.prototype.fill",t);var u=this||self;function v(a,c){a=a.split(".");var b=u;a[0]in b||"undefined"==typeof b.execScript||b.execScript("var "+a[0]);for(var d;a.length&&(d=a.shift());)a.length||void 0===c?b[d]&&b[d]!==Object.prototype[d]?b=b[d]:b=b[d]={}:b[d]=c};var w={color:"white",lineWidth:4,radius:2,visibilityMin:.5};function x(a){a=a||{};return Object.assign(Object.assign(Object.assign({},w),{fillColor:a.color}),a)}function y(a,c){return a instanceof Function?a(c):a}function z(a,c,b){return Math.max(Math.min(c,b),Math.min(Math.max(c,b),a))}v("clamp",z);
+		v("drawLandmarks",function(a,c,b){if(c){b=x(b);a.save();var d=a.canvas,e=0;c=q(c);for(var f=c.next();!f.done;f=c.next())if(f=f.value,void 0!==f&&(void 0===f.visibility||f.visibility>b.visibilityMin)){a.fillStyle=y(b.fillColor,{index:e,from:f});a.strokeStyle=y(b.color,{index:e,from:f});a.lineWidth=y(b.lineWidth,{index:e,from:f});var g=new Path2D;g.arc(f.x*d.width,f.y*d.height,y(b.radius,{index:e,from:f}),0,2*Math.PI);a.fill(g);a.stroke(g);++e}a.restore()}});
+		v("drawConnectors",function(a,c,b,d){if(c&&b){d=x(d);a.save();var e=a.canvas,f=0;b=q(b);for(var g=b.next();!g.done;g=b.next()){var k=g.value;a.beginPath();g=c[k[0]];k=c[k[1]];g&&k&&(void 0===g.visibility||g.visibility>d.visibilityMin)&&(void 0===k.visibility||k.visibility>d.visibilityMin)&&(a.strokeStyle=y(d.color,{index:f,from:g,to:k}),a.lineWidth=y(d.lineWidth,{index:f,from:g,to:k}),a.moveTo(g.x*e.width,g.y*e.height),a.lineTo(k.x*e.width,k.y*e.height));++f;a.stroke()}a.restore()}});
+		v("drawRectangle",function(a,c,b){b=x(b);a.save();var d=a.canvas;a.beginPath();a.lineWidth=y(b.lineWidth,{});a.strokeStyle=y(b.color,{});a.fillStyle=y(b.fillColor,{});a.translate(c.xCenter*d.width,c.yCenter*d.height);a.rotate(c.rotation*Math.PI/180);a.rect(-c.width/2*d.width,-c.height/2*d.height,c.width*d.width,c.height*d.height);a.translate(-c.xCenter*d.width,-c.yCenter*d.height);a.stroke();a.fill();a.restore()});v("lerp",function(a,c,b,d,e){return z(d*(1-(a-c)/(b-c))+e*(1-(b-a)/(b-c)),d,e)})
+		
+
+		function SendCapturedImage() {
+			//var date = new Date();
+			//myFilename.value = date.getFullYear()+"_"+(date.getMonth()+1)+"_"+date.getDate()+"_"+date.getHours()+"_"+date.getMinutes()+"_"+date.getSeconds()+".png";
+			myFile.value = canvas.toDataURL();
+			myToken.value = token.value;
+			myForm.submit();
+		}		  
+		
+       function start() {
+		  //官方式函式
+          var baseHost = 'http://'+document.getElementById("ip").value;  //var baseHost = document.location.origin
+          var streamUrl = baseHost + ':81';
+        
+          const hide = el => {
+            el.classList.add('hidden')
+          }
+          
+          const show = el => {
+            el.classList.remove('hidden')
+          }
+        
+          const disable = el => {
+            el.classList.add('disabled')
+            el.disabled = true
+          }
+        
+          const enable = el => {
+            el.classList.remove('disabled')
+            el.disabled = false
+          }
+        
+          const updateValue = (el, value, updateRemote) => {
+            updateRemote = updateRemote == null ? true : updateRemote
+            let initialValue
+            if(!el) return;
+            if (el.type === 'checkbox') {
+              initialValue = el.checked
+              value = !!value
+              el.checked = value
+            } else {
+              initialValue = el.value
+              el.value = value
+            }
+        
+            if (updateRemote && initialValue !== value) {
+              updateConfig(el);
+            } 
+          }
+        
+          function updateConfig (el) {
+            let value
+            switch (el.type) {
+              case 'checkbox':
+                value = el.checked ? 1 : 0
+                break
+              case 'range':
+              case 'select-one':
+                value = el.value
+                break
+              case 'button':
+              case 'submit':
+                value = '1'
+                break
+              default:
+                return
+            }
+        
+            if (el.id =="flash") {  //新增flash自訂指令
+              var query = baseHost+"/control?flash=" + String(value);
+            } else if (el.id =="servo") {  //新增servo自訂指令
+              var query = baseHost+"/control?servo=" + pinServo.value + ";" + String(value);
+            } else if (el.id =="relay") {  //新增繼電器自訂指令
+              var query = baseHost+"/control?relay=" + pinRelay.value + ";" + Number(relay.checked);
+            } else if (el.id =="uart") {  //新增uart自訂指令
+              return;
+            } else if (el.id =="face") {  //新增face自訂指令
+              return;
+            } else if (el.id =="pose") {  //新增pose自訂指令
+              return;  
+            } else if (el.id =="lefthand") {  //新增lefthand自訂指令
+              return;  
+            } else if (el.id =="righthand") {  //新增righthand自訂指令
+              return; 			  
+            } else {
+              var query = `${baseHost}/control?var=${el.id}&val=${value}`
+            }
+        
+            fetch(query)
+              .then(response => {
+                console.log(`request to ${query} finished, status: ${response.status}`)
+              })
+          }
+        
+          document
+            .querySelectorAll('.close')
+            .forEach(el => {
+              el.onclick = () => {
+                hide(el.parentNode)
+              }
+            })
+        
+          const view = document.getElementById('stream')
+          const viewContainer = document.getElementById('stream-container')
+          const stillButton = document.getElementById('get-still')
+          const streamButton = document.getElementById('toggle-stream')
+          const enrollButton = document.getElementById('face_enroll')
+          const closeButton = document.getElementById('close-stream')
+          const stopButton = document.getElementById('stop-still')            //新增stopButton變數
+          const restartButton = document.getElementById('restart')            //新增restart變數
+          const flash = document.getElementById('flash')                      //新增flash變數
+          const servo = document.getElementById('servo')                      //新增servo變數
+          const pinServo = document.getElementById('pinServo');               //新增servo pin變數
+          const relay = document.getElementById('relay')                      //新增relay變數
+          const pinRelay = document.getElementById('pinRelay');               //新增relay pin變數          
+          //const uart = document.getElementById('uart')                        //新增uart變數
+          
+          const stopStream = () => {
+            window.stop();
+            streamButton.innerHTML = 'Start Stream'
+          }
+        
+          const startStream = () => {
+            view.src = `${streamUrl}/stream`
+            show(viewContainer)
+            streamButton.innerHTML = 'Stop Stream'
+          }
+          
+          // Attach actions to buttons
+          stillButton.onclick = () => {
+            //stopStream()
+            view.src = `${baseHost}/capture?_cb=${Date.now()}`
+            show(viewContainer)
+          }
+        
+          closeButton.onclick = () => {
+            stopStream()
+            hide(viewContainer)
+          }
+        
+          streamButton.onclick = () => {
+            const streamEnabled = streamButton.innerHTML === 'Stop Stream'
+            if (streamEnabled) {
+              stopStream()
+            } else {
+              startStream()
+            }
+          }
+          
+          //新增重啟電源按鈕點選事件 (自訂指令格式：http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9)
+          restartButton.onclick = () => {
+            fetch(baseHost+"/control?restart");
+          }
+
+          //
+          stopButton.onclick = () => {
+            window.stop();
+            closeButton.click();
+          }            
+        
+          // Attach default on change action
+          document
+            .querySelectorAll('.default-action')
+            .forEach(el => {
+              el.onchange = () => updateConfig(el)
+            })
+        
+          framesize.onchange = () => {
+            updateConfig(framesize)
+          }
+          
+          // read initial values  
+          fetch(`${baseHost}/status`)
+          .then(function (response) {
+            return response.json()
+          })
+          .then(function (state) {
+            document
+            .querySelectorAll('.default-action')
+            .forEach(el => {
+              if (el.id=="flash") {  //新增flash設定預設值0
+                flash.value=0;
+                var query = baseHost+"/control?flash=0";
+                fetch(query)
+                  .then(response => {
+                    console.log(`request to ${query} finished, status: ${response.status}`)
+                  })
+              } else if (el.id=="servo") {  //新增servo設定預設值90度
+                servo.value=90;
+                /*
+                var query = baseHost+"/control?servo=" + pinServo.value + ";90";
+                fetch(query)
+                  .then(response => {
+                    console.log(`request to ${query} finished, status: ${response.status}`)
+                  })
+                */
+              } else if (el.id=="relay") {  //新增relay設定預設值0
+                relay.checked = false;
+                /*
+                var query = baseHost+"/control?relay=" + pinRelay.value + ";0";
+                fetch(query)
+                  .then(response => {
+                    console.log(`request to ${query} finished, status: ${response.status}`)
+                  })
+                */
+              } else if (el.id=="uart") {  //新增uart設定預設值0
+                uart.checked = false;
+              } else if (el.id=="face") {  //新增face設定預設值0
+                face.checked = true;
+              } else if (el.id=="pose") {  //新增pose設定預設值0
+                pose.checked = true;
+              } else if (el.id=="lefthand") {  //新增lefthand設定預設值0
+                lefthand.checked = true;
+              } else if (el.id=="righthand") {  //新增righthand設定預設值0
+                righthand.checked = true;                                
+              } else {    
+                updateValue(el, state[el.id], false)
+              }
+            })
+			
+			aiStill.click();
+          })
+        }
+        
+        //  網址/?192.168.1.38  可自動帶入?後參數IP值
+        var href=location.href;
+        if (href.indexOf("?")!=-1) {
+          ip.value = location.search.split("?")[1].replace(/http:\/\//g,"");
+          start();
+        }
+        else if (href.indexOf("http")!=-1) {
+          ip.value = location.host;
+          start();
+        }
+        </script>
+</body></html>
