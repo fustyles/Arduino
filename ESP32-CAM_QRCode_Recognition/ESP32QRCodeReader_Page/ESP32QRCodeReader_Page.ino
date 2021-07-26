@@ -5,6 +5,21 @@ https://www.facebook.com/francefu
 
 Refer to the code
 https://github.com/alvarowolfx/ESP32QRCodeReader
+
+自訂指令格式 http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+
+http://192.168.xxx.xxx/?ip                      //取得APIP, STAIP
+http://192.168.xxx.xxx/?mac                     //取得MAC位址
+http://192.168.xxx.xxx/?digitalwrite=pin;value  //數位輸出
+http://192.168.xxx.xxx/?analogwrite=pin;value   //類比輸出
+http://192.168.xxx.xxx/?digitalread=pin         //數位讀取
+http://192.168.xxx.xxx/?analogread=pin          //類比讀取
+http://192.168.xxx.xxx/?touchread=pin           //觸碰讀取
+http://192.168.xxx.xxx/?restart                 //重啟電源
+http://192.168.xxx.xxx/?flash=value             //閃光燈 value= 0~255
+http://192.168.xxx.xxx/?servo=value             //伺服馬達 value= 0~180
+http://192.168.xxx.xxx/?relay=value             //繼電器 value = 0, 1
+http://192.168.xxx.xxx/?uart=value              //序列埠
 */
 
 //輸入WIFI連線帳號密碼
