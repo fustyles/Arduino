@@ -1,6 +1,6 @@
 /*
 ESP32-CAM QR code Reader
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-26 22:10
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-26 22:30
 https://www.facebook.com/francefu
 */
 
@@ -230,7 +230,7 @@ void QRCodeReader( void * pvParameters ){
         } else {
           Serial.printf("Decoding successful:\n");
           dumpData(&data);
-      
+          /*
           qrCodeData.dataType = data.data_type;
           for (int j = 0; j < data.payload_len; j++)
           {
@@ -239,7 +239,7 @@ void QRCodeReader( void * pvParameters ){
           qrCodeData.valid = true;
           qrCodeData.payload[data.payload_len] = '\0';
           qrCodeData.payloadLen = data.payload_len;
-          
+          */
           //vTaskDelay(3000/portTICK_RATE_MS);
         } 
         Serial.println();
