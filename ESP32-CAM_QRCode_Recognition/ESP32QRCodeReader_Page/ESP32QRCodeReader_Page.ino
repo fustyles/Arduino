@@ -23,8 +23,8 @@ byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolon
 #include "soc/soc.h"             //用於電源不穩不重開機 
 #include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機 
 #include "quirc.h"
-TaskHandle_t Task1;
-TaskHandle_t Task2;
+
+TaskHandle_t Task;
 
 //ESP32-CAM 安信可模組腳位設定
 #define PWDN_GPIO_NUM     32
@@ -177,11 +177,11 @@ void setup() {
 
   xTaskCreatePinnedToCore(
              QRCodeReader, /* Task function. */
-             "Task0",   /* name of task. */
+             "Task",   /* name of task. */
              10000,     /* Stack size of task */
              NULL,      /* parameter of the task */
              1,         /* priority of the task */
-             &Task1,    /* Task handle to keep track of created task */
+             &Task,    /* Task handle to keep track of created task */
              0);        /* pin task to core 0 */
 
   Serial.print("listenConnection running on core ");
