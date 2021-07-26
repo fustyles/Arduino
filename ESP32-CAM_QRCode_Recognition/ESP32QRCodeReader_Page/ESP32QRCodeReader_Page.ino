@@ -1,3 +1,9 @@
+/*
+ESP32-CAM QR code Reader
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-26 22:00
+https://www.facebook.com/francefu
+*/
+
 //輸入WIFI連線帳號密碼
 const char* ssid = "*****";
 const char* password = "*****";
