@@ -1,6 +1,6 @@
 /*
 ESP32-CAM QR code Reader
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-26 22:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-26 22:10
 https://www.facebook.com/francefu
 */
 
@@ -506,7 +506,7 @@ void getStill() {
   fb = esp_camera_fb_get();  
   if(!fb) {
     Serial.println("Camera capture failed");
-    ESP.restart();
+    return;
   }
 
   client.println("HTTP/1.1 200 OK");
