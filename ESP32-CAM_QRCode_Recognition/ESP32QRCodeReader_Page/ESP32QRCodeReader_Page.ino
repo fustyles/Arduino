@@ -2,6 +2,9 @@
 ESP32-CAM QR code Reader
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-26 23:00
 https://www.facebook.com/francefu
+
+Refer to the code
+https://github.com/alvarowolfx/ESP32QRCodeReader
 */
 
 //輸入WIFI連線帳號密碼
