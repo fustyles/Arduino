@@ -501,7 +501,7 @@ void mainPage() {
 }
 
 void getStill() {
-  //回傳JPEG格式影像
+  //回傳文字格式影像
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();  
   if(!fb) {
