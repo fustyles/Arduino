@@ -1,8 +1,6 @@
-//https://github.com/alvarowolfx/ESP32QRCodeReader
-
 //輸入WIFI連線帳號密碼
-const char* ssid = "3COM";
-const char* password = "godblessyou";
+const char* ssid = "*****";
+const char* password = "*****";
 
 //輸入AP端連線帳號密碼  http://192.168.4.1
 const char* apssid = "esp32-cam";
