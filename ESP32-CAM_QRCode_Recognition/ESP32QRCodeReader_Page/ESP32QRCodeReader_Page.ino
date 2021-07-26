@@ -1,6 +1,6 @@
 /*
 ESP32-CAM QR code Reader
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-26 22:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-26 23:00
 https://www.facebook.com/francefu
 */
 
@@ -259,9 +259,8 @@ void dumpData(const struct quirc_data *data)
   Serial.printf("Mask: %d\n", data->mask);
   Serial.printf("Length: %d\n", data->payload_len);
   Serial.printf("Payload: %s\n", data->payload);
-  String result = (const char *)data->payload;
-  QRCodeResult = result;
-  Serial.println(QRCodeResult);
+  
+  QRCodeResult = (const char *)data->payload;
 }
 
 //執行自訂指令
@@ -501,7 +500,7 @@ void mainPage() {
 }
 
 void getStill() {
-  //回傳文字格式影像
+  //回傳JPEG格式影像
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();  
   if(!fb) {
