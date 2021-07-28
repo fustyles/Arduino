@@ -1,6 +1,6 @@
 /*
 ESP32-CAM QR code Reader
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-26 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-28 00:00
 https://www.facebook.com/francefu
 
 Refer to the code
@@ -17,8 +17,8 @@ http://192.168.xxx.xxx/?analogread=pin          //類比讀取
 http://192.168.xxx.xxx/?touchread=pin           //觸碰讀取
 http://192.168.xxx.xxx/?restart                 //重啟電源
 http://192.168.xxx.xxx/?flash=value             //閃光燈 value= 0~255
-http://192.168.xxx.xxx/?servo=value             //伺服馬達 value= 0~180
-http://192.168.xxx.xxx/?relay=value             //繼電器 value = 0, 1
+http://192.168.xxx.xxx/?servo=pin;value         //伺服馬達 value= 0~180
+http://192.168.xxx.xxx/?relay=pin;value         //繼電器 value = 0, 1
 http://192.168.xxx.xxx/?uart=value              //序列埠
 */
 
