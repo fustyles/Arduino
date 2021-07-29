@@ -1,6 +1,6 @@
 /*
 ESP32-CAM OTTO ROBOT
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-28 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-29 11:00
 https://www.facebook.com/francefu
 
 ESP32-CAM RX -> Arduino NANO TX
@@ -590,7 +590,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 flex-direction: column
             }
             #menu {
-                display: flex;
+                display: none;
                 flex-wrap: nowrap;
                 min-width: 340px;
                 background: #363636;
@@ -665,7 +665,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 height: 0
             }
             #nav-toggle-cb:checked+#menu {
-                display: none
+                display: flex
             }
             .input-group {
                 display: flex;
@@ -866,73 +866,73 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <canvas id="canvas" width="320" height="240" style="background-color:#000000;display:none;">
         <img id="example" width="320" height="240" style="display:none">
       </div>
+      ESP32-CAM IP: <input type="text" id="ip" value="">&nbsp;&nbsp;<input type="button" value="Set" onclick="start();">
+      <table id="GeneralPanel_table">
+        <tr>
+          <td align="left"><button id="restartButton">Restart</button></td>
+          <td align="center"><button id="get-still">get-still</button></td>
+          <td align="right"><button id="toggle-stream">Start Stream</button></td>
+        </tr>
+        <tr bgcolor="#363636">
+          <td align="center"></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=U');">Front</button></td>
+          <td align="center"></td>
+        </tr>
+        <tr bgcolor="#363636">
+          <td align="center"><button onclick="ottoAction('/control?otto=L');">Left</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=B');">Home</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=R');">Right</button></td>
+        </tr>
+        <tr bgcolor="#363636">
+          <td align="center"></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=D');">Back</button></td>
+          <td align="center"></td>
+        </tr>        
+      </table>
+      <table id="DancePanel_table" style="display:none;width:320px">                                                
+        <tr bgcolor="gray">
+          <td align="center"><button onclick="ottoAction('/control?otto=B');">B</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=A');">A</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=U');">U</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=C');">C</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=L');">L</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=R');">R</button></td>                   
+        </tr>                   
+        <tr bgcolor="gray">
+          <td align="center"><button onclick="ottoAction('/control?otto=a');">a</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=b');">b</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=c');">c</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=d');">d</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=e');">e</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=f');">f</button></td>
+        </tr>                   
+        <tr bgcolor="gray">
+          <td align="center"><button onclick="ottoAction('/control?otto=g');">g</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=h');">h</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=i');">i</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=j');">j</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=k');">k</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=l');">l</button></td>
+        </tr>                   
+        <tr bgcolor="gray">
+          <td align="center"><button onclick="ottoAction('/control?otto=m');">m</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=n');">n</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=o');">o</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=p');">p</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=r');">r</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=s');">s</button></td>
+        </tr>                   
+        <tr bgcolor="gray">
+          <td align="center"><button onclick="ottoAction('/control?otto=t');">t</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=u');">u</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=v');">v</button></td>
+          <td align="center"><button onclick="ottoAction('/control?otto=w');">w</button></td>
+          <td align="center"></td>
+          <td align="center"></td>                    
+        </tr>                
+      </table>             
     </figure>
         <section class="main">
-            <section id="buttons">
-                <table>
-                  <tr><td colspan="6">IP: <input type="text" id="ip" value=""><input type="button" value="Set" onclick="start();"></td></tr>
-                  <tr>
-                  <td colspan="2" align="left"><button id="restartButton">Restart</button></td>
-                  <td colspan="2" align="center"><button id="get-still">get-still</button></td>
-                  <td colspan="2" align="right"><button id="toggle-stream">Start Stream</button></td>
-                  </tr>
-                  <tr bgcolor="#363636">
-                  <td colspan="2" align="center"></td>
-                  <td colspan="2" align="center"><button onclick="ottoAction('/control?otto=U');">Front</button></td>
-                  <td colspan="2" align="center"></td>
-                  </tr>
-                  <tr bgcolor="#363636">
-                  <td colspan="2" align="center"><button onclick="ottoAction('/control?otto=L');">Left</button></td>
-                  <td colspan="2" align="center"><button onclick="ottoAction('/control?otto=B');">Home</button></td>
-                  <td colspan="2" align="center"><button onclick="ottoAction('/control?otto=R');">Right</button></td>
-                  </tr>
-                  <tr bgcolor="#363636">
-                  <td colspan="2" align="center"></td>
-                  <td colspan="2" align="center"><button onclick="ottoAction('/control?otto=D');">Back</button></td>
-                  <td colspan="2" align="center"></td>
-                  </tr>                
-                  <tr bgcolor="gray">
-                    <td align="center"><button onclick="ottoAction('/control?otto=B');">B</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=A');">A</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=U');">U</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=C');">C</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=L');">L</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=R');">R</button></td>                   
-                  </tr>                   
-                  <tr bgcolor="gray">
-                    <td align="center"><button onclick="ottoAction('/control?otto=a');">a</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=b');">b</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=c');">c</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=d');">d</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=e');">e</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=f');">f</button></td>
-                  </tr>                   
-                  <tr bgcolor="gray">
-                    <td align="center"><button onclick="ottoAction('/control?otto=g');">g</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=h');">h</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=i');">i</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=j');">j</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=k');">k</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=l');">l</button></td>
-                  </tr>                   
-                  <tr bgcolor="gray">
-                    <td align="center"><button onclick="ottoAction('/control?otto=m');">m</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=n');">n</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=o');">o</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=p');">p</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=r');">r</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=s');">s</button></td>
-                  </tr>                   
-                  <tr bgcolor="gray">
-                    <td align="center"><button onclick="ottoAction('/control?otto=t');">t</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=u');">u</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=v');">v</button></td>
-                    <td align="center"><button onclick="ottoAction('/control?otto=w');">w</button></td>
-                    <td align="center"></td>
-                    <td align="center"></td>                    
-                  </tr>                
-                </table>
-            </section>         
             <div id="logo">
                 <label for="nav-toggle-cb" id="nav-toggle">&#9776;&nbsp;&nbsp;Toggle settings</label>
             </div>
@@ -940,6 +940,20 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                 <div id="sidebar">
                     <input type="checkbox" id="nav-toggle-cb">
                     <nav id="menu">
+                        <div class="input-group" id="GeneralPanel-group">
+                            <label for="GeneralPanel">General Panel</label>
+                            <div class="switch">
+                                <input id="GeneralPanel" type="checkbox" checked>
+                                <label class="slider" for="GeneralPanel"></label>
+                            </div>
+                        </div>
+                        <div class="input-group" id="dancepanel-group">
+                            <label for="DancePanel">Dance Panel</label>
+                            <div class="switch">
+                                <input id="DancePanel" type="checkbox">
+                                <label class="slider" for="DancePanel"></label>
+                            </div>
+                        </div>
                         <div class="input-group" id="flash-group">
                             <label for="flash">Flash</label>
                             <div class="range-min">0</div>
@@ -1155,6 +1169,25 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   console.log(`request to ${query} finished, status: ${response.status}`)
                 })
           }
+
+          const GeneralPanel = document.getElementById('GeneralPanel')
+          const GeneralPanel_table = document.getElementById('GeneralPanel_table')
+          const DancePanel = document.getElementById('DancePanel')          
+          const DancePanel_table = document.getElementById('DancePanel_table')
+
+          GeneralPanel.onchange = function(e){  
+            if (!GeneralPanel.checked)
+              GeneralPanel_table.style.display = "none";
+            else
+              GeneralPanel_table.style.display = "block";
+          }
+
+          DancePanel.onchange = function(e){  
+            if (!DancePanel.checked)
+              DancePanel_table.style.display = "none";
+            else
+              DancePanel_table.style.display = "block";
+          }                    
           
           //  網址/?192.168.1.38  可自動帶入?後參數IP值
           var href=location.href;
