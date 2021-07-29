@@ -866,8 +866,10 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
         <canvas id="canvas" width="320" height="240" style="background-color:#000000;display:none;">
         <img id="example" width="320" height="240" style="display:none">
       </div>
-      ESP32-CAM IP: <input type="text" id="ip" value="">&nbsp;&nbsp;<input type="button" value="Set" onclick="start();">
       <table id="GeneralPanel_table">
+        <tr>
+          <td colspan="3">ESP32-CAM IP: <input type="text" id="ip" value="">&nbsp;&nbsp;<input type="button" value="Set" onclick="start();"></td>
+        </tr>      
         <tr>
           <td align="left"><button id="restartButton">Restart</button></td>
           <td align="center"><button id="get-still">get-still</button></td>
