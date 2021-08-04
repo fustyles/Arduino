@@ -1167,12 +1167,12 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
       var faceX153z = (holistic_face_position("153", "z"));
       var rotateAngleX = (holistic_angle(faceX153y, faceX153z, faceX11y, faceX11z));
       if (rotateAngleX) {
-      var valX = rotateAngleX-70;
+      var valX = rotateAngleX-90;
       if (valX<0) valX+=360
       message.innerHTML += "rotateX = " + valX + "<br>";
       }  
 
-          //臉部y軸左右轉動
+      //臉部y軸左右轉動
       var faceY163x = (holistic_face_position("163", "x"));
       var faceY163z = (holistic_face_position("163", "z"));
       var faceY390x = (holistic_face_position("390", "x"));
@@ -1184,14 +1184,14 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
       message.innerHTML += "rotateY = " + valY + "<br>";
       }
       
-          //臉部z軸左右擺動
+      //臉部z軸左右擺動
       var faceZ11x = (holistic_face_position("11", "x"));
       var faceZ11y = (holistic_face_position("11", "y"));
       var faceZ153x = (holistic_face_position("153", "x"));
       var faceZ153y = (holistic_face_position("153", "y"));
       var rotateAngleZ = (holistic_angle(faceZ153x, faceZ153y, faceZ11x, faceZ11y));
       if (rotateAngleZ) {
-      valZ = rotateAngleZ-160;
+      var valZ = rotateAngleZ-180;
       if (valZ<0) valZ+=360
       message.innerHTML += "rotateZ = " + valZ + "<br>";
       }     
