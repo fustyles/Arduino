@@ -571,7 +571,7 @@ https://fustyles.github.io/webduino/TensorFlow/Holistic_video/ESP32-CAM_holistic
 			message.innerHTML += "rotateX = " + valX + "<br>";
 		  }
 
-          //肩膀y軸旋轉
+         	   //肩膀y軸旋轉
 		  rightShoulderY4x = (holistic_pose_position("12", "x"));
 		  rightShoulderY4z = (holistic_pose_position("12", "z"));
 		  leftShoulderY4x = (holistic_pose_position("11", "x"));
@@ -583,14 +583,14 @@ https://fustyles.github.io/webduino/TensorFlow/Holistic_video/ESP32-CAM_holistic
 			message.innerHTML += "rotateY = " + valY + "<br>";
 		  }
 		  
-          //肩膀z軸旋轉角度
+          	  //肩膀z軸旋轉角度
 		  var rightShoulderZ4x = (holistic_pose_position("12", "x"));
 		  var rightShoulderZ4y = (holistic_pose_position("12", "y"));
 		  var leftShoulderZ4x = (holistic_pose_position("11", "x"));
 		  var leftShoulderZ4y = (holistic_pose_position("11", "y"));
 		  var rotateAngleZ = (holistic_angle(rightShoulderZ4x, rightShoulderZ4y, leftShoulderZ4x, leftShoulderZ4y));
 		  if (rotateAngleZ) {
-			valZ = rotateAngleZ-90;
+			var valZ = rotateAngleZ-90;
 			if (valZ<0) valZ+=360
 			message.innerHTML += "rotateZ = " + valZ + "<br>";
 		  }		
