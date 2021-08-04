@@ -575,7 +575,7 @@ https://fustyles.github.io/webduino/TensorFlow/Holistic_video/ESP32-CAM_holistic
 			message.innerHTML += "rotateX = " + valX + "<br>";
 		  }  
 
-          //臉部y軸左右轉動
+          	  //臉部y軸左右轉動
 		  var faceY163x = (holistic_face_position("163", "x"));
 		  var faceY163z = (holistic_face_position("163", "z"));
 		  var faceY390x = (holistic_face_position("390", "x"));
@@ -587,14 +587,14 @@ https://fustyles.github.io/webduino/TensorFlow/Holistic_video/ESP32-CAM_holistic
 			message.innerHTML += "rotateY = " + valY + "<br>";
 		  }
 		  
-          //臉部z軸左右擺動
+		  //臉部z軸左右擺動
 		  var faceZ11x = (holistic_face_position("11", "x"));
 		  var faceZ11y = (holistic_face_position("11", "y"));
 		  var faceZ153x = (holistic_face_position("153", "x"));
 		  var faceZ153y = (holistic_face_position("153", "y"));
 		  var rotateAngleZ = (holistic_angle(faceZ153x, faceZ153y, faceZ11x, faceZ11y));
 		  if (rotateAngleZ) {
-			valZ = rotateAngleZ-180;
+			var valZ = rotateAngleZ-180;
 			if (valZ<0) valZ+=360
 			message.innerHTML += "rotateZ = " + valZ + "<br>";
 		  }		  
