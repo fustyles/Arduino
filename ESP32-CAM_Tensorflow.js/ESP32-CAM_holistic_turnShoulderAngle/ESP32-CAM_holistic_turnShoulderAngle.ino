@@ -1163,12 +1163,12 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
       var leftShoulderX4z = (holistic_pose_position("11", "z"));
       var rotateAngleX = (holistic_angle(rightShoulderX4y, rightShoulderX4z, leftShoulderX4y, leftShoulderX4z));
       if (rotateAngleX) {
-      var valX = rotateAngleX;
+      var valX = rotateAngleX-180;
       if (valX<0) valX+=360
       message.innerHTML += "rotateX = " + valX + "<br>";
       }
 
-          //肩膀y軸旋轉
+      //肩膀y軸旋轉
       rightShoulderY4x = (holistic_pose_position("12", "x"));
       rightShoulderY4z = (holistic_pose_position("12", "z"));
       leftShoulderY4x = (holistic_pose_position("11", "x"));
@@ -1180,14 +1180,14 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
       message.innerHTML += "rotateY = " + valY + "<br>";
       }
       
-          //肩膀z軸旋轉角度
+      //肩膀z軸旋轉角度
       var rightShoulderZ4x = (holistic_pose_position("12", "x"));
       var rightShoulderZ4y = (holistic_pose_position("12", "y"));
       var leftShoulderZ4x = (holistic_pose_position("11", "x"));
       var leftShoulderZ4y = (holistic_pose_position("11", "y"));
       var rotateAngleZ = (holistic_angle(rightShoulderZ4x, rightShoulderZ4y, leftShoulderZ4x, leftShoulderZ4y));
       if (rotateAngleZ) {
-      valZ = rotateAngleZ-90;
+      var valZ = rotateAngleZ-90;
       if (valZ<0) valZ+=360
       message.innerHTML += "rotateZ = " + valZ + "<br>";
       }   
