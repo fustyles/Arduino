@@ -1168,7 +1168,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
       message.innerHTML += "rotateX = " + valX + "<br>";
       }
 
-          //左手掌y軸旋轉
+      //左手掌y軸旋轉
       thumbY4x = (holistic_lefthand_position("4", "x"));
       thumbY4z = (holistic_lefthand_position("4", "z"));
       pinkyY4x = (holistic_lefthand_position("20", "x"));
@@ -1180,14 +1180,14 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
       message.innerHTML += "rotateY = " + valY + "<br>";
       }
       
-          //左手掌z軸旋轉角度
+      //左手掌z軸旋轉角度
       var thumbZ4x = (holistic_lefthand_position("4", "x"));
       var thumbZ4y = (holistic_lefthand_position("4", "y"));
       var pinkyZ4x = (holistic_lefthand_position("20", "x"));
       var pinkyZ4y = (holistic_lefthand_position("20", "y"));
       var rotateAngleZ = (holistic_angle(thumbZ4x, thumbZ4y, pinkyZ4x, pinkyZ4y));
       if (rotateAngleZ) {
-      valZ = rotateAngleZ-90;
+      var valZ = rotateAngleZ-90;
       if (valZ<0) valZ+=360
       message.innerHTML += "rotateZ = " + valZ + "<br>";
       }   
