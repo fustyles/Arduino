@@ -571,26 +571,26 @@ https://fustyles.github.io/webduino/TensorFlow/Holistic_video/ESP32-CAM_holistic
 			message.innerHTML += "rotateX = " + valX + "<br>";
 		  }
 
-          //左手掌y軸旋轉
+          	  //左手掌y軸旋轉
 		  thumbY4x = (holistic_lefthand_position("4", "x"));
 		  thumbY4z = (holistic_lefthand_position("4", "z"));
 		  pinkyY4x = (holistic_lefthand_position("20", "x"));
 		  pinkyY4z = (holistic_lefthand_position("20", "z"));
 		  rotateAngleY = (holistic_angle(thumbY4x, thumbY4z, pinkyY4x, pinkyY4z));
 		  if (rotateAngleY) {
-			var valY = rotateAngleY;
+			var valY = rotateAngleY-90
 			if (valY<0) valY+=360
 			message.innerHTML += "rotateY = " + valY + "<br>";
 		  }
 		  
-          //左手掌z軸旋轉角度
+          	  //左手掌z軸旋轉角度
 		  var thumbZ4x = (holistic_lefthand_position("4", "x"));
 		  var thumbZ4y = (holistic_lefthand_position("4", "y"));
 		  var pinkyZ4x = (holistic_lefthand_position("20", "x"));
 		  var pinkyZ4y = (holistic_lefthand_position("20", "y"));
 		  var rotateAngleZ = (holistic_angle(thumbZ4x, thumbZ4y, pinkyZ4x, pinkyZ4y));
 		  if (rotateAngleZ) {
-			valZ = rotateAngleZ-200;
+			valZ = rotateAngleZ-90
 			if (valZ<0) valZ+=360
 			message.innerHTML += "rotateZ = " + valZ + "<br>";
 		  }		
