@@ -1175,7 +1175,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
       pinkyY4z = (holistic_lefthand_position("20", "z"));
       rotateAngleY = (holistic_angle(thumbY4x, thumbY4z, pinkyY4x, pinkyY4z));
       if (rotateAngleY) {
-      var valY = rotateAngleY;
+      var valY = rotateAngleY-90;
       if (valY<0) valY+=360
       message.innerHTML += "rotateY = " + valY + "<br>";
       }
@@ -1187,7 +1187,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
       var pinkyZ4y = (holistic_lefthand_position("20", "y"));
       var rotateAngleZ = (holistic_angle(thumbZ4x, thumbZ4y, pinkyZ4x, pinkyZ4y));
       if (rotateAngleZ) {
-      valZ = rotateAngleZ-200;
+      valZ = rotateAngleZ-90;
       if (valZ<0) valZ+=360
       message.innerHTML += "rotateZ = " + valZ + "<br>";
       }   
