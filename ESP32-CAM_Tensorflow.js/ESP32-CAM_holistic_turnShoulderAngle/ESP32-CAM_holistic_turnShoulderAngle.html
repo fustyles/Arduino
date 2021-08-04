@@ -579,7 +579,7 @@ https://fustyles.github.io/webduino/TensorFlow/Holistic_video/ESP32-CAM_holistic
 		  rotateAngleY = (holistic_angle(rightShoulderY4x, rightShoulderY4z, leftShoulderY4x, leftShoulderY4z));
 		  if (rotateAngleY) {
 			var valY = rotateAngleY-90;
-			if (valY<0) valY+=270
+			if (valY<0) valY+=360
 			message.innerHTML += "rotateY = " + valY + "<br>";
 		  }
 		  
