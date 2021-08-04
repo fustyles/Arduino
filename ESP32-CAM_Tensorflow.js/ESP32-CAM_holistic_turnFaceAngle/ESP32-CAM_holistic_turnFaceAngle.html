@@ -570,7 +570,7 @@ https://fustyles.github.io/webduino/TensorFlow/Holistic_video/ESP32-CAM_holistic
 		  var faceX153z = (holistic_face_position("153", "z"));
 		  var rotateAngleX = (holistic_angle(faceX153y, faceX153z, faceX11y, faceX11z));
 		  if (rotateAngleX) {
-			var valX = rotateAngleX-70;
+			var valX = rotateAngleX-90;
 			if (valX<0) valX+=360
 			message.innerHTML += "rotateX = " + valX + "<br>";
 		  }  
@@ -594,7 +594,7 @@ https://fustyles.github.io/webduino/TensorFlow/Holistic_video/ESP32-CAM_holistic
 		  var faceZ153y = (holistic_face_position("153", "y"));
 		  var rotateAngleZ = (holistic_angle(faceZ153x, faceZ153y, faceZ11x, faceZ11y));
 		  if (rotateAngleZ) {
-			valZ = rotateAngleZ-160;
+			valZ = rotateAngleZ-180;
 			if (valZ<0) valZ+=360
 			message.innerHTML += "rotateZ = " + valZ + "<br>";
 		  }		  
