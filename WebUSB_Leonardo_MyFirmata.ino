@@ -11,7 +11,6 @@ Then find the line #define USB_VERSION 0x200 and change 0x200 to 0x210. That’s
 
 Library
 https://github.com/webusb/arduino
-https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads/
 
 Command Format
 ?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
@@ -21,16 +20,12 @@ Command Format
 ?digitalread=pin
 ?analogwrite=pin;value   
 ?analogread=pin
-?i2cLcd=address;text1;text2  (SDA:A4, SCL:A5)
 ?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 */
 
 #include <WebUSB.h>
 WebUSB WebUSBSerial(1 /* https:// */, "fustyles.github.io/webduino/myBlockly/");
 #define Serial WebUSBSerial
-
-#include <Wire.h>
-#include <LiquidCrystal_I2C.h>
 
 String ReceiveData="", Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";
 boolean debug = true;
@@ -71,25 +66,6 @@ void ExecuteCommand()
   else if (cmd=="analogread")  {
     pinMode(P1.toInt(), INPUT_PULLUP);    
     SendData("[{\"data\":\""+String(analogRead(P1.toInt()))+"\"}]");
-  }
-  // Library: https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads/
-  // ?i2cLcd=address;text1;text2    
-  else if (cmd=="i2cLcd") {
-    P1.toLowerCase();
-    //You must convert hex value(P1) to decimal value.
-    if (P1=="0x27") 
-      P1="39";
-    else if (P1=="0x3f") 
-      P1="63";
-    LiquidCrystal_I2C lcd(P1.toInt(), 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
-    lcd.begin(16, 2);
-    lcd.backlight();
-    lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print(P2);
-    lcd.setCursor(0,1);
-    lcd.print(P3);
-    if (debug == true) SendData("[{\"data\":\""+P2+"\"},{\"data\":\""+P3+"\"}]");
   }
   else if (cmd=="car")  {  // ?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
     pinMode(P1.toInt(), OUTPUT);
