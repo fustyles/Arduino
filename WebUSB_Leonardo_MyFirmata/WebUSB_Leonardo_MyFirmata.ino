@@ -39,33 +39,33 @@ void ExecuteCommand()
   
   if (cmd=="yourcmd")  {
     //you can do anything
-    //if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+    //if (debug == true) SendData(Command);
   } 
   else if (cmd=="inputpullup")  {
     pinMode(P1.toInt(), INPUT_PULLUP);
-    if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+    if (debug == true) SendData(Command);
   }  
   else if (cmd=="pinmode")  {
     pinMode(P1.toInt(), P2.toInt());
-    if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+    if (debug == true) SendData(Command);
   }        
   else if (cmd=="digitalwrite")  {
     pinMode(P1.toInt(), OUTPUT);
     digitalWrite(P1.toInt(),P2.toInt());
-    if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+    if (debug == true) SendData(Command);
   }   
   else if (cmd=="digitalread")  {
     pinMode(P1.toInt(), INPUT_PULLUP);    
-    SendData("[{\"data\":\""+String(digitalRead(P1.toInt()))+"\"}]");
+    SendData(String(digitalRead(P1.toInt())));
   }    
   else if (cmd=="analogwrite")  {
     pinMode(P1.toInt(), OUTPUT);
     analogWrite(P1.toInt(),P2.toInt());
-    if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+    if (debug == true) SendData(Command);
   }       
   else if (cmd=="analogread")  {
     pinMode(P1.toInt(), INPUT_PULLUP);    
-    SendData("[{\"data\":\""+String(analogRead(P1.toInt()))+"\"}]");
+    SendData(String(analogRead(P1.toInt())));
   }
   // Library: https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads/
   // ?i2cLcd=address;text1;text2    
@@ -127,10 +127,10 @@ void ExecuteCommand()
         analogWrite(P3.toInt(),0);       
       }        
     }
-    if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+    if (debug == true) SendData(Command);
   }    
   else
-    SendData("[{\"data\":\"Command is not defined\"}]");
+    SendData("Command is not defined");
 }
 
 void setup()
