@@ -1,5 +1,5 @@
 /*
-WebUSB + Arduino Leonardo  2021-8-12 12:30
+WebUSB + Arduino Leonardo  2021-8-12 23:30
 Author : ChungYi Fu (Kaohsiung, Taiwan)
 https://www.facebook.com/francefu
 
@@ -28,7 +28,7 @@ WebUSB WebUSBSerial(1 /* https:// */, "fustyles.github.io/webduino/myBlockly/");
 #define Serial WebUSBSerial
 
 String ReceiveData="", Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";
-boolean debug = false;
+boolean debug = true;
 
 void ExecuteCommand()
 {
@@ -43,16 +43,16 @@ void ExecuteCommand()
   } 
   else if (cmd=="inputpullup")  {
     pinMode(P1.toInt(), INPUT_PULLUP);
-    if (debug == true) SendData(Command);
+    if (debug == true) SendData(Command+" ok");
   }  
   else if (cmd=="pinmode")  {
     pinMode(P1.toInt(), P2.toInt());
-    if (debug == true) SendData(Command);
+    if (debug == true) SendData(Command+" ok");
   }        
   else if (cmd=="digitalwrite")  {
     pinMode(P1.toInt(), OUTPUT);
     digitalWrite(P1.toInt(),P2.toInt());
-    if (debug == true) SendData(Command);
+    if (debug == true) SendData(Command+" ok");
   }   
   else if (cmd=="digitalread")  {
     pinMode(P1.toInt(), INPUT_PULLUP);    
@@ -61,7 +61,7 @@ void ExecuteCommand()
   else if (cmd=="analogwrite")  {
     pinMode(P1.toInt(), OUTPUT);
     analogWrite(P1.toInt(),P2.toInt());
-    if (debug == true) SendData(Command);
+    if (debug == true) SendData(Command+" ok");
   }       
   else if (cmd=="analogread")  {
     pinMode(P1.toInt(), INPUT_PULLUP);    
@@ -127,7 +127,7 @@ void ExecuteCommand()
         analogWrite(P3.toInt(),0);       
       }        
     }
-    if (debug == true) SendData(Command);
+    if (debug == true) SendData(Command+" ok");
   }    
   else
     SendData("Command is not defined");
