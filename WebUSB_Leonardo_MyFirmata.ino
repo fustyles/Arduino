@@ -1,5 +1,5 @@
 /*
-WebUSB + Arduino Leonardo  2019-3-2 18:30
+WebUSB + Arduino Leonardo  2021-8-12 12:30
 Author : ChungYi Fu (Kaohsiung, Taiwan)
 https://www.facebook.com/francefu
 
@@ -23,7 +23,7 @@ Command Format
 ?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
 */
 
-#include <WebUSB.h>
+#include "WebUSB.h"
 WebUSB WebUSBSerial(1 /* https:// */, "fustyles.github.io/webduino/myBlockly/");
 #define Serial WebUSBSerial
 
@@ -32,41 +32,43 @@ boolean debug = true;
 
 void ExecuteCommand()
 {
-  Serial.println("");
+  //Serial.println("");
   //Serial.println("Command: "+Command);
-  Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
-  Serial.println("");
+  //Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
+  //Serial.println("");
   
   if (cmd=="yourcmd")  {
     //you can do anything
-    //if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+    //if (debug == true) SendData(Command);
   } 
   else if (cmd=="inputpullup")  {
     pinMode(P1.toInt(), INPUT_PULLUP);
-    if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+    if (debug == true) SendData(Command);
   }  
   else if (cmd=="pinmode")  {
     pinMode(P1.toInt(), P2.toInt());
-    if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+    if (debug == true) SendData(Command);
   }        
   else if (cmd=="digitalwrite")  {
     pinMode(P1.toInt(), OUTPUT);
     digitalWrite(P1.toInt(),P2.toInt());
-    if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+    if (debug == true) SendData(Command);
   }   
   else if (cmd=="digitalread")  {
     pinMode(P1.toInt(), INPUT_PULLUP);    
-    SendData("[{\"data\":\""+String(digitalRead(P1.toInt()))+"\"}]");
+    SendData(String(digitalRead(P1.toInt())));
   }    
   else if (cmd=="analogwrite")  {
     pinMode(P1.toInt(), OUTPUT);
     analogWrite(P1.toInt(),P2.toInt());
-    if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+    if (debug == true) SendData(Command);
   }       
   else if (cmd=="analogread")  {
     pinMode(P1.toInt(), INPUT_PULLUP);    
-    SendData("[{\"data\":\""+String(analogRead(P1.toInt()))+"\"}]");
+    SendData(String(analogRead(P1.toInt())));
   }
+  // Library: https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads/
+  // ?i2cLcd=address;text1;text2    
   else if (cmd=="car")  {  // ?car=pinL1;pinL2;pinR1;pinR2;L_speed;R_speed;Delay;state
     pinMode(P1.toInt(), OUTPUT);
     pinMode(P2.toInt(), OUTPUT);
@@ -125,10 +127,10 @@ void ExecuteCommand()
         analogWrite(P3.toInt(),0);       
       }        
     }
-    if (debug == true) SendData("[{\"data\":\""+Command+"\"}]");
+    if (debug == true) SendData(Command);
   }    
   else
-    SendData("[{\"data\":\"Command is not defined\"}]");
+    SendData("Command is not defined");
 }
 
 void setup()
