@@ -1,6 +1,6 @@
 /*
 ESP32-CAM QR code Reader
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-8-13 20:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-28 00:00
 https://www.facebook.com/francefu
 
 Refer to the code
@@ -425,29 +425,26 @@ Flash<input type="range" id="flash" min="0" max="255" value="0">
   }
 
   function getStill() {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", "/?getstill", true);
-    xhr.responseType = "arraybuffer";
-    
-    xhr.onload = function (oEvent) {
-      var arrayBuffer = xhr.response; // Note: not xhr.responseText
-      if (arrayBuffer) {
-        var byteArray = new Uint8Array(arrayBuffer);
-        var imgData=context.getImageData(0,0,canvas.width,canvas.height);
-        var val = 0;
-        for (var i=0;i<imgData.data.length;i+=4) {
-          val = parseInt(byteArray[i/4], 10);
-              imgData.data[i]=val;
-              imgData.data[i+1]=val;
-              imgData.data[i+2]=val;
-              imgData.data[i+3]=255;
-          }
-          context.putImageData(imgData,0,0);
-          setTimeout(function(){getStill();}, 100);
-        }
-    };
-    
-    xhr.send(null);
+    var query = document.location.origin+"/?getstill";
+    fetch(query).then(function(response) {
+      return response.text();
+    }).then(function(text) {
+      result.innerHTML = text.split(",")[1];
+      text = text.split(",")[0];
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      var imgData=context.getImageData(0,0,canvas.width,canvas.height);
+      var n = 0;
+      for (var i=0;i<imgData.data.length;i+=4) {
+        var val = parseInt(text.substr(2*n,2), 16);
+        imgData.data[i]=val;
+        imgData.data[i+1]=val;
+        imgData.data[i+2]=val;
+        imgData.data[i+3]=255;
+        n++;
+      }
+      context.putImageData(imgData,0,0);
+      setTimeout(function(){getStill();}, 100);
+    })
   }
 </script>   
 )rawliteral";
@@ -521,32 +518,44 @@ void mainPage() {
 }
 
 void getStill() {
+  //回傳文字格式影像
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();  
   if(!fb) {
     Serial.println("Camera capture failed");
     return;
   }
-  uint8_t *fbBuf = fb->buf;
-  size_t fbLen = fb->len; 
-  
+
   client.println("HTTP/1.1 200 OK");
   client.println("Access-Control-Allow-Origin: *");              
   client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
   client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
-  client.println("Content-Type: application/octet-stream");
+  client.println("Content-Type: text/plain");
+  client.println("Connection: close");
   client.println();
-
-  for (size_t n=0;n<fbLen;n=n+1024) {
-    if (n+1024<fbLen) {
-      client.write(fbBuf, 1024);
-      fbBuf += 1024;
-    }
-    else if (fbLen%1024>0) {
-      size_t remainder = fbLen%1024;
-      client.write(fbBuf, remainder);
-    }
-  }  
+  
+  uint8_t *fbBuf = fb->buf;
+  size_t fbLen = fb->len;
+  String val = "";
+  String v = "";
+  for (int n=0;n<fbLen;n++) {
+    v = String(fbBuf[n], HEX);
+    if (v.length()==1)
+      val += "0"+v;
+    else
+      val += v;
+    if ((n+1)%1024==0) {
+      client.print(val);
+      val = "";
+    }  
+  }
+  if (val!="")
+    client.print(val);
+    
+  val = ","+QRCodeResult;
+  client.print(val);
+  QRCodeResult = "";
+  
   esp_camera_fb_return(fb);
 
   pinMode(4, OUTPUT);
