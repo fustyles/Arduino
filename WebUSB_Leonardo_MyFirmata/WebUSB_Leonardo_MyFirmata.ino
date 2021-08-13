@@ -9,7 +9,7 @@ Your device must be upgraded from USB 2.0 to USB 2.1.
 To do this go into the SDK installation directory and open hardware/arduino/avr/cores/arduino/USBCore.h. 
 Then find the line #define USB_VERSION 0x200 and change 0x200 to 0x210. That’s it!
 
-Library
+Library  (Include WebUSB.cpp and WebUSB.h in your sketch)
 https://github.com/webusb/arduino
 
 Command Format
