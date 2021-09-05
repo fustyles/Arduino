@@ -298,7 +298,7 @@ void ExecuteCommand() {
     ledcSetup(4, 5000, 8);   
     int val = P1.toInt();
     ledcWrite(4,val);  
-  } else if(cmd=="servo") {  //伺服馬達接於IO2 (SG90 1638-7864)
+  } else if(cmd=="servo") {  //伺服馬達接於 (SG90 1638-7864)
     ledcAttachPin(P1.toInt(), 3);
     ledcSetup(3, 50, 16);
      
@@ -308,7 +308,7 @@ void ExecuteCommand() {
     else if (val < 1638)
       val = 1638; 
     ledcWrite(3, val);
-  } else if (cmd=="relay") {  //繼電器接於IO13
+  } else if (cmd=="relay") {  //繼電器
     pinMode(P1.toInt(), OUTPUT);  
     digitalWrite(P1.toInt(), P2.toInt());
   } else if (cmd=="resetwifi") {  //重設網路連線  
