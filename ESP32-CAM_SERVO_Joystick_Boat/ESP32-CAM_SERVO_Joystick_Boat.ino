@@ -1,6 +1,6 @@
 /*
 ESP32-CAM boat controlled by using Joystick
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-12-10 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-12-11 07:00
 https://www.facebook.com/francefu
 
 Servo -> gpio2 (伺服馬達與ESP32-CAM共地外接電源)
@@ -57,7 +57,7 @@ const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 
 int speed = 200;
-int turn = 30;
+int rudder = 30;
 
 #include <WiFi.h>
 #include <esp32-hal-ledc.h>      //用於控制伺服馬達
@@ -524,28 +524,28 @@ static esp_err_t cmd_handler(httpd_req_t *req){
           Serial.println("Left-Up");
           ledcWrite(5,speed);
           ledcWrite(6,0);  
-          servo_rotate(3, 90-turn);
+          servo_rotate(3, 90-rudder);
           delay(100);                   
         }
         else if (P1=="NE") {
           Serial.println("Right-Up");
           ledcWrite(5,speed);
           ledcWrite(6,0);  
-          servo_rotate(3, 90+turn);
+          servo_rotate(3, 90+rudder);
           delay(100);             
         }
         else if (P1=="SW") {
           Serial.println("Left-Down");
           ledcWrite(5,0);
           ledcWrite(6,speed); 
-          servo_rotate(3, 90-turn);
+          servo_rotate(3, 90-rudder);
           delay(100);                            
         }
         else if (P1=="SE") {
           Serial.println("Right-Down");
           ledcWrite(5,0);
           ledcWrite(6,speed); 
-          servo_rotate(3, 90+turn);
+          servo_rotate(3, 90+rudder);
           delay(100);                         
         }
       }                  
@@ -575,12 +575,12 @@ static esp_err_t cmd_handler(httpd_req_t *req){
       else if(!strcmp(variable, "brightness")) res = s->set_brightness(s, val);
       else if(!strcmp(variable, "hmirror")) res = s->set_hmirror(s, val);
       else if(!strcmp(variable, "vflip")) res = s->set_vflip(s, val);
-      else if(!strcmp(variable, "turn")) {
+      else if(!strcmp(variable, "rudder")) {
         if (val > 90)
           val = 90;
         else if (val < 0)
           val = 0;       
-        turn = val;
+        rudder = val;
       }      
       else if(!strcmp(variable, "speed")) {
         if (val > 255)
@@ -623,7 +623,7 @@ static esp_err_t status_handler(httpd_req_t *req){
     sensor_t * s = esp_camera_sensor_get();
     char * p = json_response;
     *p++ = '{';
-    p+=sprintf(p, "\"turn\":%d,", turn);    
+    p+=sprintf(p, "\"rudder\":%d,", rudder);    
     p+=sprintf(p, "\"speed\":%d,", speed);
     p+=sprintf(p, "\"flash\":%d,", 0);        
     p+=sprintf(p, "\"framesize\":%u,", s->status.framesize);
@@ -961,10 +961,10 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 <div id="sidebar">
                     <input type="checkbox" id="nav-toggle-cb">
                     <nav id="menu">
-                        <div class="input-group" id="turn-group">
-                            <label for="turn">Turn</label>
+                        <div class="input-group" id="rudder-group">
+                            <label for="rudder">Rudder Angle</label>
                             <div class="range-min">0</div>
-                            <input type="range" id="turn" min="0" max="90" value="30" step="10" class="default-action">
+                            <input type="range" id="rudder" min="0" max="90" value="30" step="10" class="default-action">
                             <div class="range-max">90</div>
                         </div>                     
                         <div class="input-group" id="speed-group">
