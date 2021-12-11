@@ -3,7 +3,7 @@ ESP32-CAM boat controlled by using Joystick
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-12-11 13:00
 https://www.facebook.com/francefu
 
-Servo -> gpio2 (船舵的角度，伺服馬達與ESP32-CAM共地外接電源)
+Servo -> gpio2 (船舵的角度，伺服馬達與ESP32-CAM共地外接5V電源)
 Motor Driver IC -> gpio12, gpio13 (螺旋槳水泵，避免使用L9100S，獨立外接3V電源)
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
