@@ -1243,12 +1243,12 @@ static esp_err_t wifi_handler(httpd_req_t *req) {
       <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width,initial-scale=1">
-          <title>ESP32-CAM Caution Area</title>  
+          <title>ESP32-CAM Wi-Fi settings</title>  
       </head>
       <body>
       WIFI SSID: <input type="text" id="ssid"><br>
       WIFI  PWD: <input type="text" id="pwd"><br>
-      <input type="button" value="Set" onclick="location.href='/control?resetwifi='+document.getElementById('ssid').value+';'+document.getElementById('pwd').value;">
+      <input type="button" value="Link" onclick="location.href='/control?resetwifi='+document.getElementById('ssid').value+';'+document.getElementById('pwd').value;">
       </body>
   </html>        
   )rawliteral";
