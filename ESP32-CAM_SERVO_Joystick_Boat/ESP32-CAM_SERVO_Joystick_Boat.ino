@@ -4,7 +4,7 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-12-11 13:00
 https://www.facebook.com/francefu
 
 Servo -> gpio2 (船舵的角度，伺服馬達與ESP32-CAM共地外接電源)
-Motor Driver IC -> gpio12, gpio13 (螺旋槳水泵，避免使用L9100S，獨立外接電源)
+Motor Driver IC -> gpio12, gpio13 (螺旋槳水泵，避免使用L9100S，獨立外接3V電源)
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
 http://192.168.xxx.xxx:81/stream   //取得串流影像       網頁語法 <img src="http://192.168.xxx.xxx:81/stream">
