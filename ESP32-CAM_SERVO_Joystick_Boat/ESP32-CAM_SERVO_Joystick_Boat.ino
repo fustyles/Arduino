@@ -1,6 +1,6 @@
 /*
 ESP32-CAM boat controlled by using Joystick
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-12-11 07:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-12-11 13:00
 https://www.facebook.com/francefu
 
 Servo -> gpio2 (伺服馬達與ESP32-CAM共地外接電源)
@@ -10,6 +10,7 @@ http://192.168.xxx.xxx             //網頁首頁管理介面
 http://192.168.xxx.xxx:81/stream   //取得串流影像       網頁語法 <img src="http://192.168.xxx.xxx:81/stream">
 http://192.168.xxx.xxx/capture     //取得影像           網頁語法 <img src="http://192.168.xxx.xxx/capture">
 http://192.168.xxx.xxx/status      //取得影像狀態值
+http://192.168.xxx.xxx/wifi        //設定區域網路Wi-Fi帳號密碼
 
 //自訂指令格式  http://192.168.xxx.xxx/control?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://192.168.xxx.xxx/control?ip                        //IP
@@ -56,10 +57,13 @@ const char* password = "87654321";   //your network password
 const char* apssid = "ESP32-CAM";
 const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 
-int speed = 200;
+String lineNotifyToken = "";    //Line Notify Token
+
+int speed = 255;
 int rudder = 30;
 
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
 #include <esp32-hal-ledc.h>      //用於控制伺服馬達
 #include "soc/soc.h"             //用於電源不穩不重開機 
 #include "soc/rtc_cntl_reg.h"    //用於電源不穩不重開機
@@ -239,6 +243,10 @@ void setup() {
         ledcWrite(4,0);
         delay(200);    
       }
+      
+      if (lineNotifyToken!="")
+        sendRequest2LineNotify(lineNotifyToken, WiFi.localIP().toString());
+      
       break;
     }
   } 
@@ -950,7 +958,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         </figure>
         <section id="buttons">
             <table>
-              <tr><td><button id="restart" onclick="try{fetch(document.location.origin+'/control?restart');}catch(e){}">Restart</button></td><td><button id="get-still">Get Still</button></td><td><button id="toggle-stream">Start Stream</button></td></tr>
+              <tr><td><button id="wifi" onclick="location.href=document.location.origin+'/wifi';">Wi-Fi</button></td><td><button id="restart" onclick="try{fetch(document.location.origin+'/control?restart');}catch(e){}">Restart</button></td><td><button id="get-still">Still</button></td><td><button id="toggle-stream">Start Stream</button></td></tr>
             </table>
         </section>
         <section class="main">      
@@ -1228,6 +1236,30 @@ static esp_err_t index_handler(httpd_req_t *req){
     return httpd_resp_send(req, (const char *)INDEX_HTML, strlen(INDEX_HTML));
 }
 
+static esp_err_t wifi_handler(httpd_req_t *req) {
+  
+  const char index_wifi_html[] PROGMEM = R"rawliteral(
+  <!doctype html>
+  <html>
+      <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width,initial-scale=1">
+          <title>ESP32-CAM Caution Area</title>  
+      </head>
+      <body>
+      WIFI SSID: <input type="text" id="ssid"><br>
+      WIFI  PWD: <input type="text" id="pwd"><br>
+      <input type="button" value="Set" onclick="location.href='/control?resetwifi='+document.getElementById('ssid').value+';'+document.getElementById('pwd').value;">
+      </body>
+  </html>        
+  )rawliteral";
+
+  httpd_resp_set_type(req, "text/html");
+  httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+  httpd_resp_send(req, (const char *)index_wifi_html, strlen(index_wifi_html));
+  return ESP_OK;
+}
+
 //自訂網址路徑要執行的函式
 void startCameraServer(){
   httpd_config_t config = HTTPD_DEFAULT_CONFIG();  //可在HTTPD_DEFAULT_CONFIG()中設定Server Port 
@@ -1271,6 +1303,12 @@ void startCameraServer(){
       .handler   = stream_handler,
       .user_ctx  = NULL
   };
+  httpd_uri_t wifi_uri = {
+    .uri       = "/wifi",
+    .method    = HTTP_GET,
+    .handler   = wifi_handler,
+    .user_ctx  = NULL
+  };    
   
   Serial.printf("Starting web server on port: '%d'\n", config.server_port);  //Server Port
   if (httpd_start(&camera_httpd, &config) == ESP_OK) {
@@ -1279,6 +1317,7 @@ void startCameraServer(){
       httpd_register_uri_handler(camera_httpd, &cmd_uri);
       httpd_register_uri_handler(camera_httpd, &status_uri);
       httpd_register_uri_handler(camera_httpd, &capture_uri);
+      httpd_register_uri_handler(camera_httpd, &wifi_uri);       
   }
   
   config.server_port += 1;  //Stream Port
@@ -1317,4 +1356,69 @@ void getCommand(char c)
     if (c=='=') equalstate=1;
     if ((strState>=9)&&(c==';')) semicolonstate=1;
   }
+}
+
+String sendRequest2LineNotify(String token, String request) {
+  request.replace("%","%25");
+  request.replace(" ","%20");
+  //request.replace("&","%20");
+  request.replace("#","%20");
+  //request.replace("\'","%27");
+  request.replace("\"","%22");
+  request.replace("\n","%0D%0A");
+  request.replace("%3Cbr%3E","%0D%0A");
+  request.replace("%3Cbr/%3E","%0D%0A");
+  request.replace("%3Cbr%20/%3E","%0D%0A");
+  request.replace("%3CBR%3E","%0D%0A");
+  request.replace("%3CBR/%3E","%0D%0A");
+  request.replace("%3CBR%20/%3E","%0D%0A"); 
+  request.replace("%20stickerPackageId","&stickerPackageId");
+  request.replace("%20stickerId","&stickerId");    
+
+  WiFiClientSecure client_tcp;
+  client_tcp.setInsecure();   //run version 1.0.5 or above
+  
+  Serial.println("Connect to notify-api.line.me");  
+  
+  if (client_tcp.connect("notify-api.line.me", 443)) {
+    Serial.println("Connection successful");
+        
+    //Serial.println(request);    
+    client_tcp.println("POST /api/notify HTTP/1.1");
+    client_tcp.println("Connection: close"); 
+    client_tcp.println("Host: notify-api.line.me");
+    client_tcp.println("User-Agent: ESP8266/1.0");
+    client_tcp.println("Authorization: Bearer " + token);
+    client_tcp.println("Content-Type: application/x-www-form-urlencoded");
+    client_tcp.println("Content-Length: " + String(request.length()));
+    client_tcp.println();
+    client_tcp.println(request);
+    client_tcp.println();
+    
+    String getResponse="",Feedback="";
+    boolean state = false;
+    int waitTime = 3000;   // timeout 3 seconds
+    long startTime = millis();
+    while ((startTime + waitTime) > millis()) {
+      Serial.print(".");
+      delay(100);      
+      while (client_tcp.available()) {
+          char c = client_tcp.read();
+          if (state==true) Feedback += String(c);        
+          if (c == '\n') {
+            if (getResponse.length()==0) state=true; 
+            getResponse = "";
+          } 
+          else if (c != '\r')
+            getResponse += String(c);
+          startTime = millis();
+       }
+       if (getResponse.length()>0) break;
+    }
+    Serial.println();
+    client_tcp.stop();
+    return Feedback;
+  }
+  else
+    return "Connection failed";  
 }
