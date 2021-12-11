@@ -49,11 +49,11 @@ http://192.168.xxx.xxx/control?var=anglestep&val=value          //伺服馬達�
 */
 
 //輸入WIFI連線帳號密碼
-const char* ssid     = "teacher";   //your network SSID
-const char* password = "87654321";   //your network password
+const char* ssid     = "boat01";   //your network SSID
+const char* password = "12345678";   //your network password
 
 //輸入AP端連線帳號密碼
-const char* apssid = "ESP32-CAM";
+const char* apssid = "boat01";
 const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 
 String lineNotifyToken = "";    //Line Notify Token
