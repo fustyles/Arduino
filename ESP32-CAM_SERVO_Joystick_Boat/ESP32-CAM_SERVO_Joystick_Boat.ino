@@ -3,8 +3,8 @@ ESP32-CAM boat controlled by using Joystick
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-12-11 13:00
 https://www.facebook.com/francefu
 
-Servo -> gpio2 (伺服馬達與ESP32-CAM共地外接電源)
-Motor Driver IC -> gpio12, gpio13 (避免使用L9100S)
+Servo -> gpio2 (船舵的角度，伺服馬達與ESP32-CAM共地外接電源)
+Motor Driver IC -> gpio12, gpio13 (螺旋槳水泵，避免使用L9100S，獨立外接電源)
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
 http://192.168.xxx.xxx:81/stream   //取得串流影像       網頁語法 <img src="http://192.168.xxx.xxx:81/stream">
@@ -25,9 +25,8 @@ http://192.168.xxx.xxx/control?resetwifi=ssid;password   //重設Wi-Fi網路
 http://192.168.xxx.xxx/control?restart                   //重啟ESP32-CAM
 http://192.168.xxx.xxx/control?flash=value               //閃光燈 value= 0~255
 http://192.168.xxx.xxx/control?relay=pin;value           //繼電器 value = 0, 1
-http://192.168.xxx.xxx/control?speed=value      //速度 value= 0~255
-
-http://192.168.xxx.xxx/control?joystick=direction           //伺服馬達
+http://192.168.xxx.xxx/control?speed=value               //螺旋槳速度 value= 0~255
+http://192.168.xxx.xxx/control?joystick=direction        //控制船的方向 Up(上)、C(停止)、S(下)、NW(左上)、NE(右上)、SW(左下)、SE(右下)
 
 官方指令格式 http://192.168.xxx.xxx/control?var=***&val=***
 
