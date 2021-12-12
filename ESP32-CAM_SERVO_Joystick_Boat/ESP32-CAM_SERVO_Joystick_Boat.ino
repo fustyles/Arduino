@@ -46,11 +46,11 @@ http://192.168.xxx.xxx/control?var=flash&val=value              //閃光燈 valu
 */
 
 //輸入WIFI連線帳號密碼
-const char* ssid     = "boat01";   //your network SSID
+const char* ssid     = "boatxx";   //your network SSID
 const char* password = "12345678";   //your network password
 
 //輸入AP端連線帳號密碼
-const char* apssid = "boat01";
+const char* apssid = "boatxx";
 const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 
 String lineNotifyToken = "";    //Line Notify Token
