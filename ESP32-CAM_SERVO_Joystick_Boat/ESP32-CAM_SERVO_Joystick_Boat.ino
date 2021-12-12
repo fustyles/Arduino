@@ -39,9 +39,6 @@ http://192.168.xxx.xxx/control?var=special_effect&val=value     //特效 value =
 http://192.168.xxx.xxx/control?var=hmirror&val=value            //水平鏡像 value = 0 or 1 
 http://192.168.xxx.xxx/control?var=vflip&val=value              //垂直翻轉 value = 0 or 1       // value = 0 or 1 
 http://192.168.xxx.xxx/control?var=flash&val=value              //閃光燈 value = 0 ~ 255
-http://192.168.xxx.xxx/control?var=servoH&val=value             //伺服馬達1 value= 1700~8000
-http://192.168.xxx.xxx/control?var=servoV&val=value             //伺服馬達2 value= 1700~8000
-http://192.168.xxx.xxx/control?var=anglestep&val=value          //伺服馬達轉動角度
 
 查詢Client端IP：
 查詢IP：http://192.168.4.1/?ip
