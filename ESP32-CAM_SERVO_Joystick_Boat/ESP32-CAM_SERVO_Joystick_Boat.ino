@@ -26,7 +26,7 @@ http://192.168.xxx.xxx/control?restart                   //重啟ESP32-CAM
 http://192.168.xxx.xxx/control?flash=value               //閃光燈 value= 0~255
 http://192.168.xxx.xxx/control?relay=pin;value           //繼電器 value = 0, 1
 http://192.168.xxx.xxx/control?speed=value               //螺旋槳速度 value= 0~255
-http://192.168.xxx.xxx/control?joystick=direction        //控制船的方向 Up(上)、C(停止)、S(下)、NW(左上)、NE(右上)、SW(左下)、SE(右下)
+http://192.168.xxx.xxx/control?joystick=direction        //控制船的行進 Up(上)、C(停止)、S(下)、NW(左上)、NE(右上)、SW(左下)、SE(右下)
 
 官方指令格式 http://192.168.xxx.xxx/control?var=***&val=***
 
