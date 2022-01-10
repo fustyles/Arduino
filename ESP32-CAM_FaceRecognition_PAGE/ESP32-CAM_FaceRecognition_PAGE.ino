@@ -25,7 +25,9 @@ http://192.168.xxx.xxx/control?var=contrast&val=value       //對比 value = -2 
 const char* ssid = "teacher";
 const char* password = "87654321";
 
-String LineToken = "";  //傳送區域網路IP至Line通知(用不到可不填)
+String LineToken = "xyzoVC5O980of8tqdidXvBJurw1hC6tiq5cnUvEla3cfN8";  //傳送區域網路IP至Line通知(用不到可不填)
+byte pinRelay = 14;     //控制繼電器腳位(門鎖)
+byte pinBuzzer = 2;     //控制蜂鳴器腳位(警示音)
 
 //輸入AP端連線帳號密碼  http://192.168.4.1
 const char* apssid = "esp32-cam";
@@ -39,7 +41,7 @@ const char* appassword = "12345678";         //AP密碼至少要8個字元以上
 //設定人臉辨識顯示的人名
 String recognize_face_matched_name[7] = {"Name0","Name1","Name2","Name3","Name4","Name5","Name6"};
 
-boolean controlState = false;  //是否執行函式 void FaceMatched(), void FaceNoMatched
+boolean controlState = false;  //是否執行函式 void FaceMatched(), void FaceNoMatched()
 
 #include <WiFi.h>
 #include <HTTPClient.h>
@@ -258,16 +260,26 @@ void loop() {
   delay(10000);
 }
 
+void tone(int pin, int frequency, int duration) {
+  ledcSetup(9, 2000, 8);
+  ledcAttachPin(pin, 9);
+  ledcWriteTone(9, frequency);
+  delay(duration);
+  ledcWriteTone(9, 0);
+}
+
 void FaceMatched(int faceid) {  //辨識到註冊人臉執行指令控制
   if (controlState == false) return;
   Serial.println("FaceMatched = "+String(faceid));
-  
+
+  //觸發繼電器3秒鐘
+  pinMode (pinRelay, OUTPUT);
+  digitalWrite (pinRelay, HIGH);
+  //發出一長音
+  pinMode(pinBuzzer,OUTPUT);
+  tone(pinBuzzer, 262, 3000);
+  digitalWrite (pinRelay, LOW);
   if (faceid==0) {
-    /*
-    byte Pin = 2;
-    pinMode (Pin, OUTPUT);
-    digitalWrite (Pin, HIGH);
-    */
   } 
   else if (faceid==1) {   
   } 
@@ -289,6 +301,11 @@ void FaceNoMatched() {  //辨識為陌生人臉執行指令控制
   if (controlState == false) return;
   Serial.println("FaceNoMatched");
   
+  //發出三短音
+  pinMode(pinBuzzer,OUTPUT);
+  for (int i=0;i<3;i++) {
+    tone(pinBuzzer, 262, 100);
+  }
 }
 
 void startCameraServer(){
