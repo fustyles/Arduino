@@ -61,13 +61,9 @@ class CharacteristicCallbacks: public BLECharacteristicCallbacks {
         }
 
         /*
-        float txValue = 100; // This could be an actual sensor reading!
-        char txString[8]; // make sure this is big enuffz
-        dtostrf(txValue, 1, 2, txString); // float_val, min_width, digits_after_decimal, char_buffer
         //characteristicTX->setValue(txValue, 1); // To send the integer value
         //characteristicTX->setValue("Hello!"); // Sending a test message
-        characteristicTX->setValue(txString);
-        characteristicTX->notify();
+        //characteristicTX->notify();
         */
       }
     }
