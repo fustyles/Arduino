@@ -14,6 +14,9 @@ Uart Command Format :
 ?digitalread=pin
 ?touchread=pin
 ?analogread=pin
+
+Web Serial
+https://github.com/fustyles/webduino/blob/master/WebSerial.html
 */
 
 String ReceiveData="", command="",cmd="",str1="",str2="",str3="",str4="",str5="",str6="",str7="",str8="",str9="";
