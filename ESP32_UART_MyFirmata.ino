@@ -60,7 +60,7 @@ void executecommand() {
     SendData(String(analogRead(str1.toInt())));
   }  
   else {
-    SendData("command is not defined");
+    SendData("Command is not defined");
   }   
 }
 
