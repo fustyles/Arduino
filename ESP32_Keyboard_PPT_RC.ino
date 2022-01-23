@@ -125,21 +125,21 @@ void ExecuteCommand() {
       bleKeyboard.releaseAll();
     }
     else
-      Feedback="Please connect to ESP32 BLE";       
+      Feedback="Please connect to ESP32 keyboard";       
   }  
   else if (cmd=="keyboardprint") {
     if(bleKeyboard.isConnected()) {
       bleKeyboard.print(P1);
     }
     else
-      Feedback="Please connect to ESP32 BLE";    
+      Feedback="Please connect to ESP32 keyboard";    
   } 
   else if (cmd=="keyboardwrite") {
     if(bleKeyboard.isConnected()) {
       bleKeyboard.write(char(P1.toInt()));
     }
     else
-      Feedback="Please connect to ESP32 BLE";    
+      Feedback="Please connect to ESP32 keyboard";    
   }
   else {
     Feedback="Command is not defined";
