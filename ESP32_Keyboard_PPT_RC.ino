@@ -200,7 +200,7 @@ void setup() {
   long int StartTime=millis();
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    if ((StartTime+10000) < millis()) break;
+    if ((StartTime+5000) < millis()) break;
   } 
 
   if (WiFi.status() == WL_CONNECTED) {
