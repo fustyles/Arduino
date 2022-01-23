@@ -279,8 +279,7 @@ void getRequest() {
   }
 }
 
-void getCommand(char c)
-{
+void getCommand(char c) {
   if (c=='?') ReceiveState=1;
   if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
   
