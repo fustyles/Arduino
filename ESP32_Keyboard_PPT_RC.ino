@@ -181,6 +181,7 @@ void setup() {
   Serial.println("Starting BLE");
 
   initWiFi();
+  server.begin(); 
 }
 
 void loop() {
@@ -231,8 +232,6 @@ void initWiFi() {
   Serial.println("");
   Serial.println("APIP address: ");
   Serial.println(WiFi.softAPIP()); 
-  
-  server.begin(); 
 }
 
 void getRequest() {
