@@ -178,10 +178,9 @@ void setup() {
   Serial.begin(115200);
   
   bleKeyboard.begin(); 
-  Serial.println("Starting BLE");
+  Serial.println("Starting Ble Keyboard");
 
   initWiFi();
-  server.begin(); 
 }
 
 void loop() {
@@ -231,7 +230,9 @@ void initWiFi() {
   //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
   Serial.println("");
   Serial.println("APIP address: ");
-  Serial.println(WiFi.softAPIP()); 
+  Serial.println(WiFi.softAPIP());
+  
+  server.begin(); 
 }
 
 void getRequest() {
