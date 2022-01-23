@@ -180,6 +180,15 @@ void setup() {
   bleKeyboard.begin(); 
   Serial.println("Starting BLE");
 
+  initWiFi();   
+  server.begin();   
+}
+
+void loop() {
+  getRequest();
+}
+
+void initWiFi() {
   WiFi.mode(WIFI_AP_STA);
 
   //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
@@ -223,12 +232,6 @@ void setup() {
   Serial.println("");
   Serial.println("APIP address: ");
   Serial.println(WiFi.softAPIP()); 
-     
-  server.begin();   
-}
-
-void loop() {
-  getRequest();
 }
 
 void getRequest() {
