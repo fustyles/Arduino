@@ -1,8 +1,11 @@
-/**
- * This example turns the ESP32 into a Bluetooth LE keyboard that writes the words, presses Enter, presses a media key and then Ctrl+Alt+Delete
- */
+/*
+ESP32 Keyboard RC for PPT
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-1-23 13:00
+https://www.facebook.com/francefu
 
-// Library: https://github.com/T-vK/ESP32-BLE-Keyboard
+Library: https://github.com/T-vK/ESP32-BLE-Keyboard
+*/
+
 #include <BleKeyboard.h>
 BleKeyboard bleKeyboard;
 
