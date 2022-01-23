@@ -394,11 +394,10 @@ void mainPage() {
     String Data="";
     if (cmd!="")
       Data = Feedback;
-    else {
+    else
       Data = String((const char *)PPT_RC);
-    }
-    int Index;
-    for (Index = 0; Index < Data.length(); Index = Index+1000) {
+   
+    for (int Index = 0; Index < Data.length(); Index = Index+1000) {
       client.print(Data.substring(Index, Index+1000));
     }
 }
