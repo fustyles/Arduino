@@ -375,6 +375,7 @@ static const char PROGMEM PPT_RC[] = R"rawliteral(
         </td>
       </tr>
     </table>
+    <script>var sendkeys = document.getElementById('sendkeys');</script>
   </body>
 </html>
 )rawliteral";
