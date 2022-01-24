@@ -248,40 +248,53 @@ void initWiFi() {
 
   //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
 
-  WiFi.begin(ssid, password);
-
-  delay(1000);
-  Serial.println("");
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
+  for (int i=0;i<2;i++) {
+    WiFi.begin(ssid, password);
   
-  long int StartTime=millis();
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    if ((StartTime+5000) < millis()) break;
+    delay(1000);
+    Serial.println("");
+    Serial.print("Connecting to ");
+    Serial.println(ssid);
+    
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        if ((StartTime+5000) < millis()) break;
+    } 
+  
+    if (WiFi.status() == WL_CONNECTED) {
+      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP         
+      Serial.println("");
+      Serial.println("STAIP address: ");
+      Serial.println(WiFi.localIP());
+      Serial.println("");
+  
+      pinMode(2, OUTPUT);
+      for (int i=0;i<5;i++) {
+        digitalWrite(2,HIGH);
+        delay(100);
+        digitalWrite(2,LOW);
+        delay(100);
+      }
+      
+      if (lineToken!="")
+      LineNotify(lineToken, WiFi.localIP().toString());
+      
+      break;
+    }
   } 
 
-  if (WiFi.status() == WL_CONNECTED) {
+  if (WiFi.status() != WL_CONNECTED) {    //若連線失敗
+    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);         
+
     pinMode(2, OUTPUT);
-    for (int i=0;i<5;i++) {
+    for (int i=0;i<2;i++) {
       digitalWrite(2,HIGH);
-      delay(100);
+      delay(1000);
       digitalWrite(2,LOW);
-      delay(100);
+      delay(1000);
     }
-  }  
-
-  Serial.println("");
-  Serial.println("STAIP address: ");
-  Serial.println(WiFi.localIP());
-
-  if (WiFi.status() == WL_CONNECTED) {
-    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);
-    if (lineToken!="")
-      LineNotify(lineToken, WiFi.localIP().toString());
-  }
-  else
-    WiFi.softAP(apssid, appassword);
+  } 
     
   //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
   Serial.println("");
