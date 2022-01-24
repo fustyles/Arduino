@@ -5,6 +5,59 @@ https://www.facebook.com/francefu
 
 Library: 
 https://github.com/T-vK/ESP32-BLE-Keyboard
+
+http://192.168.xxx.xxx/?ip
+http://192.168.xxx.xxx/?mac
+http://192.168.xxx.xxx/?restart
+http://192.168.xxx.xxx/?resetwifi=ssid;password
+http://192.168.xxx.xxx/?inputpullup=pin
+http://192.168.xxx.xxx/?pinmode=pin;value
+http://192.168.xxx.xxx/?digitalwrite=pin;value
+http://192.168.xxx.xxx/?analogwrite=pin;value
+http://192.168.xxx.xxx/?digitalread=pin
+http://192.168.xxx.xxx/?analogread=pin
+http://192.168.xxx.xxx/?touchread=pin  
+http://192.168.xxx.xxx/?keyboardpress=keycode1;keycode2;keycode3;presstime
+http://192.168.xxx.xxx/?keyboardprint=characters
+http://192.168.xxx.xxx/?keyboardwrite=keycode
+
+Keyboard Modifiers (keyboardpress)
+https://www.arduino.cc/en/Reference/KeyboardModifiers
+ 
+Remote Control for PPT  (keyboard press = keycode1, keycode2, pressTime)
+keyboard write = 198              "F5"
+keyboard write = 211              "PAGE UP"
+keyboard press = 133, 198, 10     "SHIFT+F5"      
+keyboard write = 214              "PAGE DOWN"
+keyboard write = 87               "W"
+keyboard write = 177              "ESC"
+keyboard write = 66               "B"
+
+Remote Control for Game  (keyboard press = keycode1, keycode2, pressTime)
+keyboard press = 215, , 100       "KEY_RIGHT_ARROW"
+keyboard press = 216, , 100       "KEY_LEFT_ARROW"
+keyboard press = 217, , 100       "KEY_DOWN_ARROW"
+keyboard press = 218, , 200       "KEY_UP_ARROW"
+keyboard press = 215, 218, 200    "KEY_RIGHT_ARROW + KEY_UP_ARROW"
+keyboard press = 216, 218, 200    "KEY_LEFT_ARROW + KEY_UP_ARROW"
+
+Keycode Constant
+KEY_MEDIA_NEXT_TRACK
+KEY_MEDIA_PREVIOUS_TRACK
+KEY_MEDIA_STOP
+KEY_MEDIA_PLAY_PAUSE
+KEY_MEDIA_MUTE
+KEY_MEDIA_VOLUME_UP
+KEY_MEDIA_VOLUME_DOWN
+KEY_MEDIA_WWW_HOME
+KEY_MEDIA_LOCAL_MACHINE_BROWSER
+KEY_MEDIA_CALCULATOR
+KEY_MEDIA_WWW_BOOKMARKS
+KEY_MEDIA_WWW_SEARCH
+KEY_MEDIA_WWW_STOP
+KEY_MEDIA_WWW_BACK
+KEY_MEDIA_CONSUMER_CONTROL_CONFIGURATION
+KEY_MEDIA_EMAIL_READER
 */
 
 #include <BleKeyboard.h>
