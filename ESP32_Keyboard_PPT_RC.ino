@@ -321,7 +321,7 @@ void getRequest() {
                 
         if (c == '\n') {
           if (currentLine.length() == 0) {          
-            mainPage();
+            response();
             Feedback="";
             break;
           } else {
@@ -449,7 +449,7 @@ static const char PROGMEM PPT_RC[] = R"rawliteral(
 </html>
 )rawliteral";
 
-void mainPage() {
+void response() {
     client.println("HTTP/1.1 200 OK");
     client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
     client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
