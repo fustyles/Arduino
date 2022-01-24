@@ -270,7 +270,7 @@ void initWiFi() {
       Serial.println("");
   
       pinMode(2, OUTPUT);
-      for (int i=0;i<5;i++) {
+      for (int j=0;j<5;j++) {
         digitalWrite(2,HIGH);
         delay(100);
         digitalWrite(2,LOW);
@@ -288,7 +288,7 @@ void initWiFi() {
     WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);         
 
     pinMode(2, OUTPUT);
-    for (int i=0;i<2;i++) {
+    for (int k=0;k<2;k++) {
       digitalWrite(2,HIGH);
       delay(1000);
       digitalWrite(2,LOW);
