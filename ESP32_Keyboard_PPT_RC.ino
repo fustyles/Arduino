@@ -6,6 +6,9 @@ https://www.facebook.com/francefu
 Library: 
 https://github.com/T-vK/ESP32-BLE-Keyboard
 
+Keyboard Modifiers (keyboardpress)
+https://www.arduino.cc/en/Reference/KeyboardModifiers
+
 Command Format :  
 http://APIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://STAIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
@@ -26,9 +29,6 @@ http://192.168.xxx.xxx/?touchread=pin
 http://192.168.xxx.xxx/?keyboardpress=keycode1;keycode2;keycode3;presstime
 http://192.168.xxx.xxx/?keyboardprint=characters
 http://192.168.xxx.xxx/?keyboardwrite=keycode
-
-Keyboard Modifiers (keyboardpress)
-https://www.arduino.cc/en/Reference/KeyboardModifiers
  
 Remote Control for PPT  (keyboard press = keycode1, keycode2, pressTime)
 keyboard write = 198              "F5"
