@@ -6,6 +6,12 @@ https://www.facebook.com/francefu
 Library: 
 https://github.com/T-vK/ESP32-BLE-Keyboard
 
+Command Format :  
+http://APIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+http://STAIP/?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
+
+Default APIP： 192.168.4.1
+
 http://192.168.xxx.xxx/?ip
 http://192.168.xxx.xxx/?mac
 http://192.168.xxx.xxx/?restart
