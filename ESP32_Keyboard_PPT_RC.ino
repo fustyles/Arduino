@@ -1,6 +1,6 @@
 /*
 ESP32 Keyboard RC for PPT
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-1-24 08:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-1-25 08:00
 https://www.facebook.com/francefu
 
 Library: 
@@ -94,7 +94,7 @@ const char* appassword = "12345678";         //AP password require at least 8 ch
 String lineToken = "";
 
 //自訂指令參數值
-String Command="";
+String command="";
 String cmd="";
 String P1="";
 String P2="";
@@ -107,32 +107,32 @@ String P8="";
 String P9="";
 
 //自訂指令拆解狀態值
-byte ReceiveState=0;
+byte receiveState=0;
 byte cmdState=1;
-byte strState=1;
-byte questionstate=0;
-byte equalstate=0;
-byte semicolonstate=0;
+byte pState=1;
+byte questionState=0;
+byte equalState=0;
+byte semicolonState=0;
 
-String Feedback = "";
+String feedback = "";
 
-void ExecuteCommand() {
+void executecommand() {
   Serial.println("");
-  //Serial.println("Command: "+Command);
+  //Serial.println("command: "+command);
   Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
   Serial.println("");
   
   if (cmd=="your cmd") {
     // You can do anything
-    // Feedback="<font color=\"red\">Hello World</font>";
+    // feedback="<font color=\"red\">Hello World</font>";
   }
   else if (cmd=="ip") {
-    Feedback="AP IP: "+WiFi.softAPIP().toString();    
-    Feedback+="<br>";
-    Feedback+="STA IP: "+WiFi.localIP().toString();
+    feedback="AP IP: "+WiFi.softAPIP().toString();    
+    feedback+="<br>";
+    feedback+="STA IP: "+WiFi.localIP().toString();
   }  
   else if (cmd=="mac") {
-    Feedback="STA MAC: "+WiFi.macAddress();
+    feedback="STA MAC: "+WiFi.macAddress();
   }  
   else if (cmd=="restart") {
     ESP.restart();
@@ -150,9 +150,9 @@ void ExecuteCommand() {
     Serial.println("STAIP: "+WiFi.localIP().toString());
     if (WiFi.localIP().toString()!="0.0.0.0") {
       if (lineToken!="")
-        LineNotify(lineToken, WiFi.localIP().toString());
+        lineNotify(lineToken, WiFi.localIP().toString());
     }
-    Feedback="STAIP: "+WiFi.localIP().toString();
+    feedback="STAIP: "+WiFi.localIP().toString();
   }    
   else if (cmd=="inputpullup") {
     pinMode(P1.toInt(), INPUT_PULLUP);
@@ -169,7 +169,7 @@ void ExecuteCommand() {
     digitalWrite(P1.toInt(), P2.toInt());
   }   
   else if (cmd=="digitalread") {
-    Feedback=String(digitalRead(P1.toInt()));
+    feedback=String(digitalRead(P1.toInt()));
   }
   else if (cmd=="analogwrite") {
     ledcAttachPin(P1.toInt(), 1);
@@ -178,10 +178,10 @@ void ExecuteCommand() {
   }       
   else if (cmd=="analogread")
   {
-    Feedback=String(analogRead(P1.toInt()));
+    feedback=String(analogRead(P1.toInt()));
   }
   else if (cmd=="touchread") {
-    Feedback=String(touchRead(P1.toInt()));
+    feedback=String(touchRead(P1.toInt()));
   }  
   else if (cmd=="keyboardpress") {
     if(bleKeyboard.isConnected()) {
@@ -192,24 +192,24 @@ void ExecuteCommand() {
       bleKeyboard.releaseAll();
     }
     else
-      Feedback="Please connect to ESP32 keyboard";       
+      feedback="Please connect to ESP32 keyboard";       
   }  
   else if (cmd=="keyboardprint") {
     if(bleKeyboard.isConnected()) {
       bleKeyboard.print(P1);
     }
     else
-      Feedback="Please connect to ESP32 keyboard";    
+      feedback="Please connect to ESP32 keyboard";    
   } 
   else if (cmd=="keyboardwrite") {
     if(bleKeyboard.isConnected()) {
       bleKeyboard.write(char(P1.toInt()));
     }
     else
-      Feedback="Please connect to ESP32 keyboard";    
+      feedback="Please connect to ESP32 keyboard";    
   }
   else {
-    Feedback="Command is not defined";
+    feedback="command is not defined";
   }  
 
   /*
@@ -278,7 +278,7 @@ void initWiFi() {
       }
       
       if (lineToken!="")
-      LineNotify(lineToken, WiFi.localIP().toString());
+      lineNotify(lineToken, WiFi.localIP().toString());
       
       break;
     }
@@ -305,8 +305,8 @@ void initWiFi() {
 }
 
 void getRequest() {
-  Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
-  ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
+  command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
+  receiveState=0,cmdState=1,pState=1,questionState=0,equalState=0,semicolonState=0;
 
   client = server.available();
   
@@ -317,12 +317,12 @@ void getRequest() {
       if (client.available()) {
         char c = client.read();             
         
-        getCommand(c);
+        getcommand(c);
                 
         if (c == '\n') {
           if (currentLine.length() == 0) {          
             sendResponse();
-            Feedback="";
+            feedback="";
             break;
           } else {
             currentLine = "";
@@ -333,14 +333,14 @@ void getRequest() {
         }
 
         if ((currentLine.indexOf("/?")!=-1)&&(currentLine.indexOf(" HTTP")!=-1)) {
-          if (Command.indexOf("stop")!=-1) {
+          if (command.indexOf("stop")!=-1) {
             client.println();
             client.println();
             client.stop();
           }
           currentLine="";
-          Feedback="";
-          ExecuteCommand();
+          feedback="";
+          executecommand();
         }
       }
     }
@@ -349,30 +349,30 @@ void getRequest() {
   }
 }
 
-void getCommand(char c) {
-  if (c=='?') ReceiveState=1;
-  if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;
+void getcommand(char c) {
+  if (c=='?') receiveState=1;
+  if ((c==' ')||(c=='\r')||(c=='\n')) receiveState=0;
   
-  if (ReceiveState==1) {
-    Command=Command+String(c);
+  if (receiveState==1) {
+    command=command+String(c);
     
     if (c=='=') cmdState=0;
-    if (c==';') strState++;
+    if (c==';') pState++;
   
-    if ((cmdState==1)&&((c!='?')||(questionstate==1))) cmd=cmd+String(c);
-    if ((cmdState==0)&&(strState==1)&&((c!='=')||(equalstate==1))) P1=P1+String(c);
-    if ((cmdState==0)&&(strState==2)&&(c!=';')) P2=P2+String(c);
-    if ((cmdState==0)&&(strState==3)&&(c!=';')) P3=P3+String(c);
-    if ((cmdState==0)&&(strState==4)&&(c!=';')) P4=P4+String(c);
-    if ((cmdState==0)&&(strState==5)&&(c!=';')) P5=P5+String(c);
-    if ((cmdState==0)&&(strState==6)&&(c!=';')) P6=P6+String(c);
-    if ((cmdState==0)&&(strState==7)&&(c!=';')) P7=P7+String(c);
-    if ((cmdState==0)&&(strState==8)&&(c!=';')) P8=P8+String(c);
-    if ((cmdState==0)&&(strState>=9)&&((c!=';')||(semicolonstate==1))) P9=P9+String(c);
+    if ((cmdState==1)&&((c!='?')||(questionState==1))) cmd=cmd+String(c);
+    if ((cmdState==0)&&(pState==1)&&((c!='=')||(equalState==1))) P1=P1+String(c);
+    if ((cmdState==0)&&(pState==2)&&(c!=';')) P2=P2+String(c);
+    if ((cmdState==0)&&(pState==3)&&(c!=';')) P3=P3+String(c);
+    if ((cmdState==0)&&(pState==4)&&(c!=';')) P4=P4+String(c);
+    if ((cmdState==0)&&(pState==5)&&(c!=';')) P5=P5+String(c);
+    if ((cmdState==0)&&(pState==6)&&(c!=';')) P6=P6+String(c);
+    if ((cmdState==0)&&(pState==7)&&(c!=';')) P7=P7+String(c);
+    if ((cmdState==0)&&(pState==8)&&(c!=';')) P8=P8+String(c);
+    if ((cmdState==0)&&(pState>=9)&&((c!=';')||(semicolonState==1))) P9=P9+String(c);
     
-    if (c=='?') questionstate=1;
-    if (c=='=') equalstate=1;
-    if ((strState>=9)&&(c==';')) semicolonstate=1;
+    if (c=='?') questionState=1;
+    if (c=='=') equalState=1;
+    if ((pState>=9)&&(c==';')) semicolonState=1;
   }
 }
 
@@ -458,18 +458,18 @@ void sendResponse() {
     client.println("Connection: close");
     client.println();
     
-    String Data="";
+    String data="";
     if (cmd!="")
-      Data = Feedback;
+      data = feedback;
     else
-      Data = String((const char *)PPT_RC);
+      data = String((const char *)PPT_RC);
    
-    for (int Index = 0; Index < Data.length(); Index = Index+1000) {
-      client.print(Data.substring(Index, Index+1000));
+    for (int index = 0; index < data.length(); index = index+1000) {
+      client.print(data.substring(index, index+1000));
     }
 }
 
-String LineNotify(String token, String message) {
+String lineNotify(String token, String message) {
   message.replace("%","%25");  
   message.replace(" ","%20");
   message.replace("&","%20");
@@ -478,7 +478,7 @@ String LineNotify(String token, String message) {
   message.replace("\"","%22");
   message.replace("\n","%0D%0A");
   
-  http.begin("http://linenotify.com/notify.php?token="+token+"&message="+message);
+  http.begin("http://lineNotify.com/notify.php?token="+token+"&message="+message);
   int httpCode = http.GET();
   if(httpCode > 0) {
       if(httpCode == 200) 
