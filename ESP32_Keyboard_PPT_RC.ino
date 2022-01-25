@@ -30,22 +30,22 @@ http://192.168.xxx.xxx/?keyboardpress=keycode1;keycode2;keycode3;presstime
 http://192.168.xxx.xxx/?keyboardprint=characters
 http://192.168.xxx.xxx/?keyboardwrite=keycode
  
-Remote Control for PPT  (keyboard press = keycode1, keycode2, pressTime)
+Remote Control for PPT  (keyboard press = keycode1, keycode2, keycode3, pressTime)
 keyboard write = 198              "F5"
 keyboard write = 211              "PAGE UP"
-keyboard press = 133, 198, 10     "SHIFT+F5"      
+keyboard press = 133,198,,10      "SHIFT+F5"      
 keyboard write = 214              "PAGE DOWN"
 keyboard write = 87               "W"
 keyboard write = 177              "ESC"
 keyboard write = 66               "B"
 
-Remote Control for Game  (keyboard press = keycode1, keycode2, pressTime)
-keyboard press = 215, , 100       "KEY_RIGHT_ARROW"
-keyboard press = 216, , 100       "KEY_LEFT_ARROW"
-keyboard press = 217, , 100       "KEY_DOWN_ARROW"
-keyboard press = 218, , 200       "KEY_UP_ARROW"
-keyboard press = 215, 218, 200    "KEY_RIGHT_ARROW + KEY_UP_ARROW"
-keyboard press = 216, 218, 200    "KEY_LEFT_ARROW + KEY_UP_ARROW"
+Remote Control for Game  (keyboard press = keycode1, keycode2, keycode3, pressTime)
+keyboard press = 215,,,100       "KEY_RIGHT_ARROW"
+keyboard press = 216,,,100       "KEY_LEFT_ARROW"
+keyboard press = 217,,,100       "KEY_DOWN_ARROW"
+keyboard press = 218,,,200       "KEY_UP_ARROW"
+keyboard press = 215,218,,200    "KEY_RIGHT_ARROW + KEY_UP_ARROW"
+keyboard press = 216,218,,200    "KEY_LEFT_ARROW + KEY_UP_ARROW"
 
 Keycode Constant
 KEY_LEFT_CTRL
