@@ -47,7 +47,7 @@ keyboard press = 218,,,200       "KEY_UP_ARROW"
 keyboard press = 215,218,,200    "KEY_RIGHT_ARROW + KEY_UP_ARROW"
 keyboard press = 216,218,,200    "KEY_LEFT_ARROW + KEY_UP_ARROW"
 
-Keycode Constant
+Keycode Constants
 KEY_LEFT_CTRL
 KEY_LEFT_SHIFT
 KEY_LEFT_ALT
