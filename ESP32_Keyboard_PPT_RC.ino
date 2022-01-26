@@ -116,7 +116,7 @@ byte semicolonState=0;
 
 String feedback = "";
 
-void executecommand() {
+void executeCommand() {
   Serial.println("");
   //Serial.println("command: "+command);
   Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
@@ -337,7 +337,7 @@ void getRequest() {
           }
           currentLine="";
           feedback="";
-          executecommand();
+          executeCommand();
         }
       }
     }
