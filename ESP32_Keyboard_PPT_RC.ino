@@ -461,8 +461,8 @@ void sendResponse() {
     else
       data = String((const char *)PPT_RC);
    
-    for (int index = 0; index < data.length(); index = index+1000) {
-      client.print(data.substring(index, index+1000));
+    for (int index = 0; index < data.length(); index = index+1024) {
+      client.print(data.substring(index, index+1024));
     }
 }
 
