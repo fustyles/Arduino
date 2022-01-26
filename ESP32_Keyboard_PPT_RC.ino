@@ -314,7 +314,7 @@ void getRequest() {
       if (client.available()) {
         char c = client.read();             
         
-        getcommand(c);
+        getCommand(c);
                 
         if (c == '\n') {
           if (currentLine.length() == 0) {          
@@ -346,7 +346,7 @@ void getRequest() {
   }
 }
 
-void getcommand(char c) {
+void getCommand(char c) {
   if (c=='?') receiveState=1;
   if ((c==' ')||(c=='\r')||(c=='\n')) receiveState=0;
   
