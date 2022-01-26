@@ -206,7 +206,7 @@ void executeCommand() {
       feedback="Please connect to ESP32 keyboard";    
   }
   else {
-    feedback="command is not defined";
+    feedback="Command is not defined";
   }  
 
   /*
