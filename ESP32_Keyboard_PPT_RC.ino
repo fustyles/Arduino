@@ -176,8 +176,7 @@ void executecommand() {
     ledcSetup(1, 5000, 8);
     ledcWrite(1,P2.toInt());
   }       
-  else if (cmd=="analogread")
-  {
+  else if (cmd=="analogread") {
     feedback=String(analogRead(P1.toInt()));
   }
   else if (cmd=="touchread") {
@@ -195,16 +194,14 @@ void executecommand() {
       feedback="Please connect to ESP32 keyboard";       
   }  
   else if (cmd=="keyboardprint") {
-    if(bleKeyboard.isConnected()) {
+    if(bleKeyboard.isConnected())
       bleKeyboard.print(P1);
-    }
     else
       feedback="Please connect to ESP32 keyboard";    
   } 
   else if (cmd=="keyboardwrite") {
-    if(bleKeyboard.isConnected()) {
+    if(bleKeyboard.isConnected())
       bleKeyboard.write(char(P1.toInt()));
-    }
     else
       feedback="Please connect to ESP32 keyboard";    
   }
