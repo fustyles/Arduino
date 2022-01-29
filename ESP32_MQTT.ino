@@ -192,7 +192,6 @@ void sendText(String text) {
     clientId += String(random(0xffff), HEX);
     if (client.connect(clientId.c_str())) {
       client.publish(MQTT_PUBLISH_TOPIC, text.c_str());
-      client.subscribe(MQTT_SUBSCRIBE_TOPIC);
     } else {
       Serial.print("failed");
     }
