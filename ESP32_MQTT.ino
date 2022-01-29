@@ -70,7 +70,7 @@ void executeCommand() {
   
   if (cmd=="your cmd") {
     // You can do anything
-    // feedback="<font color=\"red\">Hello World</font>";
+    // feedback="Hello World";
   }
   else if (cmd=="ip") {
     feedback="STA IP: "+WiFi.localIP().toString();
