@@ -188,19 +188,13 @@ void reconnect() {
 }
 
 void sendText(String text) {
-    Serial.print("Attempting MQTT connection...");
-    // Create a random client ID
     String clientId = "ESP32-";
     clientId += String(random(0xffff), HEX);
-    // Attempt to connect
     if (client.connect(clientId.c_str())) {
-      Serial.println("connected");
-      // Once connected, publish an announcement...
       client.publish(MQTT_PUBLISH_TOPIC, text.c_str());
-      // ... and resubscribe
       client.subscribe(MQTT_SUBSCRIBE_TOPIC);
     } else {
-      Serial.print("Publish failed");
+      Serial.print("failed");
     }
 }
 
