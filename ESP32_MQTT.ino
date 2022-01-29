@@ -193,7 +193,8 @@ void sendText(String text) {
     if (client.connect(clientId.c_str())) {
       client.publish(MQTT_PUBLISH_TOPIC, text.c_str());
     } else {
-      Serial.print("failed");
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
     }
 }
 
