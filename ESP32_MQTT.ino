@@ -73,10 +73,10 @@ void executeCommand() {
     // feedback="Hello World";
   }
   else if (cmd=="ip") {
-    feedback="STA IP: "+WiFi.localIP().toString();
+    feedback=WiFi.localIP().toString();
   }  
   else if (cmd=="mac") {
-    feedback="STA MAC: "+WiFi.macAddress();
+    feedback=WiFi.macAddress();
   }  
   else if (cmd=="restart") {
     ESP.restart();
@@ -92,7 +92,7 @@ void executeCommand() {
     } 
     Serial.println("");
     Serial.println("STAIP: "+WiFi.localIP().toString());
-    feedback="STAIP: "+WiFi.localIP().toString();
+    feedback=WiFi.localIP().toString();
   }     
   else if (cmd=="inputpullup") {
     pinMode(P1.toInt(), INPUT_PULLUP);
