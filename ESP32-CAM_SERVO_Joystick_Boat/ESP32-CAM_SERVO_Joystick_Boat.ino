@@ -1,6 +1,6 @@
 /*
 ESP32-CAM boat controlled by using Joystick
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-12-11 13:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-1-29 21:00
 https://www.facebook.com/francefu
 
 Servo -> gpio2 (船舵的角度，伺服馬達與ESP32-CAM共地外接兩顆鋰電池串聯降壓5V電源)
@@ -970,6 +970,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 <div id="sidebar">
                     <input type="checkbox" id="nav-toggle-cb">
                     <nav id="menu">
+                        <div class="input-group" id="joystickturn-group">
+                            <label for="joystickturn">Joystick turn 90</label>
+                            <div class="switch">
+                                <input id="joystickturn" type="checkbox" class="default-action">
+                                <label class="slider" for="joystickturn"></label>
+                            </div>
+                        </div>                    
                         <div class="input-group" id="rudder-group">
                             <label for="rudder">Rudder Angle</label>
                             <div class="range-min">0</div>
@@ -1097,7 +1104,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
               }
           
               const query = `${baseHost}/control?var=${el.id}&val=${value}`
-          
+
+              if (el.id=="joystickturn") return;
               fetch(query)
                 .then(response => {
                   console.log(`request to ${query} finished, status: ${response.status}`)
@@ -1187,6 +1195,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
          
         <script type="text/javascript">
           var chkcanvas = document.getElementById('chkcanvas');
+          var joystickturn = document.getElementById('joystickturn');
           var joy3Div = document.getElementById('joy3Div');
           var joy3Param = { "title": "joystick3" };
           var Joy3 = new JoyStick('joy3Div', joy3Param);
@@ -1210,8 +1219,19 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           
           function controlBoat() {
             var dir = Joy3.GetDir();
+            if (joystickturn.checked) {
+              if (dir=="E") dir="N";
+              else if (dir=="SE") dir="NE";
+              else if (dir=="S") dir="E";
+              else if (dir=="SW") dir="SE";
+              else if (dir=="W") dir="S";
+              else if (dir=="NW") dir="SW";
+              else if (dir=="N") dir="W";
+              else if (dir=="NE") dir="NW";
+            }
             if (dir!=lastdir) {
               lastdir = dir;
+              console.log(dir);
               var target_url = document.location.origin+'/control?joystick='+dir;
               fetch(target_url).then(function(response) {
                 return response.text();
