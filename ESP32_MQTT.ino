@@ -16,7 +16,7 @@ Command Format :
 ?inputpullup=pin
 ?pinmode=pin;value
 ?digitalwrite=pin;value
-?analogwrite=pin;value
+?analogwrite=pin;value;channel
 ?digitalread=pin
 ?analogread=pin
 ?touchread=pin  
@@ -115,10 +115,12 @@ void executeCommand() {
     feedback=String(digitalRead(P1.toInt()));
   }
   else if (cmd=="analogwrite") {
-    ledcAttachPin(P1.toInt(), 1);
-    ledcSetup(1, 5000, 8);
-    ledcWrite(1,P2.toInt());
-  }       
+    if (P3=="") P3="1";
+    int channel = P3.toInt();
+    ledcAttachPin(P1.toInt(), channel);
+    ledcSetup(channel, 5000, 8);
+    ledcWrite(channel,P2.toInt());
+  }     
   else if (cmd=="analogread") {
     feedback=String(analogRead(P1.toInt()));
   }
