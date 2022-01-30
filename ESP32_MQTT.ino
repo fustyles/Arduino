@@ -89,9 +89,13 @@ void executeCommand() {
         delay(500);
         if ((StartTime+5000) < millis()) break;
     } 
-    Serial.println("");
-    Serial.println("STAIP: "+WiFi.localIP().toString());
-    feedback=WiFi.localIP().toString();
+    if (WiFi.status() == WL_CONNECTED) {
+        Serial.println("");
+        Serial.println("STAIP: "+WiFi.localIP().toString());
+        feedback=WiFi.localIP().toString();
+    }
+    else
+        feedback="failed";
   }     
   else if (cmd=="inputpullup") {
     pinMode(P1.toInt(), INPUT_PULLUP);
