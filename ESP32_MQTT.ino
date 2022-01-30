@@ -1,6 +1,6 @@
 /*
 ESP32 MQTT
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-1-30 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-1-30 10:00
 https://www.facebook.com/francefu
 
 Library: 
@@ -127,7 +127,8 @@ void executeCommand() {
 
   Serial.println("feedback: "+feedback);
   Serial.println("");
-  sendText(feedback); 
+  if (feedback!="") 
+      sendText(feedback); 
 }
 
 void setup() {
