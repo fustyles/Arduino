@@ -141,7 +141,7 @@ void executeCommand() {
     feedback=String(digitalRead(P1.toInt()));
   }
   else if (cmd=="analogwrite") {
-    if (P3=="") P3="1";
+    if (P3=="") P3="3";
     int channel = P3.toInt();
     ledcAttachPin(P1.toInt(), channel);
     ledcSetup(channel, 5000, 8);
