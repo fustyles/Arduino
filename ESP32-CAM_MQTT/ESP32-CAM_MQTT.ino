@@ -376,9 +376,7 @@ String sendImage() {
   clientId += String(random(0xffff), HEX);
   if (client.connect(clientId.c_str())) {
     //https://github.com/knolleary/pubsubclient/blob/master/src/PubSubClient.h
-    
     client.beginPublish(MQTT_PUBLISH_TOPIC, fbLen, true);
-
     String str = "";
     for (size_t n=0;n<fbLen;n=n+2048) {
       if (n+2048<fbLen) {
@@ -391,11 +389,8 @@ String sendImage() {
         client.write((uint8_t*)str.c_str(), remainder);
       }
     }  
-    
     client.endPublish();
-    
     esp_camera_fb_return(fb);
-    
     return "";
   }
   esp_camera_fb_return(fb);
