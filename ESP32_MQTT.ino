@@ -161,7 +161,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
   Serial.println();
     
-  if (cmd!="") executeCommand();
+  if (cmd!="") 
+      executeCommand();
 }
 
 void reconnect() {
