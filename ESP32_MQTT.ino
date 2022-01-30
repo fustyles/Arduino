@@ -159,6 +159,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.print(c);
   }
   Serial.println();
+    
   if (cmd!="") executeCommand();
 }
 
