@@ -160,7 +160,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.print(c);
   }
   Serial.println();
-  executeCommand();
+  if (cmd!="") executeCommand();
 }
 
 void reconnect() {
