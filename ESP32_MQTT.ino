@@ -179,7 +179,7 @@ void reconnect() {
     String clientId = "ESP32-";
     clientId += String(random(0xffff), HEX);
     // Attempt to connect
-    if (client.connect(clientId.c_str())) {
+    if (client.connect(clientId.c_str(), MQTT_USER, MQTT_PASSWORD)) {
       Serial.println("connected");
       // Once connected, publish an announcement...
       //client.publish(MQTT_PUBLISH_TOPIC, "hello world");
@@ -198,7 +198,7 @@ void reconnect() {
 void sendText(String text) {
     String clientId = "ESP32-";
     clientId += String(random(0xffff), HEX);
-    if (client.connect(clientId.c_str())) {
+    if (client.connect(clientId.c_str(), MQTT_USER, MQTT_PASSWORD)) {
       client.publish(MQTT_PUBLISH_TOPIC, text.c_str());
     } else {
       Serial.print("failed, rc=");
