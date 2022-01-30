@@ -217,7 +217,7 @@ void reconnect() {
     String clientId = "ESP32-";
     clientId += String(random(0xffff), HEX);
     // Attempt to connect
-    if (client.connect(clientId.c_str())) {
+    if (client.connect(clientId.c_str(), MQTT_USER, MQTT_PASSWORD)) {
       Serial.println("connected");
       // Once connected, publish an announcement...
       //client.publish(MQTT_PUBLISH_TOPIC, "hello world");
@@ -347,7 +347,7 @@ void initWiFi() {
 void sendText(String text) {
     String clientId = "ESP32-";
     clientId += String(random(0xffff), HEX);
-    if (client.connect(clientId.c_str())) {
+    if (client.connect(clientId.c_str(), MQTT_USER, MQTT_PASSWORD)) {
       client.publish(MQTT_PUBLISH_TOPIC, text.c_str());
     } else {
       Serial.print("failed, rc=");
@@ -374,9 +374,11 @@ String sendImage() {
   
   String clientId = "ESP32-";
   clientId += String(random(0xffff), HEX);
-  if (client.connect(clientId.c_str())) {
+  if (client.connect(clientId.c_str(), MQTT_USER, MQTT_PASSWORD)) {
     //https://github.com/knolleary/pubsubclient/blob/master/src/PubSubClient.h
+    
     client.beginPublish(MQTT_PUBLISH_TOPIC, fbLen, true);
+
     String str = "";
     for (size_t n=0;n<fbLen;n=n+2048) {
       if (n+2048<fbLen) {
@@ -389,8 +391,11 @@ String sendImage() {
         client.write((uint8_t*)str.c_str(), remainder);
       }
     }  
+    
     client.endPublish();
+    
     esp_camera_fb_return(fb);
+    
     return "";
   }
   esp_camera_fb_return(fb);
