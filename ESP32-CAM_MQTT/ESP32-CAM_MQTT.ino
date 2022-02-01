@@ -25,7 +25,7 @@ Command Format :
 ?quality=value       // value = 10 to 63
 ?brightness=value    // value = -2 to 2
 ?contrast=value      // value = -2 to 2 
-?flash=value                 //value= 0~255
+?flash=value;channel         //value= 0~255
 ?servo=pin;value;channel     //value= 0~180
 */
 
@@ -160,10 +160,12 @@ void executeCommand() {
     feedback=String(touchRead(P1.toInt()));
   }
   else if (cmd=="flash") {
-    ledcAttachPin(4, 4);  
-    ledcSetup(4, 5000, 8);   
+    if (P3=="") P3="4";
+    int channel = P3.toInt();       
+    ledcAttachPin(4, channel);  
+    ledcSetup(channel, 5000, 8);   
     int val = P1.toInt();
-    ledcWrite(4,val);  
+    ledcWrite(channel,val);  
   }
   else if(cmd=="servo") {
     if (P3=="") P3="5";
