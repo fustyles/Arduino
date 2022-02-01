@@ -25,8 +25,8 @@ Command Format :
 ?quality=value       // value = 10 to 63
 ?brightness=value    // value = -2 to 2
 ?contrast=value      // value = -2 to 2 
-?flash=value;channel         //value= 0~255
-?servo=pin;value;channel     //value= 0~180
+?flash=value;channel         //value= 0~255, channel= 3~15
+?servo=pin;value;channel     //value= 0~180, channel= 3~15
 */
 
 #include <WiFi.h>
