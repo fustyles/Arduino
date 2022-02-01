@@ -21,7 +21,7 @@ Command Format :
 ?analogread=pin
 ?touchread=pin  
 ?getstill 
-?framesize=size      //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA 改變影像解析度
+?framesize=size      //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA
 ?quality=value       // value = 10 to 63
 ?brightness=value    // value = -2 to 2
 ?contrast=value      // value = -2 to 2 
