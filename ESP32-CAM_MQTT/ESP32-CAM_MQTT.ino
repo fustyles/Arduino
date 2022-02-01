@@ -20,7 +20,13 @@ Command Format :
 ?digitalread=pin
 ?analogread=pin
 ?touchread=pin  
-?getstill  
+?getstill 
+?framesize=size      //size= UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA 改變影像解析度
+?quality=value       // value = 10 to 63
+?brightness=value    // value = -2 to 2
+?contrast=value      // value = -2 to 2 
+?flash=value                 //value= 0~255
+?servo=pin;value;channel     //value= 0~180
 */
 
 #include <WiFi.h>
@@ -153,6 +159,63 @@ void executeCommand() {
   else if (cmd=="touchread") {
     feedback=String(touchRead(P1.toInt()));
   }
+  else if (cmd=="flash") {
+    ledcAttachPin(4, 4);  
+    ledcSetup(4, 5000, 8);   
+    int val = P1.toInt();
+    ledcWrite(4,val);  
+  }
+  else if(cmd=="servo") {
+    if (P3=="") P3="5";
+    int channel = P3.toInt();     
+    ledcAttachPin(P1.toInt(), channel);
+    ledcSetup(channel, 50, 16);
+
+    int val = 7864-P2.toInt()*34.59; 
+    if (val > 7864)
+       val = 7864;
+    else if (val < 1638)
+      val = 1638; 
+    ledcWrite(channel, val);
+  }
+  else if (cmd=="framesize") { 
+    sensor_t * s = esp_camera_sensor_get();  
+    if (P1=="QQVGA")
+      s->set_framesize(s, FRAMESIZE_QQVGA);
+    else if (P1=="HQVGA")
+      s->set_framesize(s, FRAMESIZE_HQVGA);
+    else if (P1=="QVGA")
+      s->set_framesize(s, FRAMESIZE_QVGA);
+    else if (P1=="CIF")
+      s->set_framesize(s, FRAMESIZE_CIF);
+    else if (P1=="VGA")
+      s->set_framesize(s, FRAMESIZE_VGA);  
+    else if (P1=="SVGA")
+      s->set_framesize(s, FRAMESIZE_SVGA);
+    else if (P1=="XGA")
+      s->set_framesize(s, FRAMESIZE_XGA);
+    else if (P1=="SXGA")
+      s->set_framesize(s, FRAMESIZE_SXGA);
+    else if (P1=="UXGA")
+      s->set_framesize(s, FRAMESIZE_UXGA);           
+    else 
+      s->set_framesize(s, FRAMESIZE_QVGA);     
+  }
+  else if (cmd=="quality") { 
+    sensor_t * s = esp_camera_sensor_get();
+    int val = P1.toInt(); 
+    s->set_quality(s, val);
+  }
+  else if (cmd=="contrast") {
+    sensor_t * s = esp_camera_sensor_get();
+    int val = P1.toInt(); 
+    s->set_contrast(s, val);
+  }
+  else if (cmd=="brightness") {
+    sensor_t * s = esp_camera_sensor_get();
+    int val = P1.toInt();  
+    s->set_brightness(s, val);  
+  }    
   else if (cmd=="getstill") {
     feedback=sendImage();
     if (feedback=="") {
