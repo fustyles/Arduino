@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (Line Bot)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-4-4 17:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-4-4 23:30
 https://www.facebook.com/francefu
 
 Google Apps Script
@@ -14,7 +14,8 @@ https://script.google.com/home
 https://script.google.com/home/executions
 https://drive.google.com/drive/my-drive
 
-Line Message API
+
+Line Message AIP
 https://developers.line.biz/en/services/messaging-api/
 
 
@@ -24,21 +25,22 @@ function doPost(e) {
   var NOTIFY_ACCESS_TOKEN = 'RXDcVAhLhvVJjX0fxarGLcrbjqyWWIJPKPu0QdpomFE123';
   var SPREADSHEET_ID = '1VVONSSJSNY8Xj2-hO3swD7EEfky6vA99jp5CzZkxDKM123';
 
-  var scriptProperties = PropertiesService.getScriptProperties();
+  var SpreadSheet = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var Sheet = SpreadSheet.getSheets()[0];
+  var lastRow = Sheet.getLastRow();
 
-  if (e.parameter.esp32Data) {
+  if (e.parameter.myFile) {
 
-    var esp32Data = e.parameter.esp32Data;    
+    var humidity = e.parameter.humidity;
+    var temperature = e.parameter.temperature;    
     var myFile = e.parameter.myFile;
     var filename = e.parameter.myFilename;
 
-    var SpreadSheet = SpreadsheetApp.openById(SPREADSHEET_ID);
-    var Sheet = SpreadSheet.getSheets()[0];
-    Sheet.getRange(1,1).setValue("'"+Utilities.formatDate(new Date(), "GMT+8", "yyyy/MM/dd HH:mm:ss"));
-    Sheet.getRange(1,2).setValue(esp32Data.split(",")[0]);
-    Sheet.getRange(1,3).setValue(esp32Data.split(",")[1]); 
-    Sheet.getRange(1,4).setValue(filename);           
-    Sheet.getRange(1,5).setValue(myFile);
+    Sheet.getRange(lastRow+1,1).setValue("'"+Utilities.formatDate(new Date(), "GMT+8", "yyyy/MM/dd HH:mm:ss"));
+    Sheet.getRange(lastRow+1,2).setValue(humidity);
+    Sheet.getRange(lastRow+1,3).setValue(temperature); 
+    Sheet.getRange(lastRow+1,4).setValue(filename);           
+    Sheet.getRange(lastRow+1,5).setValue(myFile);
 
   } else {
 
@@ -49,17 +51,15 @@ function doPost(e) {
     const replyToken = msg.events[0].replyToken;
       
     var reply_message;
-    var SpreadSheet = SpreadsheetApp.openById(SPREADSHEET_ID);
-    var Sheet = SpreadSheet.getSheets()[0];
-    var Time = Sheet.getRange(1,1).getValue();
+    var Time = Sheet.getRange(lastRow,1).getValue();
 
     if (userMessage=="image") {
       
-      var myFile = Sheet.getRange(1,5).getValue();
+      var myFile = Sheet.getRange(lastRow,5).getValue();
       var imageData = myFile.substring(myFile.indexOf(",")+1);
       imageData = Utilities.base64Decode(imageData);
       var contentType = myFile.substring(myFile.indexOf(":")+1, myFile.indexOf(";"));
-      var filename = Sheet.getRange(1,4).getValue();
+      var filename = Sheet.getRange(lastRow,4).getValue();
       var message =  filename;
 
       var blob = Utilities.newBlob(imageData, contentType, filename);
@@ -83,50 +83,39 @@ function doPost(e) {
       UrlFetchApp.fetch("https://notify-api.line.me/api/notify", options);
 
     } else if (userMessage=="humidity") {
-      var humidity = Sheet.getRange(1,2).getValue();
-      reply_message = [{
-        "type":"text",
-        "text": Time+"\nhumidity = "+humidity+" %"
-      }]
+      var humidity = Time+"\nhumidity = "+Sheet.getRange(lastRow,2).getValue()+" %";
+      sendMessageToLineBot(CHANNEL_ACCESS_TOKEN,replyToken,humidity);
 
-      var url = 'https://api.line.me/v2/bot/message/reply';
-      UrlFetchApp.fetch(url, {
-        'headers': {
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer ' + CHANNEL_ACCESS_TOKEN,
-        },
-        'method': 'post',
-        'payload': JSON.stringify({
-          'replyToken': replyToken,
-          'messages': reply_message
-        }),
-      });
     } else if (userMessage=="temperature") {
-      var temperature = Sheet.getRange(1,3).getValue();
-      reply_message = [{
-        "type":"text",
-        "text": Time+"\ntemperature = "+temperature+" °C"
-      }]
+      var temperature = Time+"\ntemperature = "+Sheet.getRange(lastRow,3).getValue()+" °C";
+      sendMessageToLineBot(CHANNEL_ACCESS_TOKEN,replyToken,temperature);
 
-      var url = 'https://api.line.me/v2/bot/message/reply';
-      UrlFetchApp.fetch(url, {
-        'headers': {
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer ' + CHANNEL_ACCESS_TOKEN,
-        },
-        'method': 'post',
-        'payload': JSON.stringify({
-          'replyToken': replyToken,
-          'messages': reply_message
-        }),
-      });      
     }
 
-  }  
-
+  } 
   return  ContentService.createTextOutput("Return = OK");
   
 }
+
+function sendMessageToLineBot(accessToken, replyToken, message) {
+  reply_message = [{
+    "type":"text",
+    "text": message
+  }]
+
+  var url = 'https://api.line.me/v2/bot/message/reply';
+  UrlFetchApp.fetch(url, {
+    'headers': {
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer ' + accessToken,
+    },
+    'method': 'post',
+    'payload': JSON.stringify({
+      'replyToken': replyToken,
+      'messages': reply_message
+    }),
+  });
+} 
 
 
 */
@@ -275,10 +264,10 @@ void setup()
 void loop()
 {
   DHT.read11(dht_dpin);
-  dhtData = "&esp32Data=" +String(DHT.humidity)+","+String(DHT.temperature);
+  dhtData = "&humidity=" +String(DHT.humidity)+"&temperature="+String(DHT.temperature);
 
   SendCapturedImageToLineBot();
-  delay(30000);  
+  delay(60000);  
 }
 
 String SendCapturedImageToLineBot() {
