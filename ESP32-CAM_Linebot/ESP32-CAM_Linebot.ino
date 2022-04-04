@@ -14,7 +14,6 @@ https://script.google.com/home
 https://script.google.com/home/executions
 https://drive.google.com/drive/my-drive
 
-
 Line Message AIP
 https://developers.line.biz/en/services/messaging-api/
 
@@ -35,7 +34,7 @@ function doPost(e) {
 
     var SpreadSheet = SpreadsheetApp.openById(SPREADSHEET_ID);
     var Sheet = SpreadSheet.getSheets()[0];
-    Sheet.getRange(1,1).setValue("'"+Utilities.formatDate(new Date(), "GMT", "yyyy/MM/dd HH:mm:ss"));
+    Sheet.getRange(1,1).setValue("'"+Utilities.formatDate(new Date(), "GMT+8", "yyyy/MM/dd HH:mm:ss"));
     Sheet.getRange(1,2).setValue(esp32Data.split(",")[0]);
     Sheet.getRange(1,3).setValue(esp32Data.split(",")[1]); 
     Sheet.getRange(1,4).setValue(filename);           
@@ -89,26 +88,39 @@ function doPost(e) {
         "type":"text",
         "text": Time+"\nhumidity = "+humidity+" %"
       }]
+
+      var url = 'https://api.line.me/v2/bot/message/reply';
+      UrlFetchApp.fetch(url, {
+        'headers': {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer ' + CHANNEL_ACCESS_TOKEN,
+        },
+        'method': 'post',
+        'payload': JSON.stringify({
+          'replyToken': replyToken,
+          'messages': reply_message
+        }),
+      });
     } else if (userMessage=="temperature") {
       var temperature = Sheet.getRange(1,3).getValue();
       reply_message = [{
         "type":"text",
         "text": Time+"\ntemperature = "+temperature+" °C"
       }]
-    }
 
-    var url = 'https://api.line.me/v2/bot/message/reply';
-    UrlFetchApp.fetch(url, {
-      'headers': {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer ' + CHANNEL_ACCESS_TOKEN,
-      },
-      'method': 'post',
-      'payload': JSON.stringify({
-        'replyToken': replyToken,
-        'messages': reply_message
-      }),
-    });
+      var url = 'https://api.line.me/v2/bot/message/reply';
+      UrlFetchApp.fetch(url, {
+        'headers': {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer ' + CHANNEL_ACCESS_TOKEN,
+        },
+        'method': 'post',
+        'payload': JSON.stringify({
+          'replyToken': replyToken,
+          'messages': reply_message
+        }),
+      });      
+    }
 
   }  
 
