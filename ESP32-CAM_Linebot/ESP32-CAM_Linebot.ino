@@ -15,7 +15,7 @@ https://script.google.com/home/executions
 https://drive.google.com/drive/my-drive
 
 
-Line Message AIP
+Line bot Message API
 https://developers.line.biz/en/services/messaging-api/
 
 
