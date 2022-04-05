@@ -4,18 +4,15 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-4-4 23:30
 https://www.facebook.com/francefu
 
 Google Apps Script
-https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doPost.gs
 You must allow anyone and anonymous to execute the google script.
-
-How to add a new script
-https://www.youtube.com/watch?v=f46VBqWwUuI
-
 https://script.google.com/home
 https://script.google.com/home/executions
 https://drive.google.com/drive/my-drive
 
+Google spreadsheet
+https://docs.google.com/spreadsheets/u/0/
 
-Line bot Message API
+Line bot Message API (Using Google Apps Script as a Webhook)
 https://developers.line.biz/en/services/messaging-api/
 
 
