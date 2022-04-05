@@ -30,7 +30,6 @@ function doPost(e) {
   var lastRow = Sheet.getLastRow();
 
   if (e.parameter.myFile) {
-
     var humidity = e.parameter.humidity;
     var temperature = e.parameter.temperature;    
     var myFile = e.parameter.myFile;
@@ -41,9 +40,9 @@ function doPost(e) {
     Sheet.getRange(lastRow+1,3).setValue(temperature); 
     Sheet.getRange(lastRow+1,4).setValue(filename);           
     Sheet.getRange(lastRow+1,5).setValue(myFile);
-
+    
   } else {
-
+  
     var msg = JSON.parse(e.postData.contents);
     const userMessage = msg.events[0].message.text;
     const user_id = msg.events[0].source.userId;
@@ -54,7 +53,6 @@ function doPost(e) {
     var Time = Sheet.getRange(lastRow,1).getValue();
 
     if (userMessage=="image") {
-      
       var myFile = Sheet.getRange(lastRow,5).getValue();
       var imageData = myFile.substring(myFile.indexOf(",")+1);
       imageData = Utilities.base64Decode(imageData);
@@ -81,28 +79,63 @@ function doPost(e) {
         "headers" : {"Authorization" : "Bearer " + NOTIFY_ACCESS_TOKEN}
       };
       UrlFetchApp.fetch("https://notify-api.line.me/api/notify", options);
-
-    } else if (userMessage=="humidity") {
+    } 
+    else if (userMessage=="humidity") {
       var humidity = Time+"\nhumidity = "+Sheet.getRange(lastRow,2).getValue()+" %";
-      sendMessageToLineBot(CHANNEL_ACCESS_TOKEN,replyToken,humidity);
-
-    } else if (userMessage=="temperature") {
+      reply_message = [{
+        "type":"text",
+        "text": humidity
+      }]
+      sendMessageToLineBot(CHANNEL_ACCESS_TOKEN,replyToken,reply_message);
+    } 
+    else if (userMessage=="temperature") {
       var temperature = Time+"\ntemperature = "+Sheet.getRange(lastRow,3).getValue()+" °C";
-      sendMessageToLineBot(CHANNEL_ACCESS_TOKEN,replyToken,temperature);
-
+      reply_message = [{
+        "type":"text",
+        "text": temperature
+      }]      
+      sendMessageToLineBot(CHANNEL_ACCESS_TOKEN,replyToken,reply_message);
+    } 
+    else if (userMessage=="help") {
+      reply_message = [{
+            "type": "text",
+            "text": "Command list",
+            "quickReply": {
+                "items": [
+                    {
+                        "type": "action",
+                        "action": {
+                            "type": "message",
+                            "label": "humidity",
+                            "text": "humidity"
+                        }
+                    },
+                    {
+                        "type": "action",
+                        "action": {
+                            "type": "message",
+                            "label": "temperature",
+                            "text": "temperature"
+                        }
+                    },
+                    {
+                        "type": "action",
+                        "action": {
+                            "type": "message",
+                            "label": "image",
+                            "text": "image"
+                        }
+                    }
+                ]
+            }
+      }] 
+      sendMessageToLineBot(CHANNEL_ACCESS_TOKEN,replyToken,reply_message);           
     }
-
   } 
   return  ContentService.createTextOutput("Return = OK");
-  
 }
 
-function sendMessageToLineBot(accessToken, replyToken, message) {
-  reply_message = [{
-    "type":"text",
-    "text": message
-  }]
-
+function sendMessageToLineBot(accessToken, replyToken, reply_message) {
   var url = 'https://api.line.me/v2/bot/message/reply';
   UrlFetchApp.fetch(url, {
     'headers': {
