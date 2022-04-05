@@ -7,7 +7,6 @@ Google Apps Script
 You must allow anyone and anonymous to execute the google script.
 https://script.google.com/home
 https://script.google.com/home/executions
-https://drive.google.com/drive/my-drive
 
 Google spreadsheet
 https://docs.google.com/spreadsheets/u/0/
