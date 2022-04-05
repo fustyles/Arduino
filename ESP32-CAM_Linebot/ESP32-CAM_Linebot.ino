@@ -15,6 +15,9 @@ https://docs.google.com/spreadsheets/u/0/
 Line bot Message API (Using Google Apps Script as a Webhook)
 https://developers.line.biz/en/services/messaging-api/
 
+Line Notify
+https://notify-bot.line.me/
+
 
 function doPost(e) {
 
