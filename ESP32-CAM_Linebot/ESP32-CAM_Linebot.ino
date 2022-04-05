@@ -43,7 +43,7 @@ function doPost(e) {
   } else {
   
     var msg = JSON.parse(e.postData.contents);
-    const userMessage = msg.events[0].message.text;
+    const userMessage = msg.events[0].message.text.trim();
     const user_id = msg.events[0].source.userId;
     const event_type = msg.events[0].source.type;
     const replyToken = msg.events[0].replyToken;
