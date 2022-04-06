@@ -38,7 +38,7 @@ https://notify-bot.line.me/
 
 function doPost(e) {
 
-  var CHANNEL_ACCESS_TOKEN = 'Nwyfihc0pKey868MefCc9Er028u7E33OPJuRwdLEi/mmyjBSh0jFOJKvS3AMaFvKUKAp1k7JKdj2tpd8nr8/aJVF45aQajMY0anwVABxPkvJk3oPUeGlmdDWBiQt6qKBLzGhYimXU377SkcT03hhBwdB04t89/1O/w1cDnyilFU=123';
+  var BOT_ACCESS_TOKEN = 'Nwyfihc0pKey868MefCc9Er028u7E33OPJuRwdLEi/mmyjBSh0jFOJKvS3AMaFvKUKAp1k7JKdj2tpd8nr8/aJVF45aQajMY0anwVABxPkvJk3oPUeGlmdDWBiQt6qKBLzGhYimXU377SkcT03hhBwdB04t89/1O/w1cDnyilFU=123';
   var NOTIFY_ACCESS_TOKEN = 'RXDcVAhLhvVJjX0fxarGLcrbjqyWWIJPKPu0QdpomFE123';
   var SPREADSHEET_ID = '1VVONSSJSNY8Xj2-hO3swD7EEfky6vA99jp5CzZkxDKM123';
 
@@ -103,7 +103,7 @@ function doPost(e) {
         "type":"text",
         "text": humidity
       }]
-      sendMessageToLineBot(CHANNEL_ACCESS_TOKEN,replyToken,reply_message);
+      sendMessageToLineBot(BOT_ACCESS_TOKEN,replyToken,reply_message);
     } 
     else if (userMessage=="temperature") {
       var temperature = Time+"\ntemperature = "+Sheet.getRange(lastRow,3).getValue()+" °C";
@@ -111,7 +111,7 @@ function doPost(e) {
         "type":"text",
         "text": temperature
       }]      
-      sendMessageToLineBot(CHANNEL_ACCESS_TOKEN,replyToken,reply_message);
+      sendMessageToLineBot(BOT_ACCESS_TOKEN,replyToken,reply_message);
     } 
     else if (userMessage=="help") {
       reply_message = [{
@@ -146,7 +146,7 @@ function doPost(e) {
                 ]
             }
       }] 
-      sendMessageToLineBot(CHANNEL_ACCESS_TOKEN,replyToken,reply_message);           
+      sendMessageToLineBot(BOT_ACCESS_TOKEN,replyToken,reply_message);           
     }
   } 
   return  ContentService.createTextOutput("Return = OK");
