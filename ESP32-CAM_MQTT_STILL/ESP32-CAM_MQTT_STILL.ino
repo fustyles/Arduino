@@ -35,7 +35,6 @@ Command Format :
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
 #include "esp_camera.h"
-#include "Base64.h"
 
 const char* ssid = "teacher";
 const char* password = "87654321";
