@@ -6,6 +6,8 @@ https://www.facebook.com/francefu
 
 ArduinoJson Library：
 https://github.com/bblanchon/ArduinoJson
+PubSubClient Library：
+https://www.arduino.cc/reference/en/libraries/pubsubclient/
 
 Telegram Bot API
 https://core.telegram.org/bots/api
