@@ -3,19 +3,37 @@ ESP32-CAM (Line Bot)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-4-4 23:30
 https://www.facebook.com/francefu
 
+
 Google Apps Script
 You must allow anyone and anonymous to execute the google script.
 https://script.google.com/home
 https://script.google.com/home/executions
 
+ESP32-CAM Line Bot
+https://github.com/fustyles/webduino/blob/gs/esp32-cam_linebot_dht.gs
+
+ESP32-CAM Line Bot with MQTT
+https://github.com/fustyles/webduino/blob/gs/esp32-cam_linebot_dht_mqtt.txt
+
+ESP32 Line Bot with MQTT
+https://github.com/fustyles/webduino/blob/gs/esp32_linebot_mqtt.txt
+
+
 Google spreadsheet
 https://docs.google.com/spreadsheets/u/0/
+
 
 Line bot Message API (Using Google Apps Script as a Webhook)
 https://developers.line.biz/en/services/messaging-api/
 
+
 Line Notify
 https://notify-bot.line.me/
+
+
+
+
+
 
 
 function doPost(e) {
