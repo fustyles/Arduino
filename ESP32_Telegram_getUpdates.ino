@@ -16,7 +16,7 @@ const char* ssid     = "*****";   //your network SSID
 const char* password = "*****";   //your network password
 
 String token = "*****:*****";   // Create your bot and get the token -> https://telegram.me/fatherbot
-String chat_id = "*****";   // Get chat_id -> https://telegram.me/chatid_echo_bot
+String chat_id = "*****";   // Get chat_id -> https://telegram.me/userinfobot
 
 /*
 If "sendHelp" variable is equal to "true", it will send the command list to Telegram Bot when the board boots. 
