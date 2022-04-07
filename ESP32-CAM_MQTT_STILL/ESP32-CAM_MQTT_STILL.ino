@@ -39,8 +39,8 @@ Command Format :
 const char* ssid = "teacher";
 const char* password = "87654321";
 
-//ws://broker.emqx.io:8083/mqtt
-//wss://broker.emqx.io:8084/mqtt
+// ws://broker.emqx.io:8083/mqtt  (MQTT.js)
+// wss://broker.emqx.io:8084/mqtt  (MQTT.js)
 const char* mqtt_server = "broker.emqx.io";
 const unsigned int mqtt_port = 1883;
 #define MQTT_USER               ""
