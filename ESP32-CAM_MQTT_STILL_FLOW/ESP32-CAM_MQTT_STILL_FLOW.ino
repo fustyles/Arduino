@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Send still using MQTT
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-4-7 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-4-13 20:00
 https://www.facebook.com/francefu
 
 Library: 
