@@ -1,0 +1,76 @@
+<html><head><meta charset='utf-8'><script src='https://fustyles.github.io/webduino/SpBlocklyJS/GameElements_20190131/gameelements.js'></script><script src='https://unpkg.com/mqtt/dist/mqtt.min.js'></script></head><body><script>const delay=(seconds)=>{return new Promise((resolve)=>{setTimeout(resolve,seconds*1000);});};const main=async()=>{
+
+var state, command, myTimerPublish;
+
+state = false;
+command = '';
+div_create('server',60,30,0,10,"none",1,'#000000','#ffffff','#000000',14,1,'Server',999,true);
+text_create('server',300,30,80,10,'#ffffff','#000000',14,1,'wss://broker.emqx.io:8084/mqtt',999,true);
+div_create('subscribe',60,30,0,40,"none",1,'#000000','#ffffff','#000000',14,1,'Subscribe',999,true);
+text_create('subscribe',300,30,80,40,'#ffffff','#000000',14,1,'yourTopic/sendstill',999,true);
+div_create('publish',60,30,0,70,"none",1,'#000000','#ffffff','#000000',14,1,'Publish',999,true);
+text_create('publish',300,30,80,70,'#ffffff','#000000',14,1,'yourTopic/getstill',999,true);
+button_create('set',100,30,0,110,1,null,'MQTT connect',12,999,true);
+button_create('start',60,30,250,110,1,null,'Get Still',12,999,true);
+div_create('state',100,30,120,110,"none",1,'#000000','#ffffff','#000000',18,1,'',999,true);
+image_create_stream('','',0,150,999,true);
+
+async function gamebutton_set_onclick (event) {
+	div_set('state',"innerHTML","");
+	const clientId = "mqtt_" + Math.random().toString(16).substr(2, 8);
+	const options = {
+		username: '',
+		password: '',
+		keepalive: 60,
+		clientId: clientId,
+		protocolId: "MQTT",
+		protocolVersion: 4,
+		clean: true,
+		reconnectPeriod: 1000,
+		connectTimeout: 30 * 1000
+	}
+
+	var mqtt_client = mqtt.connect((text_get('server',"value")),options);
+	mqtt_client.on("connect", ()=>{
+	  div_set('state',"innerHTML","connected");
+	  mqtt_client.subscribe((text_get('subscribe',"value")));
+	  setInterval(async function(){
+		if (state == true) {
+		  if (command == '') {
+			clearInterval(myTimerPublish);
+			command = 'getstill';
+			mqtt_client.publish((text_get('publish',"value")), command);
+			myTimerPublish = setInterval(async function(){
+			  if (command != '') {
+				mqtt_client.publish((text_get('publish',"value")), command);
+			  }
+			},31000);
+		  }
+		} else {
+		  clearInterval(myTimerPublish);
+		  command = '';
+		  image_set('',"url",'');
+		}
+	  },100);
+		mqtt_client.on("message", async function (topic, payload) {
+	  image_set('',"url",("data:image/jpeg;base64,"+ binarytobase64((payload))));
+	  command = '';
+	   })
+	  }
+	)
+};
+document.getElementById("gamebutton_set").addEventListener("click", gamebutton_set_onclick, true);
+
+async function gamebutton_start_onclick (event) {
+  if (state == true) {
+    state = false;
+    button_set('start',"value",'Start');
+  } else {
+    state = true;
+    button_set('start',"value",'Stop');
+  }
+};
+document.getElementById("gamebutton_start").addEventListener("click", gamebutton_start_onclick, true);
+
+
+};main();</script></body></html>
