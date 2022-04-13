@@ -5,6 +5,9 @@ https://www.facebook.com/francefu
 
 Library: 
 https://www.arduino.cc/reference/en/libraries/pubsubclient/
+
+MQTT page
+https://fustyles.github.io/webduino/ESP32-CAM_MQTT_STILL_FLOW.html
 */
 
 #include <WiFi.h>
