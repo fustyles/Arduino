@@ -158,8 +158,9 @@ void initCamera() {
     s->set_saturation(s, -2); // lower the saturation
   }
   // drop down frame size for higher initial frame rate
-  s->set_framesize(s, FRAMESIZE_QVGA);    //解析度 SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120), QXGA(2048x1564 for OV3660)
-
+  s->set_framesize(s, FRAMESIZE_HQVGA);    //解析度 SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120), QXGA(2048x1564 for OV3660)
+  //解析度太高檔案太大，MQTT.js端將無法接收顯示。建議QVGA以下
+    
   //s->set_vflip(s, 1);  //垂直翻轉
   //s->set_hmirror(s, 1);  //水平鏡像
 
