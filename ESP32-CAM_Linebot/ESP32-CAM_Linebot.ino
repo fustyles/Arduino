@@ -15,7 +15,7 @@ https://github.com/fustyles/webduino/blob/gs/esp32-cam_linebot_dht.gs
 ESP32-CAM Line Bot with MQTT
 https://github.com/fustyles/webduino/blob/gs/esp32-cam_linebot_dht_mqtt.txt
 
-Line Bot with MQTT
+Line Bot with MQTT (for any microcontroller)
 https://github.com/fustyles/webduino/blob/gs/esp32_linebot_mqtt.txt
 
 
