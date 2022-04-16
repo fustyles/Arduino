@@ -358,8 +358,8 @@ String SendCapturedImageToLineBot() {
     
     client_tcp.print(Data);
     int Index;
-    for (Index = 0; Index < imageFile.length(); Index = Index+1000) {
-      client_tcp.print(imageFile.substring(Index, Index+1000));
+    for (Index = 0; Index < imageFile.length(); Index = Index+1024) {
+      client_tcp.print(imageFile.substring(Index, Index+1024));
     }
     esp_camera_fb_return(fb);
     
