@@ -45,8 +45,8 @@ const char* mqtt_server = "broker.emqx.io";
 const unsigned int mqtt_port = 1883;
 #define MQTT_USER               ""
 #define MQTT_PASSWORD           ""
-#define MQTT_PUBLISH_TOPIC    "yourtopic/recongitionserver"
-#define MQTT_SUBSCRIBE_TOPIC    "yourtopic/recongitionresult"
+#define MQTT_PUBLISH_TOPIC    "yourName/recongitionserver"
+#define MQTT_SUBSCRIBE_TOPIC    "yourName/recongitionresult"
     
 WiFiClient espClient;
 PubSubClient client_mqtt(espClient);
