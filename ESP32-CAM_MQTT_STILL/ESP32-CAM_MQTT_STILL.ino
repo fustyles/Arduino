@@ -1,6 +1,6 @@
 /*
 ESP32-CAM MQTT Firmata
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-4-7 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-4-17 10:00
 https://www.facebook.com/francefu
 
 Library: 
@@ -29,6 +29,7 @@ Command Format :
 ?servo=pin;value;channel     //value= 0~180, channel= 3~15
 ?serial=command
 ?sendstill
+?sendtext=text
 */
 
 #include <WiFi.h>
