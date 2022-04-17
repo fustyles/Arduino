@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Send still using MQTT
+ESP32-CAM MQTT Firmata
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-4-7 01:00
 https://www.facebook.com/francefu
 
