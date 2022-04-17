@@ -51,6 +51,8 @@ const unsigned int mqtt_port = 1883;
     
 WiFiClient espClient;
 PubSubClient client_mqtt(espClient);
+String getData = "";
+String getDext = "";
 
 //Arduino IDE開發版選擇 ESP32 Wrover Module
 
@@ -225,8 +227,13 @@ void executeCommand() {
     Serial.println(command);
   } 
   else if (cmd=="sendstill") {
-    sendImage();
-  }    
+    getData = "sendstill";
+    getDext = "";
+  }
+  else if (cmd=="sendtext") {
+    getData = "sendtext";
+    getDext = P1;
+  }     
   else {
     feedback="Command is not defined";
   } 
@@ -256,8 +263,15 @@ void loop() {
   }
   client_mqtt.loop();
   
-  //sendImage();
-  //delay(10000);
+  if (getData=="sendstill") {
+    sendImage();
+    getData = "";
+  }
+  else if (getData=="sendtext") {
+    sendText(getDext);
+    getData = "";
+    getDext = "";
+  }    
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
