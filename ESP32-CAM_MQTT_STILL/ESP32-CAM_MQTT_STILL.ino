@@ -53,7 +53,7 @@ const unsigned int mqtt_port = 1883;
 WiFiClient espClient;
 PubSubClient client_mqtt(espClient);
 String getData = "";
-String getDext = "";
+String getText = "";
 
 //Arduino IDE開發版選擇 ESP32 Wrover Module
 
@@ -229,11 +229,11 @@ void executeCommand() {
   } 
   else if (cmd=="sendstill") {
     getData = "sendstill";
-    getDext = "";
+    getText = "";
   }
   else if (cmd=="sendtext") {
     getData = "sendtext";
-    getDext = P1;
+    getText = P1;
   }     
   else {
     feedback="Command is not defined";
@@ -269,9 +269,9 @@ void loop() {
     getData = "";
   }
   else if (getData=="sendtext") {
-    sendText(getDext);
+    sendText(getText);
     getData = "";
-    getDext = "";
+    getText = "";
   }    
 }
 
