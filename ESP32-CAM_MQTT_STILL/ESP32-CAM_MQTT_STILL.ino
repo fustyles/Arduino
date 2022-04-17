@@ -28,6 +28,7 @@ Command Format :
 ?flash=value;channel         //value= 0~255, channel= 3~15
 ?servo=pin;value;channel     //value= 0~180, channel= 3~15
 ?serial=command
+?sendstill
 */
 
 #include <WiFi.h>
@@ -222,7 +223,10 @@ void executeCommand() {
   }    
   else if (cmd=="serial") {
     Serial.println(command);
-  }     
+  } 
+  else if (cmd=="sendstill") {
+    sendImage();
+  }    
   else {
     feedback="Command is not defined";
   } 
@@ -252,8 +256,8 @@ void loop() {
   }
   client_mqtt.loop();
   
-  sendImage();
-  delay(10000);
+  //sendImage();
+  //delay(10000);
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
