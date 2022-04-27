@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Remote Control Car 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2019-11-3 00:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-4-27 20:30
 https://www.facebook.com/francefu
 
 //If you use Motor Driver IC L9110(s), it can't work well.
@@ -15,8 +15,12 @@ http://APIP
 http://STAIP
 */
 
-const char* ssid = "xxxxx";
-const char* password = "xxxxx";
+const char* ssid = "********";
+const char* password = "********";
+
+//輸入AP端連線帳號密碼
+const char* apssid = "ESP32-CAM";
+const char* appassword = "12345678";         //AP password require at least 8 characters.
 
 #include "esp_camera.h"
 #include <WiFi.h>
@@ -118,48 +122,65 @@ void setup() {
   ledcAttachPin(14, 8);
   ledcSetup(8, 2000, 8);  
 
-  Serial.println("ssid: " + (String)ssid);
-  Serial.println("password: " + (String)password);
-  
-  WiFi.begin(ssid, password);
+  WiFi.mode(WIFI_AP_STA);  //其他模式 WiFi.mode(WIFI_AP); WiFi.mode(WIFI_STA);
 
-  long int StartTime=millis();
-  while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
-      if ((StartTime+10000) < millis()) break;
+  //指定Client端靜態IP
+  //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
+
+  for (int i=0;i<2;i++) {
+    WiFi.begin(ssid, password);    //執行網路連線
+  
+    delay(1000);
+    Serial.println("");
+    Serial.print("Connecting to ");
+    Serial.println(ssid);
+    
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        if ((StartTime+5000) < millis()) break;    //等待10秒連線
+    } 
+  
+    if (WiFi.status() == WL_CONNECTED) {    //若連線成功
+      WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP         
+      Serial.println("");
+      Serial.println("STAIP address: ");
+      Serial.println(WiFi.localIP());
+      Serial.println("");
+  
+      for (int i=0;i<5;i++) {   //若連上WIFI設定閃光燈快速閃爍
+        ledcWrite(4,10);
+        delay(200);
+        ledcWrite(4,0);
+        delay(200);    
+      }
+      break;
+    }
   } 
 
-  startCameraServer();
+  if (WiFi.status() != WL_CONNECTED) {    //若連線失敗
+    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);         
 
-  char* apssid = "ESP32-CAM";
-  char* appassword = "12345678";         //AP password require at least 8 characters.
-  Serial.println("");
-  Serial.println("WiFi connected");    
-  Serial.print("Camera Ready! Use 'http://");
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.print(WiFi.localIP());
-    Serial.println("' to connect");
-    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);    
-    
-    for (int i=0;i<5;i++) {
-      ledcWrite(4,10);
-      delay(200);
-      ledcWrite(4,0);
-      delay(200);    
-    }        
-  }
-  else {
-    Serial.print(WiFi.softAPIP());
-    Serial.println("' to connect");
-    WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);    
-    
-    for (int i=0;i<2;i++) {
+    for (int i=0;i<2;i++) {    //若連不上WIFI設定閃光燈慢速閃爍
       ledcWrite(4,10);
       delay(1000);
       ledcWrite(4,0);
       delay(1000);    
-    }  
-  }     
+    }
+  } 
+  
+  //指定AP端IP
+  //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
+  Serial.println("");
+  Serial.println("APIP address: ");
+  Serial.println(WiFi.softAPIP());  
+  Serial.println("");
+  
+  startCameraServer(); 
+
+  //設定閃光燈為低電位
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);
 }
 
 void loop() {
