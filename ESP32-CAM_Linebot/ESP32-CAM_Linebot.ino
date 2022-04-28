@@ -21,7 +21,6 @@ https://script.google.com/home/executions
 Line Bot with MQTT (for any microcontroller)
 https://github.com/fustyles/webduino/blob/gs/esp32_linebot_mqtt.txt
 
-
 Google spreadsheet
 https://docs.google.com/spreadsheets/u/0/
 
