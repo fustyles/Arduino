@@ -1,5 +1,5 @@
 /*
-ESP32-CAM (Line Bot)
+ESP32-CAM (Upload DHT11 values and stills to spreadsheet and query on Line Bot)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-4-4 23:30
 https://www.facebook.com/francefu
 
