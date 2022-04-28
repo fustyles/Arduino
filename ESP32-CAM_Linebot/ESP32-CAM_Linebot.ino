@@ -4,19 +4,19 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-4-4 23:30
 https://www.facebook.com/francefu
 
 Line Bot gs code (Google Apps Script)
+ESP32-CAM Line Bot
 https://github.com/fustyles/webduino/blob/gs/esp32-cam_linebot_dht.gs
+
+ESP32-CAM Line Bot with MQTT
+https://github.com/fustyles/webduino/blob/gs/esp32-cam_linebot_dht_mqtt.txt
+
+
 
 
 Google Apps Script
 You must allow anyone and anonymous to execute the google script.
 https://script.google.com/home
 https://script.google.com/home/executions
-
-ESP32-CAM Line Bot
-https://github.com/fustyles/webduino/blob/gs/esp32-cam_linebot_dht.gs
-
-ESP32-CAM Line Bot with MQTT
-https://github.com/fustyles/webduino/blob/gs/esp32-cam_linebot_dht_mqtt.txt
 
 Line Bot with MQTT (for any microcontroller)
 https://github.com/fustyles/webduino/blob/gs/esp32_linebot_mqtt.txt
