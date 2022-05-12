@@ -8,12 +8,12 @@ https://www.facebook.com/francefu
 #include <WiFiClientSecure.h>
 #include <ArduinoJson.h>
 
-char _lwifi_ssid[] = "teacher";
-char _lwifi_pass[] = "87654321";
+char wifi_ssid[] = "teacher";
+char wifi_pass[] = "87654321";
 
-String Weather12[8] = {"","","","","","","",""};
-String Weather24[8] = {"","","","","","","",""};
-String Weather36[8] = {"","","","","","","",""};
+String Weather0012[8] = {"","","","","","","",""};
+String Weather1224[8] = {"","","","","","","",""};
+String Weather2436[8] = {"","","","","","","",""};
 
 void setup()
 {
@@ -35,7 +35,25 @@ void loop()
   Serial.println("最低氣溫= "+getWeather(0, 5)+" °C");
   Serial.println("舒適度= "+getWeather(0, 6));
   Serial.println("最高氣溫= "+getWeather(0, 7)+" °C");            
-  
+  Serial.println();
+  Serial.println("位置= "+getWeather(1, 0));
+  Serial.println("開始時間= "+getWeather(1, 1));
+  Serial.println("結束時間= "+getWeather(1, 2));
+  Serial.println("天氣現象= "+getWeather(1, 3));
+  Serial.println("降雨機率= "+getWeather(1, 4)+" %");
+  Serial.println("最低氣溫= "+getWeather(1, 5)+" °C");
+  Serial.println("舒適度= "+getWeather(1, 6));
+  Serial.println("最高氣溫= "+getWeather(1, 7)+" °C");            
+  Serial.println();
+  Serial.println("位置= "+getWeather(2, 0));
+  Serial.println("開始時間= "+getWeather(2, 1));
+  Serial.println("結束時間= "+getWeather(2, 2));
+  Serial.println("天氣現象= "+getWeather(2, 3));
+  Serial.println("降雨機率= "+getWeather(2, 4)+" %");
+  Serial.println("最低氣溫= "+getWeather(2, 5)+" °C");
+  Serial.println("舒適度= "+getWeather(2, 6));
+  Serial.println("最高氣溫= "+getWeather(2, 7)+" °C");            
+  Serial.println();    
   delay(60000);
 }
 
@@ -43,12 +61,12 @@ void initWiFi() {
   WiFi.mode(WIFI_AP_STA);
 
   for (int i=0;i<2;i++) {
-    WiFi.begin(_lwifi_ssid, _lwifi_pass);
+    WiFi.begin(wifi_ssid, wifi_pass);
 
     delay(1000);
     Serial.println("");
     Serial.print("Connecting to ");
-    Serial.println(_lwifi_ssid);
+    Serial.println(wifi_ssid);
 
     long int StartTime=millis();
     while (WiFi.status() != WL_CONNECTED) {
@@ -122,32 +140,32 @@ void opendataWeather(String location, String Authorization) {
     deserializeJson(doc, Feedback);
     obj = doc.as<JsonObject>();
 
-    Weather12[0] = obj["location"][0]["locationName"].as<String>();
-    Weather12[1] = obj["location"][0]["weatherElement"][0]["time"][0]["startTime"].as<String>();
-    Weather12[2] = obj["location"][0]["weatherElement"][0]["time"][0]["endTime"].as<String>();
-    Weather12[3] = obj["location"][0]["weatherElement"][0]["time"][0]["parameter"]["parameterName"].as<String>();
-    Weather12[4] = obj["location"][0]["weatherElement"][1]["time"][0]["parameter"]["parameterName"].as<String>();
-    Weather12[5] = obj["location"][0]["weatherElement"][2]["time"][0]["parameter"]["parameterName"].as<String>();
-    Weather12[6] = obj["location"][0]["weatherElement"][3]["time"][0]["parameter"]["parameterName"].as<String>();
-    Weather12[7] = obj["location"][0]["weatherElement"][4]["time"][0]["parameter"]["parameterName"].as<String>();
+    Weather0012[0] = obj["location"][0]["locationName"].as<String>();
+    Weather0012[1] = obj["location"][0]["weatherElement"][0]["time"][0]["startTime"].as<String>();
+    Weather0012[2] = obj["location"][0]["weatherElement"][0]["time"][0]["endTime"].as<String>();
+    Weather0012[3] = obj["location"][0]["weatherElement"][0]["time"][0]["parameter"]["parameterName"].as<String>();
+    Weather0012[4] = obj["location"][0]["weatherElement"][1]["time"][0]["parameter"]["parameterName"].as<String>();
+    Weather0012[5] = obj["location"][0]["weatherElement"][2]["time"][0]["parameter"]["parameterName"].as<String>();
+    Weather0012[6] = obj["location"][0]["weatherElement"][3]["time"][0]["parameter"]["parameterName"].as<String>();
+    Weather0012[7] = obj["location"][0]["weatherElement"][4]["time"][0]["parameter"]["parameterName"].as<String>();
   
-    Weather24[0] = obj["location"][0]["locationName"].as<String>();
-    Weather24[1] = obj["location"][0]["weatherElement"][0]["time"][1]["startTime"].as<String>();
-    Weather24[2] = obj["location"][0]["weatherElement"][0]["time"][1]["endTime"].as<String>();   
-    Weather24[3] = obj["location"][0]["weatherElement"][0]["time"][1]["parameter"]["parameterName"].as<String>();
-    Weather24[4] = obj["location"][0]["weatherElement"][1]["time"][1]["parameter"]["parameterName"].as<String>();
-    Weather24[5] = obj["location"][0]["weatherElement"][2]["time"][1]["parameter"]["parameterName"].as<String>();
-    Weather24[6] = obj["location"][0]["weatherElement"][3]["time"][1]["parameter"]["parameterName"].as<String>();
-    Weather24[7] = obj["location"][0]["weatherElement"][4]["time"][1]["parameter"]["parameterName"].as<String>();
+    Weather1224[0] = obj["location"][0]["locationName"].as<String>();
+    Weather1224[1] = obj["location"][0]["weatherElement"][0]["time"][1]["startTime"].as<String>();
+    Weather1224[2] = obj["location"][0]["weatherElement"][0]["time"][1]["endTime"].as<String>();   
+    Weather1224[3] = obj["location"][0]["weatherElement"][0]["time"][1]["parameter"]["parameterName"].as<String>();
+    Weather1224[4] = obj["location"][0]["weatherElement"][1]["time"][1]["parameter"]["parameterName"].as<String>();
+    Weather1224[5] = obj["location"][0]["weatherElement"][2]["time"][1]["parameter"]["parameterName"].as<String>();
+    Weather1224[6] = obj["location"][0]["weatherElement"][3]["time"][1]["parameter"]["parameterName"].as<String>();
+    Weather1224[7] = obj["location"][0]["weatherElement"][4]["time"][1]["parameter"]["parameterName"].as<String>();
    
-    Weather36[0] = obj["location"][0]["locationName"].as<String>();
-    Weather36[1] = obj["location"][0]["weatherElement"][0]["time"][2]["startTime"].as<String>();   
-    Weather36[2] = obj["location"][0]["weatherElement"][0]["time"][2]["endTime"].as<String>();      
-    Weather36[3] = obj["location"][0]["weatherElement"][0]["time"][2]["parameter"]["parameterName"].as<String>();
-    Weather36[4] = obj["location"][0]["weatherElement"][1]["time"][2]["parameter"]["parameterName"].as<String>();
-    Weather36[5] = obj["location"][0]["weatherElement"][2]["time"][2]["parameter"]["parameterName"].as<String>();
-    Weather36[6] = obj["location"][0]["weatherElement"][3]["time"][2]["parameter"]["parameterName"].as<String>();
-    Weather36[7] = obj["location"][0]["weatherElement"][4]["time"][2]["parameter"]["parameterName"].as<String>();
+    Weather2436[0] = obj["location"][0]["locationName"].as<String>();
+    Weather2436[1] = obj["location"][0]["weatherElement"][0]["time"][2]["startTime"].as<String>();   
+    Weather2436[2] = obj["location"][0]["weatherElement"][0]["time"][2]["endTime"].as<String>();      
+    Weather2436[3] = obj["location"][0]["weatherElement"][0]["time"][2]["parameter"]["parameterName"].as<String>();
+    Weather2436[4] = obj["location"][0]["weatherElement"][1]["time"][2]["parameter"]["parameterName"].as<String>();
+    Weather2436[5] = obj["location"][0]["weatherElement"][2]["time"][2]["parameter"]["parameterName"].as<String>();
+    Weather2436[6] = obj["location"][0]["weatherElement"][3]["time"][2]["parameter"]["parameterName"].as<String>();
+    Weather2436[7] = obj["location"][0]["weatherElement"][4]["time"][2]["parameter"]["parameterName"].as<String>();
 
     /*
     Serial.println(obj["location"][0]["locationName"].as<String>());
@@ -183,11 +201,11 @@ void opendataWeather(String location, String Authorization) {
 
 String getWeather(int period,int index) {   //period=0,1,2  index=0,1,2,3,4,5,6,7
   if (period==0)
-    return Weather12[index];
+    return Weather0012[index];
   else if (period==1)
-    return Weather24[index];
+    return Weather1224[index];
   else if (period==2)
-    return Weather36[index];
+    return Weather2436[index];
   return "";
 }
 
