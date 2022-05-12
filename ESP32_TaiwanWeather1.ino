@@ -26,6 +26,7 @@ void loop()
   //宜蘭縣,花蓮縣,臺東縣,澎湖縣,金門縣,連江縣,臺北市,新北市,桃園市,臺中市,臺中市,臺南市,高雄市,基隆市,新竹縣,新竹市,苗栗縣,彰化縣,南投縣,雲林縣,嘉義縣,嘉義市,屏東縣
   opendataWeather("高雄市", "rdec-key-123-45678-011121314");
 
+  //getWeather(period, index)   period=0,1,2  index=0,1,2,3,4,5,6,7
   Serial.println("位置= "+getWeather(0, 0));
   Serial.println("開始時間= "+getWeather(0, 1));
   Serial.println("結束時間= "+getWeather(0, 2));
