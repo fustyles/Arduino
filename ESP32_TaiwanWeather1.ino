@@ -125,7 +125,7 @@ void opendataWeather(String location, String Authorization) {
     temp = "";
     for (i=0;i<Feedback.length();i++) {
       c = Feedback[i];
-      if (c!='\r'&&c!='\n'&&c!='\0')
+      if (c!='\r'&&c!='\n')
       temp += Feedback[i];
     }
     Feedback = temp;
