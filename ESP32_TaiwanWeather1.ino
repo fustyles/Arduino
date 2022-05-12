@@ -95,7 +95,6 @@ void opendataWeather(String location, String Authorization) {
     client_tcp.println();
     String getResponse="",Feedback="";
     boolean state = false;
-    boolean cutstate = false;
     int waitTime = 10000;
     long startTime = millis();
     char c;
