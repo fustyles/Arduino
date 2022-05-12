@@ -8,12 +8,12 @@ https://www.facebook.com/francefu
 #include <WiFiClientSecure.h>
 #include <ArduinoJson.h>
 
-char _lwifi_ssid[] = "teacher";
-char _lwifi_pass[] = "87654321";
+char wifi_ssid[] = "teacher";
+char wifi_pass[] = "87654321";
 
-String Weather12[8] = {"","","","","","","",""};
-String Weather24[8] = {"","","","","","","",""};
-String Weather36[8] = {"","","","","","","",""};
+String Weather0012[8] = {"","","","","","","",""};
+String Weather1224[8] = {"","","","","","","",""};
+String Weather2436[8] = {"","","","","","","",""};
 
 void setup()
 {
@@ -24,7 +24,7 @@ void setup()
 void loop()
 {
   //宜蘭縣,花蓮縣,臺東縣,澎湖縣,金門縣,連江縣,臺北市,新北市,桃園市,臺中市,臺中市,臺南市,高雄市,基隆市,新竹縣,新竹市,苗栗縣,彰化縣,南投縣,雲林縣,嘉義縣,嘉義市,屏東縣
-  opendataWeather("高雄市","rdec-key-123-45678-011121314");
+  opendataWeather("高雄市", "rdec-key-123-45678-011121314");
 
   Serial.println("位置= "+getWeather(0, 0));
   Serial.println("開始時間= "+getWeather(0, 1));
@@ -60,12 +60,12 @@ void initWiFi() {
   WiFi.mode(WIFI_AP_STA);
 
   for (int i=0;i<2;i++) {
-    WiFi.begin(_lwifi_ssid, _lwifi_pass);
+    WiFi.begin(wifi_ssid, wifi_pass);
 
     delay(1000);
     Serial.println("");
     Serial.print("Connecting to ");
-    Serial.println(_lwifi_ssid);
+    Serial.println(wifi_ssid);
 
     long int StartTime=millis();
     while (WiFi.status() != WL_CONNECTED) {
@@ -130,9 +130,9 @@ void opendataWeather(String location, String Authorization) {
     }
     Feedback = temp;
     
-    Weather12[0] = location;
-    Weather24[0] = location;
-    Weather36[0] = location;
+    Weather0012[0] = location;
+    Weather1224[0] = location;
+    Weather2436[0] = location;
     
     JsonObject obj;
     DynamicJsonDocument doc(1024);
@@ -142,61 +142,61 @@ void opendataWeather(String location, String Authorization) {
     temp = Feedback.substring(Feedback.indexOf("\"Wx\",")+5,Feedback.indexOf("}}]}")+3);
     deserializeJson(doc, "{"+temp+"}");
     obj = doc.as<JsonObject>();
-    Weather12[1] = obj["time"][0]["startTime"].as<String>();
-    Weather12[2] = obj["time"][0]["endTime"].as<String>();
-    Weather24[1] = obj["time"][1]["startTime"].as<String>();
-    Weather24[2] = obj["time"][1]["endTime"].as<String>();
-    Weather36[1] = obj["time"][2]["startTime"].as<String>();
-    Weather36[2] = obj["time"][2]["endTime"].as<String>();
-    Weather12[3] = obj["time"][0]["parameter"]["parameterName"].as<String>();
-    Weather24[3] = obj["time"][1]["parameter"]["parameterName"].as<String>();  
-    Weather36[3] = obj["time"][2]["parameter"]["parameterName"].as<String>();
+    Weather0012[1] = obj["time"][0]["startTime"].as<String>();
+    Weather0012[2] = obj["time"][0]["endTime"].as<String>();
+    Weather1224[1] = obj["time"][1]["startTime"].as<String>();
+    Weather1224[2] = obj["time"][1]["endTime"].as<String>();
+    Weather2436[1] = obj["time"][2]["startTime"].as<String>();
+    Weather2436[2] = obj["time"][2]["endTime"].as<String>();
+    Weather0012[3] = obj["time"][0]["parameter"]["parameterName"].as<String>();
+    Weather1224[3] = obj["time"][1]["parameter"]["parameterName"].as<String>();  
+    Weather2436[3] = obj["time"][2]["parameter"]["parameterName"].as<String>();
 
     //PoP
     Feedback.replace(temp,"");
     temp = Feedback.substring(Feedback.indexOf("\"PoP\",")+6,Feedback.indexOf("}}]}")+3);
     deserializeJson(doc, "{"+temp+"}");
     obj = doc.as<JsonObject>();
-    Weather12[4] = obj["time"][0]["parameter"]["parameterName"].as<String>();
-    Weather24[4] = obj["time"][1]["parameter"]["parameterName"].as<String>();  
-    Weather36[4] = obj["time"][2]["parameter"]["parameterName"].as<String>();    
+    Weather0012[4] = obj["time"][0]["parameter"]["parameterName"].as<String>();
+    Weather1224[4] = obj["time"][1]["parameter"]["parameterName"].as<String>();  
+    Weather2436[4] = obj["time"][2]["parameter"]["parameterName"].as<String>();    
 
     //MinT
     Feedback.replace(temp,"");
     temp = Feedback.substring(Feedback.indexOf("\"MinT\",")+7,Feedback.indexOf("}}]}")+3);
     deserializeJson(doc, "{"+temp+"}");
     obj = doc.as<JsonObject>();
-    Weather12[5] = obj["time"][0]["parameter"]["parameterName"].as<String>();
-    Weather24[5] = obj["time"][1]["parameter"]["parameterName"].as<String>();  
-    Weather36[5] = obj["time"][2]["parameter"]["parameterName"].as<String>();
+    Weather0012[5] = obj["time"][0]["parameter"]["parameterName"].as<String>();
+    Weather1224[5] = obj["time"][1]["parameter"]["parameterName"].as<String>();  
+    Weather2436[5] = obj["time"][2]["parameter"]["parameterName"].as<String>();
           
     //CI
     Feedback.replace(temp,"");
     temp = Feedback.substring(Feedback.indexOf("\"CI\",")+5,Feedback.indexOf("}}]}")+3);
     deserializeJson(doc, "{"+temp+"}");
     obj = doc.as<JsonObject>();
-    Weather12[6] = obj["time"][0]["parameter"]["parameterName"].as<String>();
-    Weather24[6] = obj["time"][1]["parameter"]["parameterName"].as<String>();  
-    Weather36[6] = obj["time"][2]["parameter"]["parameterName"].as<String>(); 
+    Weather0012[6] = obj["time"][0]["parameter"]["parameterName"].as<String>();
+    Weather1224[6] = obj["time"][1]["parameter"]["parameterName"].as<String>();  
+    Weather2436[6] = obj["time"][2]["parameter"]["parameterName"].as<String>(); 
 
     //MaxT
     Feedback.replace(temp,"");
     temp = Feedback.substring(Feedback.indexOf("\"MaxT\",")+7,Feedback.indexOf("}}]}")+3);
     deserializeJson(doc, "{"+temp+"}");
     obj = doc.as<JsonObject>();
-    Weather12[7] = obj["time"][0]["parameter"]["parameterName"].as<String>();
-    Weather24[7] = obj["time"][1]["parameter"]["parameterName"].as<String>();  
-    Weather36[7] = obj["time"][2]["parameter"]["parameterName"].as<String>(); 
+    Weather0012[7] = obj["time"][0]["parameter"]["parameterName"].as<String>();
+    Weather1224[7] = obj["time"][1]["parameter"]["parameterName"].as<String>();  
+    Weather2436[7] = obj["time"][2]["parameter"]["parameterName"].as<String>(); 
   }
 }
 
 String getWeather(int period,int index) {   //period=0,1,2  index=0,1,2,3,4,5,6,7
   if (period==0)
-    return Weather12[index];
+    return Weather0012[index];
   else if (period==1)
-    return Weather24[index];
+    return Weather1224[index];
   else if (period==2)
-    return Weather36[index];
+    return Weather2436[index];
   return "";
 }
 
