@@ -123,13 +123,11 @@ void opendataWeather(String location, String Authorization) {
       if (Feedback.length()!= 0) break;
     }
     client_tcp.stop();
+    
     JsonObject obj;
     DynamicJsonDocument doc(4096);
+    
     Feedback = Feedback.substring(Feedback.indexOf("records")+9,Feedback.length()-1);
-
-    
-
-    
     temp = "";
     for (i=0;i<Feedback.length();i++) {
       c = Feedback[i];
@@ -137,9 +135,11 @@ void opendataWeather(String location, String Authorization) {
       temp += Feedback[i];
     }
     Feedback = temp;
+    
     deserializeJson(doc, Feedback);
     obj = doc.as<JsonObject>();
 
+    //00-12
     Weather0012[0] = obj["location"][0]["locationName"].as<String>();
     Weather0012[1] = obj["location"][0]["weatherElement"][0]["time"][0]["startTime"].as<String>();
     Weather0012[2] = obj["location"][0]["weatherElement"][0]["time"][0]["endTime"].as<String>();
@@ -148,7 +148,7 @@ void opendataWeather(String location, String Authorization) {
     Weather0012[5] = obj["location"][0]["weatherElement"][2]["time"][0]["parameter"]["parameterName"].as<String>();
     Weather0012[6] = obj["location"][0]["weatherElement"][3]["time"][0]["parameter"]["parameterName"].as<String>();
     Weather0012[7] = obj["location"][0]["weatherElement"][4]["time"][0]["parameter"]["parameterName"].as<String>();
-  
+    //12-24
     Weather1224[0] = obj["location"][0]["locationName"].as<String>();
     Weather1224[1] = obj["location"][0]["weatherElement"][0]["time"][1]["startTime"].as<String>();
     Weather1224[2] = obj["location"][0]["weatherElement"][0]["time"][1]["endTime"].as<String>();   
@@ -157,7 +157,7 @@ void opendataWeather(String location, String Authorization) {
     Weather1224[5] = obj["location"][0]["weatherElement"][2]["time"][1]["parameter"]["parameterName"].as<String>();
     Weather1224[6] = obj["location"][0]["weatherElement"][3]["time"][1]["parameter"]["parameterName"].as<String>();
     Weather1224[7] = obj["location"][0]["weatherElement"][4]["time"][1]["parameter"]["parameterName"].as<String>();
-   
+    //24-36
     Weather2436[0] = obj["location"][0]["locationName"].as<String>();
     Weather2436[1] = obj["location"][0]["weatherElement"][0]["time"][2]["startTime"].as<String>();   
     Weather2436[2] = obj["location"][0]["weatherElement"][0]["time"][2]["endTime"].as<String>();      
@@ -166,36 +166,6 @@ void opendataWeather(String location, String Authorization) {
     Weather2436[5] = obj["location"][0]["weatherElement"][2]["time"][2]["parameter"]["parameterName"].as<String>();
     Weather2436[6] = obj["location"][0]["weatherElement"][3]["time"][2]["parameter"]["parameterName"].as<String>();
     Weather2436[7] = obj["location"][0]["weatherElement"][4]["time"][2]["parameter"]["parameterName"].as<String>();
-
-    /*
-    Serial.println(obj["location"][0]["locationName"].as<String>());
-    Serial.println(obj["location"][0]["weatherElement"][0]["time"][0]["startTime"].as<String>());
-    Serial.println(obj["location"][0]["weatherElement"][0]["time"][0]["endTime"].as<String>());
-    Serial.println(obj["location"][0]["weatherElement"][0]["time"][0]["parameter"]["parameterName"].as<String>());
-    Serial.println(obj["location"][0]["weatherElement"][1]["time"][0]["parameter"]["parameterName"].as<String>());
-    Serial.println(obj["location"][0]["weatherElement"][2]["time"][0]["parameter"]["parameterName"].as<String>());
-    Serial.println(obj["location"][0]["weatherElement"][3]["time"][0]["parameter"]["parameterName"].as<String>());
-    Serial.println(obj["location"][0]["weatherElement"][4]["time"][0]["parameter"]["parameterName"].as<String>());
-    Serial.println();
-    Serial.println(obj["location"][0]["locationName"].as<String>());
-    Serial.println(obj["location"][0]["weatherElement"][0]["time"][1]["startTime"].as<String>());
-    Serial.println(obj["location"][0]["weatherElement"][0]["time"][1]["endTime"].as<String>());   
-    Serial.println(obj["location"][0]["weatherElement"][0]["time"][1]["parameter"]["parameterName"].as<String>());
-    Serial.println(obj["location"][0]["weatherElement"][1]["time"][1]["parameter"]["parameterName"].as<String>());
-    Serial.println(obj["location"][0]["weatherElement"][2]["time"][1]["parameter"]["parameterName"].as<String>());
-    Serial.println(obj["location"][0]["weatherElement"][3]["time"][1]["parameter"]["parameterName"].as<String>());
-    Serial.println(obj["location"][0]["weatherElement"][4]["time"][1]["parameter"]["parameterName"].as<String>());
-    Serial.println();
-    Serial.println(obj["location"][0]["locationName"].as<String>());
-    Serial.println(obj["location"][0]["weatherElement"][0]["time"][2]["startTime"].as<String>());   
-    Serial.println(obj["location"][0]["weatherElement"][0]["time"][2]["endTime"].as<String>());      
-    Serial.println(obj["location"][0]["weatherElement"][0]["time"][2]["parameter"]["parameterName"].as<String>());
-    Serial.println(obj["location"][0]["weatherElement"][1]["time"][2]["parameter"]["parameterName"].as<String>());
-    Serial.println(obj["location"][0]["weatherElement"][2]["time"][2]["parameter"]["parameterName"].as<String>());
-    Serial.println(obj["location"][0]["weatherElement"][3]["time"][2]["parameter"]["parameterName"].as<String>());
-    Serial.println(obj["location"][0]["weatherElement"][4]["time"][2]["parameter"]["parameterName"].as<String>());
-    Serial.println();
-    */
   }
 }
 
