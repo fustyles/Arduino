@@ -123,6 +123,7 @@ void opendataWeather(String location, String Authorization) {
       if (Feedback.length()!= 0) break;
     }
     client_tcp.stop();
+    //Serial.println(Feedback);
     
     JsonObject obj;
     DynamicJsonDocument doc(4096);
