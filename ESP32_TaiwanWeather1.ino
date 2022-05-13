@@ -202,6 +202,7 @@ String getWeather(int period,int index) {   //period=0,1,2  index=0,1,2,3,4,5,6,
   return "";
 }
 
+//https://github.com/zenmanenergy/ESP8266-Arduino-Examples/
 String urlencode(String str) {
     String encodedString="";
     char c;
