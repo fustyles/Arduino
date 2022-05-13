@@ -122,6 +122,8 @@ void opendataWeather(String location, String Authorization) {
       if (Feedback.length()!= 0) break;
     }
     client_tcp.stop();
+    //Serial.println(Feedback);
+    
     temp = "";
     for (i=0;i<Feedback.length();i++) {
       c = Feedback[i];
