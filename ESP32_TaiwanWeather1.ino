@@ -87,6 +87,8 @@ void initWiFi() {
 
 void opendataWeather(String location, String Authorization) {
   WiFiClientSecure client_tcp;
+  //client_tcp.setInsecure();  //for 1.0.5 or 1.0.6
+
   String request = "/api/v1/rest/datastore/F-C0032-001?Authorization="+Authorization+"&locationName="+urlencode(location);
   if (client_tcp.connect("opendata.cwb.gov.tw", 443)) {
     client_tcp.println("GET " + request + " HTTP/1.1");
