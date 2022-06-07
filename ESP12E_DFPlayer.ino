@@ -1,10 +1,10 @@
 /* 
 NodeMCU ESP12E + DFPlayer Mini MP3
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-2-17 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-6-7 20:00
 https://www.facebook.com/francefu
 
-DFPlayer RX -> ESP12E gpio16 
-DFPlayer TX -> ESP12E gpio17
+DFPlayer RX -> ESP12E TX 
+DFPlayer TX -> ESP12E RX
 
 Sample Code
 https://wiki.dfrobot.com/DFPlayer_Mini_SKU_DFR0299
@@ -18,9 +18,9 @@ Default APIP： 192.168.4.1
 STAIP：
 Query： http://192.168.4.1/?ip
 Link：http://192.168.4.1/?resetwifi=ssid;password
-
 If you don't need to get response from ESP8266 and want to execute commands quickly, 
 you can append a parameter value "stop" at the end of command.
+
 For example:
 http://192.168.4.1/?digitalwrite=gpio;value;stop
 http://192.168.4.1/?restart=stop
@@ -29,8 +29,8 @@ http://192.168.4.1/?restart=stop
 #include <ESP8266WiFi.h>
 
 // Enter your WiFi ssid and password
-const char* ssid     = "";   //your network SSID
-const char* password = "";   //your network password
+const char* ssid     = "teacher";   //your network SSID
+const char* password = "87654321";   //your network password
 
 const char* apssid = "ESP12E_DFPlayer";
 const char* appassword = "12345678";         //AP password require at least 8 characters.
@@ -39,8 +39,6 @@ WiFiServer server(80);
 
 #include "Arduino.h"
 #include "DFRobotDFPlayerMini.h"
-#include <HardwareSerial.h>
-HardwareSerial mySerial(1);  // RX:gpio16 TX:gpio17
 
 DFRobotDFPlayerMini myDFPlayer;
 void printDetail(uint8_t type, int value);
@@ -50,11 +48,6 @@ byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolon
 
 void ExecuteCommand()
 {
-  Serial.println("");
-  //Serial.println("Command: "+Command);
-  Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
-  Serial.println("");
-  
   if (cmd=="your cmd") {
     // You can do anything
     // Feedback="<font color=\"red\">Hello World</font>";
@@ -72,16 +65,12 @@ void ExecuteCommand()
   }    
   else if (cmd=="resetwifi") {
     WiFi.begin(P1.c_str(), P2.c_str());
-    Serial.print("Connecting to ");
-    Serial.println(P1);
     long int StartTime=millis();
     while (WiFi.status() != WL_CONNECTED) 
     {
         delay(500);
         if ((StartTime+5000) < millis()) break;
     } 
-    Serial.println("");
-    Serial.println("STAIP: "+WiFi.localIP().toString());
     Feedback="STAIP: "+WiFi.localIP().toString();
   }   
   else if (cmd=="volume") {   // value = 0 to 30
@@ -210,9 +199,7 @@ void ExecuteCommand()
 
 void setup()
 {
-    mySerial.begin(9600, SERIAL_8N1, 16, 17);
-      
-    Serial.begin(115200);
+    Serial.begin(9600);
     delay(10);
     
     WiFi.mode(WIFI_AP_STA);
@@ -260,7 +247,7 @@ void setup()
     Serial.println(F("DFRobotDemo"));
     Serial.println(F("Initializing DFPlayer ... (May take 3~5 seconds)"));
     
-    if (!myDFPlayer.begin(mySerial)) {  //Use softwareSerial to communicate with mp3.
+    if (!myDFPlayer.begin(Serial)) {  //Use softwareSerial to communicate with mp3.
       Serial.println(F("Unable to begin:"));
       Serial.println(F("1.Please recheck the connection!"));
       Serial.println(F("2.Please insert the SD card!"));
