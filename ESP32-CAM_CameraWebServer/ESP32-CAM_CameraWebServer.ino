@@ -15,7 +15,7 @@ http://192.168.xxx.xxx/status      //取得視訊參數值
 設定視訊參數(官方指令格式)  http://192.168.xxx.xxx/control?var=*****&val=*****
 
 http://192.168.xxx.xxx/control?var=flash&val=value          //閃光燈 value= 0~255
-http://192.168.xxx.xxx/control?var=framesize&val=value      //解析度 value = 10->UXGA(1600x1200), 9->SXGA(1280x1024), 8->XGA(1024x768) ,7->SVGA(800x600), 6->VGA(640x480), 5 selected=selected->CIF(400x296), 4->QVGA(320x240), 3->HQVGA(240x176), 0->QQVGA(160x120), 11->QXGA(2048x1564 for OV3660)
+http://192.168.xxx.xxx/control?var=framesize&val=value      //解析度 value = 21-> QSXGA(2560x1920), 20-> P FHD(1080x1920), 19-> WQXGA(2560x1600), 18-> QHD(2560x1440), 17-> QXGA(2048x1564), 16-> P 3MP(864x1564), 15-> P HD(720x1280), 14-> FHD(1920x1080), 13-> UXGA(1600x1200), 12-> SXGA(1280x1024), 11-> HD(1280x720), 10-> XGA(1024x768), 9-> SVGA(800x600), 8-> VGA(640x480), 7-> HVGA(480x320), 6-> CIF(400x296), 5-> QVGA(320x240), 4-> 240x240, 3-> HQVGA(240x176), 2-> QCIF(176x144), 1-> QQVGA(160x120), 0-> 96x96
 http://192.168.xxx.xxx/control?var=quality&val=value        //畫質 value = 10 ~ 63
 http://192.168.xxx.xxx/control?var=brightness&val=value     //亮度 value = -2 ~ 2
 http://192.168.xxx.xxx/control?var=contrast&val=value       //對比 value = -2 ~ 2
