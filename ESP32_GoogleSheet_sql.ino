@@ -1,7 +1,7 @@
 /*
 ESP32 Google spreadsheet query by SQL statement
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-6-19 16:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-6-20 00:00
 https://www.facebook.com/francefu
 */
 
