@@ -154,7 +154,7 @@ String Spreadsheet_getcell_query(int row, int col) {
       DynamicJsonDocument doc(1024);
       deserializeJson(doc, spreadsheetQueryData);
       obj = doc.as<JsonObject>();
-      if ((obj["values"].size()<row+1)||obj["values"][0]["c"].size()<col+1))
+      if ((obj["values"].size()<row+1)||(obj["values"][0]["c"].size()<col+1))
         return "";
       return obj["values"][row]["c"][col]["v"].as<String>();
     }
