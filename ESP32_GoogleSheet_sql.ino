@@ -5,9 +5,9 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-6-19 16:00
 https://www.facebook.com/francefu
 */
 
- 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
+
 #include <ArduinoJson.h>
 String spreadsheetQueryData = "{\"values\":[]}";
 
@@ -28,7 +28,6 @@ void setup()
   Serial.println((Spreadsheet_getcell_query_number("row")));  //資料陣列橫列數
   Serial.println((Spreadsheet_getcell_query_number("col")));  //資料陣列縱行數
 }
-
 
 void loop()
 {
