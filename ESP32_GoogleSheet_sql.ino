@@ -103,7 +103,7 @@ String Spreadsheet_query(String sql, String mySpreadsheetid, String mySpreadshee
        if (getBody.length()>0) break;
     }
     Serial.println("");
-    if (getBody.indexOf("error")!=-1)
+    if (getBody.indexOf("error")!=-1||getBody=="")
     	return "{\"values\":[]}";
     getData = "{\"values\":[" + getData.substring(0, getData.length()-2) + "]}";
     return getData;
@@ -154,9 +154,7 @@ String Spreadsheet_getcell_query(int row, int col) {
       DynamicJsonDocument doc(1024);
       deserializeJson(doc, spreadsheetQueryData);
       obj = doc.as<JsonObject>();
-      if (obj["values"].size()<row+1)
-        return "";
-      if (obj["values"][0]["c"].size()<col+1)
+      if ((obj["values"].size()<row+1)||obj["values"][0]["c"].size()<col+1))
         return "";
       return obj["values"][row]["c"][col]["v"].as<String>();
     }
