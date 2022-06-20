@@ -24,8 +24,8 @@ void setup()
   Serial.println(Spreadsheet_getcell(0, 1));  //C1
   Serial.println(Spreadsheet_getcell(1, 0));  //B2
   Serial.println(Spreadsheet_getcell(1, 1));  //C2  
-  Serial.println(Spreadsheet_getcell_number("row"));  //資料陣列橫列數
-  Serial.println(Spreadsheet_getcell_number("col"));  //資料陣列縱行數
+  Serial.println(Spreadsheet_getcell_count("row"));  //資料陣列橫列數
+  Serial.println(Spreadsheet_getcell_count("col"));  //資料陣列縱行數
 }
 
 void loop()
@@ -154,7 +154,7 @@ String Spreadsheet_getcell(int row, int col) {
       return "";
 }
 
-int Spreadsheet_getcell_number(String option) {
+int Spreadsheet_getcell_count(String option) {
     if (spreadsheetQueryData!="") {
       JsonObject obj;
       DynamicJsonDocument doc(1024);
