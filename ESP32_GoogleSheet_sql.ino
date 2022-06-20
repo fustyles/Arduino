@@ -22,8 +22,8 @@ void setup()
   //Spreadsheet_query(sql, spreadsheetId, spreadsheetName)
   spreadsheetQueryData = Spreadsheet_query("select B,C", "1EjRU-dWFYq3pq8uXjh_LYwEbI-hff2jQC1N0GQ6qGYw", "工作表1");   
   Serial.println((Spreadsheet_getcell_query(0, 0)));  //B1
-  Serial.println((Spreadsheet_getcell_query(0, 1)));  //B2
-  Serial.println((Spreadsheet_getcell_query(1, 0)));  //C1
+  Serial.println((Spreadsheet_getcell_query(0, 1)));  //C1
+  Serial.println((Spreadsheet_getcell_query(1, 0)));  //B2
   Serial.println((Spreadsheet_getcell_query(1, 1)));  //C2  
   Serial.println((Spreadsheet_getcell_query_number("row")));  //資料陣列橫列數
   Serial.println((Spreadsheet_getcell_query_number("col")));  //資料陣列縱行數
