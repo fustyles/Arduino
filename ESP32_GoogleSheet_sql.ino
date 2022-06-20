@@ -2,6 +2,9 @@
 ESP32 Google spreadsheet query by SQL statement
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-6-20 08:00
 https://www.facebook.com/francefu
+
+Query Language Reference
+https://developers.google.com/chart/interactive/docs/querylanguage
 */
 
 #include <WiFi.h>
