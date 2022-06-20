@@ -66,7 +66,7 @@ String Spreadsheet_query(String sql, String mySpreadsheetid, String mySpreadshee
   const char* myDomain = "docs.google.com";
   String getAll="", getBody = "", getData = "";
   Serial.println("Connect to " + String(myDomain));
-  WiFiClientSecure client_tcp;   //若使用Arduino core 1.0.4編譯將產生錯誤，可刪除此行正常編譯 (Arduino core 1.0.5 or above)
+  WiFiClientSecure client_tcp;   //Arduino core 1.0.5 or above  (若使用Arduino core 1.0.4編譯將產生錯誤，可刪除此行正常編譯)
   client_tcp.setInsecure();
   if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
