@@ -1,7 +1,6 @@
 /*
 ESP32 Google spreadsheet query by SQL statement
-
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-6-20 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-6-20 08:00
 https://www.facebook.com/francefu
 */
 
@@ -21,12 +20,12 @@ void setup()
 
   //Spreadsheet_query(sql, spreadsheetId, spreadsheetName)
   spreadsheetQueryData = Spreadsheet_query("select B,C", "1EjRU-dWFYq3pq8uXjh_LYwEbI-hff2jQC1N0GQ6qGYw", "工作表1");   
-  Serial.println((Spreadsheet_getcell_query(0, 0)));  //B1
-  Serial.println((Spreadsheet_getcell_query(0, 1)));  //C1
-  Serial.println((Spreadsheet_getcell_query(1, 0)));  //B2
-  Serial.println((Spreadsheet_getcell_query(1, 1)));  //C2  
-  Serial.println((Spreadsheet_getcell_query_number("row")));  //資料陣列橫列數
-  Serial.println((Spreadsheet_getcell_query_number("col")));  //資料陣列縱行數
+  Serial.println(Spreadsheet_getcell(0, 0));  //B1
+  Serial.println(Spreadsheet_getcell(0, 1));  //C1
+  Serial.println(Spreadsheet_getcell(1, 0));  //B2
+  Serial.println(Spreadsheet_getcell(1, 1));  //C2  
+  Serial.println(Spreadsheet_getcell_number("row"));  //資料陣列橫列數
+  Serial.println(Spreadsheet_getcell_number("col"));  //資料陣列縱行數
 }
 
 void loop()
@@ -37,7 +36,6 @@ void loop()
 void initWiFi() {
   for (int i=0;i<2;i++) {
     WiFi.begin(wifi_ssid, wifi_pass);
-
     delay(1000);
     Serial.println("");
     Serial.print("Connecting to ");
@@ -54,7 +52,6 @@ void initWiFi() {
       Serial.println("STAIP address: ");
       Serial.println(WiFi.localIP());
       Serial.println("");
-
       break;
     }
   }
@@ -66,7 +63,7 @@ String Spreadsheet_query(String sql, String mySpreadsheetid, String mySpreadshee
   const char* myDomain = "docs.google.com";
   String getAll="", getBody = "", getData = "";
   Serial.println("Connect to " + String(myDomain));
-  WiFiClientSecure client_tcp;   //Arduino core 1.0.5 or above  (若使用Arduino core 1.0.4編譯將產生錯誤，可刪除此行正常運作)
+  WiFiClientSecure client_tcp;   //run version 1.0.5 or above
   client_tcp.setInsecure();
   if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
@@ -80,23 +77,19 @@ String Spreadsheet_query(String sql, String mySpreadsheetid, String mySpreadshee
     boolean state = false;
     boolean start = false;
 
-    while ((startTime + waitTime) > millis())
-    {
+    while ((startTime + waitTime) > millis()) {
       Serial.print(".");
       delay(100);
-      while (client_tcp.available())
-      {
+      while (client_tcp.available()) {
           char c = client_tcp.read();
           if (getBody.indexOf("\"rows\":[")!=-1) start = true;
           if (getData.indexOf("],")!=-1) start = false;
           if (state==true&&c!='\n'&&c!='\r') getBody += String(c);
           if (start==true&&c!='\n'&&c!='\r') getData += String(c);
-          if (c == '\n')
-          {
+          if (c == '\n') {
             if (getAll.length()==0) state=true;
             getAll = "";
-          }
-          else if (c != '\r')
+          } else if (c != '\r')
             getAll += String(c);
           startTime = millis();
        }
@@ -104,11 +97,10 @@ String Spreadsheet_query(String sql, String mySpreadsheetid, String mySpreadshee
     }
     Serial.println("");
     if (getBody.indexOf("error")!=-1||getBody=="")
-    	return "{\"values\":[]}";
+      return "{\"values\":[]}";
     getData = "{\"values\":[" + getData.substring(0, getData.length()-2) + "]}";
     return getData;
-  }
-  else {
+  } else {
     Serial.println("Connected to " + String(myDomain) + " failed.");
     return "{\"values\":[]}";
   }
@@ -123,18 +115,18 @@ String urlencode(String str)
   char code2;
   for (int i =0; i < str.length(); i++){
     c=str.charAt(i);
-    if (c == ' '){
+    if (c == ' ') {
       encodedString+= '+';
     } else if (isalnum(c)){
       encodedString+=c;
-    } else{
+    } else {
       code1=(c & 0xf)+'0';
-      if ((c & 0xf) >9){
+      if ((c & 0xf) >9) {
           code1=(c & 0xf) - 10 + 'A';
       }
       c=(c>>4)&0xf;
       code0=c+'0';
-      if (c > 9){
+      if (c > 9) {
           code0=c - 10 + 'A';
       }
       code2='\0';
@@ -148,7 +140,7 @@ String urlencode(String str)
   return encodedString;
 }
 
-String Spreadsheet_getcell_query(int row, int col) {
+String Spreadsheet_getcell(int row, int col) {
     if (spreadsheetQueryData!="") {
       JsonObject obj;
       DynamicJsonDocument doc(1024);
@@ -162,15 +154,15 @@ String Spreadsheet_getcell_query(int row, int col) {
       return "";
 }
 
-int Spreadsheet_getcell_query_number(String record) {
+int Spreadsheet_getcell_number(String option) {
     if (spreadsheetQueryData!="") {
       JsonObject obj;
       DynamicJsonDocument doc(1024);
       deserializeJson(doc, spreadsheetQueryData);
       obj = doc.as<JsonObject>();
-      if (record=="row")
+      if (option=="row")
         return obj["values"].size();
-      if (record=="col")
+      else if (option=="col")
         return obj["values"][0]["c"].size();
     }
     return 0;
