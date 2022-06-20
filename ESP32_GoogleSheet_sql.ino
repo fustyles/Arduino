@@ -109,6 +109,34 @@ String Spreadsheet_query(String sql, String mySpreadsheetid, String mySpreadshee
   }
 }
 
+String Spreadsheet_getcell(int row, int col) {
+    if (spreadsheetQueryData!="") {
+      JsonObject obj;
+      DynamicJsonDocument doc(1024);
+      deserializeJson(doc, spreadsheetQueryData);
+      obj = doc.as<JsonObject>();
+      if ((obj["values"].size()<row+1)||(obj["values"][0]["c"].size()<col+1))
+        return "";
+      return obj["values"][row]["c"][col]["v"].as<String>();
+    }
+    else
+      return "";
+}
+
+int Spreadsheet_getcell_count(String option) {
+    if (spreadsheetQueryData!="") {
+      JsonObject obj;
+      DynamicJsonDocument doc(1024);
+      deserializeJson(doc, spreadsheetQueryData);
+      obj = doc.as<JsonObject>();
+      if (option=="row")
+        return obj["values"].size();
+      else if (option=="col")
+        return obj["values"][0]["c"].size();
+    }
+    return 0;
+}
+
 String urlencode(String str)
 {
   String encodedString="";
@@ -141,32 +169,4 @@ String urlencode(String str)
     yield();
   }
   return encodedString;
-}
-
-String Spreadsheet_getcell(int row, int col) {
-    if (spreadsheetQueryData!="") {
-      JsonObject obj;
-      DynamicJsonDocument doc(1024);
-      deserializeJson(doc, spreadsheetQueryData);
-      obj = doc.as<JsonObject>();
-      if ((obj["values"].size()<row+1)||(obj["values"][0]["c"].size()<col+1))
-        return "";
-      return obj["values"][row]["c"][col]["v"].as<String>();
-    }
-    else
-      return "";
-}
-
-int Spreadsheet_getcell_count(String option) {
-    if (spreadsheetQueryData!="") {
-      JsonObject obj;
-      DynamicJsonDocument doc(1024);
-      deserializeJson(doc, spreadsheetQueryData);
-      obj = doc.as<JsonObject>();
-      if (option=="row")
-        return obj["values"].size();
-      else if (option=="col")
-        return obj["values"][0]["c"].size();
-    }
-    return 0;
 }
