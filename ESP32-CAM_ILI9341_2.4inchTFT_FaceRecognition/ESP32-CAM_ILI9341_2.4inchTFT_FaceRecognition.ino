@@ -1,5 +1,5 @@
 /*
-ESP32-CAM Load images from SD card to enroll faces and recognize faces automatically without opening the page.
+ESP32-CAM 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-19 12:00
 https://www.facebook.com/francefu
 
@@ -32,12 +32,6 @@ boolean pageState = false;
 
 //人臉辨識同一人人臉註冊影像數
 #define ENROLL_CONFIRM_TIMES 5
-//Save the captured still (FRAMESIZE_CIF) with your face to the SD card. 
-//Filename: 1.jpg,  2.jpg, 3.jpg, 4.jpg, 5.jpg
-String filename[5] = {"/1.jpg", "/2.jpg", "/3.jpg", "/4.jpg", "/5.jpg"};  //1.jpg, 2.jpg, ...., 35.jpg
-int image_width = 240;  
-int image_height = 176;
-//UXGA(1600x1200), SXGA(1280x1024), XGA(1024x768) , SVGA(800x600), VGA(640x480), CIF(400x296), QVGA(320x240), HQVGA(240x176), QQVGA(160x120)
 
 //人臉辨識註冊人數
 #define FACE_ID_SAVE_NUMBER 7
