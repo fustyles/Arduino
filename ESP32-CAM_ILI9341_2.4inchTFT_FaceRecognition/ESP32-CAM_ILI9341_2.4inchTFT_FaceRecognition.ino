@@ -32,7 +32,6 @@ boolean pageState = false;
 
 //人臉辨識同一人人臉註冊影像數
 #define ENROLL_CONFIRM_TIMES 5
-
 //人臉辨識註冊人數
 #define FACE_ID_SAVE_NUMBER 7
 //設定人臉辨識顯示的人名
