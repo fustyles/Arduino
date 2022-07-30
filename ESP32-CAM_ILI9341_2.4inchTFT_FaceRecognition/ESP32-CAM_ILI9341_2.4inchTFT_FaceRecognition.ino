@@ -1,5 +1,5 @@
 /*
-ESP32-CAM 
+ESP32-CAM_ILI9341_2.4inchTFT_FaceRecognition
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2020-12-19 12:00
 https://www.facebook.com/francefu
 
