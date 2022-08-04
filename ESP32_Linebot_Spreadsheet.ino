@@ -207,8 +207,8 @@ void setup()
 void loop()
 {
   spreadsheetQueryData = Spreadsheet_query("select " + colsToList(1, 2) + " limit " + String(1-1+1)+ " offset "+ String(1-1), String(spreadsheetID), String(spreadsheetName));
-  String message = (Spreadsheet_getcell_query((1-1), (1-1)));
-  String replyToken = (Spreadsheet_getcell_query((1-1), (2-1)));
+  String message = Spreadsheet_getcell_query(0, 0);
+  String replyToken = Spreadsheet_getcell_query(0, 1);
   if (message != "") {
     Serial.println(message);
     Serial.println(replyToken);
