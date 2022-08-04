@@ -1,5 +1,5 @@
 /*
-ESP32-CAM LineBot using spreadsheet
+ESP32-CAM Line Bot using spreadsheet 
 Author : ChungYi Fu (Kaohsiung, Taiwan)   2022/8/4 17:30
 https://www.facebook.com/francefu
 
