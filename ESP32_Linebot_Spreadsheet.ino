@@ -3,7 +3,7 @@ ESP32 LineBot using spreadsheet
 Author : ChungYi Fu (Kaohsiung, Taiwan)   2022/8/4 12:30
 https://www.facebook.com/francefu
 
-apps Script
+Google apps script
 https://github.com/fustyles/webduino/blob/gs/Linebot_Spreadsheet.gs
  */
  
