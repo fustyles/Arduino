@@ -111,7 +111,7 @@ String Spreadsheet_query(String sql, String mySpreadsheetid, String mySpreadshee
        }
        if (getBody.length()>0) break;
     }
-    Serial.println("");
+    //Serial.println("");
     if (getBody.indexOf("error")!=-1||getData=="")
     	return "{\"values\":[]}";
     getData = "{\"values\":[" + getData.substring(0, getData.length()-2) + "]}";
