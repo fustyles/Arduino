@@ -1,10 +1,11 @@
 /*
 ESP32 LineBot remote (using google spreadsheet, google apps script)
-Author : ChungYi Fu (Kaohsiung, Taiwan)   2022/8/4 17:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)   2022/8/5 23:30
 https://www.facebook.com/francefu
 
 apps Script
 https://github.com/fustyles/webduino/blob/gs/Linebot_Spreadsheet.gs
+
 
 spreadsheet
 https://docs.google.com/spreadsheets
@@ -14,14 +15,14 @@ https://developers.line.biz/en/
 
 google apps script
 https://script.google.com/home/
- */
+*/
  
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <ArduinoJson.h>
 
-char _lwifi_ssid[] = "teacher";
-char _lwifi_pass[] = "87654321";
+char wifi_ssid[] = "teacher";
+char wifi_pass[] = "87654321";
 String spreadsheetID = "1zztiZMyQ7HplFp0cHc0dKpiomZLDDfu8nJuStz_hFIss";
 String spreadsheetName = "工作表1";
 String appsScriptID = "AKfycbx-9F6o1gl6-404JBXkpiJQ0-wCyn8tFlxPXZOqiX3qeuoxjlMlv9FdhsXkZY4jYHmss";
@@ -37,8 +38,8 @@ void setup()
 void loop()
 {
   spreadsheetQueryData = Spreadsheet_query("select A, B limit 1 offset 0", String(spreadsheetID), String(spreadsheetName));
-  String message = Spreadsheet_getcell_query(0, 0);
-  String replyToken = Spreadsheet_getcell_query(0, 1);
+  String message = Spreadsheet_getcell(0, 0);
+  String replyToken = Spreadsheet_getcell(0, 1);
   if (message != "") {
     Serial.println(message);
     Serial.println(replyToken);
@@ -46,8 +47,11 @@ void loop()
       message = "Led on";
     } else if (message == "off") {
       message = "Led off";
+    } else {
+      message = "Command is not defined.";
     }
-    tcp_https_esp32("POST", "script.google.com", "/macros/s/"+appsScriptID+"/exec?response="+urlencode(message)+"&token="+String(replyToken), 443, 3000);
+	
+    tcp_https("POST", "script.google.com", "/macros/s/"+appsScriptID+"/exec?response="+urlencode(message)+"&token="+replyToken, 443, 3000);
   }
   delay(1000);
 }
@@ -55,12 +59,12 @@ void loop()
 void initWiFi() {
 
   for (int i=0;i<2;i++) {
-    WiFi.begin(_lwifi_ssid, _lwifi_pass);
+    WiFi.begin(wifi_ssid, wifi_pass);
 
     delay(1000);
     Serial.println("");
     Serial.print("Connecting to ");
-    Serial.println(_lwifi_ssid);
+    Serial.println(wifi_ssid);
 
     long int StartTime=millis();
     while (WiFi.status() != WL_CONNECTED) {
@@ -131,7 +135,7 @@ String Spreadsheet_query(String sql, String mySpreadsheetid, String mySpreadshee
   }
 }
 
-String Spreadsheet_getcell_query(int row, int col) {
+String Spreadsheet_getcell(int row, int col) {
     if (spreadsheetQueryData!="") {
     	JsonObject obj;
     	DynamicJsonDocument doc(1024);
@@ -145,7 +149,7 @@ String Spreadsheet_getcell_query(int row, int col) {
 		return "";
 }
 
-String tcp_https_esp32(String type,String domain,String request,int port,int waittime) {
+String tcp_https(String type,String domain,String request,int port,int waittime) {
   String getAll="", getBody="";
   WiFiClientSecure client_tcp;
   client_tcp.setInsecure();
