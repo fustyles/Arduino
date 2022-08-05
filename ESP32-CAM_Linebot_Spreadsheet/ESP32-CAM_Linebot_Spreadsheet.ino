@@ -56,8 +56,8 @@ void setup()
 void loop()
 {
   spreadsheetQueryData = Spreadsheet_query("select A, B limit 1 offset 0", spreadsheetID, spreadsheetName);
-  String message = Spreadsheet_getcell_query(0, 0);
-  String replyToken = Spreadsheet_getcell_query(0, 1);
+  String message = Spreadsheet_getcell(0, 0);
+  String replyToken = Spreadsheet_getcell(0, 1);
   if (message != "") {
     Serial.println(message);
     Serial.println(replyToken);
@@ -211,7 +211,7 @@ String Spreadsheet_query(String sql, String mySpreadsheetid, String mySpreadshee
   }
 }
 
-String Spreadsheet_getcell_query(int row, int col) {
+String Spreadsheet_getcell(int row, int col) {
     if (spreadsheetQueryData!="") {
     	JsonObject obj;
     	DynamicJsonDocument doc(1024);
