@@ -5,6 +5,15 @@ https://www.facebook.com/francefu
 
 apps Script
 https://github.com/fustyles/webduino/blob/gs/Linebot_Spreadsheet_googledrive.gs
+
+spreadsheet
+https://docs.google.com/spreadsheets
+
+linebot
+https://developers.line.biz/en/
+
+google apps script
+https://script.google.com/home/
  */
  
 #include <WiFi.h>
