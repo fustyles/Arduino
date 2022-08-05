@@ -1,5 +1,5 @@
 /*
-ESP32-CAM LineBot using spreadsheet
+ESP32-CAM LineBot remote (using google spreadsheet, google apps script)
 Author : ChungYi Fu (Kaohsiung, Taiwan)   2022/8/5 01:30
 https://www.facebook.com/francefu
 
