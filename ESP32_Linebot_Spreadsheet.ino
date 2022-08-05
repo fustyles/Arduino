@@ -173,6 +173,7 @@ String tcp_https_esp32(String type,String domain,String request,int port,int wai
         if (getBody.length()!= 0) break;
       }
       client_tcp.stop();
+      //Serial.println(getBody);
   }
   else {
     getBody="Connected to "+domain+" failed.";
