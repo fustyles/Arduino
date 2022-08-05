@@ -1,5 +1,5 @@
 /*
-ESP32 LineBot using spreadsheet
+ESP32 LineBot remote (using google spreadsheet, google apps script)
 Author : ChungYi Fu (Kaohsiung, Taiwan)   2022/8/4 17:30
 https://www.facebook.com/francefu
 
