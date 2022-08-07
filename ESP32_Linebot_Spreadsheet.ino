@@ -23,9 +23,9 @@ https://script.google.com/home/
 
 char wifi_ssid[] = "teacher";
 char wifi_pass[] = "87654321";
-String spreadsheetID = "1zztiZMyQ7HplFp0cHc0dKpiomZLDDfu8nJuStz_hFIss";
-String spreadsheetName = "工作表1";
-String appsScriptID = "AKfycbx-9F6o1gl6-404JBXkpiJQ0-wCyn8tFlxPXZOqiX3qeuoxjlMlv9FdhsXkZY4jYHmss";
+String spreadsheetID = "*****";
+String spreadsheetName = "*****";
+String appsScriptID = "*****";
 
 String spreadsheetQueryData = "{\"values\":[]}";
 
@@ -37,7 +37,7 @@ void setup()
 
 void loop()
 {
-  spreadsheetQueryData = Spreadsheet_query("select A, B limit 1 offset 0", String(spreadsheetID), String(spreadsheetName));
+  spreadsheetQueryData = Spreadsheet_query("select A, B limit 1 offset 0", spreadsheetID, spreadsheetName);
   String message = Spreadsheet_getcell(0, 0);
   String replyToken = Spreadsheet_getcell(0, 1);
   if (message != "") {
