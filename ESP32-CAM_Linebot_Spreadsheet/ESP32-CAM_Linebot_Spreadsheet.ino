@@ -15,9 +15,9 @@ https://github.com/fustyles/webduino/blob/gs/Linebot_Spreadsheet_googledrive.gs
 
 char wifi_ssid[] = "teacher";
 char wifi_pass[] = "87654321";
-String spreadsheetID = "1zztiZMyQ7HplFp0cHc0dKpiomZLDDfu8nJuStz_hFIss";
-String spreadsheetName = "工作表1";
-String appsScriptID = "AKfycbx-9F6o1gl6-404JBXkpiJQ0-wCyn8tFlxPXZOqiX3qeuoxjlMlv9FdhsXkZY4jYHmss";
+String spreadsheetID = "*****";
+String spreadsheetName = "*****";
+String appsScriptID = "*****";
 
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
 //            or another board which has PSRAM enabled
@@ -65,8 +65,8 @@ void loop()
       ledcWrite(15, 10);
       message = "Led on";
     } else if (message == "off") {
-      message = "Led off";
       ledcWrite(15, 0);
+      message = "Led off";
     } else if (message == "getstill") {
       SendCapturedImage(replyToken);
       return;
