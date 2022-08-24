@@ -506,7 +506,7 @@ static esp_err_t cmd_handler(httpd_req_t *req)
               s->set_awb_gain(s, p1.toInt());
           else if (cmd=="agc_gain")
               s->set_agc_gain(s, p1.toInt());
-          else if (cmd=="aec_p1.toInt()ue")
+          else if (cmd=="aec_value")
               s->set_aec_value(s, p1.toInt());
           else if (cmd=="aec2")
               s->set_aec2(s, p1.toInt());
