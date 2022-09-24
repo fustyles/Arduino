@@ -81,6 +81,7 @@ void loop() {
         
       // broadcasting value changes to all connected central devices
       LBLEPeripheral.notifyAll(CHARACTERISTIC_UUID_TX);
+      CHARACTERISTIC_UUID_TX.setValue("");
     }
   }
   
