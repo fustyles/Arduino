@@ -57,14 +57,18 @@ void loop() {
   }
 
   if (LBLEPeripheral.connected()==1) {
+    
     if (CHARACTERISTIC_UUID_RX.isWritten()) {
+      
       const char value = CHARACTERISTIC_UUID_RX.getValue();
       Serial.println(value);
+      
       CHARACTERISTIC_UUID_TX.setValue(value);
-  
       // broadcasting value changes to all connected central devices
       LBLEPeripheral.notifyAll(CHARACTERISTIC_UUID_TX);
+      
     }
+    
   }
   
   delay(100);
