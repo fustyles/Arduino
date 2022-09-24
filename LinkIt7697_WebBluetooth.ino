@@ -1,3 +1,14 @@
+/*
+  This example configures LinkIt 7697 to act as a simple GATT server with 1 characteristic.
+
+  To use it, open AppInventor project:
+
+    * 
+
+  Build & install it on Android id
+
+  created Mar 2017
+*/
 #include <LBLE.h>
 #include <LBLEPeriphral.h>
 
@@ -61,7 +72,13 @@ void loop() {
       String value = CHARACTERISTIC_UUID_RX.getValue();
       Serial.println(value);
       
-      CHARACTERISTIC_UUID_TX.setValue(value);
+      if (value == "on") 
+        CHARACTERISTIC_UUID_TX.setValue("LED ON");
+      else if (value == "off")
+        CHARACTERISTIC_UUID_TX.setValue("LED OFF");
+      else
+        CHARACTERISTIC_UUID_TX.setValue("UNKNOWN");
+        
       // broadcasting value changes to all connected central devices
       LBLEPeripheral.notifyAll(CHARACTERISTIC_UUID_TX);
     }
