@@ -1,14 +1,3 @@
-/*
-  This example configures LinkIt 7697 to act as a simple GATT server with 1 characteristic.
-
-  To use it, open AppInventor project:
-
-    * 
-
-  Build & install it on Android id
-
-  created Mar 2017
-*/
 #include <LBLE.h>
 #include <LBLEPeriphral.h>
 
