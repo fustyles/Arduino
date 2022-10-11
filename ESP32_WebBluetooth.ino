@@ -9,6 +9,7 @@ https://fustyles.github.io/webduino/WebBluetooth.html
 
 
 //https://www.instructables.com/ESP32-Bluetooth-Low-Energy/
+//Library: https://github.com/nkolban/ESP32_BLE_Arduino
 #include <BLEDevice.h>
 #include <BLEServer.h>
 #include <BLEUtils.h>
