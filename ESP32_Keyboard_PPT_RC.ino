@@ -33,19 +33,19 @@ http://192.168.xxx.xxx/?keyboardwrite=keycode
 Remote Control for PPT  (keyboard press = keycode1, keycode2, keycode3, pressTime)
 ?keyboardwrite=198              "F5"
 ?keyboardwrite=211              "PAGE UP"
-?keyboardwrite=133,198,,10      "SHIFT+F5"      
+?keyboardwrite=133;198;;10      "SHIFT+F5"      
 ?keyboardwrite=214              "PAGE DOWN"
 ?keyboardwrite=87               "W"
 ?keyboardwrite=177              "ESC"
 ?keyboardwrite=66               "B"
 
 Remote Control for Game  (keyboard press = keycode1, keycode2, keycode3, pressTime)
-?keyboardpress=215,,,100       "KEY_RIGHT_ARROW"
-?keyboardpress=216,,,100       "KEY_LEFT_ARROW"
-?keyboardpress=217,,,100       "KEY_DOWN_ARROW"
-?keyboardpress=218,,,200       "KEY_UP_ARROW"
-?keyboardpress=215,218,,200    "KEY_RIGHT_ARROW + KEY_UP_ARROW"
-?keyboardpress=216,218,,200    "KEY_LEFT_ARROW + KEY_UP_ARROW"
+?keyboardpress=215;;;100       "KEY_RIGHT_ARROW"
+?keyboardpress=216;;;100       "KEY_LEFT_ARROW"
+?keyboardpress=217;;;100       "KEY_DOWN_ARROW"
+?keyboardpress=218;;;200       "KEY_UP_ARROW"
+?keyboardpress=215;218;;200    "KEY_RIGHT_ARROW + KEY_UP_ARROW"
+?keyboardpress=216;218;;200    "KEY_LEFT_ARROW + KEY_UP_ARROW"
 
 Keycode Constants
 KEY_LEFT_CTRL
