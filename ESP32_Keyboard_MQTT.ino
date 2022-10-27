@@ -1,6 +1,6 @@
 /*
-ESp32 Keyboard RC for PPT
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-1-25 08:00
+ESp32 Keyboard by using MQTT
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-10-27 00:00
 https://www.facebook.com/francefu
 
 Library: 
