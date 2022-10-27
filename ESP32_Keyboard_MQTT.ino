@@ -252,7 +252,7 @@ void executeCommand() {
 void setup() {
   Serial.begin(115200);
   
-  bleKeyboard.setName("ESp32 Keyboard");
+  bleKeyboard.setName("ESP32 Keyboard");
   bleKeyboard.begin(); 
   Serial.println("Starting Ble Keyboard");
 
