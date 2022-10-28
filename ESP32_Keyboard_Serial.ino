@@ -6,28 +6,20 @@ https://www.facebook.com/francefu
 Library: 
 https://github.com/T-vK/ESp32-BLE-Keyboard
 
-Keyboard Modifiers (keyboardpress)
-https://www.arduino.cc/en/Reference/KeyboardModifiers
-
 Command Format :  
-http://APIP/?cmd=p1;p2;p3;p4;p5;p6;p7;p8;p9
-http://STAIP/?cmd=p1;p2;p3;p4;p5;p6;p7;p8;p9
+?cmd=p1;p2;p3;p4;p5;p6;p7;p8;p9
 
-Default APIP： 192.168.4.1
-http://192.168.xxx.xxx/?ip
-http://192.168.xxx.xxx/?mac
-http://192.168.xxx.xxx/?restart
-http://192.168.xxx.xxx/?resetwifi=ssid;password
-http://192.168.xxx.xxx/?inputpullup=pin
-http://192.168.xxx.xxx/?pinmode=pin;value
-http://192.168.xxx.xxx/?digitalwrite=pin;value
-http://192.168.xxx.xxx/?analogwrite=pin;value
-http://192.168.xxx.xxx/?digitalread=pin
-http://192.168.xxx.xxx/?analogread=pin
-http://192.168.xxx.xxx/?touchread=pin  
-http://192.168.xxx.xxx/?keyboardpress=keycode1;keycode2;keycode3;presstime
-http://192.168.xxx.xxx/?keyboardprint=characters
-http://192.168.xxx.xxx/?keyboardwrite=keycode
+?restart
+?inputpullup=pin
+?pinmode=pin;value
+?digitalwrite=pin;value
+?analogwrite=pin;value
+?digitalread=pin
+?analogread=pin
+?touchread=pin  
+?keyboardpress=keycode1;keycode2;keycode3;presstime
+?keyboardprint=characters
+?keyboardwrite=keycode
  
 Remote Control for PPT  (keyboard press = keycode1, keycode2, keycode3, pressTime)
 ?keyboardwrite=198              "F5"
