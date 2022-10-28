@@ -37,6 +37,7 @@ Remote Control for Game
 ?keyboardpress=218;;;200       "KEY_UP_ARROW"
 ?keyboardpress=215;218;;200    "KEY_RIGHT_ARROW + KEY_UP_ARROW"
 ?keyboardpress=216;218;;200    "KEY_LEFT_ARROW + KEY_UP_ARROW"
+
 Keycode Constants
 KEY_LEFT_CTRL
 KEY_LEFT_SHIFT
