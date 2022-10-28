@@ -12,8 +12,6 @@ String filepath[5] = {"/1.jpg", "/2.jpg", "/3.jpg", "/4.jpg", "/5.jpg"};  //1.jp
 int image_width = 400;  
 int image_height = 296;
 
-//人臉辨識同一人人臉註冊影像數
-#define ENROLL_CONFIRM_TIMES 5
 //人臉辨識註冊人數
 #define FACE_ID_SAVE_NUMBER 7
 
