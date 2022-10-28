@@ -24,7 +24,7 @@ Command Format :
 Remote Control for PPT  (keyboard press = keycode1, keycode2, keycode3, pressTime)
 ?keyboardwrite=198              "F5"
 ?keyboardwrite=211              "PAGE UP"
-?keyboardwrite=133;198;;10      "SHIFT+F5"      
+?keyboardpress=133;198;;10      "SHIFT+F5"      
 ?keyboardwrite=214              "PAGE DOWN"
 ?keyboardwrite=87               "W"
 ?keyboardwrite=177              "ESC"
