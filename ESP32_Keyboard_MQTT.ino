@@ -22,7 +22,7 @@ Command Format :
 ?keyboardprint=characters
 ?keyboardwrite=keycode
  
-Remote Control for PPT  (keyboard press = keycode1, keycode2, keycode3, pressTime)
+Remote Control for PPT
 ?keyboardwrite=198              "F5"
 ?keyboardwrite=211              "PAGE UP"
 ?keyboardpress=133;198;;10      "SHIFT+F5"      
@@ -31,7 +31,7 @@ Remote Control for PPT  (keyboard press = keycode1, keycode2, keycode3, pressTim
 ?keyboardwrite=177              "ESC"
 ?keyboardwrite=66               "B"
 
-Remote Control for Game  (keyboard press = keycode1, keycode2, keycode3, pressTime)
+Remote Control for Game
 ?keyboardpress=215;;;100       "KEY_RIGHT_ARROW"
 ?keyboardpress=216;;;100       "KEY_LEFT_ARROW"
 ?keyboardpress=217;;;100       "KEY_DOWN_ARROW"
