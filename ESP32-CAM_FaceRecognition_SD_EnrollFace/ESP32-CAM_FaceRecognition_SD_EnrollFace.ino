@@ -7,13 +7,13 @@ https://www.facebook.com/francefu
 //人臉辨識同一人人臉註冊影像數
 #define ENROLL_CONFIRM_TIMES 5
 
+//人臉辨識註冊人數
+#define FACE_ID_SAVE_NUMBER 7
+
 //可由網頁get-still按鈕取得解析度CIF影像另存於SD卡 http://192.168.xxx.xxx/capture  (FRAMESIZE_CIF)
 String filepath[5] = {"/1.jpg", "/2.jpg", "/3.jpg", "/4.jpg", "/5.jpg"};  //1.jpg, 2.jpg, ...., 35.jpg
 int image_width = 400;  
 int image_height = 296;
-
-//人臉辨識註冊人數
-#define FACE_ID_SAVE_NUMBER 7
 
 //設定人臉辨識顯示的人名
 String recognize_face_matched_name[7] = {"Name0","Name1","Name2","Name3","Name4","Name5","Name6"};
