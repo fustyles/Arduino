@@ -331,7 +331,7 @@ void getCommand(char c) {
 TaskHandle_t Task0;
 void codeForTask0( void * parameter ) {
   while (true) {
-    getRequest81();
+    getRequest80();
     vTaskDelay(10);
   }
 
@@ -361,5 +361,5 @@ void setup()
 
 void loop()
 {
-  getRequest80();
+  getRequest81();
 }
