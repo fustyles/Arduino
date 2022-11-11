@@ -1,5 +1,5 @@
 /*
-ESP32-CAM My Stream (For sloving the problem about "Header fields are too long for server to interpret")
+ESP32-CAM My Stream (For solving the problem about "Header fields are too long for server to interpret")
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-11-11 11:11
 
 https://www.facebook.com/francefu
