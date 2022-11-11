@@ -119,8 +119,8 @@ void initWiFi() {
       Serial.println(WiFi.localIP());
       Serial.println("");
 
-		 ledcAttachPin(4, 4);
-		 ledcSetup(4, 5000, 8);
+      ledcAttachPin(4, 4);
+      ledcSetup(4, 5000, 8);
       for (int i=0;i<5;i++) {
         ledcWrite(4,10);
         delay(200);
