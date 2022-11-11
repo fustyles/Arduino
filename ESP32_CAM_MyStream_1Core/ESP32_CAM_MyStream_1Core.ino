@@ -8,6 +8,7 @@ stream
 http://yourIP/?stream
 
 gestill
+http://yourIP/?getstill
 http://yourIP/?getstill=random_number
 */
 
