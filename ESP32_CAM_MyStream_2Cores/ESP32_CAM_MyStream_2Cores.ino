@@ -1,6 +1,6 @@
 /*
 ESP32-CAM My Stream (For solving the problem about "Header fields are too long for server to interpret")
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-11-12 14:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-11-12 20:00
 https://www.facebook.com/francefu
 
 stream
@@ -221,6 +221,7 @@ void getRequest80() {
               }
             }
             Feedback="";
+            cameraState=0;
             break;
           } else {
             currentLine = "";
@@ -234,7 +235,6 @@ void getRequest80() {
     delay(1);
     client.stop();
   }
-  cameraState=0;
 }
 
 void getRequest81() {
@@ -285,9 +285,9 @@ void getRequest81() {
               
               client.print("\r\n");
               cameraState=0;
-              vTaskDelay(100);
+              vTaskDelay(20);
             }
-           
+            cameraState=0;
             break;
           } else {
             currentLine = "";
@@ -298,10 +298,8 @@ void getRequest81() {
         }
       }
     }
-    delay(1);
     client.stop();
   }
-  cameraState=0;
 }
 
 void getCommand(char c) {
@@ -365,4 +363,5 @@ void setup()
 void loop()
 {
   getRequest81();
+  vTaskDelay(10);
 }
