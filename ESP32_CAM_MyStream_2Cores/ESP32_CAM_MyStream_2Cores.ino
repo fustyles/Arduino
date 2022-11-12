@@ -175,8 +175,8 @@ void getRequest80() {
 
             if (cmd=="getstill") {
               while (streamState!=0) {vTaskDelay(10);}
-              camera_fb_t * fb = NULL;
               streamState=1;
+              camera_fb_t * fb = NULL;
               fb = esp_camera_fb_get();  
               if(!fb) {
                 Serial.println("Camera capture failed");
