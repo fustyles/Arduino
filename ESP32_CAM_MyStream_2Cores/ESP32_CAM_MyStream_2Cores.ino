@@ -1,7 +1,6 @@
 /*
 ESP32-CAM My Stream (For solving the problem about "Header fields are too long for server to interpret")
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-11-11 11:11
-
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-11-12 14:00
 https://www.facebook.com/francefu
 
 stream
@@ -17,7 +16,7 @@ http://yourIP/?cmd=p1;p2;p3;p4;p5;p6;p7;p8;p9
 
 
 const char* ssid = "teacher";
-const char* password = "12345678";
+const char* password = "077462774";
 
 const char* apssid = "esp32-cam";
 const char* appassword = "12345678";
@@ -47,10 +46,10 @@ const char* appassword = "12345678";
 
 String Feedback="",Command="",cmd="",p1="",p2="",p3="",p4="",p5="",p6="",p7="",p8="",p9="";
 byte receiveState=0,cmdState=1,pState=1,questionState=0,equalState=0,semicolonState=0;
-byte streamState = 0;
+byte cameraState = 0;
 
-WiFiServer server1(80);
-WiFiServer server2(81);
+WiFiServer server80(80);
+WiFiServer server81(81);
 
 void cameraInitial() {
   camera_config_t config;
@@ -149,15 +148,15 @@ void initWiFi() {
   Serial.println("APIP address: ");
   Serial.println(WiFi.softAPIP());
 
-  server1.begin();
-  server2.begin();  
+  server80.begin();
+  server81.begin();  
 }
 
 void getRequest80() {
   Command="";cmd="";p1="";p2="";p3="";p4="";p5="";p6="";p7="";p8="";p9="";
   receiveState=0,cmdState=1,pState=1,questionState=0,equalState=0,semicolonState=0;
 
-  WiFiClient client = server1.available();
+  WiFiClient client = server80.available();
 
   if (client) {
     String currentLine = "";
@@ -174,8 +173,8 @@ void getRequest80() {
             //Serial.println("");
 
             if (cmd=="getstill") {
-              while (streamState!=0) {vTaskDelay(10);}
-              streamState=1;
+              while (cameraState!=0) {vTaskDelay(10);}
+              cameraState=1;
               camera_fb_t * fb = NULL;
               fb = esp_camera_fb_get();  
               if(!fb) {
@@ -207,22 +206,22 @@ void getRequest80() {
                 }
               }  
               esp_camera_fb_return(fb);
-   	        } else {
-   	        	client.println("HTTP/1.1 200 OK");
-   	        	client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
-   	        	client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
-   	        	client.println("Content-Type: text/html; charset=utf-8");
-   	        	client.println("Access-Control-Allow-Origin: *");
-   	        	client.println("X-Content-Type-Options: nosniff");
-   	        	client.println();
-   	        	if (Feedback=="")
-   	        		Feedback=("<!DOCTYPE html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'></head><body><a onclick=\"location.href='http://'+location.hostname+':81';\" target=\"_blank\">http://ip:81/</a><br><br><a href=\"?getstill\" target=\"_blank\">http://ip/?getstill</a></body></html>");
-   	        	for (int index = 0; index < Feedback.length(); index = index+1024) {
-   	        	  client.print(Feedback.substring(index, index+1024));
-   	        	}
-   	        }
-   	        Feedback="";
-   	        break;
+             } else {
+              client.println("HTTP/1.1 200 OK");
+              client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+              client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
+              client.println("Content-Type: text/html; charset=utf-8");
+              client.println("Access-Control-Allow-Origin: *");
+              client.println("X-Content-Type-Options: nosniff");
+              client.println();
+              if (Feedback=="")
+                Feedback=("<!DOCTYPE html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'></head><body><a onclick=\"location.href='http://'+location.hostname+':81';\" target=\"_blank\">http://ip:81/</a><br><br><a href=\"?getstill\" target=\"_blank\">http://ip/?getstill</a></body></html>");
+              for (int index = 0; index < Feedback.length(); index = index+1024) {
+                client.print(Feedback.substring(index, index+1024));
+              }
+            }
+            Feedback="";
+            break;
           } else {
             currentLine = "";
           }
@@ -235,11 +234,11 @@ void getRequest80() {
     delay(1);
     client.stop();
   }
-  streamState=0;
+  cameraState=0;
 }
 
 void getRequest81() {
-  WiFiClient client = server2.available();
+  WiFiClient client = server81.available();
 
   if (client) {
     String currentLine = "";
@@ -259,8 +258,8 @@ void getRequest81() {
             client.println();  
 
             while(client.connected()) {
-              while (streamState!=0) {vTaskDelay(10);}
-              streamState=2;
+              while (cameraState!=0) {vTaskDelay(10);}
+              cameraState=2;
               camera_fb_t * fb = NULL;
               fb = esp_camera_fb_get();
               if(!fb) {
@@ -285,7 +284,7 @@ void getRequest81() {
               esp_camera_fb_return(fb);
               
               client.print("\r\n");
-              streamState=0;
+              cameraState=0;
               vTaskDelay(100);
             }
            
@@ -302,7 +301,7 @@ void getRequest81() {
     delay(1);
     client.stop();
   }
-  streamState=0;
+  cameraState=0;
 }
 
 void getCommand(char c) {
