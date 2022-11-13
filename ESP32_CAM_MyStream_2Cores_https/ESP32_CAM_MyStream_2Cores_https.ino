@@ -240,10 +240,8 @@ void getRequest80() {
               esp_camera_fb_return(fb);
               cameraState = false;
               vTaskDelay(10);
-              break;
             } else if (cmd=="stop") {
                connectionState = false;
-               break;
             } else {
               client.println("HTTP/1.1 200 OK");
               client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
