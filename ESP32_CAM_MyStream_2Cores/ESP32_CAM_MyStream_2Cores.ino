@@ -7,7 +7,10 @@ stream
 http://yourIP:81
 
 gestill
-http://yourIP/?getstill   
+http://yourIP/?getstill
+
+main page
+http://yourIP/
 
 custom command
 http://yourIP/?cmd=p1;p2;p3;p4;p5;p6;p7;p8;p9 
