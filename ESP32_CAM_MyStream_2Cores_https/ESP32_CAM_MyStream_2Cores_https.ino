@@ -7,17 +7,18 @@ https://www.facebook.com/francefu
 library:
 https://github.com/fhessel/esp32_https_server
 
-stream (https 443)
-https://yourIP
+stream
+https://yourIP (https 443)
 
-get still (https 443)
-https://yourIP/getstill
+get still
+https://yourIP/getstill (https 443)
+http://yourIP/?getstill (http 80)
 
-Stop streamming (http 80)
-http://yourIP/?stop
+Stop streamming
+http://yourIP/?stop (http 80)
 
-Custom command (http 80)
-http://yourIP/?cmd=p1;p2;p3;p4;p5;p6;p7;p8;p9
+Custom command
+http://yourIP/?cmd=p1;p2;p3;p4;p5;p6;p7;p8;p9 (http 80)
 
 issue
 https://github.com/fhessel/esp32_https_server/issues/143
