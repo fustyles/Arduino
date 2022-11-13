@@ -1,24 +1,23 @@
 /*
 ESP32-CAM My Stream (For solving the problem about "Header fields are too long for server to interpret")
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-11-13 18:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-11-13 19:00
 
 https://www.facebook.com/francefu
 
 library:
 https://github.com/fhessel/esp32_https_server
 
-stream
-https://yourIP (https 443)
+stream (core 1 -> https 443)
+https://yourIP
 
-get still
-https://yourIP/getstill (https 443)
-http://yourIP/?getstill (http 80)
+get still (core 1 -> https 443)
+https://yourIP/getstill
 
-Stop streamming
-http://yourIP/?stop (http 80)
+Stop streamming (core 0 -> http 80)
+http://yourIP/?stop
 
-Custom command
-http://yourIP/?cmd=p1;p2;p3;p4;p5;p6;p7;p8;p9 (http 80)
+Custom command (core 0 -> http 80)
+http://yourIP/?cmd=p1;p2;p3;p4;p5;p6;p7;p8;p9
 
 issue
 https://github.com/fhessel/esp32_https_server/issues/143
@@ -242,7 +241,15 @@ void getRequest80() {
               cameraState = false;
               vTaskDelay(10);
             } else if (cmd=="stop") {
-               connectionState = false;
+              client.println("HTTP/1.1 200 OK");
+              client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+              client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
+              client.println("Content-Type: text/html; charset=utf-8");
+              client.println("Access-Control-Allow-Origin: *");
+              client.println("X-Content-Type-Options: nosniff");
+              client.println();
+              client.print("Stop streamming");
+              connectionState = false;               
             } else {
               client.println("HTTP/1.1 200 OK");
               client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
@@ -252,7 +259,7 @@ void getRequest80() {
               client.println("X-Content-Type-Options: nosniff");
               client.println();
               if (Feedback=="")
-                Feedback=("<!DOCTYPE html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'></head><body><a onclick=\"location.href='https://'+location.hostname;\" target=\"_blank\">https://ip/</a><br><br><a href=\"?stop\" target=\"_blank\">http://ip/?stop</a></body></html>");
+                Feedback=("<!DOCTYPE html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'></head><body><a onclick=\"location.href='https://'+location.hostname+'/stream';\" target=\"_blank\">Stream (https)</a><br><br><a onclick=\"location.href='https://'+location.hostname+'/getstill';\" target=\"_blank\">Get still (https)</a><br><br><a onclick=\"location.href='http://'+location.hostname+'/?getstill';\" target=\"_blank\">Get still (http)</a><br><br><a onclick=\"location.href='http://'+location.hostname+'/?stop';\" target=\"_blank\">stop streamming</a></body></html>");
               for (int index = 0; index < Feedback.length(); index = index+1024) {
                 client.print(Feedback.substring(index, index+1024));
               }
@@ -340,14 +347,15 @@ void initCert(boolean custom) {
 
   // For every resource available on the server, we need to create a ResourceNode
   // The ResourceNode links URL and HTTP method to a handler function
-  ResourceNode * nodeStream = new ResourceNode("/", "GET", &handleStream);
+  ResourceNode * nodeIndex = new ResourceNode("/", "GET", &handleIndex);
+  ResourceNode * nodeStream = new ResourceNode("/stream", "GET", &handleStream);
   ResourceNode * nodeGetstill = new ResourceNode("/getstill", "GET", &handleGetstill);
   ResourceNode * node404  = new ResourceNode("", "GET", &handle404);
 
   // Add the root node to the servers. We can use the same ResourceNode on multiple
   // servers (you could also run multiple HTTPS servers)
+  secureServer->registerNode(nodeIndex);  
   secureServer->registerNode(nodeStream);
-
   secureServer->registerNode(nodeGetstill);
       
   // We do the same for the default Node
@@ -399,9 +407,30 @@ void loop()
   vTaskDelay(10);
 }
 
+void handleIndex(HTTPRequest * req, HTTPResponse * res) {
+  res->setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  res->setHeader("Access-Control-Allow-Origin",  "*");
+  res->setHeader("Access-Control-Allow-Headers", "*");  
+
+  // Set content type of the response
+  res->setHeader("Content-Type", "text/html");
+
+  // Write a tiny HTTP page
+  res->println("<!DOCTYPE html>");
+  res->println("<html>");
+  res->println("<head><title>Main Page</title></head>");
+  res->println("<body>");
+  res->println("<a onclick=\"location.href='https://'+location.hostname+'/stream';\" target=\"_blank\">Stream (https)</a><br><br>");
+  res->println("<a onclick=\"location.href='https://'+location.hostname+'/getstill';\" target=\"_blank\">Get still (https)</a><br><br>");
+  res->println("<a onclick=\"location.href='http://'+location.hostname+'/?getstill';\" target=\"_blank\">Get still (http)</a><br><br>");
+  res->println("<a onclick=\"location.href='http://'+location.hostname+'/?stop';\" target=\"_blank\">stop streamming</a>");
+  res->println("</body>");
+  res->println("</html>");
+}
+
 void handleStream(HTTPRequest * req, HTTPResponse * res) {
   String head = "--Taiwan\r\nContent-Type: image/jpeg\r\n\r\n";
-  //String tail = "\r\n--Taiwan--\r\n";
+  String tail = "\r\n--Taiwan--\r\n";
               
   res->setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
   res->setHeader("Access-Control-Allow-Origin",  "*");
@@ -433,8 +462,11 @@ void handleStream(HTTPRequest * req, HTTPResponse * res) {
       }
     }
     esp_camera_fb_return(fb);
-              
-    res->print("\r\n");
+    if (connectionState) 
+      res->print("\r\n");
+    else
+      res->print(tail);
+      
     cameraState = false;
     vTaskDelay(10);
   }
