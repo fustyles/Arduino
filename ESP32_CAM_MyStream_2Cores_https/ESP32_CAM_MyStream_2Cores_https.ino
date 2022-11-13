@@ -7,7 +7,7 @@ https://www.facebook.com/francefu
 library:
 https://github.com/fhessel/esp32_https_server
 
-stream (https)
+stream (https 443)
 https://yourIP
 
 stop stream
