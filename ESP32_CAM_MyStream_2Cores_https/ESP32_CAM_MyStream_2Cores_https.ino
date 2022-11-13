@@ -423,7 +423,7 @@ void handleIndex(HTTPRequest * req, HTTPResponse * res) {
   res->println("<a onclick=\"location.href='https://'+location.hostname+'/stream';\" target=\"_blank\">Stream (https)</a><br><br>");
   res->println("<a onclick=\"location.href='https://'+location.hostname+'/getstill';\" target=\"_blank\">Get still (https)</a><br><br>");
   res->println("<a onclick=\"location.href='http://'+location.hostname+'/?getstill';\" target=\"_blank\">Get still (http)</a><br><br>");
-  res->println("<a onclick=\"location.href='http://'+location.hostname+'/?stop';\" target=\"_blank\">stop streamming</a>");
+  res->println("<a onclick=\"location.href='http://'+location.hostname+'/?stop';\" target=\"_blank\">stop streamming (http)</a>");
   res->println("</body>");
   res->println("</html>");
 }
