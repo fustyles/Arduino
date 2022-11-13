@@ -8,12 +8,10 @@ http://yourIP:81
 
 gestill
 http://yourIP/?getstill   
-http://yourIP/?getstill=random_number
 
 custom command
 http://yourIP/?cmd=p1;p2;p3;p4;p5;p6;p7;p8;p9 
 */
-
 
 const char* ssid = "teacher";
 const char* password = "077462774";
@@ -46,7 +44,7 @@ const char* appassword = "12345678";
 
 String Feedback="",Command="",cmd="",p1="",p2="",p3="",p4="",p5="",p6="",p7="",p8="",p9="";
 byte receiveState=0,cmdState=1,pState=1,questionState=0,equalState=0,semicolonState=0;
-byte cameraState = 0;
+boolean cameraState = false;
 
 WiFiServer server80(80);
 WiFiServer server81(81);
@@ -173,8 +171,8 @@ void getRequest80() {
             //Serial.println("");
 
             if (cmd=="getstill") {
-              while (cameraState!=0) {vTaskDelay(10);}
-              cameraState=1;
+              while (cameraState) {vTaskDelay(10);}
+              cameraState=true;
               
               camera_fb_t * fb = NULL;
               fb = esp_camera_fb_get();  
@@ -216,13 +214,13 @@ void getRequest80() {
               client.println("X-Content-Type-Options: nosniff");
               client.println();
               if (Feedback=="")
-                Feedback=("<!DOCTYPE html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'></head><body><a onclick=\"location.href='http://'+location.hostname+':81';\" target=\"_blank\">http://ip:81/</a><br><br><a href=\"?getstill\" target=\"_blank\">http://ip/?getstill</a></body></html>");
+                Feedback=("<!DOCTYPE html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'></head><body><a onclick=\"location.href='http://'+location.hostname+':81';\" target=\"_blank\">Stream (https)</a><br><br><a href=\"?getstill\" target=\"_blank\">Get still (http)</a></body></html>");
               for (int index = 0; index < Feedback.length(); index = index+1024) {
                 client.print(Feedback.substring(index, index+1024));
               }
             }
             Feedback="";
-            cameraState=0;
+            cameraState=false;
             break;
           } else {
             currentLine = "";
@@ -259,8 +257,8 @@ void getRequest81() {
             client.println();  
 
             while(client.connected()) {
-              while (cameraState!=0) {vTaskDelay(10);}
-              cameraState=2;
+              while (cameraState) {vTaskDelay(10);}
+              cameraState=true;
               camera_fb_t * fb = NULL;
               fb = esp_camera_fb_get();
               if(!fb) {
@@ -285,8 +283,8 @@ void getRequest81() {
               esp_camera_fb_return(fb);
               
               client.print("\r\n");
-              cameraState=0;
-              vTaskDelay(20);
+              cameraState=false;
+              vTaskDelay(10);
             }
             cameraState=0;
             break;
@@ -336,7 +334,6 @@ void codeForTask0( void * parameter ) {
     getRequest80();
     vTaskDelay(10);
   }
-
 }
 
 void setup()
@@ -364,5 +361,4 @@ void setup()
 void loop()
 {
   getRequest81();
-  vTaskDelay(10);
 }
