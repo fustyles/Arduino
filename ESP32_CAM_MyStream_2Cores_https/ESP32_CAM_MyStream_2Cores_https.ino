@@ -10,7 +10,8 @@ https://github.com/fhessel/esp32_https_server
 stream (https)
 https://yourIP
 
-stop stream (http)
+stop stream
+https://yourIP/stop
 http://yourIP/?stop
 
 custom command (http)
