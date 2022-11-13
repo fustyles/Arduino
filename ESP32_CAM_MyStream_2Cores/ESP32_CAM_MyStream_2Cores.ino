@@ -175,6 +175,7 @@ void getRequest80() {
             if (cmd=="getstill") {
               while (cameraState!=0) {vTaskDelay(10);}
               cameraState=1;
+              
               camera_fb_t * fb = NULL;
               fb = esp_camera_fb_get();  
               if(!fb) {
@@ -206,7 +207,7 @@ void getRequest80() {
                 }
               }  
               esp_camera_fb_return(fb);
-             } else {
+            } else {
               client.println("HTTP/1.1 200 OK");
               client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
               client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
