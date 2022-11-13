@@ -17,7 +17,7 @@ http://yourIP/?cmd=p1;p2;p3;p4;p5;p6;p7;p8;p9
 */
 
 const char* ssid = "teacher";
-const char* password = "077462774";
+const char* password = "12345678";
 
 const char* apssid = "esp32-cam";
 const char* appassword = "12345678";
