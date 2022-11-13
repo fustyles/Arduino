@@ -6,13 +6,13 @@ https://www.facebook.com/francefu
 stream
 http://yourIP:81
 
-gestill
+get still
 http://yourIP/?getstill
 
 main page
 http://yourIP/
 
-custom command
+custom command format
 http://yourIP/?cmd=p1;p2;p3;p4;p5;p6;p7;p8;p9 
 */
 
