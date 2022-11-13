@@ -1,6 +1,6 @@
 /*
 ESP32-CAM My Stream (For solving the problem about "Header fields are too long for server to interpret")
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-11-11 11:11
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-11-13 18:00
 
 https://www.facebook.com/francefu
 
@@ -10,12 +10,17 @@ https://github.com/fhessel/esp32_https_server
 stream (https 443)
 https://yourIP
 
-stop stream
-https://yourIP/stop
+get still (https 443)
+https://yourIP/getstill
+
+Stop streamming (http 80)
 http://yourIP/?stop
 
-custom command (http)
-http://yourIP/?cmd=p1;p2;p3;p4;p5;p6;p7;p8;p9 
+Custom command (http 80)
+http://yourIP/?cmd=p1;p2;p3;p4;p5;p6;p7;p8;p9
+
+issue
+https://github.com/fhessel/esp32_https_server/issues/143
 */
 
 
@@ -39,6 +44,8 @@ const char* appassword = "12345678";
 #include <HTTPSServer.hpp>
 #include <SSLCert.hpp>
 
+WiFiServer server80(80);
+
 // The HTTPS Server comes in a separate namespace. For easier use, include it here.
 using namespace httpsserver;
 
@@ -48,11 +55,11 @@ SSLCert cert = SSLCert(
   example_key_DER, example_key_DER_len
 );
 
-// First, we create the HTTPSServer with the certificate created above
-HTTPSServer secureServer = HTTPSServer(&cert);
+SSLCert * cert_custom;
+HTTPSServer * secureServer;
 
 // Declare some handler functions for the various URLs on the server
-void handleRoot(HTTPRequest * req, HTTPResponse * res);
+void handleStream(HTTPRequest * req, HTTPResponse * res);
 void handle404(HTTPRequest * req, HTTPResponse * res);
 
 
@@ -75,9 +82,8 @@ void handle404(HTTPRequest * req, HTTPResponse * res);
 
 String Feedback="",Command="",cmd="",p1="",p2="",p3="",p4="",p5="",p6="",p7="",p8="",p9="";
 byte receiveState=0,cmdState=1,pState=1,questionState=0,equalState=0,semicolonState=0;
-boolean connectionState = false;
-
-WiFiServer server80(80);
+boolean connectionState = true;
+boolean cameraState = false;
 
 void cameraInitial() {
   camera_config_t config;
@@ -175,25 +181,6 @@ void initWiFi() {
   Serial.println("");
   Serial.println("APIP address: ");
   Serial.println(WiFi.softAPIP());
-
-  // For every resource available on the server, we need to create a ResourceNode
-  // The ResourceNode links URL and HTTP method to a handler function
-  ResourceNode * nodeRoot = new ResourceNode("/", "GET", &handleRoot);
-  ResourceNode * nodeStop = new ResourceNode("/stop", "GET", &handleStop);
-  ResourceNode * node404  = new ResourceNode("", "GET", &handle404);
-
-  // Add the root node to the servers. We can use the same ResourceNode on multiple
-  // servers (you could also run multiple HTTPS servers)
-  secureServer.registerNode(nodeRoot);
-
-  // We do the same for the default Node
-  secureServer.setDefaultNode(node404);
-
-  Serial.println("Starting HTTPS server...");
-  secureServer.start();
-  if (secureServer.isRunning()) {
-    Serial.println("Servers ready.");
-  }
 }
 
 void getRequest80() {
@@ -216,9 +203,48 @@ void getRequest80() {
             //Serial.println("cmd= "+cmd+" ,p1= "+p1+" ,p2= "+p2+" ,p3= "+p3+" ,p4= "+p4+" ,p5= "+p5+" ,p6= "+p6+" ,p7= "+p7+" ,p8= "+p8+" ,p9= "+p9);
             //Serial.println("");
 
-            if (cmd=="stop") {
+             if (cmd=="getstill") {
+              while (cameraState) {vTaskDelay(10);}
+              cameraState = true;
+              
+              camera_fb_t * fb = NULL;
+              fb = esp_camera_fb_get();  
+              if(!fb) {
+                Serial.println("Camera capture failed");
+                delay(1000);
+                ESP.restart();
+              }
+  
+              client.println("HTTP/1.1 200 OK");
+              client.println("Access-Control-Allow-Origin: *");              
+              client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+              client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
+              client.println("Content-Type: image/jpeg");
+              client.println("Content-Disposition: inline; filename=\"picture.jpg\""); 
+              client.println("Content-Length: " + String(fb->len));
+              client.println("Cache-Control: no-cache");        
+              client.println("Connection: close");
+              client.println();
+              uint8_t *fbBuf = fb->buf;
+              size_t fbLen = fb->len;
+              for (size_t n=0;n<fbLen;n=n+1024) {
+                if (n+1024<fbLen) {
+                  client.write(fbBuf, 1024);
+                  fbBuf += 1024;
+                }
+                else if (fbLen%1024>0) {
+                  size_t remainder = fbLen%1024;
+                  client.write(fbBuf, remainder);
+                }
+              }  
+              esp_camera_fb_return(fb);
+              cameraState = false;
+              vTaskDelay(10);
+              break;
+            } else if (cmd=="stop") {
                connectionState = false;
-             } else {
+               break;
+            } else {
               client.println("HTTP/1.1 200 OK");
               client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
               client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
@@ -275,6 +301,66 @@ void getCommand(char c) {
   }
 }
 
+void initCert(boolean custom) {
+  if (custom) {
+    Serial.println("Creating a new self-signed certificate.");
+    Serial.println("This may take up to a minute, so be patient ;-)");
+    
+    // First, we create an empty certificate:
+    cert_custom = new SSLCert();
+    
+    // Now, we use the function createSelfSignedCert to create private key and certificate.
+    // The function takes the following paramters:
+    // - Key size: 1024 or 2048 bit should be fine here, 4096 on the ESP might be "paranoid mode"
+    //   (in generel: shorter key = faster but less secure)
+    // - Distinguished name: The name of the host as used in certificates.
+    //   If you want to run your own DNS, the part after CN (Common Name) should match the DNS
+    //   entry pointing to your ESP32. You can try to insert an IP there, but that's not really good style.
+    // - Dates for certificate validity (optional, default is 2019-2029, both included)
+    //   Format is YYYYMMDDhhmmss
+    int createCertResult = createSelfSignedCert(
+      *cert_custom,
+      KEYSIZE_2048,
+      "CN=myesp32.local,O=FancyCompany,C=DE",
+      "20190101000000",
+      "20300101000000"
+    );
+    
+    // Now check if creating that worked
+    if (createCertResult != 0) {
+      Serial.printf("Cerating certificate failed. Error Code = 0x%02X, check SSLCert.hpp for details", createCertResult);
+      while(true) delay(500);
+    }
+    Serial.println("Creating the certificate was successful");  
+    
+    // We can now use the new certificate to setup our server as usual.
+    secureServer = new HTTPSServer(cert_custom);
+  }
+  else 
+    secureServer = new HTTPSServer(&cert);
+
+  // For every resource available on the server, we need to create a ResourceNode
+  // The ResourceNode links URL and HTTP method to a handler function
+  ResourceNode * nodeStream = new ResourceNode("/", "GET", &handleStream);
+  ResourceNode * nodeGetstill = new ResourceNode("/getstill", "GET", &handleGetstill);
+  ResourceNode * node404  = new ResourceNode("", "GET", &handle404);
+
+  // Add the root node to the servers. We can use the same ResourceNode on multiple
+  // servers (you could also run multiple HTTPS servers)
+  secureServer->registerNode(nodeStream);
+
+  secureServer->registerNode(nodeGetstill);
+      
+  // We do the same for the default Node
+  secureServer->setDefaultNode(node404);
+
+  Serial.println("Starting HTTPS server...");
+  secureServer->start();
+  if (secureServer->isRunning()) {
+    Serial.println("Servers ready.");
+  }
+}
+
 TaskHandle_t Task0;
 void codeForTask0( void * parameter ) {
   while (true) {
@@ -289,10 +375,13 @@ void setup()
   Serial.begin(115200);
   cameraInitial();
   initWiFi();
+  initCert(false);
 
   pinMode(4, OUTPUT);
-  digitalWrite(4, LOW); 
+  digitalWrite(4, LOW);
 
+  server80.begin();  
+  
   xTaskCreatePinnedToCore(
     codeForTask0,
     "Task 0",
@@ -302,31 +391,33 @@ void setup()
     &Task0,
     0
   );
-  vTaskDelay(100);  
-
-  server80.begin();
+  vTaskDelay(100);
 }
 
 void loop()
 {
-  secureServer.loop();
+  secureServer->loop();
+  vTaskDelay(10);
 }
 
-void handleRoot(HTTPRequest * req, HTTPResponse * res) {
+void handleStream(HTTPRequest * req, HTTPResponse * res) {
   String head = "--Taiwan\r\nContent-Type: image/jpeg\r\n\r\n";
   //String tail = "\r\n--Taiwan--\r\n";
               
-  res->setHeader("Access-Control-Allow-Origin", "*");
+  res->setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  res->setHeader("Access-Control-Allow-Origin",  "*");
+  res->setHeader("Access-Control-Allow-Headers", "*");
   res->setHeader("Content-Type", "multipart/x-mixed-replace; boundary=Taiwan");
-  connectionState = true;
+  res->setHeader("Cache-Control", "no-cache"); 
   
   while(connectionState) {
+    while (cameraState) {vTaskDelay(10);}
+    cameraState = true;
     camera_fb_t * fb = NULL;
     fb = esp_camera_fb_get();
     if(!fb) {
       Serial.println("Camera capture failed");
-      delay(1000);
-      ESP.restart();
+      return;
     }
     res->print(head);
     
@@ -345,23 +436,51 @@ void handleRoot(HTTPRequest * req, HTTPResponse * res) {
     esp_camera_fb_return(fb);
               
     res->print("\r\n");
-      
-    delay(10);
-  }     
+    cameraState = false;
+    vTaskDelay(10);
+  }
+
+  connectionState = true;
 }
 
-void handleStop(HTTPRequest * req, HTTPResponse * res) {
-  connectionState = false;
-
-  // Set content type of the response
-  res->setHeader("Content-Type", "text/html");
-
-  // Write a tiny HTTP page
-  res->println("<!DOCTYPE html>");
-  res->println("<html>");
-  res->println("<head><title></title></head>");
-  res->println("<body></body>");
-  res->println("</html>");  
+void handleGetstill(HTTPRequest * req, HTTPResponse * res) {
+    String head = "--Taiwan\r\nContent-Type: image/jpeg\r\n\r\n";
+    String tail = "\r\n--Taiwan--\r\n";
+                
+    res->setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+    res->setHeader("Access-Control-Allow-Origin",  "*");
+    res->setHeader("Access-Control-Allow-Headers", "*");
+    res->setHeader("Content-Type", "multipart/x-mixed-replace; boundary=Taiwan");
+    res->setHeader("Cache-Control", "no-cache");
+    
+    boolean state = connectionState;
+    connectionState = false;
+    delay(100);
+    
+    camera_fb_t * fb = NULL;
+    fb = esp_camera_fb_get();
+    if(!fb) {
+      Serial.println("Camera capture failed");
+      return;
+    }
+    res->print(head);
+    
+    uint8_t *fbBuf = fb->buf;
+    size_t fbLen = fb->len;
+    for (size_t n=0;n<fbLen;n=n+1024) {
+      if (n+1024<fbLen) {
+        res->write(fbBuf, 1024);
+        fbBuf += 1024;
+      }
+      else if (fbLen%1024>0) {
+        size_t remainder = fbLen%1024;
+        res->write(fbBuf, remainder);
+      }
+    }
+    esp_camera_fb_return(fb);
+    res->print(tail);
+    
+    connectionState = state;
 }
 
 void handle404(HTTPRequest * req, HTTPResponse * res) {
@@ -372,6 +491,10 @@ void handle404(HTTPRequest * req, HTTPResponse * res) {
   // Set the response status
   res->setStatusCode(404);
   res->setStatusText("Not Found");
+
+  res->setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  res->setHeader("Access-Control-Allow-Origin",  "*");
+  res->setHeader("Access-Control-Allow-Headers", "*");  
 
   // Set content type of the response
   res->setHeader("Content-Type", "text/html");
