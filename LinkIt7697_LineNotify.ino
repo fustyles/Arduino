@@ -9,7 +9,6 @@ const char* password = "12345678";   //your network password
 String token = "";
 
 #include <LWiFi.h>
-WiFiServer server(80);
 
 static const char rootCA[] = "-----BEGIN CERTIFICATE-----\r\n"
 "MIIDBjCCAe6gAwIBAgIBATANBgkqhkiG9w0BAQsFADA8MRYwFAYDVQQDDA1teWVz\r\n"
