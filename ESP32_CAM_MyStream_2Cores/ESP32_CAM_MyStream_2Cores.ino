@@ -217,7 +217,7 @@ void getRequest80() {
               client.println("X-Content-Type-Options: nosniff");
               client.println();
               if (Feedback=="")
-                Feedback=("<!DOCTYPE html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'></head><body><a onclick=\"location.href='http://'+location.hostname+':81';\" target=\"_blank\">Stream (https)</a><br><br><a href=\"?getstill\" target=\"_blank\">Get still (http)</a></body></html>");
+                Feedback=("<!DOCTYPE html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'></head><body><a onclick=\"location.href='http://'+location.hostname+':81';\" target=\"_blank\">Stream (http)</a><br><br><a href=\"?getstill\" target=\"_blank\">Get still (http)</a></body></html>");
               for (int index = 0; index < Feedback.length(); index = index+1024) {
                 client.print(Feedback.substring(index, index+1024));
               }
