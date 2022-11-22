@@ -22,7 +22,7 @@ void loop() {
 }
 
 void Preferences_write(const char * name, const char* key, const char* value) {
-  preferences.clear();
+  //preferences.clear();
   preferences.begin(name, false);
   Serial.printf("Put %s = %s\n", key, value);
   preferences.putString(key, value);
