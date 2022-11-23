@@ -36,3 +36,15 @@ String Preferences_read(const char * name, const char* key) {
   preferences.end();
   return myData;
 }
+
+void Preferences_clear_namespace(const char * name) {
+  preferences.begin(name, false);
+  preferences.clear();
+  preferences.end();
+}
+
+void Preferences_remove_key(const char * name, const char* key) {
+  preferences.begin(name, false);
+  preferences.remove(key);
+  preferences.end();
+}
