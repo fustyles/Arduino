@@ -48,7 +48,7 @@ byte receiveState=0,cmdState=1,pState=1,questionState=0,equalState=0,semicolonSt
 
 WiFiServer server(80);
 
-void initialCamera() {
+void initCamera() {
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
@@ -297,7 +297,7 @@ void setup()
 {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
   Serial.begin(115200);
-  initialCamera();
+  initCamera();
   initWiFi();
 
   pinMode(4, OUTPUT);
