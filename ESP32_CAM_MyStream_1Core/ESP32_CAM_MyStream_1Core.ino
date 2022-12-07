@@ -1,6 +1,6 @@
 /*
-ESP32-CAM My Stream (For solving the problem about "Header fields are too long for server to interpret")
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-11-13 19:00
+ESP32-CAM My Stream for solving the problem about "Header fields are too long for server to interpret.
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-12-7 23:00
 https://www.facebook.com/francefu
 
 stream
@@ -12,7 +12,6 @@ http://yourIP/?getstill
 custom command
 http://yourIP/?cmd=p1;p2;p3;p4;p5;p6;p7;p8;p9 
 */
-
 
 const char* ssid = "teacher";
 const char* password = "12345678";
@@ -148,6 +147,20 @@ void initWiFi() {
   server.begin();
 }
 
+static const char PROGMEM INDEX_HTML[] = R"rawliteral(
+<!DOCTYPE html>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+<body>
+<a href="?stream" target="_blank">stream</a>
+<br><br>
+<a href="?getstill" target="_blank">getstill</a>
+</body>
+</html>
+)rawliteral";      
+
 void getRequest() {
   Command="";cmd="";p1="";p2="";p3="";p4="";p5="";p6="";p7="";p8="";p9="";
   receiveState=0,cmdState=1,pState=1,questionState=0,equalState=0,semicolonState=0;
@@ -168,7 +181,7 @@ void getRequest() {
             Serial.println("cmd= "+cmd+" ,p1= "+p1+" ,p2= "+p2+" ,p3= "+p3+" ,p4= "+p4+" ,p5= "+p5+" ,p6= "+p6+" ,p7= "+p7+" ,p8= "+p8+" ,p9= "+p9);
             Serial.println("");
 
-   	    if (cmd=="stream") {
+         if (cmd=="stream") {
                 String head = "--Taiwan\r\nContent-Type: image/jpeg\r\n\r\n";
                 //String tail = "\r\n--Taiwan--\r\n";
                 
@@ -203,8 +216,8 @@ void getRequest() {
                   
                   client.print("\r\n");
                 }
-   	    } 
-   	    else if (cmd=="getstill") {
+        } 
+        else if (cmd=="getstill") {
               camera_fb_t * fb = NULL;
               fb = esp_camera_fb_get();  
               if(!fb) {
@@ -236,22 +249,25 @@ void getRequest() {
                 }
               }  
               esp_camera_fb_return(fb);
-   	    } else {
-   	        	client.println("HTTP/1.1 200 OK");
-   	        	client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
-   	        	client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
-   	        	client.println("Content-Type: text/html; charset=utf-8");
-   	        	client.println("Access-Control-Allow-Origin: *");
-   	        	client.println("X-Content-Type-Options: nosniff");
-   	        	client.println();
-   	        	if (Feedback=="")
-   	        		Feedback=("<!DOCTYPE html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'></head><body><a href=\"?stream\" target=\"_blank\">stream</a><br><br><a href=\"?getstill\" target=\"_blank\">getstill</a></body></html>");
-   	        	for (int index = 0; index < Feedback.length(); index = index+1024) {
-   	        	  client.print(Feedback.substring(index, index+1024));
-   	        	}
-   	    }
-   	    Feedback="";
-   	    break;
+        } else {
+              client.println("HTTP/1.1 200 OK");
+              client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+              client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
+              client.println("Content-Type: text/html; charset=utf-8");
+              client.println("Access-Control-Allow-Origin: *");
+              client.println("X-Content-Type-Options: nosniff");
+              client.println();
+              String Data="";
+              if (cmd!="")
+                Data = Feedback;
+              else
+                Data = String((const char *)INDEX_HTML);
+              for (int index = 0; index < Data.length(); index = index+1024) {
+                client.print(Data.substring(index, index+1024));
+              }
+        }
+        Feedback="";
+        break;
           } else {
             currentLine = "";
           }
