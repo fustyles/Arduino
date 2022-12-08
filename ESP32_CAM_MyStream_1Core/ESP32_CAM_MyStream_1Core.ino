@@ -150,8 +150,8 @@ void initWiFi() {
 static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 <!DOCTYPE html>
 <head>
-<meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <a href="?stream" target="_blank">stream</a>
@@ -159,7 +159,34 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 <a href="?getstill" target="_blank">getstill</a>
 </body>
 </html>
-)rawliteral";      
+)rawliteral";
+
+void getCommand(char c) {
+  if (c=='?') receiveState=1;
+  if ((c==' ')||(c=='\r')||(c=='\n')) receiveState=0;
+
+  if (receiveState==1) {
+    Command=Command+String(c);
+
+    if (c=='=') cmdState=0;
+    if (c==';') pState++;
+
+    if ((cmdState==1)&&((c!='?')||(questionState==1))) cmd=cmd+String(c);
+    if ((cmdState==0)&&(pState==1)&&((c!='=')||(equalState==1))) p1=p1+String(c);
+    if ((cmdState==0)&&(pState==2)&&(c!=';')) p2=p2+String(c);
+    if ((cmdState==0)&&(pState==3)&&(c!=';')) p3=p3+String(c);
+    if ((cmdState==0)&&(pState==4)&&(c!=';')) p4=p4+String(c);
+    if ((cmdState==0)&&(pState==5)&&(c!=';')) p5=p5+String(c);
+    if ((cmdState==0)&&(pState==6)&&(c!=';')) p6=p6+String(c);
+    if ((cmdState==0)&&(pState==7)&&(c!=';')) p7=p7+String(c);
+    if ((cmdState==0)&&(pState==8)&&(c!=';')) p8=p8+String(c);
+    if ((cmdState==0)&&(pState>=9)&&((c!=';')||(semicolonState==1))) p9=p9+String(c);
+
+    if (c=='?') questionState=1;
+    if (c=='=') equalState=1;
+    if ((pState>=9)&&(c==';')) semicolonState=1;
+  }
+}
 
 void getRequest() {
   Command="";cmd="";p1="";p2="";p3="";p4="";p5="";p6="";p7="";p8="";p9="";
@@ -279,33 +306,6 @@ void getRequest() {
     }
     delay(1);
     client.stop();
-  }
-}
-
-void getCommand(char c) {
-  if (c=='?') receiveState=1;
-  if ((c==' ')||(c=='\r')||(c=='\n')) receiveState=0;
-
-  if (receiveState==1) {
-    Command=Command+String(c);
-
-    if (c=='=') cmdState=0;
-    if (c==';') pState++;
-
-    if ((cmdState==1)&&((c!='?')||(questionState==1))) cmd=cmd+String(c);
-    if ((cmdState==0)&&(pState==1)&&((c!='=')||(equalState==1))) p1=p1+String(c);
-    if ((cmdState==0)&&(pState==2)&&(c!=';')) p2=p2+String(c);
-    if ((cmdState==0)&&(pState==3)&&(c!=';')) p3=p3+String(c);
-    if ((cmdState==0)&&(pState==4)&&(c!=';')) p4=p4+String(c);
-    if ((cmdState==0)&&(pState==5)&&(c!=';')) p5=p5+String(c);
-    if ((cmdState==0)&&(pState==6)&&(c!=';')) p6=p6+String(c);
-    if ((cmdState==0)&&(pState==7)&&(c!=';')) p7=p7+String(c);
-    if ((cmdState==0)&&(pState==8)&&(c!=';')) p8=p8+String(c);
-    if ((cmdState==0)&&(pState>=9)&&((c!=';')||(semicolonState==1))) p9=p9+String(c);
-
-    if (c=='?') questionState=1;
-    if (c=='=') equalState=1;
-    if ((pState>=9)&&(c==';')) semicolonState=1;
   }
 }
 
