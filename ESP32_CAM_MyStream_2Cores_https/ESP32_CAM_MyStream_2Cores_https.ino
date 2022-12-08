@@ -1,6 +1,6 @@
 /*
 ESP32-CAM My Stream (For solving the problem about "Header fields are too long for server to interpret")
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-11-13 19:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-12-9 22:00
 https://www.facebook.com/francefu
 
 library:
@@ -19,7 +19,6 @@ main page
 http://yourIP/
 get still
 http://yourIP/?getstill
-
 ***Stop streamming***
 http://yourIP/?stop
 
@@ -31,8 +30,8 @@ https://github.com/fhessel/esp32_https_server/issues/143
 */
 
 
-const char* ssid = "teacher";
-const char* password = "12345678";
+const char* ssid = "3COM";
+const char* password = "godblessyou";
 
 const char* apssid = "esp32-cam";
 const char* appassword = "12345678";
@@ -68,7 +67,6 @@ HTTPSServer * secureServer;
 // Declare some handler functions for the various URLs on the server
 void handleStream(HTTPRequest * req, HTTPResponse * res);
 void handle404(HTTPRequest * req, HTTPResponse * res);
-
 
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
@@ -190,6 +188,51 @@ void initWiFi() {
   Serial.println(WiFi.softAPIP());
 }
 
+static const char PROGMEM INDEX_HTML[] = R"rawliteral(
+<!DOCTYPE html>
+<html>
+<head>
+<title>Main Page</title>
+</head>
+<body>
+<a onclick='location.href="https:\/\/"+location.hostname+"/stream";' target='_blank'>Stream (https)</a>
+<br><br>
+<a onclick='location.href="https:\/\/"+location.hostname+"/getstill";' target='_blank'>Get still (https)</a>
+<br><br>
+<a onclick='location.href="http:\/\/"+location.hostname+"/?getstill";' target='_blank'>Get still (http)</a>
+<br><br>
+<a onclick='location.href="http:\/\/"+location.hostname+"/?stop";' target='_blank'>stop streamming (http)</a>
+</body>
+</html>
+)rawliteral"; 
+
+void getCommand(char c) {
+  if (c=='?') receiveState=1;
+  if ((c==' ')||(c=='\r')||(c=='\n')) receiveState=0;
+
+  if (receiveState==1) {
+    Command=Command+String(c);
+
+    if (c=='=') cmdState=0;
+    if (c==';') pState++;
+
+    if ((cmdState==1)&&((c!='?')||(questionState==1))) cmd=cmd+String(c);
+    if ((cmdState==0)&&(pState==1)&&((c!='=')||(equalState==1))) p1=p1+String(c);
+    if ((cmdState==0)&&(pState==2)&&(c!=';')) p2=p2+String(c);
+    if ((cmdState==0)&&(pState==3)&&(c!=';')) p3=p3+String(c);
+    if ((cmdState==0)&&(pState==4)&&(c!=';')) p4=p4+String(c);
+    if ((cmdState==0)&&(pState==5)&&(c!=';')) p5=p5+String(c);
+    if ((cmdState==0)&&(pState==6)&&(c!=';')) p6=p6+String(c);
+    if ((cmdState==0)&&(pState==7)&&(c!=';')) p7=p7+String(c);
+    if ((cmdState==0)&&(pState==8)&&(c!=';')) p8=p8+String(c);
+    if ((cmdState==0)&&(pState>=9)&&((c!=';')||(semicolonState==1))) p9=p9+String(c);
+
+    if (c=='?') questionState=1;
+    if (c=='=') equalState=1;
+    if ((pState>=9)&&(c==';')) semicolonState=1;
+  }
+}
+
 void getRequest80() {
   Command="";cmd="";p1="";p2="";p3="";p4="";p5="";p6="";p7="";p8="";p9="";
   receiveState=0,cmdState=1,pState=1,questionState=0,equalState=0,semicolonState=0;
@@ -265,8 +308,8 @@ void getRequest80() {
               client.println("Access-Control-Allow-Origin: *");
               client.println("X-Content-Type-Options: nosniff");
               client.println();
-              if (Feedback=="")
-                Feedback=("<!DOCTYPE html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'></head><body><a onclick=\"location.href='https://'+location.hostname+'/stream';\" target=\"_blank\">Stream (https)</a><br><br><a onclick=\"location.href='https://'+location.hostname+'/getstill';\" target=\"_blank\">Get still (https)</a><br><br><a onclick=\"location.href='http://'+location.hostname+'/?getstill';\" target=\"_blank\">Get still (http)</a><br><br><a onclick=\"location.href='http://'+location.hostname+'/?stop';\" target=\"_blank\">stop streamming</a></body></html>");
+              if (cmd=="")
+                Feedback = String((const char *)INDEX_HTML);
               for (int index = 0; index < Feedback.length(); index = index+1024) {
                 client.print(Feedback.substring(index, index+1024));
               }
@@ -284,33 +327,6 @@ void getRequest80() {
     }
     delay(1);
     client.stop();
-  }
-}
-
-void getCommand(char c) {
-  if (c=='?') receiveState=1;
-  if ((c==' ')||(c=='\r')||(c=='\n')) receiveState=0;
-
-  if (receiveState==1) {
-    Command=Command+String(c);
-
-    if (c=='=') cmdState=0;
-    if (c==';') pState++;
-
-    if ((cmdState==1)&&((c!='?')||(questionState==1))) cmd=cmd+String(c);
-    if ((cmdState==0)&&(pState==1)&&((c!='=')||(equalState==1))) p1=p1+String(c);
-    if ((cmdState==0)&&(pState==2)&&(c!=';')) p2=p2+String(c);
-    if ((cmdState==0)&&(pState==3)&&(c!=';')) p3=p3+String(c);
-    if ((cmdState==0)&&(pState==4)&&(c!=';')) p4=p4+String(c);
-    if ((cmdState==0)&&(pState==5)&&(c!=';')) p5=p5+String(c);
-    if ((cmdState==0)&&(pState==6)&&(c!=';')) p6=p6+String(c);
-    if ((cmdState==0)&&(pState==7)&&(c!=';')) p7=p7+String(c);
-    if ((cmdState==0)&&(pState==8)&&(c!=';')) p8=p8+String(c);
-    if ((cmdState==0)&&(pState>=9)&&((c!=';')||(semicolonState==1))) p9=p9+String(c);
-
-    if (c=='?') questionState=1;
-    if (c=='=') equalState=1;
-    if ((pState>=9)&&(c==';')) semicolonState=1;
   }
 }
 
@@ -423,16 +439,7 @@ void handleIndex(HTTPRequest * req, HTTPResponse * res) {
   res->setHeader("Content-Type", "text/html");
 
   // Write a tiny HTTP page
-  res->println("<!DOCTYPE html>");
-  res->println("<html>");
-  res->println("<head><title>Main Page</title></head>");
-  res->println("<body>");
-  res->println("<a onclick=\"location.href='https://'+location.hostname+'/stream';\" target=\"_blank\">Stream (https)</a><br><br>");
-  res->println("<a onclick=\"location.href='https://'+location.hostname+'/getstill';\" target=\"_blank\">Get still (https)</a><br><br>");
-  res->println("<a onclick=\"location.href='http://'+location.hostname+'/?getstill';\" target=\"_blank\">Get still (http)</a><br><br>");
-  res->println("<a onclick=\"location.href='http://'+location.hostname+'/?stop';\" target=\"_blank\">stop streamming (http)</a>");
-  res->println("</body>");
-  res->println("</html>");
+  res->println(String((const char *)INDEX_HTML));
 }
 
 void handleStream(HTTPRequest * req, HTTPResponse * res) {
