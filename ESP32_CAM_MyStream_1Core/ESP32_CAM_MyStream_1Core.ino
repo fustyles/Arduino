@@ -300,7 +300,11 @@ void getRequest() {
               else if (p1=="10")
                 s->set_framesize(s, FRAMESIZE_UXGA);           
               else 
-                s->set_framesize(s, FRAMESIZE_QVGA);           
+                s->set_framesize(s, FRAMESIZE_QVGA);
+              client.println("HTTP/1.1 200 OK");
+              client.println("Content-Type: text/html; charset=utf-8");
+              client.println("Access-Control-Allow-Origin: *");
+              client.println();           
         } else {
               client.println("HTTP/1.1 200 OK");
               client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
