@@ -276,6 +276,28 @@ void getRequest() {
                 }
               }  
               esp_camera_fb_return(fb);
+        } else if (cmd=="framesize") {
+              sensor_t * s = esp_camera_sensor_get();  
+              if (p1=="0")
+                s->set_framesize(s, FRAMESIZE_QQVGA);
+              else if (p1=="3")
+                s->set_framesize(s, FRAMESIZE_HQVGA);
+              else if (p1=="4")
+                s->set_framesize(s, FRAMESIZE_QVGA);
+              else if (p1=="5")
+                s->set_framesize(s, FRAMESIZE_CIF);
+              else if (p1=="6")
+                s->set_framesize(s, FRAMESIZE_VGA);  
+              else if (p1=="7")
+                s->set_framesize(s, FRAMESIZE_SVGA);
+              else if (p1=="8")
+                s->set_framesize(s, FRAMESIZE_XGA);
+              else if (p1=="9")
+                s->set_framesize(s, FRAMESIZE_SXGA);
+              else if (p1=="10")
+                s->set_framesize(s, FRAMESIZE_UXGA);           
+              else 
+                s->set_framesize(s, FRAMESIZE_QVGA);           
         } else {
               client.println("HTTP/1.1 200 OK");
               client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
