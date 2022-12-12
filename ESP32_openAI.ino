@@ -50,17 +50,17 @@ void setup()
     ESP.restart();
   }
   
-  Serial.println(openAI("How are you?")); 
-  Serial.println(openAI("What is your name?")); 
-  Serial.println(openAI("Where are you going?"));  
-  Serial.println(openAI("請寫出讚美台灣的一首詩"));       
+  Serial.println(openAI_text("How are you?")); 
+  Serial.println(openAI_text("What is your name?")); 
+  Serial.println(openAI_text("Where are you going?"));  
+  Serial.println(openAI_text("請寫出讚美台灣的一首詩"));       
 }
 
 void loop()
 {
 }
 
-String openAI(String request) { 
+String openAI_text(String request) { 
   WiFiClientSecure client_tcp;
   client_tcp.setInsecure();   //run version 1.0.5 or above
 
