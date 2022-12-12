@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-12-12 15:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-12-12 21:30
 https://www.facebook.com/francefu
 */
 
@@ -25,17 +25,14 @@ void setup()
   Serial.println(ssid);
   
   long int StartTime=millis();
-  while (WiFi.status() != WL_CONNECTED) 
-  {
+  while (WiFi.status() != WL_CONNECTED) {
       delay(500);
       if ((StartTime+10000) < millis()) break;
   } 
 
-  if (WiFi.status() == WL_CONNECTED)
-  {
+  if (WiFi.status() == WL_CONNECTED) {
     pinMode(2, OUTPUT);
-    for (int i=0;i<5;i++)
-    {
+    for (int i=0;i<5;i++) {
       digitalWrite(2,HIGH);
       delay(100);
       digitalWrite(2,LOW);
@@ -46,29 +43,27 @@ void setup()
     Serial.println("STAIP address: ");
     Serial.println(WiFi.localIP());
     Serial.println();     
-  }  
-  else 
-  {
+  } else {
     Serial.println("Unable to connect!"); 
     delay(2000);
     ESP.restart();
   }
   
-  Serial.println("\n\nAI: " + openAI("How are you?", 1)); 
-  Serial.println("\n\nAI: " + openAI("What is your name?", 1)); 
-  Serial.println("\n\nAI: " + openAI("Where are you going?", 1));     
+  Serial.println(openAI("How are you?")); 
+  Serial.println(openAI("What is your name?")); 
+  Serial.println(openAI("Where are you going?"));     
 }
 
 void loop()
 {
 }
 
-String openAI(String request, byte wait) { 
+String openAI(String request) { 
   WiFiClientSecure client_tcp;
   client_tcp.setInsecure();   //run version 1.0.5 or above
 
   Serial.println("\n\nME: \n"+request);
-  request = "{\"model\":\"text-davinci-003\",\"prompt\":\""+request+"\",\"temperature\":0.9,\"max_tokens\":1024,\"frequency_penalty\":0,\"presence_penalty\":0.6,\"top_p\":1.0}";
+  request = "{\"model\":\"text-davinci-003\",\"prompt\":\"" + request + "\",\"temperature\":0.9,\"max_tokens\":800,\"frequency_penalty\":0,\"presence_penalty\":0.6,\"top_p\":1.0}";
       
   if (client_tcp.connect("api.openai.com", 443)) {
     client_tcp.println("POST /v1/completions HTTP/1.1");
@@ -76,7 +71,7 @@ String openAI(String request, byte wait) {
     client_tcp.println("Host: api.openai.com");
     client_tcp.println("User-Agent: ESP8266/1.0");
     client_tcp.println("Authorization: Bearer " + token);
-    client_tcp.println("Content-Type: application/json");
+    client_tcp.println("Content-Type: application/json; charset=utf-8");
     client_tcp.println("Content-Length: " + String(request.length()));
     client_tcp.println();
     client_tcp.println(request);
@@ -86,22 +81,22 @@ String openAI(String request, byte wait) {
     int waitTime = 3000;   // timeout 3 seconds
     long startTime = millis();
     while ((startTime + waitTime) > millis()) {
-      while (client_tcp.available())  {
+      Serial.print(".");
+      delay(100);      
+      while (client_tcp.available()) {
           char c = client_tcp.read();
           if (state==true) Feedback += String(c);        
-          if (c == '\n') 
-          {
+          if (c == '\n') {
             if (getResponse.length()==0) state=true; 
             getResponse = "";
           } 
           else if (c != '\r')
             getResponse += String(c);
-          if (wait==1)
-            startTime = millis();
+          startTime = millis();
        }
-       if (wait==0)
-        if ((state==true)&&(Feedback.length()!= 0)) break;
+       if (getResponse.length()>0) break;
     }
+    Serial.println();
     client_tcp.stop();
 
     JsonObject obj;
@@ -113,4 +108,35 @@ String openAI(String request, byte wait) {
   }
   else
     return "Connection failed";  
+}
+
+//https://github.com/zenmanenergy/ESP8266-Arduino-Examples/
+String urlencode(String str) {
+    String encodedString="";
+    char c;
+    char code0;
+    char code1;
+    for (int i =0; i < str.length(); i++) {
+      c=str.charAt(i);
+      if (c == ' '){
+        encodedString+= '+';
+      } else if (isalnum(c)){
+        encodedString+=c;
+      } else{
+        code1=(c & 0xf)+'0';
+        if ((c & 0xf) >9){
+            code1=(c & 0xf) - 10 + 'A';
+        }
+        c=(c>>4)&0xf;
+        code0=c+'0';
+        if (c > 9){
+            code0=c - 10 + 'A';
+        }
+        encodedString+="%";
+        encodedString+=code0;
+        encodedString+=code1;
+      }
+      yield();
+    }
+    return encodedString;
 }
