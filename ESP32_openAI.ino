@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-12-12 23:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-12-12 23:00
 https://www.facebook.com/francefu
 */
 
@@ -126,7 +126,7 @@ String openAI(String request) {
     }
     //Serial.println(Feedback);
     client_tcp.stop();
-    return "";
+    return "error";
   }
   else
     return "Connection failed";  
