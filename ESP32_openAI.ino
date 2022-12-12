@@ -10,7 +10,7 @@ https://www.facebook.com/francefu
 
 const char* ssid     = "teacher";   // your network SSID
 const char* password = "12345678";   // your network password
-String token = "";  // openAI Token
+String token = "";  // openAI API Token
 int max_tokens = 1024;
 
 void setup() 
