@@ -78,7 +78,7 @@ String openAI(String request) {
     
     String getResponse="",Feedback="";
     boolean state = false;
-    int waitTime = 30000;   // timeout 10 seconds
+    int waitTime = 60000;   // timeout 60 seconds
     long startTime = millis();
     while ((startTime + waitTime) > millis()) {
       Serial.print(".");
