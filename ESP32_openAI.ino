@@ -18,49 +18,67 @@ void setup()
   Serial.begin(115200);
   delay(10);
   
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  delay(1000);
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
+  initWiFi();
   
-  long int StartTime=millis();
-  while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
-      if ((StartTime+10000) < millis()) break;
-  } 
-
-  if (WiFi.status() == WL_CONNECTED) {
-    pinMode(2, OUTPUT);
-    for (int i=0;i<5;i++) {
-      digitalWrite(2,HIGH);
-      delay(100);
-      digitalWrite(2,LOW);
-      delay(100);
-    }
-      
-    Serial.println();
-    Serial.println("STAIP address: ");
-    Serial.println(WiFi.localIP());
-    Serial.println();     
-  } else {
-    Serial.println("Unable to connect!"); 
-    delay(2000);
-    ESP.restart();
-  }
-  
-  Serial.println(openAI_text("How are you?")); 
-  Serial.println(openAI_text("What is your name?")); 
-  Serial.println(openAI_text("Where are you going?"));  
-  Serial.println(openAI_text("請寫出讚美台灣的一首詩"));       
+  Serial.println(openAI("How are you?")); 
+  Serial.println(openAI("What is your name?")); 
+  Serial.println(openAI("Where are you going?"));  
+  Serial.println(openAI("請寫出讚美台灣的一首詩"));       
 }
 
 void loop()
 {
 }
 
-String openAI_text(String request) { 
+void initWiFi() {
+  WiFi.mode(WIFI_STA);
+
+  //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
+
+  for (int i=0;i<2;i++) {
+    WiFi.begin(ssid, password);
+  
+    delay(1000);
+    Serial.println("");
+    Serial.print("Connecting to ");
+    Serial.println(ssid);
+    
+    long int StartTime=millis();
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        if ((StartTime+5000) < millis()) break;
+    } 
+  
+    if (WiFi.status() == WL_CONNECTED) {
+      Serial.println("");
+      Serial.println("STAIP address: ");
+      Serial.println(WiFi.localIP());
+      Serial.println("");
+  
+      pinMode(2, OUTPUT);
+      for (int j=0;j<5;j++) {
+        digitalWrite(2,HIGH);
+        delay(100);
+        digitalWrite(2,LOW);
+        delay(100);
+      }
+      
+      break;
+    }
+  } 
+
+  if (WiFi.status() != WL_CONNECTED) {    //若連線失敗
+    pinMode(2, OUTPUT);
+    for (int k=0;k<2;k++) {
+      digitalWrite(2,HIGH);
+      delay(1000);
+      digitalWrite(2,LOW);
+      delay(1000);
+    }
+  } 
+}
+
+String openAI(String request) { 
   WiFiClientSecure client_tcp;
   client_tcp.setInsecure();   //run version 1.0.5 or above
 
