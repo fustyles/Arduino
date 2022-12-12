@@ -1,6 +1,6 @@
 /* 
 NodeMCU (ESP32)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-12-12 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-12-12 23:30
 https://www.facebook.com/francefu
 */
 
@@ -11,6 +11,7 @@ https://www.facebook.com/francefu
 const char* ssid     = "teacher";   // your network SSID
 const char* password = "12345678";   // your network password
 String token = "";  // openAI Token
+int max_tokens = 1024;
 
 void setup() 
 {
@@ -64,7 +65,7 @@ String openAI(String request) {
   client_tcp.setInsecure();   //run version 1.0.5 or above
 
   Serial.println(request);
-  request = "{\"model\":\"text-davinci-003\",\"prompt\":\"" + request + "\",\"temperature\":0.9,\"max_tokens\":1024,\"frequency_penalty\":0,\"presence_penalty\":0.6,\"top_p\":1.0}";
+  request = "{\"model\":\"text-davinci-003\",\"prompt\":\"" + request + "\",\"temperature\":0.9,\"max_tokens\":" + String(max_tokens) + ",\"frequency_penalty\":0,\"presence_penalty\":0.6,\"top_p\":1.0}";
   
   if (client_tcp.connect("api.openai.com", 443)) {
     client_tcp.println("POST /v1/completions HTTP/1.1");
