@@ -1,5 +1,5 @@
 /* 
-NodeMCU (ESP32)
+ESP32 Use GPT-3 with the OpenAI API
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-12-12 23:00
 https://www.facebook.com/francefu
 */
