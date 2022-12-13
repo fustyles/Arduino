@@ -6,7 +6,6 @@ https://www.facebook.com/francefu
 
 #include <WiFi.h>             
 #include <WiFiClientSecure.h>
-#include <ArduinoJson.h>
 
 const char* ssid     = "teacher";   // your network SSID
 const char* password = "12345678";   // your network password
