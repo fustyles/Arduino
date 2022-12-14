@@ -123,7 +123,7 @@ String openAI_text(String request) {
        }
        if (getResponse.length()>0) break;
     }
-    //Serial.println(Feedback);
+    Serial.println(Feedback);
     client_tcp.stop();
     return "error";
   }
