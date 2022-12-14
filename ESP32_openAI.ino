@@ -4,6 +4,7 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2022-12-12 23:00
 https://www.facebook.com/francefu
 
 Tutorial
+https://beta.openai.com/docs/guides/completion
 https://beta.openai.com/docs/api-reference/completions/create
 */
 
