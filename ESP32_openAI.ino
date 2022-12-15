@@ -13,7 +13,7 @@ https://beta.openai.com/docs/api-reference/completions/create
 
 const char* ssid     = "teacher";   // your network SSID
 const char* password = "12345678";   // your network password
-String token = "";  // openAI API Token
+String token = "";  // openAI API Key
 int max_tokens = 1024;
 
 void setup() 
