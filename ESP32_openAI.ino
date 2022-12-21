@@ -26,8 +26,7 @@ void setup()
   
   initWiFi();
   
-  Serial.println(openAI_text("How are you?")); 
-  Serial.println(openAI_text("What is your name?")); 
+  Serial.println(openAI_text("How are you?"));
   Serial.println(openAI_text("Where are you going?"));  
   Serial.println(openAI_text("請寫出讚美台灣的一首詩"));       
 }
