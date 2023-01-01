@@ -9,6 +9,7 @@ char wifi_pass[] = "87654321";
 String telegrambotToken = "";
 String telegrambotChatID = "";
 String openaiKey = "";
+int max_tokens = 256;
 
 void initWiFi() {
   for (int i=0;i<2;i++) {
@@ -199,7 +200,7 @@ void loop()
   String message = telegrambot_getUpdates(telegrambotToken);
   if (message != "" && message != "/start" && message != "null") {
     Serial.println(message);
-    String response = (openAI_text(openaiKey, 256, message));
+    String response = (openAI_text(openaiKey, max_tokens, message));
     sendMessageToTelegram_custom(telegrambotToken,telegrambotChatID,response,"");
   }
   delay(100);
