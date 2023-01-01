@@ -113,11 +113,18 @@ String openAI_text(String request) {
             Feedback += String(c);
             if (Feedback.indexOf("\"text\":\"\\n\\n")!=-1)
                Feedback = "";
+            if (Feedback.indexOf("\"text\":\"?\\n\\n")!=-1)
+               Feedback = "";            
             if (Feedback.indexOf("\",\"index\"")!=-1) {
               client_tcp.stop();
               Serial.println();
               return Feedback.substring(0,Feedback.length()-9);               
             }
+            if (Feedback.indexOf("\"}}")!=-1) {
+              client_tcp.stop();
+              Serial.println();
+              return Feedback.substring(0,Feedback.length()-3);               
+            }            
           }
           if (c == '\n') {
             if (getResponse.length()==0) state=true; 
