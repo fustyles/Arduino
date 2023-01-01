@@ -1,4 +1,15 @@
-//Generated Date: Sun, 01 Jan 2023 06:03:35 GMT
+/* 
+ESP32 Use GPT-3 with the OpenAI API on Telegram Bot
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2023-1-1 14:00
+https://www.facebook.com/francefu
+
+Tutorial
+https://beta.openai.com/docs/guides/completion
+https://beta.openai.com/docs/api-reference/completions/create
+
+Page
+https://fustyles.github.io/webduino/openAI.html
+*/
 
 #include <WiFi.h>
 #include <ArduinoJson.h>
