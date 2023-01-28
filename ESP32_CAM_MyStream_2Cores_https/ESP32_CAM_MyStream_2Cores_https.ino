@@ -30,8 +30,8 @@ https://github.com/fhessel/esp32_https_server/issues/143
 */
 
 
-const char* ssid = "3COM";
-const char* password = "godblessyou";
+const char* ssid = "teacher";
+const char* password = "87654321";
 
 const char* apssid = "esp32-cam";
 const char* appassword = "12345678";
