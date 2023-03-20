@@ -1,5 +1,3 @@
-//Generated Date: Mon, 20 Mar 2023 01:24:03 GMT
-
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
@@ -10,11 +8,15 @@ char _lwifi_pass[] = "87654321";
 const char* mqtt_server = "mqtt3.thingspeak.com";
 const unsigned int mqtt_port = 1883;
 #define MQTT_USER "ORgsJg4UMTYkKxQgNAkmFA81"
+String MQTT_CLIENTID = "ORgsJg4UMTYkKxQgNAkmFA81";
 #define MQTT_PASSWORD "Ug0bXHfAd93EEznD8YO0kxSo1"
-String clientId = "ORgsJg4UMTYkKxQgNAkmFA81";
+#define MQTT_SUBSCRIBE_TOPIC "channels/9972371/subscribe"
+
+WiFiClient espClient;
+PubSubClient mqtt_client(espClient);
+String mqtt_data = "";
 
 void initWiFi() {
-
   for (int i=0;i<2;i++) {
     WiFi.begin(_lwifi_ssid, _lwifi_pass);
 
@@ -40,21 +42,16 @@ void initWiFi() {
   }
 }
 
-WiFiClient espClient;
-PubSubClient mqtt_client(espClient);
-String mqtt_data = "";
-
 void mqtt_sendText(String topic, String text) {
-    if (mqtt_client.connect(clientId.c_str(), MQTT_USER, MQTT_PASSWORD)) {
+    if (mqtt_client.connect(MQTT_CLIENTID.c_str(), MQTT_USER, MQTT_PASSWORD)) {
       mqtt_client.publish(topic.c_str(), text.c_str());
     }
 }
 
 void reconnect() {
   while (!mqtt_client.connected()) {
-    String mqtt_clientId = "ORgsJg4UMTYkKxQgNAkmFA8";
-    if (mqtt_client.connect(mqtt_clientId.c_str(), MQTT_USER, MQTT_PASSWORD)) {
-      mqtt_client.subscribe("channels/997237/subscribe");
+    if (mqtt_client.connect(MQTT_CLIENTID.c_str(), MQTT_USER, MQTT_PASSWORD)) {
+      mqtt_client.subscribe(MQTT_SUBSCRIBE_TOPIC);
     } else {
       delay(5000);
     }
@@ -93,8 +90,6 @@ void setup()
   mqtt_client.setServer(mqtt_server,mqtt_port);
   mqtt_client.setCallback(callback);
   //mqtt_client.setBufferSize(1024);
-
-
 }
 
 void loop()
