@@ -16,7 +16,7 @@ https://fustyles.github.io/webduino/openAI.html
 
 const char* ssid     = "teacher";   // your network SSID
 const char* password = "87654321";   // your network password
-String token = "";  // openAI API Key
+String openaiKey = "";  // openAI API Key
 String model = "gpt-3.5-turbo";
 String role = "You are a helpful assistant.";
 String system_content = "{\"role\": \"system\", \"content\":\""+ role +"\"}";
@@ -101,7 +101,7 @@ String openAI_chat(String message) {
     client_tcp.println("POST /v1/chat/completions HTTP/1.1");
     client_tcp.println("Connection: close"); 
     client_tcp.println("Host: api.openai.com");
-    client_tcp.println("Authorization: Bearer " + token);
+    client_tcp.println("Authorization: Bearer " + openaiKey);
     client_tcp.println("Content-Type: application/json; charset=utf-8");
     client_tcp.println("Content-Length: " + String(request.length()));
     client_tcp.println();
