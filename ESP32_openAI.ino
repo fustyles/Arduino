@@ -111,7 +111,7 @@ String openAI_chat(String message) {
     
     String getResponse="",Feedback="";
     boolean state = false;
-    int waitTime = 10000;   // timeout 10 seconds
+    int waitTime = 20000;   // timeout 20 seconds
     long startTime = millis();
     while ((startTime + waitTime) > millis()) {
       Serial.print(".");
