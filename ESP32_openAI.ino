@@ -34,7 +34,7 @@ void setup()
   Serial.println("\nWhat is my name?"); 
   Serial.println(openAI_chat("What is my name?")); 
   Serial.println("\nWhere am I?"); 
-  Serial.println(openAI_chat("Where am I?"));    
+  Serial.println(openAI_chat("Where am I?"));     
 }
 
 void loop()
