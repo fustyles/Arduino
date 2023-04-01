@@ -20,8 +20,9 @@ char wifi_pass[] = "87654321";
 String telegrambotToken = "";
 String telegrambotChatID = "";
 String openaiKey = "";  // openAI API Key
-String model = "gpt-3.5-turbo";
 String role = "You are a helpful assistant.";
+
+String model = "gpt-3.5-turbo";
 String system_content = "{\"role\": \"system\", \"content\":\""+ role +"\"}";
 String historical_messages = system_content;
 
