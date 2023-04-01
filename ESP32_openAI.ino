@@ -105,7 +105,9 @@ String openAI_chat(String message) {
     client_tcp.println("Content-Type: application/json; charset=utf-8");
     client_tcp.println("Content-Length: " + String(request.length()));
     client_tcp.println();
-    client_tcp.println(request);
+    for (int i = 0; i < request.length(); i += 1024) {
+      client_tcp.print(request.substring(i, i+1024));
+    }
     
     String getResponse="",Feedback="";
     boolean state = false;
