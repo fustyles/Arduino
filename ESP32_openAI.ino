@@ -1,6 +1,6 @@
 /* 
-ESP32 Use GPT-3 with the OpenAI API
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2023-1-1 14:00
+ESP32 Use GPT-3.5 with the OpenAI API
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2023-4-1 23:00
 https://www.facebook.com/francefu
 
 Tutorial
@@ -15,9 +15,12 @@ https://fustyles.github.io/webduino/openAI.html
 #include <WiFiClientSecure.h>
 
 const char* ssid     = "teacher";   // your network SSID
-const char* password = "12345678";   // your network password
+const char* password = "87654321";   // your network password
 String token = "";  // openAI API Key
-int max_tokens = 1024;
+String model = "gpt-3.5-turbo";
+String role = "You are a helpful assistant.";
+String system_content = "{\"role\": \"system\", \"content\":\""+ role +"\"}";
+String historical_messages = system_content;
 
 void setup() 
 {
@@ -25,10 +28,13 @@ void setup()
   delay(10);
   
   initWiFi();
-  
-  Serial.println(openAI_text("How are you?"));
-  Serial.println(openAI_text("Where are you going?"));  
-  Serial.println(openAI_text("請寫出讚美台灣的一首詩"));       
+
+  Serial.println("\nMy name is France and I live in Taiwan.");
+  Serial.println(openAI_chat("My name is France and I live in Taiwan.")); 
+  Serial.println("\nDo you know my name?"); 
+  Serial.println(openAI_chat("Do you know my name?")); 
+  Serial.println("\nWhere am I?"); 
+  Serial.println(openAI_chat("Where am I?"));     
 }
 
 void loop()
@@ -83,15 +89,16 @@ void initWiFi() {
   } 
 }
 
-String openAI_text(String request) { 
+String openAI_chat(String message) { 
   WiFiClientSecure client_tcp;
   client_tcp.setInsecure();   //run version 1.0.5 or above
 
-  Serial.println(request);
-  request = "{\"model\":\"text-davinci-003\",\"prompt\":\"" + request + "\",\"temperature\":0.9,\"max_tokens\":" + String(max_tokens) + ",\"frequency_penalty\":0,\"presence_penalty\":0.6,\"top_p\":1.0}";
-  
+  String user_content = "{\"role\": \"user\", \"content\":\""+ message+"\"}";
+  historical_messages += ", "+user_content;
+  String request = "{\"model\":\""+model+"\",\"messages\":[" + historical_messages + "]}";
+
   if (client_tcp.connect("api.openai.com", 443)) {
-    client_tcp.println("POST /v1/completions HTTP/1.1");
+    client_tcp.println("POST /v1/chat/completions HTTP/1.1");
     client_tcp.println("Connection: close"); 
     client_tcp.println("Host: api.openai.com");
     client_tcp.println("Authorization: Bearer " + token);
@@ -102,44 +109,45 @@ String openAI_text(String request) {
     
     String getResponse="",Feedback="";
     boolean state = false;
-    int waitTime = 60000;   // timeout 60 seconds
+    int waitTime = 10000;   // timeout 10 seconds
     long startTime = millis();
     while ((startTime + waitTime) > millis()) {
       Serial.print(".");
       delay(100);      
       while (client_tcp.available()) {
           char c = client_tcp.read();
-          if (state==true) {
-            Feedback += String(c);
-            if (Feedback.indexOf("\"text\":\"\\n\\n")!=-1)
-               Feedback = "";
-            if (Feedback.indexOf("\"text\":\"?\\n\\n")!=-1)
-               Feedback = "";            
-            if (Feedback.indexOf("\",\"index\"")!=-1) {
-              client_tcp.stop();
-              Serial.println();
-              return Feedback.substring(0,Feedback.length()-9);               
-            }
-            if (Feedback.indexOf("\"}}")!=-1) {
-              client_tcp.stop();
-              Serial.println();
-              return Feedback.substring(0,Feedback.length()-3);               
-            }            
-          }
-          if (c == '\n') {
-            if (getResponse.length()==0) state=true; 
-            getResponse = "";
-          } 
-          else if (c != '\r')
+          //Serial.print(String(c));
+          if (state==true) 
             getResponse += String(c);
+          if (c == '\n')
+            Feedback = "";
+          else if (c != '\r')
+            Feedback += String(c);
+          if (Feedback.indexOf("\",\"content\":\"")!=-1) {
+            state=true;              
+          }
+          if (Feedback.indexOf("\"},")!=-1) {
+            state=false;    
+          }              
           startTime = millis();
        }
-       if (getResponse.length()>0) break;
+       if (getResponse.length()>0) {
+          client_tcp.stop();
+          getResponse = getResponse.substring(0,getResponse.length()-3);
+          String assistant_content = "{\"role\": \"assistant\", \"content\":\""+ message+"\"}";
+          historical_messages += ", "+assistant_content;
+          Serial.println("");
+          return getResponse;
+       }
     }
-    Serial.println(Feedback);
+    
     client_tcp.stop();
     return "error";
   }
   else
     return "Connection failed";  
+}
+
+void openAI_chat_reset() {
+  historical_messages = system_content;
 }
