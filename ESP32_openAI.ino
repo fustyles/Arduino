@@ -144,6 +144,7 @@ String openAI_chat(String message) {
     }
     
     client_tcp.stop();
+    Serial.println(Feedback);
     return "error";
   }
   else
