@@ -29,7 +29,7 @@ void setup()
   
   initWiFi();
 
-  Serial.println("\nMy name is France and I live in Taiwan.");
+  Serial.println("\nMy name is Mike and I live in Taiwan.");
   Serial.println(openAI_chat("My name is France and I live in Taiwan.")); 
   Serial.println("\nDo you know my name?"); 
   Serial.println(openAI_chat("Do you know my name?")); 
