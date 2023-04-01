@@ -19,6 +19,7 @@ const char* password = "87654321";   // your network password
 String openaiKey = "";  // openAI API Key
 String model = "gpt-3.5-turbo";
 String role = "You are a helpful assistant.";
+
 String system_content = "{\"role\": \"system\", \"content\":\""+ role +"\"}";
 String historical_messages = system_content;
 
