@@ -29,12 +29,12 @@ void setup()
   
   initWiFi();
 
-  Serial.println("\nMy name is Mike and I live in Taiwan.");
-  Serial.println(openAI_chat("My name is France and I live in Taiwan.")); 
-  Serial.println("\nDo you know my name?"); 
-  Serial.println(openAI_chat("Do you know my name?")); 
+  Serial.println("\nYou can call me Mike Fu and I live in Taiwan.");
+  Serial.println(openAI_chat("You can call me Mike Fu and I live in Taiwan.")); 
+  Serial.println("\nWhat is my name?"); 
+  Serial.println(openAI_chat("What is my name?")); 
   Serial.println("\nWhere am I?"); 
-  Serial.println(openAI_chat("Where am I?"));     
+  Serial.println(openAI_chat("Where am I?"));    
 }
 
 void loop()
