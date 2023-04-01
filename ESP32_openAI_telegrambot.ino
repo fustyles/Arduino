@@ -144,12 +144,10 @@ String openAI_chat(String message) {
             Feedback = "";
           else if (c != '\r')
             Feedback += String(c);
-          if (Feedback.indexOf("\",\"content\":\"")!=-1) {
-            state=true;              
-          }
-          if (Feedback.indexOf("\"},")!=-1) {
-            state=false;    
-          }              
+          if (Feedback.indexOf("\",\"content\":\"")!=-1)
+            state=true; 
+          if (Feedback.indexOf("\"},")!=-1)
+            state=false;            
           startTime = millis();
        }
        if (getResponse.length()>0) {
