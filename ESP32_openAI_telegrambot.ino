@@ -1,6 +1,6 @@
 /* 
-ESP32 Use GPT-3 with the OpenAI API on Telegram Bot
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2023-1-1 14:00
+ESP32 Use GPT-3.3 with the OpenAI API on Telegram Bot
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2023-4-1 23:50
 https://www.facebook.com/francefu
 
 Tutorial
@@ -19,8 +19,11 @@ char wifi_ssid[] = "teacher";
 char wifi_pass[] = "87654321";
 String telegrambotToken = "";
 String telegrambotChatID = "";
-String openaiKey = "";
-int max_tokens = 256;
+String openaiKey = "";  // openAI API Key
+String model = "gpt-3.5-turbo";
+String role = "You are a helpful assistant.";
+String system_content = "{\"role\": \"system\", \"content\":\""+ role +"\"}";
+String historical_messages = system_content;
 
 void initWiFi() {
   for (int i=0;i<2;i++) {
@@ -104,61 +107,70 @@ String telegrambot_getUpdates(String token) {
   }
 }
 
-String openAI_text(String token, int max_tokens, String words) {
+String openAI_chat(String message) { 
   WiFiClientSecure client_tcp;
-  client_tcp.setInsecure();
-  words = "{\"model\":\"text-davinci-003\",\"prompt\":\"" + words + "\",\"temperature\":0,\"max_tokens\":" + String(max_tokens) + ",\"frequency_penalty\":0,\"presence_penalty\":0.6,\"top_p\":1.0,\"n\":1}";
+  client_tcp.setInsecure();   //run version 1.0.5 or above
+
+  String user_content = "{\"role\": \"user\", \"content\":\""+ message+"\"}";
+  historical_messages += ", "+user_content;
+  String request = "{\"model\":\""+model+"\",\"messages\":[" + historical_messages + "]}";
+
   if (client_tcp.connect("api.openai.com", 443)) {
-    client_tcp.println("POST /v1/completions HTTP/1.1");
-    client_tcp.println("Connection: close");
+    client_tcp.println("POST /v1/chat/completions HTTP/1.1");
+    client_tcp.println("Connection: close"); 
     client_tcp.println("Host: api.openai.com");
     client_tcp.println("Authorization: Bearer " + token);
     client_tcp.println("Content-Type: application/json; charset=utf-8");
-    client_tcp.println("Content-Length: " + String(words.length()));
+    client_tcp.println("Content-Length: " + String(request.length()));
     client_tcp.println();
-    client_tcp.println(words);
+    for (int i = 0; i < request.length(); i += 1024) {
+      client_tcp.print(request.substring(i, i+1024));
+    }
+    
     String getResponse="",Feedback="";
     boolean state = false;
-    int waitTime = 60000;
+    int waitTime = 10000;   // timeout 10 seconds
     long startTime = millis();
     while ((startTime + waitTime) > millis()) {
       Serial.print(".");
-      delay(100);
+      delay(100);      
       while (client_tcp.available()) {
           char c = client_tcp.read();
-          if (state==true) {
-            Feedback += String(c);
-            if (Feedback.indexOf("\"text\":\"\\n\\n")!=-1)
-               Feedback = "";
-            if (Feedback.indexOf("\"text\":\"?\\n\\n")!=-1)
-               Feedback = "";
-            if (Feedback.indexOf("\",\"index\"")!=-1) {
-              client_tcp.stop();
-              Serial.println();
-              return Feedback.substring(0,Feedback.length()-9);
-            }
-            if (Feedback.indexOf("\"}}")!=-1) {
-              client_tcp.stop();
-              Serial.println();
-              return Feedback.substring(0,Feedback.length()-3);
-            }
-          }
-          if (c == '\n') {
-            if (getResponse.length()==0) state=true;
-            getResponse = "";
-          }
-          else if (c != '\r')
+          //Serial.print(String(c));
+          if (state==true) 
             getResponse += String(c);
+          if (c == '\n')
+            Feedback = "";
+          else if (c != '\r')
+            Feedback += String(c);
+          if (Feedback.indexOf("\",\"content\":\"")!=-1) {
+            state=true;              
+          }
+          if (Feedback.indexOf("\"},")!=-1) {
+            state=false;    
+          }              
           startTime = millis();
        }
-       if (getResponse.length()>0) break;
+       if (getResponse.length()>0) {
+          client_tcp.stop();
+          getResponse = getResponse.substring(0,getResponse.length()-3);
+          String assistant_content = "{\"role\": \"assistant\", \"content\":\""+ getResponse+"\"}";
+          historical_messages += ", "+assistant_content;
+          Serial.println("");
+          return getResponse;
+       }
     }
+    
     client_tcp.stop();
     Serial.println(Feedback);
     return "error";
   }
   else
-    return "Connection failed";
+    return "Connection failed";  
+}
+
+void openAI_chat_reset() {
+  historical_messages = system_content;
 }
 
 void sendMessageToTelegram_custom(String token, String chatid, String text, String keyboard) {
@@ -211,7 +223,7 @@ void loop()
   String message = telegrambot_getUpdates(telegrambotToken);
   if (message != "" && message != "/start" && message != "null") {
     Serial.println(message);
-    String response = (openAI_text(openaiKey, max_tokens, message));
+    String response = (openAI_chat(message));
     sendMessageToTelegram_custom(telegrambotToken,telegrambotChatID,response,"");
   }
   delay(100);
