@@ -134,7 +134,7 @@ String openAI_chat(String message) {
        if (getResponse.length()>0) {
           client_tcp.stop();
           getResponse = getResponse.substring(0,getResponse.length()-3);
-          String assistant_content = "{\"role\": \"assistant\", \"content\":\""+ message+"\"}";
+          String assistant_content = "{\"role\": \"assistant\", \"content\":\""+ getResponse+"\"}";
           historical_messages += ", "+assistant_content;
           Serial.println("");
           return getResponse;
