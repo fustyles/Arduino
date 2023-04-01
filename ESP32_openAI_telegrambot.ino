@@ -205,7 +205,7 @@ void sendMessageToTelegram_custom(String token, String chatid, String text, Stri
             getAll += String(c);
           startTime = millis();
        }
-       Serial.println(getBody);
+       //Serial.println(getBody);
        if (getBody.length()>0) break;
     }
   }
