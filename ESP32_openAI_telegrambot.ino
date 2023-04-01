@@ -119,7 +119,7 @@ String openAI_chat(String message) {
     client_tcp.println("POST /v1/chat/completions HTTP/1.1");
     client_tcp.println("Connection: close"); 
     client_tcp.println("Host: api.openai.com");
-    client_tcp.println("Authorization: Bearer " + token);
+    client_tcp.println("Authorization: Bearer " + openaiKey);
     client_tcp.println("Content-Type: application/json; charset=utf-8");
     client_tcp.println("Content-Length: " + String(request.length()));
     client_tcp.println();
