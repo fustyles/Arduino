@@ -1,6 +1,6 @@
 /* 
 ESP32 Use GPT-3.5 with the OpenAI API
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2023-4-1 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2023-4-1 23:30
 https://www.facebook.com/francefu
 
 Tutorial
