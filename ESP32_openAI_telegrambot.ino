@@ -1,5 +1,5 @@
 /* 
-ESP32 Use GPT-3.3 with the OpenAI API on Telegram Bot
+ESP32 Use ChatGPT API (GPT-3.5) on Telegram Bot
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2023-4-1 23:50
 https://www.facebook.com/francefu
 
