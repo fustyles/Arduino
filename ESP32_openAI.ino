@@ -1,5 +1,5 @@
 /* 
-ESP32 Use GPT-3.5 with the OpenAI API
+ESP32 Use ChatGPT API (GPT-3.5)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2023-4-1 23:30
 https://www.facebook.com/francefu
 
