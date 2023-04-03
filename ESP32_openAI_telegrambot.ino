@@ -6,9 +6,6 @@ https://www.facebook.com/francefu
 Tutorial
 https://beta.openai.com/docs/guides/completion
 https://beta.openai.com/docs/api-reference/completions/create
-
-Page
-https://fustyles.github.io/webduino/openAI.html
 */
 
 #include <WiFi.h>
