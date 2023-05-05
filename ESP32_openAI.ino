@@ -77,7 +77,7 @@ void initWiFi() {
     }
   } 
 
-  if (WiFi.status() != WL_CONNECTED) {    //若連線失敗
+  if (WiFi.status() != WL_CONNECTED) {
     pinMode(2, OUTPUT);
     for (int k=0;k<2;k++) {
       digitalWrite(2,HIGH);
