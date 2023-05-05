@@ -351,9 +351,7 @@ void loop()
     String response = "";
     if (message.indexOf("image:")!=-1) {
       String prompt = message.substring(6);
-      Serial.println(prompt);
       response = openAI_image(prompt);
-      Serial.println(response);
       sendImageToTelegram_custom(telegrambotToken, telegrambotChatID, prompt, response);
     }
     else {
