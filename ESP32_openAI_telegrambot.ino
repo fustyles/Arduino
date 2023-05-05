@@ -25,7 +25,7 @@ String role = "You are a helpful assistant.";
 String model = "gpt-3.5-turbo";
 String system_content = "{\"role\": \"system\", \"content\":\""+ role +"\"}";
 String historical_messages = system_content;
-//Image generator
+//Image generator  --> image:your prompt
 String imageSize = "256x256"; // 256x256, 512x512 , 1024x1024
 
 void initWiFi() {
