@@ -114,6 +114,7 @@ String openAI_chat(String message) {
   WiFiClientSecure client_tcp;
   client_tcp.setInsecure();   //run version 1.0.5 or above
 
+  message.replace("\"","'");
   String user_content = "{\"role\": \"user\", \"content\":\""+ message+"\"}";
   historical_messages += ", "+user_content;
   String request = "{\"model\":\""+model+"\",\"messages\":[" + historical_messages + "]}";
@@ -178,6 +179,7 @@ String openAI_image(String message) {
   WiFiClientSecure client_tcp;
   client_tcp.setInsecure();   //run version 1.0.5 or above
 
+  message.replace("\"","'");
   String request = "{\"prompt\":\""+ message+"\", \"size\":\""+imageSize+"\", \"n\":1}";
   if (client_tcp.connect("api.openai.com", 443)) {
     client_tcp.println("POST /v1/images/generations HTTP/1.1");
