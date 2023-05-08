@@ -91,7 +91,8 @@ void initWiFi() {
 String openAI_chat(String message) { 
   WiFiClientSecure client_tcp;
   client_tcp.setInsecure();   //run version 1.0.5 or above
-
+  
+  message.replace("\"","'");
   String user_content = "{\"role\": \"user\", \"content\":\""+ message+"\"}";
   historical_messages += ", "+user_content;
   String request = "{\"model\":\""+model+"\",\"messages\":[" + historical_messages + "]}";
