@@ -1,6 +1,6 @@
 /* 
 ESP32 Use ChatGPT API (GPT-3.5) and Image generator with Telegram Bot
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2023-5-5 20:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2023-6-12 12:00
 https://www.facebook.com/francefu
 
 Tutorial
@@ -147,15 +147,20 @@ String openAI_chat(String message) {
             Feedback = "";
           else if (c != '\r')
             Feedback += String(c);
-          if (Feedback.indexOf("\",\"content\":\"")!=-1)
-            state=true; 
-          if (Feedback.indexOf("\"},")!=-1)
-            state=false;            
+          if (Feedback.indexOf("\",\"content\":\"")!=-1||Feedback.indexOf("\"content\": \"")!=-1)
+            state=true;
+          if (getResponse.indexOf("\"},")!=-1&&state==true) {
+            state=false;
+            getResponse = getResponse.substring(0,getResponse.length()-3);
+          } else if (getResponse.indexOf("\"")!=-1&&c == '\n'&&state==true) {
+            state=false;
+            getResponse = getResponse.substring(0,getResponse.length()-2);
+          }
+          
           startTime = millis();
        }
        if (getResponse.length()>0) {
           client_tcp.stop();
-          getResponse = getResponse.substring(0,getResponse.length()-3);
           String assistant_content = "{\"role\": \"assistant\", \"content\":\""+ getResponse+"\"}";
           historical_messages += ", "+assistant_content;
           Serial.println("");
