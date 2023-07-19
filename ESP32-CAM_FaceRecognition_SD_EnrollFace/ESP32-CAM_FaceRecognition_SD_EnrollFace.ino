@@ -2,6 +2,8 @@
 ESP32-CAM Load images from SD card to enroll faces and recognize faces automatically.
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-29 21:30
 https://www.facebook.com/francefu
+
+Arduino ESP32 version 1.0.6
 */
 
 //人臉辨識同一人人臉註冊影像數
