@@ -2,6 +2,8 @@
 ESP32-CAM Face detection (offline)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-29 21:30
 https://www.facebook.com/francefu
+
+Arduino ESP32 version 1.0.6
 */
 
 #include <WiFi.h>
