@@ -3,7 +3,7 @@ ESP32-CAM CameraWebServer
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-7-1 00:00
 https://www.facebook.com/francefu
 
-Face recognition works well in v1.0.5, v1.0.6 or above.
+Arduino ESP32 version 1.0.6
 
 
 AP IP: 192.168.4.1
