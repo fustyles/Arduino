@@ -204,33 +204,20 @@ String getWeather(int period,int index) {   //period=0,1,2  index=0,1,2,3,4,5,6,
   return "";
 }
 
-//https://github.com/zenmanenergy/ESP8266-Arduino-Examples/
+//https://www.arduino.cc/reference/en/libraries/urlencode/
 String urlencode(String str) {
-    String encodedString="";
-    char c;
-    char code0;
-    char code1;
-    for (int i =0; i < str.length(); i++) {
-      c=str.charAt(i);
-      if (c == ' '){
-        encodedString+= '+';
-      } else if (isalnum(c)){
-        encodedString+=c;
-      } else{
-        code1=(c & 0xf)+'0';
-        if ((c & 0xf) >9){
-            code1=(c & 0xf) - 10 + 'A';
-        }
-        c=(c>>4)&0xf;
-        code0=c+'0';
-        if (c > 9){
-            code0=c - 10 + 'A';
-        }
-        encodedString+="%";
-        encodedString+=code0;
-        encodedString+=code1;
-      }
-      yield();
+  const char *msg = str.c_str();
+  const char *hex = "0123456789ABCDEF";
+  String encodedMsg = "";
+  while (*msg != '\0') {
+    if (('a' <= *msg && *msg <= 'z') || ('A' <= *msg && *msg <= 'Z') || ('0' <= *msg && *msg <= '9') || *msg == '-' || *msg == '_' || *msg == '.' || *msg == '~') {
+      encodedMsg += *msg;
+    } else {
+      encodedMsg += '%';
+      encodedMsg += hex[(unsigned char)*msg >> 4];
+      encodedMsg += hex[*msg & 0xf];
     }
-    return encodedString;
+    msg++;
+  }
+  return encodedMsg;
 }
