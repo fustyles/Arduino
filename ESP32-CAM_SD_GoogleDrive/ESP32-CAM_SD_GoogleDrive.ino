@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (Read the image file from SD card and upload it to Google Drive)
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2021-6-9 21:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2023-10-1 23:30
 https://www.facebook.com/francefu
 
 如何新增Google Script
@@ -50,6 +50,9 @@ String myFoldername = "&myFoldername=ESP32-CAM";    //設定Google drive存放�
 String myFilename = "&myFilename=ESP32-CAM.jpg";    //設定Google drive存放影像檔名
 String myImage = "&myFile=";
 
+uint8_t *fileinput;
+char *input;
+
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include "soc/soc.h"            //用於電源不穩不重開機
@@ -93,7 +96,6 @@ void setup() {
     delay(200);
     ledcWrite(3,0);
     delay(200);    
-    ledcDetachPin(3);
         
     delay(1000);
     ESP.restart();   //若未連上Wi-Fi閃燈兩次後重啟
@@ -106,8 +108,7 @@ void setup() {
       delay(200);
       ledcWrite(3,0);
       delay(200);    
-    }
-    ledcDetachPin(3);      
+    }    
   }
 
   //SD Card偵測
@@ -139,15 +140,18 @@ void setup() {
   Serial.printf("Used space: %lluMB\n", SD_MMC.usedBytes() / (1024 * 1024));
   Serial.println();
   
-  SD_MMC.end();   
-
-  //閃光燈
-  ledcAttachPin(4, 4);  
-  ledcSetup(4, 5000, 8); 
-
+  SD_MMC.end();    
 
   //read a image file from sd card and upload it to Google drive.
-  sendSDImageToGoogleDrive("/test.jpg");
+  sendSDImageToGoogleDrive("/1.jpg");
+  delay(5000);
+  sendSDImageToGoogleDrive("/2.jpg");
+  delay(5000);
+  sendSDImageToGoogleDrive("/3.jpg");
+  delay(5000);
+  sendSDImageToGoogleDrive("/4.jpg");
+  delay(5000);
+  sendSDImageToGoogleDrive("/5.jpg");
 }
 
 void loop() {
@@ -173,7 +177,7 @@ String sendSDImageToGoogleDrive(String filepath)
   Serial.println("file size: "+String(file.size()));
   Serial.println("");
 
-  uint8_t *fileinput;
+  
   unsigned int fileSize = file.size();
   fileinput = (uint8_t*)malloc(fileSize + 1);
   file.read(fileinput, fileSize);
@@ -181,7 +185,7 @@ String sendSDImageToGoogleDrive(String filepath)
   file.close();
   SD_MMC.end();
   
-  char *input = (char *)fileinput;
+  input = (char *)fileinput;
   String imageFile = "data:image/jpeg;base64,";
   char output[base64_enc_len(3)];
   for (int i=0;i<fileSize;i++) {
@@ -244,7 +248,9 @@ String sendSDImageToGoogleDrive(String filepath)
     getBody="Connected to " + String(myDomain) + " failed.";
     Serial.println("Connected to " + String(myDomain) + " failed.");
   }
-  
+
+  free(fileinput);  
+  input[0] = '\0';
   return getBody;
 }
 
