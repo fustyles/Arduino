@@ -144,14 +144,8 @@ void setup() {
 
   //read a image file from sd card and upload it to Google drive.
   sendSDImageToGoogleDrive("/1.jpg");
-  delay(5000);
   sendSDImageToGoogleDrive("/2.jpg");
-  delay(5000);
   sendSDImageToGoogleDrive("/3.jpg");
-  delay(5000);
-  sendSDImageToGoogleDrive("/4.jpg");
-  delay(5000);
-  sendSDImageToGoogleDrive("/5.jpg");
 }
 
 void loop() {
