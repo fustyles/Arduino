@@ -1,0 +1,789 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <variables>
+    <variable id="VXLuCF(5_,~80y|$Sl]u">side</variable>
+  </variables>
+  <block type="board_initializes_setup" id="0" x="100" y="50">
+    <field name="BOARD_TYPE">ESP32</field>
+    <statement name="CONTENT">
+      <block type="esp32_blekeyboard" id="XOIITZ/!:Gjh#TEE*UlL">
+        <value name="blename">
+          <block type="text" id="X`o-^2D*0)vUzFU0I_%}">
+            <field name="TEXT">ESP32 PS2</field>
+          </block>
+        </value>
+        <next>
+          <block type="fu_serial_begin_select" id="PrpUk)6C-aa`$p4UxTBq">
+            <field name="serial">Serial</field>
+            <field name="baudrate">115200</field>
+            <next>
+              <block type="ps2_initial" id="L-nv.3P/tCYrpgjG6l8C">
+                <field name="pressures">false</field>
+                <field name="rumble">false</field>
+                <value name="CLK">
+                  <block type="math_number" id="uj:0P77,uCsXmx|ha?S@">
+                    <field name="NUM">18</field>
+                  </block>
+                </value>
+                <value name="CMD">
+                  <block type="math_number" id="lw5~}?t{KJt2SQu?^b#5">
+                    <field name="NUM">23</field>
+                  </block>
+                </value>
+                <value name="CS">
+                  <block type="math_number" id="l}fZ,0{@WFw@|o[H+}h)">
+                    <field name="NUM">5</field>
+                  </block>
+                </value>
+                <value name="DAT">
+                  <block type="math_number" id="^uS^~gy[eDz^LtOZY/;;">
+                    <field name="NUM">19</field>
+                  </block>
+                </value>
+                <next>
+                  <block type="controls_if" id="w=Rid67^XF;)MaD{.LVA">
+                    <mutation else="1"></mutation>
+                    <value name="IF0">
+                      <block type="logic_negate" id="WuBYR#6uR*ZR{+,(sI=}">
+                        <value name="BOOL">
+                          <block type="ps2_state" id="!KyVC?!!L@F[^D/#bP,d"></block>
+                        </value>
+                      </block>
+                    </value>
+                    <statement name="DO0">
+                      <block type="fu_serial_println" id="2c*WVR)Z+[N8sqT$19oP">
+                        <field name="serial">Serial</field>
+                        <value name="data">
+                          <shadow type="text" id="W3;e7/UXFjdKzzPTKcOT">
+                            <field name="TEXT">RESTART</field>
+                          </shadow>
+                        </value>
+                        <next>
+                          <block type="delay_custom" id="|XPh|4U}Ncf|^J=%@4E(">
+                            <value name="DELAY_TIME">
+                              <block type="math_number" id="pl}O1=FIL=ox9?$JsD9}">
+                                <field name="NUM">1000</field>
+                              </block>
+                            </value>
+                            <next>
+                              <block type="board_restart" id="liQjT5?Ja[NG-?FS#YlU">
+                                <field name="board">esp</field>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </statement>
+                    <statement name="ELSE">
+                      <block type="fu_serial_println" id="I@5xH%8VcC`d=m|xrhkZ">
+                        <field name="serial">Serial</field>
+                        <value name="data">
+                          <shadow type="text" id="RveM)7Y1Vfp`PiK`fJJ9">
+                            <field name="TEXT">OK</field>
+                          </shadow>
+                        </value>
+                      </block>
+                    </statement>
+                    <next>
+                      <block type="variables_set" id="X:Xa:Aa/.6gUmkrgD.K@">
+                        <field name="POSITION">global</field>
+                        <field name="TYPE">String</field>
+                        <field name="VAR" id="VXLuCF(5_,~80y|$Sl]u">side</field>
+                        <value name="VALUE">
+                          <shadow type="math_number" id="%)WZU@wq4PRIVh[0QFmt">
+                            <field name="NUM">0</field>
+                          </shadow>
+                          <block type="text" id=",]!t4$^@fG3wI+.:s~)X">
+                            <field name="TEXT">LEFT</field>
+                          </block>
+                        </value>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <next>
+      <block type="initializes_loop" id="1">
+        <statement name="CONTENT">
+          <block type="ps2_read" id="l2?tg0@(^x!##C1V}%Mf">
+            <field name="vibrate">false</field>
+            <value name="val">
+              <block type="math_number" id="S5UmbAlo{qU!V3;KpBjL">
+                <field name="NUM">40</field>
+              </block>
+            </value>
+            <next>
+              <block type="controls_if" id="l%PZ5bw%=0aWc2sspg7x">
+                <mutation elseif="1"></mutation>
+                <value name="IF0">
+                  <block type="ps2_button_event" id="h8wT:4##X3/kMkuw/99U">
+                    <field name="button">PSB_L2</field>
+                    <field name="event">press_just</field>
+                  </block>
+                </value>
+                <statement name="DO0">
+                  <block type="variables_set3" id="~)}SFxA/06cStsOJGb@j">
+                    <field name="VAR" id="VXLuCF(5_,~80y|$Sl]u">side</field>
+                    <value name="DELTA">
+                      <shadow type="math_number" id="s@/qz2W{9u6WYAP_C+95">
+                        <field name="NUM">0</field>
+                      </shadow>
+                      <block type="text" id="`2=51-6n1E|n{2XKt-vU">
+                        <field name="TEXT">LEFT</field>
+                      </block>
+                    </value>
+                  </block>
+                </statement>
+                <value name="IF1">
+                  <block type="ps2_button_event" id="on(8$5bm2oCElx${cdg;">
+                    <field name="button">PSB_R2</field>
+                    <field name="event">press_just</field>
+                  </block>
+                </value>
+                <statement name="DO1">
+                  <block type="variables_set3" id="#n/C$?f?$!IjiB4IWHEF">
+                    <field name="VAR" id="VXLuCF(5_,~80y|$Sl]u">side</field>
+                    <value name="DELTA">
+                      <shadow type="math_number">
+                        <field name="NUM">0</field>
+                      </shadow>
+                      <block type="text" id="9PGd,4V!=^Zs3h1Dk-Cr">
+                        <field name="TEXT">RIGHT</field>
+                      </block>
+                    </value>
+                  </block>
+                </statement>
+                <next>
+                  <block type="controls_if" id="+u{pyQ?kC{LU)0~QAid7">
+                    <mutation elseif="4"></mutation>
+                    <value name="IF0">
+                      <block type="ps2_button_event" id="CHTWDiHKy_e]N79ZpU@:">
+                        <field name="button">PSB_CIRCLE</field>
+                        <field name="event">press_just</field>
+                      </block>
+                    </value>
+                    <statement name="DO0">
+                      <block type="esp32_blekeyboard_press" id="=~zPHcvtA)*#!rewe2;S">
+                        <value name="keycode1">
+                          <block type="esp32_blekeyboard_keycode" id="40|-#+$n7zN]+V_I$U.}">
+                            <field name="keycode">32</field>
+                          </block>
+                        </value>
+                        <value name="presstime">
+                          <block type="math_number" id="ZKZml4^:wj1prr@2E^iZ">
+                            <field name="NUM">60</field>
+                          </block>
+                        </value>
+                      </block>
+                    </statement>
+                    <value name="IF1">
+                      <block type="ps2_button_event" id="J!sw@8Q]Y_L^xX:z~=z8">
+                        <field name="button">PSB_SQUARE</field>
+                        <field name="event">press_just</field>
+                      </block>
+                    </value>
+                    <statement name="DO1">
+                      <block type="esp32_blekeyboard_press" id="#HKe6^A-ZJWDZFVBmh;c">
+                        <value name="keycode1">
+                          <block type="esp32_blekeyboard_keycode" id="z$ZDU:dM)V,A%siYH$+;">
+                            <field name="keycode">122</field>
+                          </block>
+                        </value>
+                        <value name="presstime">
+                          <block type="math_number" id="l@eX6c.Yr(#;sQW]^Q0x">
+                            <field name="NUM">60</field>
+                          </block>
+                        </value>
+                      </block>
+                    </statement>
+                    <value name="IF2">
+                      <block type="ps2_button_event" id="x]Z@:oV}?,w]?QpJ|Sbw">
+                        <field name="button">PSB_R1</field>
+                        <field name="event">press_just</field>
+                      </block>
+                    </value>
+                    <statement name="DO2">
+                      <block type="esp32_blekeyboard_press" id="7(]*9RUrU9gys.(aifI1">
+                        <value name="keycode1">
+                          <block type="esp32_blekeyboard_keycode" id="#9Ofq*:`%i=#LnB#.od_">
+                            <field name="keycode">KEY_DOWN_ARROW</field>
+                          </block>
+                        </value>
+                        <value name="presstime">
+                          <block type="math_number" id="tj70|*u9U+Gr(!7+N-5G">
+                            <field name="NUM">60</field>
+                          </block>
+                        </value>
+                        <next>
+                          <block type="controls_if" id="^kL+b)B|ELmK=4jS_RQa">
+                            <mutation else="1"></mutation>
+                            <value name="IF0">
+                              <block type="logic_compare" id="D2EP6gf]~YDmF4s1$PJl">
+                                <field name="OP">EQ</field>
+                                <value name="A">
+                                  <block type="variables_get" id=",A[lAtR|cX:_B2oh%A5b">
+                                    <field name="VAR" id="VXLuCF(5_,~80y|$Sl]u">side</field>
+                                  </block>
+                                </value>
+                                <value name="B">
+                                  <block type="text" id="$SVG(+IQTwu1V?FU%TWP">
+                                    <field name="TEXT">RIGHT</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <statement name="DO0">
+                              <block type="esp32_blekeyboard_press" id="![VX!.H0Y@#SMT(HyC~(">
+                                <value name="keycode1">
+                                  <block type="esp32_blekeyboard_keycode" id="wKi^:)RJ?3FaEQAjYbBx">
+                                    <field name="keycode">KEY_DOWN_ARROW</field>
+                                  </block>
+                                </value>
+                                <value name="keycode2">
+                                  <block type="esp32_blekeyboard_keycode" id="xkGrf.2~Ti2,{+!C3!:i">
+                                    <field name="keycode">KEY_LEFT_ARROW</field>
+                                  </block>
+                                </value>
+                                <value name="presstime">
+                                  <block type="math_number" id="zX-o;pYylHp)rErSI9o@">
+                                    <field name="NUM">60</field>
+                                  </block>
+                                </value>
+                                <next>
+                                  <block type="esp32_blekeyboard_press" id="%q7%N9@]1Ymu{fnzojql">
+                                    <value name="keycode1">
+                                      <block type="esp32_blekeyboard_keycode" id="QWDIGWAp-x]~B0GgnII8">
+                                        <field name="keycode">KEY_LEFT_ARROW</field>
+                                      </block>
+                                    </value>
+                                    <value name="presstime">
+                                      <block type="math_number" id="0]ABcJ-TaGZgeOan8|.[">
+                                        <field name="NUM">60</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </next>
+                              </block>
+                            </statement>
+                            <statement name="ELSE">
+                              <block type="esp32_blekeyboard_press" id="AiU/6LDD7Wrpi4:)E*vv">
+                                <value name="keycode1">
+                                  <block type="esp32_blekeyboard_keycode" id="wmzgNC.1s@Q3tP9W.{D^">
+                                    <field name="keycode">KEY_DOWN_ARROW</field>
+                                  </block>
+                                </value>
+                                <value name="keycode2">
+                                  <block type="esp32_blekeyboard_keycode" id="W!A3!Q-d$bYIn{,ij)m/">
+                                    <field name="keycode">KEY_RIGHT_ARROW</field>
+                                  </block>
+                                </value>
+                                <value name="presstime">
+                                  <block type="math_number" id="LQTHlMQiR_FGKIUPxm!^">
+                                    <field name="NUM">60</field>
+                                  </block>
+                                </value>
+                                <next>
+                                  <block type="esp32_blekeyboard_press" id="mR?Hj^Lwmhu62i~a(X5B">
+                                    <value name="keycode1">
+                                      <block type="esp32_blekeyboard_keycode" id="OKoa5B4s`an%60gqikRc">
+                                        <field name="keycode">KEY_RIGHT_ARROW</field>
+                                      </block>
+                                    </value>
+                                    <value name="presstime">
+                                      <block type="math_number" id="},4DVD~**3.(v~Z@{::~">
+                                        <field name="NUM">60</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </next>
+                              </block>
+                            </statement>
+                            <next>
+                              <block type="esp32_blekeyboard_press" id="h3}[:EX6Bv^7+rr]]Gku">
+                                <value name="keycode1">
+                                  <block type="esp32_blekeyboard_keycode" id="XkM,G2t{aJT2ud$PR+Zt">
+                                    <field name="keycode">32</field>
+                                  </block>
+                                </value>
+                                <value name="presstime">
+                                  <block type="math_number" id="]RJ*fHsa/e5k(RuQXGLj">
+                                    <field name="NUM">60</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </statement>
+                    <value name="IF3">
+                      <block type="ps2_button_event" id="TndqL:/gb(Q,XRKJJO7}">
+                        <field name="button">PSB_TRIANGLE</field>
+                        <field name="event">press_just</field>
+                      </block>
+                    </value>
+                    <statement name="DO3">
+                      <block type="controls_if" id="|(IQy];|hSf[T8pa_Ty8">
+                        <mutation else="1"></mutation>
+                        <value name="IF0">
+                          <block type="logic_compare" id="c%;!Io/P%W3;n+^Xxfcj">
+                            <field name="OP">EQ</field>
+                            <value name="A">
+                              <block type="variables_get" id="7D{`QUwcOb1ilBQB~?0F">
+                                <field name="VAR" id="VXLuCF(5_,~80y|$Sl]u">side</field>
+                              </block>
+                            </value>
+                            <value name="B">
+                              <block type="text" id="aYby:)?79~Ed|vV;mFZQ">
+                                <field name="TEXT">RIGHT</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <statement name="DO0">
+                          <block type="esp32_blekeyboard_press" id="ey);Dm^.[Y;t8.df~F+q">
+                            <value name="keycode1">
+                              <block type="esp32_blekeyboard_keycode" id="tdFlCjf85}~mk,-`KB[}">
+                                <field name="keycode">KEY_LEFT_ARROW</field>
+                              </block>
+                            </value>
+                            <value name="presstime">
+                              <block type="math_number" id="$r.YtAn7Ji3S0{[vOfk+">
+                                <field name="NUM">60</field>
+                              </block>
+                            </value>
+                          </block>
+                        </statement>
+                        <statement name="ELSE">
+                          <block type="esp32_blekeyboard_press" id="l6|Xp.B]_!l.tZL9i3pw">
+                            <value name="keycode1">
+                              <block type="esp32_blekeyboard_keycode" id="VvYG~vm!q8(JIIB9+yXg">
+                                <field name="keycode">KEY_RIGHT_ARROW</field>
+                              </block>
+                            </value>
+                            <value name="presstime">
+                              <block type="math_number" id="Mps!Q!eHu{kqa%.{T@N7">
+                                <field name="NUM">60</field>
+                              </block>
+                            </value>
+                          </block>
+                        </statement>
+                        <next>
+                          <block type="esp32_blekeyboard_press" id="`DKrrQFn@l[)zX#?XBO[">
+                            <value name="keycode1">
+                              <block type="esp32_blekeyboard_keycode" id="we.YB/=r%)l^fjL^/3Pb">
+                                <field name="keycode">KEY_DOWN_ARROW</field>
+                              </block>
+                            </value>
+                            <value name="presstime">
+                              <block type="math_number" id="qpM#v](nQ1M^ThnF#p$|">
+                                <field name="NUM">60</field>
+                              </block>
+                            </value>
+                            <next>
+                              <block type="controls_if" id="VR_!PZ!d{[]~m^.+SDpi">
+                                <mutation else="1"></mutation>
+                                <value name="IF0">
+                                  <block type="logic_compare" id="S,im}2YY`]jJoB8L$vK`">
+                                    <field name="OP">EQ</field>
+                                    <value name="A">
+                                      <block type="variables_get" id="v1,oPZ+tf+c=sXv!Z4^e">
+                                        <field name="VAR" id="VXLuCF(5_,~80y|$Sl]u">side</field>
+                                      </block>
+                                    </value>
+                                    <value name="B">
+                                      <block type="text" id="0*zix1smTd;6a0No^McG">
+                                        <field name="TEXT">RIGHT</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </value>
+                                <statement name="DO0">
+                                  <block type="esp32_blekeyboard_press" id="Ahf|W|,f4it8#hWF_vl*">
+                                    <value name="keycode1">
+                                      <block type="esp32_blekeyboard_keycode" id=":CA{`Ic5L,YHm6B2*;*!">
+                                        <field name="keycode">KEY_DOWN_ARROW</field>
+                                      </block>
+                                    </value>
+                                    <value name="keycode2">
+                                      <block type="esp32_blekeyboard_keycode" id="1r}7;8XZSS,GmH6Mfx[s">
+                                        <field name="keycode">KEY_LEFT_ARROW</field>
+                                      </block>
+                                    </value>
+                                    <value name="presstime">
+                                      <block type="math_number" id="M+Hra1aLx~T/*tUiqsyd">
+                                        <field name="NUM">60</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </statement>
+                                <statement name="ELSE">
+                                  <block type="esp32_blekeyboard_press" id="(3J.RbE`~-Zzvyy^G(-0">
+                                    <value name="keycode1">
+                                      <block type="esp32_blekeyboard_keycode" id="%,YU{0rgPbg@L?qqMHcj">
+                                        <field name="keycode">KEY_DOWN_ARROW</field>
+                                      </block>
+                                    </value>
+                                    <value name="keycode2">
+                                      <block type="esp32_blekeyboard_keycode" id="%@~`5D|[MPZ/y%2EkY:%">
+                                        <field name="keycode">KEY_RIGHT_ARROW</field>
+                                      </block>
+                                    </value>
+                                    <value name="presstime">
+                                      <block type="math_number" id="TQ05WfFAnhZ@PxskH8;}">
+                                        <field name="NUM">60</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </statement>
+                                <next>
+                                  <block type="esp32_blekeyboard_press" id="+P8R_e)5?CgLWF;g}piq">
+                                    <value name="keycode1">
+                                      <block type="esp32_blekeyboard_keycode" id="i)Iz^I%shcsF{bhzBVL(">
+                                        <field name="keycode">32</field>
+                                      </block>
+                                    </value>
+                                    <value name="presstime">
+                                      <block type="math_number" id="pfZAJ1*2v1TWnLzo74=K">
+                                        <field name="NUM">60</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </statement>
+                    <value name="IF4">
+                      <block type="ps2_button_event" id="ku~@FwUm!g:.ftZ2H:vp">
+                        <field name="button">PSB_CROSS</field>
+                        <field name="event">press_just</field>
+                      </block>
+                    </value>
+                    <statement name="DO4">
+                      <block type="esp32_blekeyboard_press" id="#SGJgdC}2:OEs#Nkbe6`">
+                        <value name="keycode1">
+                          <block type="esp32_blekeyboard_keycode" id="0P}x{vzLX0RQ@yz}+uPJ">
+                            <field name="keycode">KEY_DOWN_ARROW</field>
+                          </block>
+                        </value>
+                        <value name="presstime">
+                          <block type="math_number" id="U;Hp=WWLV]cZ1O0tC;Wu">
+                            <field name="NUM">60</field>
+                          </block>
+                        </value>
+                        <next>
+                          <block type="controls_if" id="a?gvZB4Bq0AwvxVPT0(P">
+                            <mutation else="1"></mutation>
+                            <value name="IF0">
+                              <block type="logic_compare" id="qxG]joi2PW:~`g]fjsJE">
+                                <field name="OP">EQ</field>
+                                <value name="A">
+                                  <block type="variables_get" id="tx%#.kjyFWXKWeKChgpb">
+                                    <field name="VAR" id="VXLuCF(5_,~80y|$Sl]u">side</field>
+                                  </block>
+                                </value>
+                                <value name="B">
+                                  <block type="text" id="8dvl3-`Of.:Na|0}UvAz">
+                                    <field name="TEXT">RIGHT</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <statement name="DO0">
+                              <block type="esp32_blekeyboard_press" id="k$Je||rS2JQ9=tQK!DRp">
+                                <value name="keycode1">
+                                  <block type="esp32_blekeyboard_keycode" id="z@bNbS]M`_H)){n_a9/$">
+                                    <field name="keycode">KEY_DOWN_ARROW</field>
+                                  </block>
+                                </value>
+                                <value name="keycode2">
+                                  <block type="esp32_blekeyboard_keycode" id="GS@{6[rqS/aPQ7(;Gd,K">
+                                    <field name="keycode">KEY_RIGHT_ARROW</field>
+                                  </block>
+                                </value>
+                                <value name="presstime">
+                                  <block type="math_number" id="@YRnA_vQ-BvTj44-v+)f">
+                                    <field name="NUM">60</field>
+                                  </block>
+                                </value>
+                                <next>
+                                  <block type="esp32_blekeyboard_press" id="K%1)_t4SdlKLAHgQO4Uq">
+                                    <value name="keycode1">
+                                      <block type="esp32_blekeyboard_keycode" id="$RVbytp.O:^Ng79y6.d5">
+                                        <field name="keycode">KEY_RIGHT_ARROW</field>
+                                      </block>
+                                    </value>
+                                    <value name="presstime">
+                                      <block type="math_number" id="1)q3_h^3I+D$Ms}Gx_RW">
+                                        <field name="NUM">60</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </next>
+                              </block>
+                            </statement>
+                            <statement name="ELSE">
+                              <block type="esp32_blekeyboard_press" id="zj{mwDC:{7BLLzhdy{@:">
+                                <value name="keycode1">
+                                  <block type="esp32_blekeyboard_keycode" id=".~seidoz9jaTGUEt|?EA">
+                                    <field name="keycode">KEY_DOWN_ARROW</field>
+                                  </block>
+                                </value>
+                                <value name="keycode2">
+                                  <block type="esp32_blekeyboard_keycode" id="flcGxd|HG|Du3CMw`X.P">
+                                    <field name="keycode">KEY_LEFT_ARROW</field>
+                                  </block>
+                                </value>
+                                <value name="presstime">
+                                  <block type="math_number" id="/BAS){HT=71Z[LA*jUUl">
+                                    <field name="NUM">60</field>
+                                  </block>
+                                </value>
+                                <next>
+                                  <block type="esp32_blekeyboard_press" id="t^c[G#-*Yr#XR:bb%JK.">
+                                    <value name="keycode1">
+                                      <block type="esp32_blekeyboard_keycode" id="d)fn,.z8kLUe(Qq-ink!">
+                                        <field name="keycode">KEY_LEFT_ARROW</field>
+                                      </block>
+                                    </value>
+                                    <value name="presstime">
+                                      <block type="math_number" id="r5j%Gh]OV+BByt/0L!)m">
+                                        <field name="NUM">60</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </next>
+                              </block>
+                            </statement>
+                            <next>
+                              <block type="esp32_blekeyboard_press" id="CQ{aER4@hZkM!_9`@t+4">
+                                <value name="keycode1">
+                                  <block type="esp32_blekeyboard_keycode" id="oOY#*$K,SbY{L)BdK`xB">
+                                    <field name="keycode">122</field>
+                                  </block>
+                                </value>
+                                <value name="presstime">
+                                  <block type="math_number" id="H_s:;k|MKU~IK|0#d-ji">
+                                    <field name="NUM">60</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </statement>
+                    <next>
+                      <block type="controls_if" id="9KtEuve!`fGwHLKI0h!K">
+                        <mutation elseif="8"></mutation>
+                        <value name="IF0">
+                          <block type="ps2_stick_direction" id="y(U$nXzr/EbGN/{b-D[!">
+                            <field name="position">true</field>
+                            <field name="type">8</field>
+                            <field name="direction">ur</field>
+                          </block>
+                        </value>
+                        <statement name="DO0">
+                          <block type="esp32_blekeyboard_press" id="~fa8[Mb~xbPq$r8Hj}W;">
+                            <value name="keycode1">
+                              <block type="esp32_blekeyboard_keycode" id=",-)wub}FI.bw-jZiTpM6">
+                                <field name="keycode">KEY_UP_ARROW</field>
+                              </block>
+                            </value>
+                            <value name="keycode2">
+                              <block type="esp32_blekeyboard_keycode" id="^Pn(J/dbJ#d4|re8OnzL">
+                                <field name="keycode">KEY_RIGHT_ARROW</field>
+                              </block>
+                            </value>
+                            <value name="presstime">
+                              <block type="math_number" id="wqIPSgq%IsK|Vho(ZWIg">
+                                <field name="NUM">60</field>
+                              </block>
+                            </value>
+                          </block>
+                        </statement>
+                        <value name="IF1">
+                          <block type="ps2_stick_direction" id="7@`5xZfku4R150._aHB^">
+                            <field name="position">true</field>
+                            <field name="type">8</field>
+                            <field name="direction">dr</field>
+                          </block>
+                        </value>
+                        <statement name="DO1">
+                          <block type="esp32_blekeyboard_press" id="H0^|2wkF4mLX%l#lDR#g">
+                            <value name="keycode1">
+                              <block type="esp32_blekeyboard_keycode" id="WdkG$;EXhUBoONo_z3J+">
+                                <field name="keycode">KEY_DOWN_ARROW</field>
+                              </block>
+                            </value>
+                            <value name="keycode2">
+                              <block type="esp32_blekeyboard_keycode" id="!pM~`F%CXeH~h*F4F0?e">
+                                <field name="keycode">KEY_RIGHT_ARROW</field>
+                              </block>
+                            </value>
+                            <value name="presstime">
+                              <block type="math_number" id="kqoXTY|!?kE[vh?#5:*2">
+                                <field name="NUM">60</field>
+                              </block>
+                            </value>
+                          </block>
+                        </statement>
+                        <value name="IF2">
+                          <block type="ps2_stick_direction" id="qvikN,oEs8NLSern8W/4">
+                            <field name="position">true</field>
+                            <field name="type">8</field>
+                            <field name="direction">dl</field>
+                          </block>
+                        </value>
+                        <statement name="DO2">
+                          <block type="esp32_blekeyboard_press" id="ylTqNrBC8]w]x|y4cB}Y">
+                            <value name="keycode1">
+                              <block type="esp32_blekeyboard_keycode" id="V$#s.}IyH3ik2qUoT!Ur">
+                                <field name="keycode">KEY_DOWN_ARROW</field>
+                              </block>
+                            </value>
+                            <value name="keycode2">
+                              <block type="esp32_blekeyboard_keycode" id="@{0Uw^1FCP`nwI_`nx-W">
+                                <field name="keycode">KEY_LEFT_ARROW</field>
+                              </block>
+                            </value>
+                            <value name="presstime">
+                              <block type="math_number" id="RaYKVE.lC+J`{F%JLLqW">
+                                <field name="NUM">60</field>
+                              </block>
+                            </value>
+                          </block>
+                        </statement>
+                        <value name="IF3">
+                          <block type="ps2_stick_direction" id="+$[)B.s(h;ZsoYV6VzGn">
+                            <field name="position">true</field>
+                            <field name="type">8</field>
+                            <field name="direction">ul</field>
+                          </block>
+                        </value>
+                        <statement name="DO3">
+                          <block type="esp32_blekeyboard_press" id="d???8TrI8@::#8%v/|Se">
+                            <value name="keycode1">
+                              <block type="esp32_blekeyboard_keycode" id="=+c]{1)N~p/HCX1Vl//@">
+                                <field name="keycode">KEY_UP_ARROW</field>
+                              </block>
+                            </value>
+                            <value name="keycode2">
+                              <block type="esp32_blekeyboard_keycode" id="4MCGk|vyB2Qs=76kbjp)">
+                                <field name="keycode">KEY_LEFT_ARROW</field>
+                              </block>
+                            </value>
+                            <value name="presstime">
+                              <block type="math_number" id="Se[:*V6uvj9sH33?}SgO">
+                                <field name="NUM">60</field>
+                              </block>
+                            </value>
+                          </block>
+                        </statement>
+                        <value name="IF4">
+                          <block type="ps2_stick_direction" id="BFT^x@2oxo+7_KrJ(:2E">
+                            <field name="position">true</field>
+                            <field name="type">8</field>
+                            <field name="direction">u</field>
+                          </block>
+                        </value>
+                        <statement name="DO4">
+                          <block type="esp32_blekeyboard_press" id="XiG.z=UN-]6{Fe+3?g1C">
+                            <value name="keycode1">
+                              <block type="esp32_blekeyboard_keycode" id="].w=.6[5{V51cy*WW3n]">
+                                <field name="keycode">KEY_UP_ARROW</field>
+                              </block>
+                            </value>
+                            <value name="presstime">
+                              <block type="math_number" id="6gJ^2{B.925plA)cfq|Q">
+                                <field name="NUM">60</field>
+                              </block>
+                            </value>
+                          </block>
+                        </statement>
+                        <value name="IF5">
+                          <block type="ps2_stick_direction" id="cF][t_o-R-ov:%K!T@kI">
+                            <field name="position">true</field>
+                            <field name="type">8</field>
+                            <field name="direction">r</field>
+                          </block>
+                        </value>
+                        <statement name="DO5">
+                          <block type="esp32_blekeyboard_press_norelease" id="j!l+|o$~ro;t;Y~CZ]iQ">
+                            <value name="keycode1">
+                              <block type="esp32_blekeyboard_keycode" id="AQSz}x}Y3o7!d~W)|wP;">
+                                <field name="keycode">KEY_RIGHT_ARROW</field>
+                              </block>
+                            </value>
+                          </block>
+                        </statement>
+                        <value name="IF6">
+                          <block type="ps2_stick_direction" id="TaRWDw+cf=bX:(?jLpk%">
+                            <field name="position">true</field>
+                            <field name="type">8</field>
+                            <field name="direction">d</field>
+                          </block>
+                        </value>
+                        <statement name="DO6">
+                          <block type="esp32_blekeyboard_press_norelease" id="}@3(;vPSPV|dwj;-;D*^">
+                            <value name="keycode1">
+                              <block type="esp32_blekeyboard_keycode" id="K|Qw$Uwm3!nfn0QheOSn">
+                                <field name="keycode">KEY_DOWN_ARROW</field>
+                              </block>
+                            </value>
+                          </block>
+                        </statement>
+                        <value name="IF7">
+                          <block type="ps2_stick_direction" id="t7o$}AK]R!q:c,Ku3?QC">
+                            <field name="position">true</field>
+                            <field name="type">8</field>
+                            <field name="direction">l</field>
+                          </block>
+                        </value>
+                        <statement name="DO7">
+                          <block type="esp32_blekeyboard_press_norelease" id="|!1h+yh~d{PE#e@V}OJo">
+                            <value name="keycode1">
+                              <block type="esp32_blekeyboard_keycode" id="?^J9ek4MC`**si~(LL7f">
+                                <field name="keycode">KEY_LEFT_ARROW</field>
+                              </block>
+                            </value>
+                          </block>
+                        </statement>
+                        <value name="IF8">
+                          <block type="ps2_stick_direction" id="@}M,(GYKgZtF/YZ1p18+">
+                            <field name="position">true</field>
+                            <field name="type">8</field>
+                            <field name="direction">x</field>
+                          </block>
+                        </value>
+                        <statement name="DO8">
+                          <block type="esp32_blekeyboard_release_all" id="[Ma_X{{-Fuhns8;aG8W_"></block>
+                        </statement>
+                        <next>
+                          <block type="delay_custom" id="-9cR?1P{470acE{V;OqQ">
+                            <value name="DELAY_TIME">
+                              <block type="math_number" id="b@MQk;nEW.9U{FuLV?C|">
+                                <field name="NUM">10</field>
+                              </block>
+                            </value>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </statement>
+      </block>
+    </next>
+  </block>
+</xml>
