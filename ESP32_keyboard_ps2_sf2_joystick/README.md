@@ -14,7 +14,7 @@ PS2手把設計 (角色：隆)<br><br>
 R1 ⭢ 波動拳<br>
 L2 ⭢ 切換角色位置在左(預設)<br>
 R2 ⭢ 切換角色位置在右<br><br>
-PS2 PIN ⭢ ESP32 PIN<br>
+PS2 PIN ⭢ ESP32 PIN<br><br>
 PS2_GND ⭢ GND<br>
 PS2_VCC ⭢ 5V<br>
 PS2_DAT ⭢ IO19<br>
