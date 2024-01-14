@@ -1,4 +1,4 @@
-遊戲資源<br>
+相關資源<br>
 https://boneash.oldgame.tw/MAME/mame.html<br>
 https://boneash.oldgame.tw/MAME/mame-1-82.html<br>
 ( 主目錄下建立資料夾\Roms\置入sf2資料夾，執行mamepgui.exe選擇sf2執行，按鍵"TAB"設定，按鍵"5"投幣，按鍵"1"單打，按鍵"2"雙打 )<br><br>
