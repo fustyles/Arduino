@@ -1,4 +1,4 @@
-//Generated Date: Sat, 13 Jan 2024 12:12:58 GMT
+//Generated Date: Sun, 14 Jan 2024 14:42:02 GMT
 
 #include <BleKeyboard.h>
 BleKeyboard bleKeyboard;
@@ -142,7 +142,7 @@ void loop()
   } else if ((ps2_stick_direction8(true)=="ul")) {
     blekeyboard("press", (KEY_UP_ARROW), (KEY_LEFT_ARROW), -1, 60, "");
   } else if ((ps2_stick_direction8(true)=="u")) {
-    blekeyboard("press", (KEY_UP_ARROW), -1, -1, 60, "");
+    blekeyboard("press_norelease", (KEY_UP_ARROW), -1, -1, 0, "");
   } else if ((ps2_stick_direction8(true)=="r")) {
     blekeyboard("press_norelease", (KEY_RIGHT_ARROW), -1, -1, 0, "");
   } else if ((ps2_stick_direction8(true)=="d")) {

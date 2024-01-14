@@ -695,15 +695,10 @@
                           </block>
                         </value>
                         <statement name="DO4">
-                          <block type="esp32_blekeyboard_press" id="XiG.z=UN-]6{Fe+3?g1C">
+                          <block type="esp32_blekeyboard_press_norelease" id="QfI6Rt+[zxv$_hu%VyRN">
                             <value name="keycode1">
                               <block type="esp32_blekeyboard_keycode" id="].w=.6[5{V51cy*WW3n]">
                                 <field name="keycode">KEY_UP_ARROW</field>
-                              </block>
-                            </value>
-                            <value name="presstime">
-                              <block type="math_number" id="6gJ^2{B.925plA)cfq|Q">
-                                <field name="NUM">60</field>
                               </block>
                             </value>
                           </block>
