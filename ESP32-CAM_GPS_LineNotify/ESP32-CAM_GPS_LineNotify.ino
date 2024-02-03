@@ -9,6 +9,10 @@ GPS Module RX -> Do not connect to the ESP32-CAM TX
 
 Library
 https://www.arduino.cc/reference/en/libraries/tinygps/
+
+Google map embed
+
+<iframe width="300" height="300" style="border:0" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps/embed/v1/place?key=填入金鑰&q=填入經度,填入緯度"> </iframe>
 */
 
 char wifi_ssid[] = "teacher";
