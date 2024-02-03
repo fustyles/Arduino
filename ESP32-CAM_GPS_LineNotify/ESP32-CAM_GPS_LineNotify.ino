@@ -11,7 +11,7 @@ Library
 https://www.arduino.cc/reference/en/libraries/tinygps/
 
 Google Maps Embed (div html)
-<iframe width="300" height="300" style="border:0" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps/embed/v1/place?key=填入金鑰&q=填入經度,填入緯度"> </iframe>
+<iframe width="300" height="300" style="border:0" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps/embed/v1/place?key=填入免費金鑰&q=填入經度,填入緯度"> </iframe>
 */
 
 char wifi_ssid[] = "teacher";
