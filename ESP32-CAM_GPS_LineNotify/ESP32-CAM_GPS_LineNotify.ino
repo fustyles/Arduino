@@ -216,8 +216,8 @@ void setup()
     s->set_saturation(s, -2);
   }
   s->set_framesize(s, FRAMESIZE_QVGA);
-  pinMode(4, OUTPUT);
-  digitalWrite(4, LOW);
+  pinMode(4, OUTPUT);  //若改良版無閃光燈拿掉此行
+  digitalWrite(4, LOW);  //若改良版無閃光燈拿掉此行
 
   initWiFi();
   
