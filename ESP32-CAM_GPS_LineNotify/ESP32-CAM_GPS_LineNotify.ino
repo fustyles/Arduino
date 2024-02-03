@@ -71,7 +71,7 @@ void initWiFi() {
   }
 }
 
-String SendStillToLineNotify(String token, String message) {
+String sendStillToLineNotify(String token, String message) {
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();
   if(!fb) {
@@ -221,7 +221,7 @@ void setup()
 
   initWiFi();
   
-  SendStillToLineNotify(lineToken, "https://www.google.com/maps/search/?api=1&map_action=map&zoom=16&query=22.62521720623603,120.37221859329584");
+  sendStillToLineNotify(lineToken, "https://www.google.com/maps/search/?api=1&map_action=map&zoom=16&query=22.62521720623603,120.37221859329584");
 }
 
 void loop()
@@ -244,7 +244,7 @@ void loop()
     String flon = (TinyGPS_flon == TinyGPS::GPS_INVALID_F_ANGLE ? "0" : TinyGPS_coordinateToString(TinyGPS_flon));
   
     String mapURL = "https://www.google.com/maps/search/?api=1&map_action=map&zoom=16&query="+flat+","+flon;
-    SendStillToLineNotify(lineToken, mapURL);
+    sendStillToLineNotify(lineToken, mapURL);
   
     delay(72000);
   }
