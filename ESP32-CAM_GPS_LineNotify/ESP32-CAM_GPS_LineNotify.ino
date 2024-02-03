@@ -18,7 +18,6 @@ char wifi_ssid[] = "teacher";
 char wifi_pass[] = "87654321";
 String lineToken = "";
 
-#include "Base64.h"
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include "esp_camera.h"
