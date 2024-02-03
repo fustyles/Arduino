@@ -1,4 +1,3 @@
-
 /*
 ESP32-CAM (with flash) Send GPS coordinate and still to Line notify
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-2-3 23:40
