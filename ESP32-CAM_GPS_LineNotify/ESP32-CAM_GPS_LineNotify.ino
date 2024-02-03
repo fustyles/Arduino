@@ -5,7 +5,7 @@ Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-2-3 23:40
 https://www.facebook.com/francefu
 
 GPS Module TX -> ESP32-CAM RX (IO3)
-GPS Module RX -> Don't connect to the ESP32-CAM TX
+GPS Module RX -> Don't connect to ESP32-CAM TX
 
 Library
 https://www.arduino.cc/reference/en/libraries/tinygps/
