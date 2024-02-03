@@ -247,7 +247,7 @@ void loop()
     String mapURL = "https://www.google.com/maps/search/?api=1&map_action=map&zoom=16&query="+flat+","+flon;
     SendStillToLineNotify(lineToken, mapURL);
   
-    delay(10000);
+    delay(72000);
   }
   gpsNewData = false;
 }
