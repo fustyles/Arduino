@@ -224,11 +224,10 @@ void setup()
 void loop()
 {
   if (Serial.available()) {
-    char uartData = '\0';
     while (Serial.available()) {
       char uartData = Serial.read();
-    if (gps.encode((uartData))) 
-      gpsNewData = true;
+      if (gps.encode((uartData))) 
+        gpsNewData = true;
     }
   }
   unsigned long TinyGPS_chars;
