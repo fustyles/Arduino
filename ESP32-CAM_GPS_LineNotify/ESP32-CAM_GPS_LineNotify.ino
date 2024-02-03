@@ -157,7 +157,7 @@ String SendStillToLineNotify(String token, String message) {
 };
 
 String TinyGPS_coordinate(float coordinate) {
-  String val = String(coordinate);
+  String val = String(coordinate*1000000);
   int point = val.indexOf(".");
   val = val.substring(0, point);
   int len = val.length();
@@ -241,8 +241,8 @@ void loop()
     unsigned long TinyGPS_age;
     gps.f_get_position(&TinyGPS_flat, &TinyGPS_flon, &TinyGPS_age);
     gps.stats(&TinyGPS_chars, &TinyGPS_sentences, &TinyGPS_failed);
-    String flat = (TinyGPS_flat == TinyGPS::GPS_INVALID_F_ANGLE ? "0" : TinyGPS_coordinate(TinyGPS_flat*1000000));
-    String flon = (TinyGPS_flon == TinyGPS::GPS_INVALID_F_ANGLE ? "0" : TinyGPS_coordinate(TinyGPS_flon*1000000));
+    String flat = (TinyGPS_flat == TinyGPS::GPS_INVALID_F_ANGLE ? "0" : TinyGPS_coordinate(TinyGPS_flat));
+    String flon = (TinyGPS_flon == TinyGPS::GPS_INVALID_F_ANGLE ? "0" : TinyGPS_coordinate(TinyGPS_flon));
   
     String mapURL = "https://www.google.com/maps/search/?api=1&map_action=map&zoom=16&query="+flat+","+flon;
     SendStillToLineNotify(lineToken, mapURL);
