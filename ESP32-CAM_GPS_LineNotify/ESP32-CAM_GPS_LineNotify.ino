@@ -4,8 +4,8 @@ ESP32-CAM Send GPS coordinate and still to Line notify
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-2-3 23:40
 https://www.facebook.com/francefu
 
-GPS TX -> ESP32-CAM RX (IO3)
-GPS RX -> Do not connect to the ESP32-CAM TX
+GPS Module TX -> ESP32-CAM RX (IO3)
+GPS Module RX -> Do not connect to the ESP32-CAM TX
 
 Library
 https://www.arduino.cc/reference/en/libraries/tinygps/
