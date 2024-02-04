@@ -81,8 +81,6 @@ String sendStillWithGPSToLineNotify(String token, String message, String coodina
     camera_fb_t * fb = NULL;
     fb = esp_camera_fb_get();
     if(!fb) {
-      Serial.println("Camera capture failed");
-      delay(1000);
       //ESP.restart();
       return "Camera capture failed";
     }
@@ -109,7 +107,7 @@ String sendStillWithGPSToLineNotify(String token, String message, String coodina
         return "to rgb888 failed";
     }
 
-    //在畫面上顯示GPS座標
+    //在影像上印出GPS座標
     rgb_printf(image_matrix, 0x000000FF, "%s", coodinate.c_str());
     
     s = fmt2jpg(image_matrix->item, fb->width*fb->height*3, fb->width, fb->height, PIXFORMAT_RGB888, 90, &outBuf, &outLen);
