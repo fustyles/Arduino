@@ -105,6 +105,7 @@ String sendStillWithGPSToLineNotify(String token, String message, String coodina
     s = fmt2rgb888(fb->buf, fb->len, fb->format, image_matrix->item);
     if(!s){
         dl_matrix3du_free(image_matrix);
+        esp_camera_fb_return(fb);
         return "to rgb888 failed";
     }
 
@@ -113,6 +114,8 @@ String sendStillWithGPSToLineNotify(String token, String message, String coodina
     
     s = fmt2jpg(image_matrix->item, fb->width*fb->height*3, fb->width, fb->height, PIXFORMAT_RGB888, 90, &outBuf, &outLen);
     if(!s){
+        dl_matrix3du_free(image_matrix);
+        esp_camera_fb_return(fb);      
         return "JPEG compression failed";
     }
 
