@@ -173,8 +173,8 @@ String sendStillWithGPSToLineNotify(String token, String message, String coodina
          }
          if (Feedback.length()>0) break;
       }
-      Serial.println(Feedback);
-      //Serial.println();
+      
+      //Serial.println(Feedback);
       client_tcp.stop();
       
       dl_matrix3du_free(image_matrix);
