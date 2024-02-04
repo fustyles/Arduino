@@ -1,5 +1,5 @@
 /*
-ESP32-CAM (with flash) Send GPS coordinate and still to Line notify
+ESP32-CAM (with flash) Send Google map url and still to Line notify
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-2-4 12:00
 https://www.facebook.com/francefu
 
