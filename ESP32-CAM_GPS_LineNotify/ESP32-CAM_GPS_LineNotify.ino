@@ -155,12 +155,13 @@ String sendStillToLineNotify(String token, String message) {
 };
 
 String TinyGPS_coordinateToString(float coordinate) {
-  String val = String(coordinate*1000000);
+  int power = 6;
+  String val = String(coordinate*pow(10, power));
   int point = val.indexOf(".");
   val = val.substring(0, point);
   int len = val.length();
-  if (len>=6) {
-    return val.substring(0, len-6)+"."+val.substring(len-6, len);
+  if (len>=power) {
+    return val.substring(0, len-power)+"."+val.substring(len-power, len);
   } else {
     return "";
   }
