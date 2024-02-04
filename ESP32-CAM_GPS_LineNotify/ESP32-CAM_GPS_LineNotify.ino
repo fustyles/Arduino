@@ -86,12 +86,6 @@ String sendStillToLineNotify(String token, String message) {
     Serial.println("Connection successful");
 
     if (message=="") message = "ESP32-CAM";
-    message.replace("%","%25");
-    message.replace(" ","%20");
-    message.replace("&","%26");
-    message.replace("#","%23");
-    message.replace("\"","%22");
-    message.replace("\n","%0D%0A");
     String head = "--Taiwan\r\nContent-Disposition: form-data; name=\"message\"; \r\n\r\n" + message + "\r\n--Taiwan\r\nContent-Disposition: form-data; name=\"imageFile\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
     String tail = "\r\n--Taiwan--\r\n";
 
