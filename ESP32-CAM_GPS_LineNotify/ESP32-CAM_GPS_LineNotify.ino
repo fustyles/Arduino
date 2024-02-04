@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (with flash) Send GPS coordinate and still to Line notify
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-2-3 23:40
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-2-4 11:00
 https://www.facebook.com/francefu
 
 GPS Module TX -> ESP32-CAM RX (IO3)
