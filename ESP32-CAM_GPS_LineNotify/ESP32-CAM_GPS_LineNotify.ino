@@ -246,7 +246,7 @@ void loop()
     String mapURL = "https://www.google.com/maps/search/?api=1&map_action=map&zoom=16&query="+flat+","+flon;
     sendStillToLineNotify(lineToken, mapURL);
   
-    delay(72000);
+    delay(72000);  //Line Notify上限 50張/時，平均間隔72秒
   }
   gpsNewData = false;
 }
