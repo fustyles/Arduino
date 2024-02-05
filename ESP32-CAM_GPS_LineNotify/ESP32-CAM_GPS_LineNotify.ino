@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (with flash) Send Google map url and still to Line notify
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-2-4 12:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-2-5 09:00
 https://www.facebook.com/francefu
 
 GPS Module TX -> ESP32-CAM RX (IO3)
