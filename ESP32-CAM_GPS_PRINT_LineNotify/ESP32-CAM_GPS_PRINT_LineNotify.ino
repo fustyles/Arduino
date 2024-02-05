@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (with flash) Send Google map url and still with GPS coordinate to Line notify
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-2-4 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-2-5 09:00
 https://www.facebook.com/francefu
 
 Arduino IDE: 
@@ -266,11 +266,13 @@ void loop()
         gpsNewData = true;
     }
   }
-  unsigned long TinyGPS_chars;
-  unsigned short TinyGPS_sentences, TinyGPS_failed;
+
   if (gpsNewData) {
     float TinyGPS_flat, TinyGPS_flon;
     unsigned long TinyGPS_age;
+    unsigned long TinyGPS_chars;
+    unsigned short TinyGPS_sentences, TinyGPS_failed; 
+    
     gps.f_get_position(&TinyGPS_flat, &TinyGPS_flon, &TinyGPS_age);
     gps.stats(&TinyGPS_chars, &TinyGPS_sentences, &TinyGPS_failed);
     String flat = (TinyGPS_flat == TinyGPS::GPS_INVALID_F_ANGLE ? "0" : TinyGPS_coordinateToString(TinyGPS_flat));
