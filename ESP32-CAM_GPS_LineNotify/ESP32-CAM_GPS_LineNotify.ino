@@ -3,7 +3,11 @@ ESP32-CAM (with flash) Send Google map url and still to Line notify
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-2-5 09:00
 https://www.facebook.com/francefu
 
-GPS Module TX -> ESP32-CAM RX (IO3)
+Arduino IDE: 
+Arduino core for the ESP32 V1.0.6
+ESP32 Wrover Module
+
+GPS Module TX -> ESP32-CAM RX (IO3)   燒錄前要移除以免無法燒錄。
 GPS Module RX -> Don't connect to ESP32-CAM TX
 
 Library
