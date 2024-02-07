@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (with flash) Send Google map url and still to Line notify
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-2-5 09:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-2-7 10:40
 https://www.facebook.com/francefu
 
 Arduino IDE: 
@@ -45,7 +45,6 @@ String lineToken = "";
 
 #include <TinyGPS.h>
 TinyGPS gps;
-bool gpsNewData = false;
 
 void initWiFi() {
 
@@ -224,6 +223,7 @@ void setup()
 
 void loop()
 {
+  bool gpsNewData = false;
   if (Serial.available()) {
     while (Serial.available()) {
       char uartData = Serial.read();
@@ -248,5 +248,4 @@ void loop()
   
     delay(72000);  //Line Notify上限 50張/時，平均間隔72秒
   }
-  gpsNewData = false;
 }
