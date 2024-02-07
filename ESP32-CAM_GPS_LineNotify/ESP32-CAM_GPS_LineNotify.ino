@@ -236,19 +236,18 @@ void loop()
     float TinyGPS_flat, TinyGPS_flon;
     unsigned long TinyGPS_age;
     gps.f_get_position(&TinyGPS_flat, &TinyGPS_flon, &TinyGPS_age);
-
-    /*
-    unsigned long TinyGPS_chars;
-    unsigned short TinyGPS_sentences, TinyGPS_failed;    
-    gps.stats(&TinyGPS_chars, &TinyGPS_sentences, &TinyGPS_failed);    
-    */
     
     String flat = (TinyGPS_flat == TinyGPS::GPS_INVALID_F_ANGLE ? "0" : TinyGPS_coordinateToString(TinyGPS_flat));
     String flon = (TinyGPS_flon == TinyGPS::GPS_INVALID_F_ANGLE ? "0" : TinyGPS_coordinateToString(TinyGPS_flon));
-  
     String mapURL = "https://www.google.com/maps/search/?api=1&map_action=map&zoom=16&query="+flat+","+flon;
     sendStillToLineNotify(lineToken, mapURL);
   
     delay(72000);  //Line Notify上限 50張/時，平均間隔72秒
   }
+
+  /*
+  unsigned long TinyGPS_chars;
+  unsigned short TinyGPS_sentences, TinyGPS_failed;    
+  gps.stats(&TinyGPS_chars, &TinyGPS_sentences, &TinyGPS_failed);    
+  */  
 }
