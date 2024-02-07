@@ -78,7 +78,7 @@ void initWiFi() {
   }
 }
 
-String sendStillWithGPSToLineNotify(String token, String message, String coodinate) {
+String sendStillPrintGPSToLineNotify(String token, String message, String coodinate) {
     camera_fb_t * fb = NULL;
     fb = esp_camera_fb_get();
     if(!fb) {
@@ -257,7 +257,7 @@ void setup()
 
   initWiFi();
   
-  sendStillWithGPSToLineNotify(lineToken, "https://www.google.com/maps/search/?api=1&map_action=map&zoom=16&query=22.625217,120.372218", "22.625217,120.372218");
+  sendStillPrintGPSToLineNotify(lineToken, "https://www.google.com/maps/search/?api=1&map_action=map&zoom=16&query=22.625217,120.372218", "22.625217,120.372218");
 }
 
 void loop()
@@ -279,7 +279,7 @@ void loop()
     String flat = (TinyGPS_flat == TinyGPS::GPS_INVALID_F_ANGLE ? "0" : TinyGPS_coordinateToString(TinyGPS_flat));
     String flon = (TinyGPS_flon == TinyGPS::GPS_INVALID_F_ANGLE ? "0" : TinyGPS_coordinateToString(TinyGPS_flon));
     String mapURL = "https://www.google.com/maps/search/?api=1&map_action=map&zoom=16&query="+flat+","+flon;
-    sendStillWithGPSToLineNotify(lineToken, mapURL, flat+", "+flon);
+    sendStillPrintGPSToLineNotify(lineToken, mapURL, flat+", "+flon);
   
     delay(72000);  //Line Notify上限 50張/時，平均間隔72秒
   }
