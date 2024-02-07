@@ -23,6 +23,9 @@ String lineToken = "";
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
+#include "soc/soc.h"
+#include "soc/rtc_cntl_reg.h"
+
 #include "esp_camera.h"
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
@@ -44,9 +47,6 @@ String lineToken = "";
 #include "img_converters.h"
 #include "fb_gfx.h"
 #include "fd_forward.h"
-
-#include "soc/soc.h"
-#include "soc/rtc_cntl_reg.h"
 
 #include <TinyGPS.h>
 TinyGPS gps;
