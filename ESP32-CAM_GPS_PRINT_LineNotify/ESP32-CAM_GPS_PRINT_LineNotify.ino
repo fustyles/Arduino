@@ -86,11 +86,13 @@ String sendStillWithGPSToLineNotify(String token, String message, String coodina
       //ESP.restart();
       return "Camera capture failed";
     }
-    
+
+    /*
     if(fb->width > 400){
         esp_camera_fb_return(fb);
         return "Error: fb->width > 400";
     }
+    */
 
     dl_matrix3du_t *image_matrix = dl_matrix3du_alloc(1, fb->width, fb->height, 3);
     if (!image_matrix) {
