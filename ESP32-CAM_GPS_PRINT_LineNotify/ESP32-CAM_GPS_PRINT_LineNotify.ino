@@ -278,8 +278,9 @@ void loop()
     
     String flat = (TinyGPS_flat == TinyGPS::GPS_INVALID_F_ANGLE ? "0" : TinyGPS_coordinateToString(TinyGPS_flat));
     String flon = (TinyGPS_flon == TinyGPS::GPS_INVALID_F_ANGLE ? "0" : TinyGPS_coordinateToString(TinyGPS_flon));
-    String mapURL = "https://www.google.com/maps/search/?api=1&map_action=map&zoom=16&query="+flat+","+flon;
-    sendStillPrintGPSToLineNotify(lineToken, mapURL, flat+", "+flon);
+    String condinate = flat+","+flon;
+    String mapURL = "https://www.google.com/maps/search/?api=1&map_action=map&zoom=16&query="+condinate;
+    sendStillPrintGPSToLineNotify(lineToken, mapURL, condinate);
   
     delay(72000);  //Line Notify上限 50張/時，平均間隔72秒
   }
