@@ -1,6 +1,6 @@
 /*
 ESP32-CAM (with flash) Send Google map url and still with GPS coordinate to Line notify
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-2-5 09:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-2-7 10:30
 https://www.facebook.com/francefu
 
 Arduino IDE: 
