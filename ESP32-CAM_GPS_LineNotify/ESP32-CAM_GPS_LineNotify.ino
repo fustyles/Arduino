@@ -8,7 +8,7 @@ Arduino core for the ESP32 V1.0.6
 ESP32 Wrover Module
 
 GPS Module TX -> ESP32-CAM RX (IO3)   燒錄前要移除以免無法燒錄。
-GPS Module RX -> Don't connect to ESP32-CAM TX
+GPS Module RX -> Don't connect to ESP32-CAM TX   接上後會運作異常
 
 Library
 https://www.arduino.cc/reference/en/libraries/tinygps/
