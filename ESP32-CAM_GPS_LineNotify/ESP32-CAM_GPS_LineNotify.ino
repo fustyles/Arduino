@@ -235,11 +235,14 @@ void loop()
   if (gpsNewData) {
     float TinyGPS_flat, TinyGPS_flon;
     unsigned long TinyGPS_age;
-    unsigned long TinyGPS_chars;
-    unsigned short TinyGPS_sentences, TinyGPS_failed;
-    
     gps.f_get_position(&TinyGPS_flat, &TinyGPS_flon, &TinyGPS_age);
-    //gps.stats(&TinyGPS_chars, &TinyGPS_sentences, &TinyGPS_failed);
+
+    /*
+    unsigned long TinyGPS_chars;
+    unsigned short TinyGPS_sentences, TinyGPS_failed;    
+    gps.stats(&TinyGPS_chars, &TinyGPS_sentences, &TinyGPS_failed);    
+    */
+    
     String flat = (TinyGPS_flat == TinyGPS::GPS_INVALID_F_ANGLE ? "0" : TinyGPS_coordinateToString(TinyGPS_flat));
     String flon = (TinyGPS_flon == TinyGPS::GPS_INVALID_F_ANGLE ? "0" : TinyGPS_coordinateToString(TinyGPS_flon));
   
