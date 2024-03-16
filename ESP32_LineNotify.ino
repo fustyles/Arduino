@@ -66,8 +66,8 @@ void setup()
   
   //Push a image to LineNotify
   String message_image = encodeMessage("message=Test image\nI'm a \"Maker\"");  
-  String imageFullsize = "https://video.nextmag.com.tw/photo/2016/04/25/1461565395_f66f-tile_1461575684432_555961_ver1.0.jpg";
-  String imageThumbnail = "https://video.nextmag.com.tw/photo/2016/01/26/B766ENT02-01_1453804306593_487920_ver1.0.jpg";
+  String imageFullsize = "https://upload.wikimedia.org/wikipedia/commons/6/62/Lin_Chi-ling%2C_5_December_2014.jpg";
+  String imageThumbnail = "https://upload.wikimedia.org/wikipedia/commons/6/62/Lin_Chi-ling%2C_5_December_2014.jpg";
   String image = "&imageFullsize="+imageFullsize+"&imageThumbnail="+imageThumbnail;
   String request_image = message_image + image;
   Serial.println(LineNotify(request_image, 1)); 
