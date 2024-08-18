@@ -95,9 +95,9 @@ void setup()
 
   delay(5000);
 
+  String response = "";	
   String openAI_Chat = "Please analyze the image content";
-  String response = "";
-  
+
   String openAI_ImageUrl = "https://upload.wikimedia.org/wikipedia/commons/c/c0/Fm_shiba_inu_puppy.jpg";
   response = SendImageUrlToOpenaiVision(openAI_Key, openAI_Chat, openAI_ImageUrl); 
   Serial.println(response);
