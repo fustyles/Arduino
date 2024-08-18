@@ -301,7 +301,7 @@ String SendMessageToChatGPT(String key, String behavior, String message) {
     Serial.println("Connection successful");
     
     String Data = "{\"model\": \"gpt-4o\", \"messages\": [{\"role\": \"system\", \"content\": \""+behavior+"\"}, {\"role\": \"user\", \"content\": \""+message+"\"}]}";
-Serial.println(Data);
+
     client_tcp.println("POST /v1/chat/completions HTTP/1.1");
     client_tcp.println("Connection: close");
     client_tcp.println("Host: api.openai.com");
