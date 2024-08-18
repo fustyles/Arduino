@@ -7,6 +7,12 @@ https://www.facebook.com/francefu
 The version of arduino core for ESP32 is 1.0.6
 */
 
+char _lwifi_ssid[] = "teacher";
+char _lwifi_pass[] = "12345678";
+
+String openAI_Key = "sk-proj-xxx-xxx-xxx";
+String openaI_chat = "Please analyze the image content";
+
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include "Base64.h"
@@ -31,12 +37,6 @@ The version of arduino core for ESP32 is 1.0.6
 #define VSYNC_GPIO_NUM    25
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
-
-char _lwifi_ssid[] = "teacher";
-char _lwifi_pass[] = "12345678";
-
-String openAI_Key = "sk-proj-xxx-xxx-xxx";
-String openaI_chat = "Please analyze the image content";
 
 void setup()
 {
