@@ -1,7 +1,7 @@
 /*
 ESP32-CAM Use OpenAI Vision to analyze still image content.
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-8-18 18:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-8-19 01:00
 https://www.facebook.com/francefu
 
 The version of arduino core for ESP32 is 1.0.6
@@ -11,7 +11,6 @@ char _lwifi_ssid[] = "teacher";
 char _lwifi_pass[] = "12345678";
 
 String openAI_Key = "sk-proj-xxx-xxx-xxx";
-String openaI_chat = "Please analyze the image content";
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -95,8 +94,20 @@ void setup()
   digitalWrite(4, LOW);
 
   delay(5000);
+
+  String openAI_Chat = "Please analyze the image content";
+  String response = "";
   
-  Serial.println((SendStillToOpenaiVision(openAI_Key, openaI_chat)));  
+  String openAI_ImageUrl = "https://upload.wikimedia.org/wikipedia/commons/c/c0/Fm_shiba_inu_puppy.jpg";
+  response = SendImageUrlToOpenaiVision(openAI_Key, openAI_Chat, openAI_ImageUrl); 
+  Serial.println(response);
+    
+  response = SendStillToOpenaiVision(openAI_Key, openAI_Chat);
+  Serial.println(response);
+
+  String openAI_Behavior = "Please follow the guidelines: (1) If the scenario description indicates the presence of people, return 'Y'. (2) If the scenario description indicates there are no people, return 'N'. (3) If it cannot be determined, return 'X'. (4) Do not provide additional explanations.";
+  openAI_Chat = response;
+  Serial.println(SendMessageToChatGPT(openAI_Key, openAI_Behavior, openAI_Chat));      
 }
 
 void loop()
@@ -174,12 +185,14 @@ String SendStillToOpenaiVision(String key, String message) {
     int waitTime = 10000;
     long startTime = millis();
     boolean state = false;
+    boolean markState = false;
     while ((startTime + waitTime) > millis()) {
       Serial.print(".");
       delay(100);
       while (client_tcp.available())  {
           char c = client_tcp.read();
-          if (state==true) Feedback += String(c);
+          if (String(c)=="{") markState=true;
+          if (state==true&&markState==true) Feedback += String(c);
           if (c == '\n') {
             if (getResponse.length()==0) state=true;
             getResponse = "";
@@ -193,12 +206,147 @@ String SendStillToOpenaiVision(String key, String message) {
     client_tcp.stop();
     Serial.println("");
     //Serial.println(Feedback);
-    
+
     JsonObject obj;
     DynamicJsonDocument doc(1024);
     deserializeJson(doc, Feedback);
     obj = doc.as<JsonObject>();
     getResponse = obj["choices"][0]["message"]["content"].as<String>();
+    if (getResponse == "null")
+      getResponse = obj["error"]["message"].as<String>();
+    //Serial.println(getResponse);
+  }
+  else {
+    getResponse = "Connected to " + String(myDomain) + " failed.";
+    Serial.println("Connected to " + String(myDomain) + " failed.");
+  }
+
+  return getResponse;
+}
+
+String SendImageUrlToOpenaiVision(String key, String message, String url) {
+  WiFiClientSecure client_tcp;
+  client_tcp.setInsecure();
+  const char* myDomain = "api.openai.com";  
+  Serial.println("Connect to " + String(myDomain));
+  String getResponse="", Feedback="";
+  if (client_tcp.connect(myDomain, 443)) {
+    Serial.println("Connection successful");
+    
+    String Data = "{\"model\": \"gpt-4o-mini\", \"messages\": [{\"role\": \"user\",\"content\": [{ \"type\": \"text\", \"text\": \""+message+"\"},{\"type\": \"image_url\", \"image_url\": {\"url\": \""+url+"\"}}]}]}";
+
+    client_tcp.println("POST /v1/chat/completions HTTP/1.1");
+    client_tcp.println("Connection: close");
+    client_tcp.println("Host: api.openai.com");
+    client_tcp.println("Authorization: Bearer " + key);
+    client_tcp.println("Content-Type: application/json; charset=utf-8");
+    client_tcp.println("Content-Length: " + String(Data.length()));
+    client_tcp.println("Connection: close");
+    client_tcp.println();
+
+    int Index;
+    for (Index = 0; Index < Data.length(); Index = Index+1024) {
+      client_tcp.print(Data.substring(Index, Index+1024));
+    }
+    
+    int waitTime = 10000;
+    long startTime = millis();
+    boolean state = false;
+    boolean markState = false;
+    while ((startTime + waitTime) > millis()) {
+      Serial.print(".");
+      delay(100);
+      while (client_tcp.available())  {
+          char c = client_tcp.read();
+          if (String(c)=="{") markState=true;
+          if (state==true&&markState==true) Feedback += String(c);
+          if (c == '\n') {
+            if (getResponse.length()==0) state=true;
+            getResponse = "";
+         }
+          else if (c != '\r')
+            getResponse += String(c);
+          startTime = millis();
+       }
+       if (Feedback.length()>0) break;
+    }
+    client_tcp.stop();
+    Serial.println("");
+    //Serial.println(Feedback);
+
+    JsonObject obj;
+    DynamicJsonDocument doc(1024);
+    deserializeJson(doc, Feedback);
+    obj = doc.as<JsonObject>();
+    getResponse = obj["choices"][0]["message"]["content"].as<String>();
+    if (getResponse == "null")
+      getResponse = obj["error"]["message"].as<String>();
+    //Serial.println(getResponse);
+  }
+  else {
+    getResponse = "Connected to " + String(myDomain) + " failed.";
+    Serial.println("Connected to " + String(myDomain) + " failed.");
+  }
+
+  return getResponse;
+}
+
+String SendMessageToChatGPT(String key, String behavior, String message) {
+  WiFiClientSecure client_tcp;
+  client_tcp.setInsecure();
+  const char* myDomain = "api.openai.com";  
+  Serial.println("Connect to " + String(myDomain));
+  String getResponse="", Feedback="";
+  if (client_tcp.connect(myDomain, 443)) {
+    Serial.println("Connection successful");
+    
+    String Data = "{\"model\": \"gpt-4o\", \"messages\": [{\"role\": \"system\", \"content\": \""+behavior+"\"}, {\"role\": \"user\", \"content\": \""+message+"\"}]}";
+Serial.println(Data);
+    client_tcp.println("POST /v1/chat/completions HTTP/1.1");
+    client_tcp.println("Connection: close");
+    client_tcp.println("Host: api.openai.com");
+    client_tcp.println("Authorization: Bearer " + key);
+    client_tcp.println("Content-Type: application/json; charset=utf-8");
+    client_tcp.println("Content-Length: " + String(Data.length()));
+    client_tcp.println("Connection: close");
+    client_tcp.println();
+
+    int Index;
+    for (Index = 0; Index < Data.length(); Index = Index+1024) {
+      client_tcp.print(Data.substring(Index, Index+1024));
+    }
+    
+    int waitTime = 10000;
+    long startTime = millis();
+    boolean state = false;
+    boolean markState = false;
+    while ((startTime + waitTime) > millis()) {
+      Serial.print(".");
+      delay(100);
+      while (client_tcp.available())  {
+          char c = client_tcp.read();
+          if (String(c)=="{") markState=true;
+          if (state==true&&markState==true) Feedback += String(c);
+          if (c == '\n') {
+            if (getResponse.length()==0) state=true;
+            getResponse = "";
+          } else if (c != '\r')
+            getResponse += String(c);
+          startTime = millis();
+       }
+       if (Feedback.length()>0) break;
+    }
+    client_tcp.stop();
+    Serial.println("");
+    //Serial.println(Feedback);
+
+    JsonObject obj;
+    DynamicJsonDocument doc(1024);
+    deserializeJson(doc, Feedback);
+    obj = doc.as<JsonObject>();
+    getResponse = obj["choices"][0]["message"]["content"].as<String>();
+    if (getResponse == "null")
+      getResponse = obj["error"]["message"].as<String>();
     //Serial.println(getResponse);
   }
   else {
