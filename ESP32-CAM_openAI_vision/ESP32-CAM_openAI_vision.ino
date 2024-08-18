@@ -107,7 +107,8 @@ void setup()
 
   String openAI_Behavior = "Please follow the guidelines: (1) If the scenario description indicates the presence of people, return 'Y'. (2) If the scenario description indicates there are no people, return 'N'. (3) If it cannot be determined, return 'X'. (4) Do not provide additional explanations.";
   openAI_Chat = response;
-  Serial.println(SendMessageToChatGPT(openAI_Key, openAI_Behavior, openAI_Chat));      
+  response = SendMessageToChatGPT(openAI_Key, openAI_Behavior, openAI_Chat); 
+  Serial.println(response);	
 }
 
 void loop()
