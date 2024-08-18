@@ -1,7 +1,7 @@
 /*
 ESP32-CAM Use OpenAI Vision to analyze still image content.
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-8-18 17:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-8-18 18:00
 https://www.facebook.com/francefu
 
 The version of arduino core for ESP32 is 1.0.6
@@ -10,6 +10,7 @@ The version of arduino core for ESP32 is 1.0.6
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include "Base64.h"
+#include <ArduinoJson.h>
 
 #include "esp_camera.h"
 #include "soc/soc.h"
@@ -89,12 +90,13 @@ void setup()
     s->set_saturation(s, -2);
   }
   s->set_framesize(s, FRAMESIZE_CIF);
+  
   pinMode(4, OUTPUT);
   digitalWrite(4, LOW);
 
   delay(5000);
   
-  Serial.println((SendStillToOpenaiVision(openAI_Key, openaI_chat)));
+  Serial.println((SendStillToOpenaiVision(openAI_Key, openaI_chat)));  
 }
 
 void loop()
@@ -129,13 +131,11 @@ void initWiFi() {
 }
 
 String SendStillToOpenaiVision(String key, String message) {
-  const char* myDomain = "api.openai.com";
-  String getResponse="",Feedback="";
-  Serial.println("Connect to " + String(myDomain));
-  
   WiFiClientSecure client_tcp;
   client_tcp.setInsecure();
-  
+  const char* myDomain = "api.openai.com";  
+  Serial.println("Connect to " + String(myDomain));
+  String getResponse="", Feedback="";
   if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
 	
@@ -154,6 +154,7 @@ String SendStillToOpenaiVision(String key, String message) {
       base64_encode(output, (input++), 3);
       if (i%3==0) imageFile += String(output);
     }
+    
     String Data = "{\"model\": \"gpt-4o-mini\", \"messages\": [{\"role\": \"user\",\"content\": [{ \"type\": \"text\", \"text\": \""+message+"\"},{\"type\": \"image_url\", \"image_url\": {\"url\": \""+imageFile+"\"}}]}]}";
 
     client_tcp.println("POST /v1/chat/completions HTTP/1.1");
@@ -169,43 +170,36 @@ String SendStillToOpenaiVision(String key, String message) {
     for (Index = 0; Index < Data.length(); Index = Index+1024) {
       client_tcp.print(Data.substring(Index, Index+1024));
     }
-
+    
     int waitTime = 10000;
     long startTime = millis();
     boolean state = false;
     while ((startTime + waitTime) > millis()) {
       Serial.print(".");
       delay(100);
-      while (client_tcp.available()) {
+      while (client_tcp.available())  {
           char c = client_tcp.read();
-          if (state==true)
-            getResponse += String(c);
-          if (c == '\n')
-            Feedback = "";
+          if (state==true) Feedback += String(c);
+          if (c == '\n') {
+            if (getResponse.length()==0) state=true;
+            getResponse = "";
+         }
           else if (c != '\r')
-            Feedback += String(c);
-          if (Feedback.indexOf("\",\"content\":\"")!=-1)
-            state=true;
-          if (Feedback.indexOf("\"},")!=-1)
-            state=false;
+            getResponse += String(c);
           startTime = millis();
-          if (Feedback.indexOf("\",\"content\":\"")!=-1||Feedback.indexOf("\"content\": \"")!=-1)
-            state=true;
-          if (getResponse.indexOf("\"},")!=-1&&state==true) {
-            state=false;
-            getResponse = getResponse.substring(0,getResponse.length()-3);
-          } else if (getResponse.indexOf("\"")!=-1&&c == '\n'&&state==true) {
-            state=false;
-            getResponse = getResponse.substring(0,getResponse.length()-3);
-          }
        }
-       if (getResponse.length()>0) {
-          client_tcp.stop();
-          return getResponse;
-       }
+       if (Feedback.length()>0) break;
     }
     client_tcp.stop();
-    getResponse = "error";
+    Serial.println("");
+    //Serial.println(Feedback);
+    
+    JsonObject obj;
+    DynamicJsonDocument doc(1024);
+    deserializeJson(doc, Feedback);
+    obj = doc.as<JsonObject>();
+    getResponse = obj["choices"][0]["message"]["content"].as<String>();
+    //Serial.println(getResponse);
   }
   else {
     getResponse = "Connected to " + String(myDomain) + " failed.";
