@@ -3,8 +3,6 @@ ESP32-CAM Use OpenAI Vision to analyze still image content.
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-8-19 01:00
 https://www.facebook.com/francefu
-
-The version of arduino core for ESP32 is 1.0.6
 */
 
 char wifi_ssid[] = "teacher";
