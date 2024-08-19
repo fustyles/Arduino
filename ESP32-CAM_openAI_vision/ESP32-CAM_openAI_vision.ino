@@ -7,8 +7,8 @@ https://www.facebook.com/francefu
 The version of arduino core for ESP32 is 1.0.6
 */
 
-char _lwifi_ssid[] = "teacher";
-char _lwifi_pass[] = "12345678";
+char wifi_ssid[] = "teacher";
+char wifi_pass[] = "12345678";
 
 String openAI_Key = "sk-proj-xxx-xxx-xxx";
 
@@ -118,12 +118,12 @@ void loop()
 
 void initWiFi() {
   for (int i=0;i<2;i++) {
-    WiFi.begin(_lwifi_ssid, _lwifi_pass);
+    WiFi.begin(wifi_ssid, wifi_pass);
 
     delay(1000);
     Serial.println("");
     Serial.print("Connecting to ");
-    Serial.println(_lwifi_ssid);
+    Serial.println(wifi_ssid);
 
     long int StartTime=millis();
     while (WiFi.status() != WL_CONNECTED) {
