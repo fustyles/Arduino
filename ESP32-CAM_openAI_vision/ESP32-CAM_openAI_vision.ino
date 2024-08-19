@@ -1,7 +1,7 @@
 /*
 ESP32-CAM Use OpenAI Vision to analyze still image content.
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-8-19 01:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-8-19 14:00
 https://www.facebook.com/francefu
 */
 
@@ -299,7 +299,7 @@ String SendMessageToChatGPT(String key, String behavior, String message) {
   if (client_tcp.connect(myDomain, 443)) {
     Serial.println("Connection successful");
     
-    String Data = "{\"model\": \"gpt-4o\", \"messages\": [{\"role\": \"system\", \"content\": \""+behavior+"\"}, {\"role\": \"user\", \"content\": \""+message+"\"}]}";
+    String Data = "{\"model\": \"gpt-4o-mini\", \"messages\": [{\"role\": \"system\", \"content\": \""+behavior+"\"}, {\"role\": \"user\", \"content\": \""+message+"\"}]}";
 
     client_tcp.println("POST /v1/chat/completions HTTP/1.1");
     client_tcp.println("Connection: close");
