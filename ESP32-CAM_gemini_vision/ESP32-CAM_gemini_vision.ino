@@ -101,7 +101,7 @@ void setup()
 
   String gemini_behavior = "Please follow the guidelines: (1) If the scenario description indicates the presence of people, return 'Y'. (2) If the scenario description indicates there are no people, return 'N'. (3) If it cannot be determined, return 'X'. (4) Do not provide additional explanations.";
   gemini_Chat = response;
-  response = SendMessageToGeminiVision(gemini_Key, gemini_behavior, gemini_Chat);
+  response = SendMessageToGemini(gemini_Key, gemini_behavior, gemini_Chat);
   Serial.println(response);  
 }
 
@@ -216,7 +216,7 @@ String SendStillToGeminiVision(String key, String message) {
   return getResponse;
 }
 
-String SendMessageToGeminiVision(String key, String behavior, String message) {
+String SendMessageToGemini(String key, String behavior, String message) {
   WiFiClientSecure client_tcp;
   client_tcp.setInsecure();
   const char* myDomain = "generativelanguage.googleapis.com";  
