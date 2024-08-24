@@ -345,8 +345,7 @@ String SendMessageToChatGPT(String key, String behavior, String message) {
     obj = doc.as<JsonObject>();
     getResponse = obj["choices"][0]["message"]["content"].as<String>();
     if (getResponse == "null")
-      getResponse = obj["error"]["message"].as<String>();
-    //Serial.println(getResponse);
+      getResponse = obj["error"]["message"].as<String>();   // api Key?image file?image resolution?
   }
   else {
     getResponse = "Connected to " + String(myDomain) + " failed.";
