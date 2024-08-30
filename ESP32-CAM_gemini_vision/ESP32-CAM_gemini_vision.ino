@@ -99,7 +99,7 @@ void setup()
   response = SendStillToGeminiVision(gemini_Key, gemini_Chat);
   Serial.println(response);
 
-  String gemini_behavior = "Please follow the guidelines: (1) If the scenario description indicates the presence of people, return 'Y'. (2) If the scenario description indicates there are no people, return 'N'. (3) If it cannot be determined, return 'X'. (4) Do not provide additional explanations.";
+  String gemini_behavior = "Please follow the guidelines: (1) If the scenario description indicates the presence of people, return '1'. (2) If the scenario description indicates there are no people, return '0'. (3) If it cannot be determined, return '-1'. (4) Do not provide additional explanations.";
   gemini_Chat = response;
   response = SendMessageToGemini(gemini_Key, gemini_behavior, gemini_Chat);
   Serial.println(response);  
