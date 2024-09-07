@@ -19,12 +19,13 @@ String myAppsScriptURL = "xxxxx";
 
 String myFolderName = "&foldername=ESP32-CAM_IMAGES";      // Google drive folder name. Set anyone with the link can view the files in the folder.
 String myDatetime = "&datetime=gmt_datetime";              // gmt_datetime (Column A,B), gmt_date (Column A), gmt_time (Column A)
-String myPosition = "&position=insertfirst";               // insertfirst, insertsecond, insertlast  (insert a new row)
+String myFormat = "&format=jpg";                           // base64, link, jpg
 String myCellwidth = "&cellwidth=240";                     // If the format setting is "jpg", the image cell width is 240px.
 String myCellheight = "&cellheight=160";                   // If the format setting is "jpg", the image cell height is 160px.
+String myPosition = "&position=insertfirst";               // insertfirst, insertsecond, insertlast  (insert a new row)
 String myColumn = "&column=3";                             // The image data inserts into the column 3 (Column C).
 String myRow = "&row=1";                                   // If the position setting is "custom" or not specified, updates the data in the row 1.
-String myFormat = "&format=jpg";                           // base64, link, jpg
+
 String myLinenotifyToken = "&linetoken=xxxxx";             // Line Notify token
 
 char wifi_ssid[] = "teacher";
