@@ -23,8 +23,8 @@ String myFormat = "&format=jpg";                           // base64, link, jpg
 String myCellwidth = "&cellwidth=240";                     // If the format setting is "jpg", the image cell width is 240px.
 String myCellheight = "&cellheight=160";                   // If the format setting is "jpg", the image cell height is 160px.
 String myPosition = "&position=insertfirst";               // insertfirst, insertsecond, insertlast  (insert a new row)
+String myRow = "&row=1";                                   // If the position setting is null or not specified, updates the data in the row 1.
 String myColumn = "&column=3";                             // The image data inserts into the column 3 (Column C).
-String myRow = "&row=1";                                   // If the position setting is "custom" or not specified, updates the data in the row 1.
 
 String myLinenotifyToken = "&linetoken=xxxxx";             // Line Notify token
 
