@@ -23,6 +23,7 @@ String myPosition = "&position=insertfirst";               // insertfirst, inser
 String myColumn = "&column=3";                             // The image data inserts into the column 3 (Column C).
 String myRow = "&row=1";                                   // If the position setting is "custom" or not specified, updates the data in the row 1.
 String myFormat = "&format=jpg";                           // base64, link, jpg
+String myLinenotifyToken = "&linetoken=xxxxx";                             // Line Notify token
 
 char wifi_ssid[] = "teacher";
 char wifi_pass[] = "12345678";
@@ -181,7 +182,7 @@ String SendStillToSpreadsheet() {
     String mySpreadsheetUrl = "&spreadsheeturl=" + spreadsheetUrl;
     String mySpreadsheetName = "&spreadsheetname=" + urlencode(spreadsheetName);
     String myFile = "&file=";
-	  String Data = mySpreadsheetUrl+mySpreadsheetName+myFolderName+myDatetime+myPosition+myColumn+myRow+myFormat+myFile;
+	  String Data = mySpreadsheetUrl+mySpreadsheetName+myFolderName+myLinenotifyToken+myDatetime+myPosition+myColumn+myRow+myFormat+myFile;
 	
     client.println("POST " + myAppsScriptURL + " HTTP/1.1");
     client.println("Host: " + String(myDomain));
