@@ -1,8 +1,7 @@
 /*
 ESP32-CAM Upload the image file to Google spreadsheet and Google drive
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-9-7 14:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-9-7 14:30
 https://www.facebook.com/francefu
-
 
 Google spreadsheet
 https://docs.google.com/spreadsheets/u/0/
@@ -11,6 +10,7 @@ Google Apps Script
 https://script.google.com/home
 https://script.google.com/home/executions
 */
+
 String spreadsheetUrl = "xxxxx";
 String spreadsheetName = "xxxxx";
 
@@ -20,8 +20,8 @@ String myAppsScriptURL = "xxxxx";
 String myFolderName = "&foldername=ESP32-CAM_IMAGES";      // Google drive folder name. Set anyone with the link can view the files in the folder.
 String myDatetime = "&datetime=gmt_datetime";              // gmt_datetime (Column A,B), gmt_date (Column A), gmt_time (Column A)
 String myPosition = "&position=insertfirst";               // insertfirst, insertsecond, insertlast  (insert a new row)
-String myCellwidth = "&cellwidth=240";                     // image cell width
-String myCellheight = "&cellheight=160";                   // image cell height
+String myCellwidth = "&cellwidth=240";                     // If the format setting is "jpg", the image cell width is 240px.
+String myCellheight = "&cellheight=160";                   // If the format setting is "jpg", the image cell height is 160px.
 String myColumn = "&column=3";                             // The image data inserts into the column 3 (Column C).
 String myRow = "&row=1";                                   // If the position setting is "custom" or not specified, updates the data in the row 1.
 String myFormat = "&format=jpg";                           // base64, link, jpg
