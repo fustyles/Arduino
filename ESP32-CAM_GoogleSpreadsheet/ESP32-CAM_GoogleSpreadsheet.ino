@@ -23,7 +23,7 @@ String myPosition = "&position=insertfirst";               // insertfirst, inser
 String myColumn = "&column=3";                             // The image data inserts into the column 3 (Column C).
 String myRow = "&row=1";                                   // If the position setting is "custom" or not specified, updates the data in the row 1.
 String myFormat = "&format=jpg";                           // base64, link, jpg
-String myLinenotifyToken = "&linetoken=xxxxx";                             // Line Notify token
+String myLinenotifyToken = "&linetoken=xxxxx";             // Line Notify token
 
 char wifi_ssid[] = "teacher";
 char wifi_pass[] = "12345678";
