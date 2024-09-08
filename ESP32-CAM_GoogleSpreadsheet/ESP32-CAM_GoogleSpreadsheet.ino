@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Upload the image file to Google spreadsheet and Google drive
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-9-7 14:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-9-8 12:30
 https://www.facebook.com/francefu
 
 Google spreadsheet
@@ -9,27 +9,28 @@ https://docs.google.com/spreadsheets/u/0/
 Google Apps Script
 https://script.google.com/home
 https://script.google.com/home/executions
+
+Apps script code
+https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToSpreadsheet_base64_doPost.gs
 */
 
-String spreadsheetUrl = "xxxxx";
-String spreadsheetName = "xxxxx";
+char wifi_ssid[] = "xxxxx";
+char wifi_pass[] = "xxxxx";
 
-//Apps script:  https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToSpreadsheet_base64_doPost.gs
-String myAppsScriptURL = "xxxxx";
+String spreadsheetID = "xxxxx";
+String spreadsheetName = "xxxxx";
+String appsScriptID = "xxxxx";
 
 String myFolderName = "&foldername=ESP32-CAM_IMAGES";      // Google drive folder name. Set anyone with the link can view the files in the folder.
 String myDatetime = "&datetime=gmt_datetime";              // gmt_datetime (Column A,B), gmt_date (Column A), gmt_time (Column A)
 String myFormat = "&format=jpg";                           // base64, link, jpg
-String myCellwidth = "&cellwidth=240";                     // If the format setting is "jpg", the image cell width is 240px.
-String myCellheight = "&cellheight=160";                   // If the format setting is "jpg", the image cell height is 160px.
+String myCellwidth = "&cellwidth=160";                     // If the format setting is "jpg", the thumbnail cell width is 160px.
+String myCellheight = "&cellheight=120";                   // If the format setting is "jpg", the thumbnail cell height is 120px.
 String myPosition = "&position=insertfirst";               // insertfirst, insertsecond, insertlast  (insert a new row)
 String myRow = "&row=1";                                   // If the position setting is null or not specified, updates the data in the row 1.
 String myColumn = "&column=3";                             // The image data inserts into the column 3 (Column C).
 
 String myLinenotifyToken = "&linetoken=xxxxx";             // Line Notify token
-
-char wifi_ssid[] = "teacher";
-char wifi_pass[] = "12345678";
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -182,19 +183,21 @@ String SendStillToSpreadsheet() {
       if (i%3==0) imageFile += urlencode(String(output));
     }
     
-    String mySpreadsheetUrl = "&spreadsheeturl=" + spreadsheetUrl;
+    String mySpreadsheetUrl = "&spreadsheeturl=https://docs.google.com/spreadsheets/d/"+spreadsheetID+"/edit?usp=sharing";
     String mySpreadsheetName = "&spreadsheetname=" + urlencode(spreadsheetName);
     String myFile = "&file=";
-    String Data = mySpreadsheetUrl+mySpreadsheetName+myFolderName+myLinenotifyToken+myDatetime+myPosition+myCellwidth+myCellheight+myColumn+myRow+myFormat+myFile;
-	
-    client.println("POST " + myAppsScriptURL + " HTTP/1.1");
+    String myData = mySpreadsheetUrl+mySpreadsheetName+myFolderName+myLinenotifyToken+myDatetime+myPosition+myCellwidth+myCellheight+myColumn+myRow+myFormat+myFile;
+    
+	  String myAppsScriptUrl = "https://script.google.com/macros/s/"+appsScriptID+"/exec";
+    
+    client.println("POST " + myAppsScriptUrl + " HTTP/1.1");
     client.println("Host: " + String(myDomain));
-    client.println("Content-Length: " + String(Data.length()+imageFile.length()));
+    client.println("Content-Length: " + String(myData.length()+imageFile.length()));
     client.println("Content-Type: application/x-www-form-urlencoded");
     client.println("Connection: close");
     client.println();
 
-    client.print(Data);
+    client.print(myData);
     int Index;
     for (Index = 0; Index < imageFile.length(); Index = Index+1024) {
       client.print(imageFile.substring(Index, Index+1024));
