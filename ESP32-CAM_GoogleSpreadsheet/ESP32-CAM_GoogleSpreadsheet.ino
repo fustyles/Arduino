@@ -23,11 +23,11 @@ String myAppsScriptUrl = "https://script.google.com/macros/s/xxxxx/exec";
 String myLinenotifyToken = "&linetoken=xxxxx";             // Line Notify token
 
 String myFolderName = "&foldername=ESP32-CAM_IMAGES";      // Google drive folder name. Set anyone with the link can view the files in the folder.
-String myDatetime = "&datetime=gmt_datetime";              // gmt_datetime (Column A,B), gmt_date (Column A), gmt_time (Column A)
+String myDatetime = "&datetime=gmt_datetime";              // gmt_datetime (Column A,B), gmt_date (Column A), gmt_time (Column A), null
 String myFormat = "&format=jpg";                           // base64, link, jpg
 String myCellwidth = "&cellwidth=160";                     // If the format setting is "jpg", the thumbnail cell width is 160px.
 String myCellheight = "&cellheight=120";                   // If the format setting is "jpg", the thumbnail cell height is 120px.
-String myPosition = "&position=insertfirst";               // insertfirst, insertsecond, insertlast  (insert a new row)
+String myPosition = "&position=insertfirst";               // insertfirst, insertsecond, insertlast, null  (insert a new row)
 String myRow = "&row=1";                                   // If the position setting is null or not specified, updates the data in the row 1.
 String myColumn = "&column=3";                             // The image data inserts into the column 3 (Column C).
 
