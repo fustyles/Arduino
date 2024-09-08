@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Upload the image file to Google spreadsheet and Google drive
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-9-8 12:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-9-8 13:00
 https://www.facebook.com/francefu
 
 Google spreadsheet
@@ -17,9 +17,10 @@ https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToSpreadsheet_base
 char wifi_ssid[] = "xxxxx";
 char wifi_pass[] = "xxxxx";
 
-String spreadsheetID = "xxxxx";
-String spreadsheetName = "xxxxx";
-String appsScriptID = "xxxxx";
+String mySpreadsheetUrl = "https://docs.google.com/spreadsheets/d/xxxxx/edit?usp=sharing";
+String mySpreadsheetName = "xxxxx";
+String myAppsScriptUrl = "https://script.google.com/macros/s/xxxxx/exec";
+String myLinenotifyToken = "&linetoken=xxxxx";             // Line Notify token
 
 String myFolderName = "&foldername=ESP32-CAM_IMAGES";      // Google drive folder name. Set anyone with the link can view the files in the folder.
 String myDatetime = "&datetime=gmt_datetime";              // gmt_datetime (Column A,B), gmt_date (Column A), gmt_time (Column A)
@@ -29,8 +30,6 @@ String myCellheight = "&cellheight=120";                   // If the format sett
 String myPosition = "&position=insertfirst";               // insertfirst, insertsecond, insertlast  (insert a new row)
 String myRow = "&row=1";                                   // If the position setting is null or not specified, updates the data in the row 1.
 String myColumn = "&column=3";                             // The image data inserts into the column 3 (Column C).
-
-String myLinenotifyToken = "&linetoken=xxxxx";             // Line Notify token
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -183,21 +182,19 @@ String SendStillToSpreadsheet() {
       if (i%3==0) imageFile += urlencode(String(output));
     }
     
-    String mySpreadsheetUrl = "&spreadsheeturl=https://docs.google.com/spreadsheets/d/"+spreadsheetID+"/edit?usp=sharing";
-    String mySpreadsheetName = "&spreadsheetname=" + urlencode(spreadsheetName);
-    String myFile = "&file=";
-    String myData = mySpreadsheetUrl+mySpreadsheetName+myFolderName+myLinenotifyToken+myDatetime+myPosition+myCellwidth+myCellheight+myColumn+myRow+myFormat+myFile;
-    
-	  String myAppsScriptUrl = "https://script.google.com/macros/s/"+appsScriptID+"/exec";
+    String spreadsheetUrl = "&spreadsheeturl="+mySpreadsheetUrl;
+    String spreadsheetName = "&spreadsheetname=" + urlencode(mySpreadsheetName);
+    String file = "&file=";
+    String data = spreadsheetUrl+spreadsheetName+myFolderName+myLinenotifyToken+myDatetime+myPosition+myCellwidth+myCellheight+myColumn+myRow+myFormat+file;
     
     client.println("POST " + myAppsScriptUrl + " HTTP/1.1");
     client.println("Host: " + String(myDomain));
-    client.println("Content-Length: " + String(myData.length()+imageFile.length()));
+    client.println("Content-Length: " + String(data.length()+imageFile.length()));
     client.println("Content-Type: application/x-www-form-urlencoded");
     client.println("Connection: close");
     client.println();
 
-    client.print(myData);
+    client.print(data);
     int Index;
     for (Index = 0; Index < imageFile.length(); Index = Index+1024) {
       client.print(imageFile.substring(Index, Index+1024));
