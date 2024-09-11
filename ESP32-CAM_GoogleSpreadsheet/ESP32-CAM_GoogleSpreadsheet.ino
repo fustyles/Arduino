@@ -20,7 +20,7 @@ char wifi_pass[] = "xxxxx";
 String mySpreadsheetUrl = "https://docs.google.com/spreadsheets/d/xxxxx/edit?usp=sharing";
 String mySpreadsheetName = "xxxxx";
 String myAppsScriptUrl = "https://script.google.com/macros/s/xxxxx/exec";
-String myLinenotifyToken = "&linetoken=xxxxx";             // Line Notify token
+String myLinenotifyToken = "&linetoken=xxxxx";             // Line Notify token (Not necessarily required)
 
 String myFolderName = "&foldername=ESP32-CAM_IMAGES";      // Google drive folder name. Set anyone with the link can view the files in the folder.
 String myDatetime = "&datetime=gmt_datetime";              // gmt_datetime (Column A,B), gmt_date (Column A), gmt_time (Column A), null
