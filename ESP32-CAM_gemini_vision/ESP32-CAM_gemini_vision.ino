@@ -1,7 +1,7 @@
 /*
 ESP32-CAM Use Gemini Vision to analyze still image content.
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-8-22 18:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-9-23 18:00
 https://www.facebook.com/francefu
 */
 
