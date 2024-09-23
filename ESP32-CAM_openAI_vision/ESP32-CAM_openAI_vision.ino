@@ -180,7 +180,8 @@ String SendStillToOpenaiVision(String key, String message) {
     for (Index = 0; Index < Data.length(); Index = Index+1024) {
       client_tcp.print(Data.substring(Index, Index+1024));
     }
-    
+    esp_camera_fb_return(fb);
+	  
     int waitTime = 10000;
     long startTime = millis();
     boolean state = false;
