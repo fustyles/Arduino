@@ -190,8 +190,7 @@ String SendStillToGeminiVision(String key, String message, bool capture) {
     getResponse = obj["candidates"][0]["content"]["parts"][0]["text"].as<String>();
     if (getResponse == "null")
       getResponse = obj["error"]["message"].as<String>();
-    }
-    else {
+    } else {
       getResponse = "Connected to " + String(myDomain) + " failed.";
       Serial.println("Connected to " + String(myDomain) + " failed.");
     }
@@ -219,10 +218,12 @@ void setup()
   Serial.println((SendStillToGeminiVision(Gemini_key, "請描述影像，若有文字請摘要內容！", 0)));
   
   /*
+  
   //使用即時影像，以不同影像做視覺辨識  
   Serial.println((SendStillToOpenaiVision(openAI_key, "請描述影像，若有文字請摘要內容！", 1)));
   delay(5000);
   Serial.println((SendStillToGeminiVision(Gemini_key, "請描述影像，若有文字請摘要內容！", 1)));
+  
   */
 
 }
