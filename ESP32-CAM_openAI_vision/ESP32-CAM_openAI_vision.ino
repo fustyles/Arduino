@@ -3,6 +3,10 @@ ESP32-CAM Use OpenAI Vision to analyze still image content.
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-9-23 14:00
 https://www.facebook.com/francefu
+
+openAI Vision
+https://platform.openai.com/docs/guides/vision
+
 */
 
 char wifi_ssid[] = "teacher";
