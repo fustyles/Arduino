@@ -3,6 +3,9 @@ ESP32-CAM Use Gemini Vision to analyze still image content.
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-9-23 18:00
 https://www.facebook.com/francefu
+
+Gemini Vision
+https://ai.google.dev/gemini-api/docs/vision
 */
 
 char wifi_ssid[] = "teacher";
