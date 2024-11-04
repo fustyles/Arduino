@@ -248,10 +248,10 @@ void setup()
   // Google drive
   SendStillToGoogleDrive(myAppsScriptID, myFoldername, myFilename);
   
-  // Google drive and Line Notify
+  // Google drive, Line Notify
   SendStillToGoogleDriveLineNotify(myAppsScriptID, myFoldername, myFilename, myLineNotifyToken);
 
-  // Google drive and Line Bot  
+  // Google drive, Line Bot  
   SendStillToGoogleDriveLineBot(myAppsScriptID, myFoldername, myFilename, myLineBotToken, myLineBotUserID);
 }
 
