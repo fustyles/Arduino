@@ -42,20 +42,20 @@ void initWiFi() {
 
 void LineBotText(String token, String userid, String message){
   String Data = "{\"to\":\""+userid+"\",\"messages\":[{\"type\":\"text\",\"text\":\""+message+"\"}]}";
-  clientRequest(token, Data);
+  linebotRequest(token, Data);
 }
 
 void LineBotSticker(String token, String userid, int packageId, int stickerId){
   String Data = "{\"to\":\""+userid+"\",\"messages\":[{\"type\":\"sticker\",\"packageId\":"+String(packageId)+",\"stickerId\":"+String(stickerId)+"}]}";
-  clientRequest(token, Data);
+  linebotRequest(token, Data);
 }
 
 void LineBotImage(String token, String userid, String originalContentUrl, String previewImageUrl){
   String Data = "{\"to\":\""+userid+"\",\"messages\":[{\"type\":\"image\",\"originalContentUrl\":\""+originalContentUrl+"\",\"previewImageUrl\":\""+previewImageUrl+"\"}]}";
-  clientRequest(token, Data);
+  linebotRequest(token, Data);
 }
 
-String clientRequest(String token, String Data) {
+String linebotRequest(String token, String Data) {
   String getAll="", getBody="";
   client.setInsecure();  
   if (client.connect("api.line.me", 443)) {
