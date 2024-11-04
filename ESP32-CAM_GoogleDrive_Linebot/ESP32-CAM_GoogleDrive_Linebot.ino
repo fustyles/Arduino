@@ -26,8 +26,8 @@ String myLineNotifyToken = "";
 String myLineBotToken = "";
 String myLineBotUserID = "";   // userId or groupId
 
-char wifi_ssid[] = "3COM";
-char wifi_pass[] = "godblessyou";
+char wifi_ssid[] = "teacher";
+char wifi_pass[] = "12345678";
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
