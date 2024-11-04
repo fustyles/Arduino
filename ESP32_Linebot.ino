@@ -98,11 +98,13 @@ void setup()
 {
   Serial.begin(115200);
   initWiFi();
-  // Text
+  // LineBotText(String token, String userid, String message)
   LineBotText(linebot_token, linebot_userid, "Hello World");
-  // Sticker
+  
+  // LineBotSticker(String token, String userid, int packageId, int stickerId)
   LineBotSticker(linebot_token, linebot_userid, 1, 2);
-  // Image
+  
+  // LineBotImage(String token, String userid, String originalContentUrl, String previewImageUrl)
   LineBotImage(linebot_token, linebot_userid, "https://cdn2.ettoday.net/images/4507/d4507139.jpg", "https://cdn2.ettoday.net/images/4507/d4507139.jpg");
 }
 
