@@ -23,7 +23,7 @@ String myFilename = "HOME";
 String myLineNotifyToken = "";
 
 // If you want to send a uploaded image link to Line Bot.
-String myLineBotToken = "";
+String myLineBotToken = "";    // Channel access token
 String myLineBotUserID = "";   // userId or groupId
 
 char wifi_ssid[] = "teacher";
