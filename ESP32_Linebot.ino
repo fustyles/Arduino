@@ -98,6 +98,7 @@ void setup()
 {
   Serial.begin(115200);
   initWiFi();
+  
   // LineBotText(String token, String userid, String message)
   LineBotText(linebot_token, linebot_userid, "Hello World");
   
