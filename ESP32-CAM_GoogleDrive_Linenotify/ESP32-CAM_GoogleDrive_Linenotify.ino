@@ -15,7 +15,7 @@ https://script.google.com/home/executions
 https://drive.google.com/drive/my-drive
 */
 
-String myAppsScriptID = "";
+String myAppsScriptID = "";    // https://github.com/fustyles/webduino/blob/gs/SendCapturedImageToGoogleDriveAndLinenotify_doPost.gs
 String myFoldername = "ESP32-CAM";   // If you want to see the thumbnail of a photo from Google Drive in a conversation message on the Line app on your mobile phone, you need to change the permissions of the Google Drive folder, setting it so that anyone with the link can view it.
 String myFilename = "HOME";
 
