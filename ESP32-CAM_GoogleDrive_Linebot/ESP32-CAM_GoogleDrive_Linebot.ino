@@ -109,8 +109,8 @@ String SendStillToGoogleDrive(String myScriptID, String myData) {
     return "Camera capture failed";
   }
 
-  Serial.println("Connect to " + String(myDomain));
   client.setInsecure();
+  Serial.println("Connect to " + String(myDomain));
   if (client.connect(myDomain, 443)) {
     Serial.println("Connection successful");
 
