@@ -95,8 +95,8 @@ void SendStillToGoogleDriveLineBot(String scriptID, String foldername, String fi
   SendStillToGoogleDrive(scriptID, Data);
 }
 
-String SendStillToGoogleDrive(String scriptID, String myData) {
-  String myScript = "/macros/s/"+scriptID+"/exec";
+String SendStillToGoogleDrive(String myScriptID, String myData) {
+  String myScript = "/macros/s/"+myScriptID+"/exec";
   const char* myDomain = "script.google.com";
   String getAll="", getBody = "";
 
