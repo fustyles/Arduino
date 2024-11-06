@@ -96,8 +96,8 @@ void SendStillToGoogleDriveLineBot(String scriptid, String foldername, String fi
 }
 
 String SendStillToGoogleDrive(String myScriptID, String myData) {
-  String myScript = "/macros/s/"+myScriptID+"/exec";
   const char* myDomain = "script.google.com";
+  String myScript = "/macros/s/"+myScriptID+"/exec";  
   String getAll="", getBody = "";
 
   camera_fb_t * fb = NULL;
