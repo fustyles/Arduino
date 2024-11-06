@@ -80,19 +80,19 @@ void initWiFi() {
   }
 }
 
-void SendStillToGoogleDrive(String scriptID, String foldername, String filename) {
+void SendStillToGoogleDrive(String scriptid, String foldername, String filename) {
   String Data = "&myFoldername="+urlencode(foldername)+"&myFilename="+urlencode(filename)+"&myLineType=&myToken=&myUserID=&myFile=";
-  SendStillToGoogleDrive(scriptID, Data);
+  SendStillToGoogleDrive(scriptid, Data);
 }
 
-void SendStillToGoogleDriveLineNotify(String scriptID, String foldername, String filename, String token) {
+void SendStillToGoogleDriveLineNotify(String scriptid, String foldername, String filename, String token) {
   String Data = "&myFoldername="+urlencode(foldername)+"&myFilename="+urlencode(filename)+"&myLineType=notify&myToken="+token+"&myUserID=&myFile=";
-  SendStillToGoogleDrive(scriptID, Data);
+  SendStillToGoogleDrive(scriptid, Data);
 }
 
-void SendStillToGoogleDriveLineBot(String scriptID, String foldername, String filename, String token, String userID) {
+void SendStillToGoogleDriveLineBot(String scriptid, String foldername, String filename, String token, String userID) {
   String Data = "&myFoldername="+urlencode(foldername)+"&myFilename="+urlencode(filename)+"&myLineType=bot&myToken="+token+"&myUserID="+userID+"&myFile=";
-  SendStillToGoogleDrive(scriptID, Data);
+  SendStillToGoogleDrive(scriptid, Data);
 }
 
 String SendStillToGoogleDrive(String myScriptID, String myData) {
