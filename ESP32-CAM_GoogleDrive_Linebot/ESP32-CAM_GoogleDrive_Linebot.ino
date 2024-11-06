@@ -80,25 +80,23 @@ void initWiFi() {
   }
 }
 
-void SendStillToGoogleDrive(String appsScriptID, String foldername, String filename) {
-  String script = "/macros/s/"+appsScriptID+"/exec";
+void SendStillToGoogleDrive(String scriptID, String foldername, String filename) {
   String Data = "&myFoldername="+urlencode(foldername)+"&myFilename="+urlencode(filename)+"&myLineType=&myToken=&myUserID=&myFile=";
-  SendStillToGoogleDrive(script, Data);
+  SendStillToGoogleDrive(scriptID, Data);
 }
 
-void SendStillToGoogleDriveLineNotify(String appsScriptID, String foldername, String filename, String token) {
-  String script = "/macros/s/"+appsScriptID+"/exec";
+void SendStillToGoogleDriveLineNotify(String scriptID, String foldername, String filename, String token) {
   String Data = "&myFoldername="+urlencode(foldername)+"&myFilename="+urlencode(filename)+"&myLineType=notify&myToken="+token+"&myUserID=&myFile=";
-  SendStillToGoogleDrive(script, Data);
+  SendStillToGoogleDrive(scriptID, Data);
 }
 
-void SendStillToGoogleDriveLineBot(String appsScriptID, String foldername, String filename, String token, String userID) {
-  String script = "/macros/s/"+appsScriptID+"/exec";
+void SendStillToGoogleDriveLineBot(String scriptID, String foldername, String filename, String token, String userID) {
   String Data = "&myFoldername="+urlencode(foldername)+"&myFilename="+urlencode(filename)+"&myLineType=bot&myToken="+token+"&myUserID="+userID+"&myFile=";
-  SendStillToGoogleDrive(script, Data);
+  SendStillToGoogleDrive(scriptID, Data);
 }
 
-String SendStillToGoogleDrive(String myScript, String myData) {
+String SendStillToGoogleDrive(String scriptID, String myData) {
+  String myScript = "/macros/s/"+scriptID+"/exec";
   const char* myDomain = "script.google.com";
   String getAll="", getBody = "";
 
