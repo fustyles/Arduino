@@ -86,12 +86,12 @@ void SendStillToGoogleDrive(String scriptid, String foldername, String filename)
 }
 
 void SendStillToGoogleDriveLineNotify(String scriptid, String foldername, String filename, String token) {
-  String data = "&myFoldername="+urlencode(foldername)+"&myFilename="+urlencode(filename)+"&myLineType=notify&myToken="+token+"&myUserID=&myFile=";
+  String data = "&myFoldername="+urlencode(foldername)+"&myFilename="+urlencode(filename)+"&myLineType=notify&myToken="+urlencode(token)+"&myUserID=&myFile=";
   SendStillToGoogleDrive(scriptid, data);
 }
 
 void SendStillToGoogleDriveLineBot(String scriptid, String foldername, String filename, String token, String userID) {
-  String data = "&myFoldername="+urlencode(foldername)+"&myFilename="+urlencode(filename)+"&myLineType=bot&myToken="+token+"&myUserID="+userID+"&myFile=";
+  String data = "&myFoldername="+urlencode(foldername)+"&myFilename="+urlencode(filename)+"&myLineType=bot&myToken="+urlencode(token)+"&myUserID="+urlencode(userID)+"&myFile=";
   SendStillToGoogleDrive(scriptid, data);
 }
 
