@@ -1,6 +1,6 @@
 /*
 ESP32-CAM Upload a captured photo to Google Drive and send the uploaded image link to Line Notify or Line Bot.
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-11-6 12:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2024-11-10 10:30
 https://www.facebook.com/francefu
 
 Google Apps Script
