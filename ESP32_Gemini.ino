@@ -62,34 +62,44 @@ String Gemini_chat_request(String message) {
     for (int i = 0; i < request.length(); i += 1024) {
       client.print(request.substring(i, i+1024));
     }
+	
     String getResponse="",Feedback="";
     boolean state = false;
     int waitTime = 20000;
     long startTime = millis();
     while ((startTime + waitTime) > millis()) {
-      //Serial.print(".");
-      delay(100);
-      while (client.available()) {
-          char c = client.read();
-          if (state==true)
-            getResponse += String(c);
-          if (c == '\n')
-            Feedback = "";
-          else if (c != '\r')
-            Feedback += String(c);
-          if (Feedback.indexOf("\",\"text\":\"")!=-1)
-            state=true;
-          if (Feedback.indexOf("\"},")!=-1)
-            state=false;
-          startTime = millis();
-          if (Feedback.indexOf("\",\"text\":\"")!=-1||Feedback.indexOf("\"text\": \"")!=-1)            state=true;          if (getResponse.indexOf("\"\n\r")!=-1&&state==true) {            state=false;            getResponse = getResponse.substring(0,getResponse.length()-4);          } else if (getResponse.indexOf("\"")!=-1&&c == '\n'&&state==true) {            state=false;            getResponse = getResponse.substring(0,getResponse.length()-4);          }       }
-       if (getResponse.length()>0) {
-          client.stop();
-          String assistant_content = "{\"role\": \"model\", \"parts\":[{ \"text\": \""+ getResponse+"\" }]}";
-          historical_messages += ", "+assistant_content;
-          Serial.println("");
-          return getResponse;
-       }
+        //Serial.print(".");
+        delay(100);
+        while (client.available()) {
+			  char c = client.read();
+			  if (state==true)
+				getResponse += String(c);
+			  if (c == '\n')
+				Feedback = "";
+			  else if (c != '\r')
+				Feedback += String(c);
+			  if (Feedback.indexOf("\",\"text\":\"")!=-1)
+				state=true;
+			  if (Feedback.indexOf("\"},")!=-1)
+				state=false;
+			  startTime = millis();
+			  if (Feedback.indexOf("\",\"text\":\"")!=-1||Feedback.indexOf("\"text\": \"")!=-1)            
+				state=true;          
+			  if (getResponse.indexOf("\"\n\r")!=-1&&state==true) {            
+				state=false;            
+				getResponse = getResponse.substring(0,getResponse.length()-4);          
+			  } else if (getResponse.indexOf("\"")!=-1&&c == '\n'&&state==true) {            
+				state=false;            
+				getResponse = getResponse.substring(0,getResponse.length()-4);          
+			  }       
+		}
+        if (getResponse.length()>0) {
+			   client.stop();
+			   String assistant_content = "{\"role\": \"model\", \"parts\":[{ \"text\": \""+ getResponse+"\" }]}";
+			   historical_messages += ", "+assistant_content;
+			   Serial.println("");
+			   return getResponse;
+        }
     }
     client.stop();
     //Serial.println(Feedback);
