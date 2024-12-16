@@ -11,7 +11,7 @@ char wifi_ssid[] = "teacher";
 char wifi_pass[] = "12345678";
 
 String Gemini_apikey = "xxxxx";
-String Gemini_model = "gemini-1.5-flash";    // "gemini-1.5-flash" or "gemini-pro"
+String Gemini_model = "gemini-1.5-flash-latest";    // "gemini-1.5-flash-latest" or "gemini-1.5-flash" or "gemini-pro"
 String system_content = "{\"role\": \"model\", \"parts\":[{ \"text\": \"You are a smart assistant.\" }]}";
 
 #include <WiFi.h>
