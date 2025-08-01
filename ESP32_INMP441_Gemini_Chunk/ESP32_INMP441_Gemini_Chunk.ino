@@ -38,6 +38,7 @@ int pinButton = 12;
 #define I2S_WS            15
 #define I2S_SD            13
 #define I2S_SCK           2
+// L/R --> GND 
 #define RECORD_TIME       5     //Recording duration
 #define SAMPLE_RATE       16000
 #define SAMPLE_BITS       16
