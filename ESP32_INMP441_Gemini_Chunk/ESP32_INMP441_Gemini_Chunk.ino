@@ -173,6 +173,7 @@ String uploadAudioBufferToGemini(String apikey, String prompt, String mimeType, 
     for (int i = 0; i < request2.length(); i += 1024) {
       client.print(request2.substring(i, i + 1024));    
     }        
+	  
     String getResponse="",Feedback="";
     int waitTime = 20000;
     long startTime = millis();
