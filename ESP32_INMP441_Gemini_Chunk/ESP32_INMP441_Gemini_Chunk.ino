@@ -3,6 +3,10 @@ NodeMCU-32S + INMP441 + Gemini Audio understanding
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-2 01:00
 https://www.facebook.com/francefu
 
+Development Environment
+Arduino IDE 1.8.19
+Arduino core for the ESP32 1.0.6
+
 Arduino IDE Settings:
 ESP32 Wrover Module
 Huge APP (3MB No OTA/1MB SPIFFS)
