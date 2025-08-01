@@ -1,5 +1,5 @@
 /* 
-NodeMCU-32S + INMP441 + Gemini Audio understanding
+NodeMCU-32S + INMP441 I2S microphone + Gemini Audio understanding
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-2 01:00
 https://www.facebook.com/francefu
 
