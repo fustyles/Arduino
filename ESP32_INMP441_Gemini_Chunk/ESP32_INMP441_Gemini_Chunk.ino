@@ -10,7 +10,7 @@ Huge APP (3MB No OTA/1MB SPIFFS)
 Gemini API Key
 https://aistudio.google.com/app/apikey
 
-Gemini audio
+Gemini Audio understanding
 https://ai.google.dev/gemini-api/docs/audio
 */
 
