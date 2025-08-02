@@ -272,7 +272,8 @@ String uploadWavDataToGemini(String apikey, String prompt, int seconds) {
       getText = obj["error"]["message"].as<String>();
     getText.replace("\n", "");
     getText.replace("```json", "");
-    getText.replace("```", "");    
+    getText.replace("```", "");
+    
     return getText;
   }
   else {  
@@ -296,3 +297,4 @@ void loop() {
     Serial.println(response); 
   }
 }
+
