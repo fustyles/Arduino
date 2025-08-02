@@ -1,6 +1,6 @@
 /* 
 NodeMCU-32S + INMP441 I2S microphone + Gemini Audio understanding
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-2 10:40
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-2 10:50
 https://www.facebook.com/francefu
 
 Development Environment
@@ -227,6 +227,7 @@ String uploadwavDataToGemini(String apikey, String prompt, int seconds) {
 
       free(encodedChunk);
     }
+    free(wavData);
   
     for (int i = 0; i < request2.length(); i += 1024) {
       client.print(request2.substring(i, i + 1024));    
@@ -260,7 +261,6 @@ String uploadwavDataToGemini(String apikey, String prompt, int seconds) {
        if (Feedback.length()>0) break;
     }
     client.stop();  
-    free(wavData);
     Serial.println();
     
     JsonObject obj;
@@ -274,8 +274,7 @@ String uploadwavDataToGemini(String apikey, String prompt, int seconds) {
     
     return getText;
   }
-  else {
-    free(wavData);    
+  else {  
     return "Connected to generativelanguage.googleapis.com failed.";
   }
 }
@@ -296,3 +295,4 @@ void loop() {
     Serial.println(response); 
   }
 }
+
