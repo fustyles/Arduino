@@ -31,7 +31,7 @@ char wifi_pass[] = "xxxxx";
 String geminiKey = "xxxxx";
 //String geminiPrompt = "Audio to Text.";
 String geminiPrompt = "First, convert the audio into text. Based on the text content, determine whether it is related to controlling a device, and respond in JSON format: {\"text\":\"transcribed text content\", \"devices\": [{\"servoAngle\":\"servo motor control angle value; use -1 if unrelated\"}], \"response\":\"chat response based on the audio content\"}. The maximum angle value for the motor is 180, and the minimum is 0. Do not use Markdown syntax.";
-//String geminiPrompt = "請先將音訊轉成繁體中文文字，根據文字內容判斷是否與控制裝置有關，並以JSON格式回覆: {\"text\":\"音訊轉文字內容\", \"devices\": [{\"servoAngle\":\"伺服馬達控制的角度值，若無關則填-1\"}], \"response\":\"依音訊內容聊天回應\"}。馬達角度最大值為180, 最小值為0。 不要使用Markdown語法";
+//String geminiPrompt = "請先將音訊轉成繁體中文文字，根據文字內容判斷是否與控制裝置有關，並以JSON格式回覆: {\"text\":\"音訊轉文字內容\", \"devices\": [{\"servoAngle\":\"伺服馬達控制的角度值，若無關則填-1。伺服馬達角度最大值為180, 最小值為0。\"}], \"response\":\"依音訊內容聊天回應\"}。不要使用Markdown語法";
 
 int pinButton = 12;
 
@@ -297,6 +297,7 @@ void loop() {
     Serial.println(response); 
   }
 }
+
 
 
 
