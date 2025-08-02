@@ -112,7 +112,7 @@ void writeWavHeader(uint8_t* buffer, uint32_t dataSize) {
   memcpy(buffer + 40, &dataSize, 4);
 }
 
-size_t getwavDataLength(uint8_t* wavData, size_t wavSize) {
+size_t getWavDataLength(uint8_t* wavData, size_t wavSize) {
     const size_t chunkSize = 960;
     size_t count = 0;
     for (size_t i = 0; i < wavSize; i += chunkSize) {
@@ -191,7 +191,7 @@ String uploadwavDataToGemini(String apikey, String prompt, int seconds) {
   String request2 = "\", \"mime_type\": \"audio/wav\"}}, {\"text\": \""+prompt+"\"}]}]}";
 
   size_t wavSize = 44 + bytes_read;
-  size_t totalEncodedLen = getwavDataLength(wavData, wavSize);
+  size_t totalEncodedLen = getWavDataLength(wavData, wavSize);
   size_t contentLength = request1.length() + totalEncodedLen + request2.length();
 
   WiFiClientSecure client;  
@@ -296,4 +296,5 @@ void loop() {
     Serial.println(response); 
   }
 }
+
 
