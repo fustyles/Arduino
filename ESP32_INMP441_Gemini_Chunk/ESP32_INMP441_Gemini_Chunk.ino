@@ -35,7 +35,7 @@ String geminiPrompt = "Please convert the audio message into text first. Based o
 
 int pinButton = 12;
 
-// SD --> IO13, VDD --> 3V3, GND --> GND, L/R --> GND, WS --> IO15, SCK --> IO2
+// INMP441 I2S:  SD --> IO13, VDD --> 3V3, GND --> GND, L/R --> GND, WS --> IO15, SCK --> IO2
 #define I2S_WS            15
 #define I2S_SD            13
 #define I2S_SCK           2
@@ -297,5 +297,6 @@ void loop() {
     Serial.println(response); 
   }
 }
+
 
 
