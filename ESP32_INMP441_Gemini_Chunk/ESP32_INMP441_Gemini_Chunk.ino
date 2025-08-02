@@ -1,6 +1,6 @@
 /* 
 NodeMCU-32S + INMP441 I2S microphone + Gemini Audio understanding
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-2 10:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-2 10:40
 https://www.facebook.com/francefu
 
 Development Environment
@@ -29,8 +29,8 @@ char wifi_ssid[] = "xxxxx";
 char wifi_pass[] = "xxxxx";
 
 String geminiKey = "xxxxx";
-String geminiPrompt = "Please convert the audio message into text first. Based on the text content, determine whether it is related to Servo motor control and reply in JSON format: {\"text\":\"The text content of the audio message\", \"angle\":\"The angle value of the motor control, if not related, leave it empty\", \"response\":\"The chat response to the audio message\"}. The maximum motor angle is 180, and the minimum is 0. Do not use Markdown syntax";
-//String geminiPrompt = "請先音訊轉成繁體中文文字，根據文字內容判斷是否與控制伺服馬達有關並以JSON格式回覆: {\"text\":\"音訊轉文字內容\", \"angle\":\"馬達控制的角度值，若無關則不填\", \"response\":\"音訊內容的聊天回應\"}。馬達角度最大值為180, 最小值為0。 不要使用Markdown語法";
+//String geminiPrompt = "Please convert the audio message into text first. Based on the text content, determine whether it is related to Servo motor control and reply in JSON format: {\"text\":\"The text content of the audio message\", \"angle\":\"The angle value of the motor control, if not related, leave it empty\", \"response\":\"The chat response to the audio message\"}. The maximum motor angle is 180, and the minimum is 0. Do not use Markdown syntax";
+String geminiPrompt = "請先音訊轉成繁體中文文字，根據文字內容判斷是否與控制伺服馬達有關並以JSON格式回覆: {\"text\":\"音訊轉文字內容\", \"angle\":\"馬達控制的角度值，若無關則不填\", \"response\":\"音訊內容的聊天回應\"}。馬達角度最大值為180, 最小值為0。 不要使用Markdown語法";
 //String geminiPrompt = "Audio to Text.";
 
 int pinButton = 12;
@@ -112,11 +112,11 @@ void writeWavHeader(uint8_t* buffer, uint32_t dataSize) {
   memcpy(buffer + 40, &dataSize, 4);
 }
 
-size_t getwavDataLength(uint8_t* wavData, size_t audioTotalSize) {
+size_t getwavDataLength(uint8_t* wavData, size_t wavSize) {
     const size_t chunkSize = 960;
     size_t count = 0;
-    for (size_t i = 0; i < audioTotalSize; i += chunkSize) {
-      size_t len = (audioTotalSize - i > chunkSize) ? chunkSize : (audioTotalSize - i);
+    for (size_t i = 0; i < wavSize; i += chunkSize) {
+      size_t len = (wavSize - i > chunkSize) ? chunkSize : (wavSize - i);
       char* encodedChunk = (char*)malloc(base64_enc_len(len) + 1);
       if (!encodedChunk) {
         return 0;
@@ -190,8 +190,8 @@ String uploadwavDataToGemini(String apikey, String prompt, int seconds) {
   String request1 = "{\"contents\": [{\"role\": \"user\", \"parts\": [{\"inline_data\": {\"data\": \"";
   String request2 = "\", \"mime_type\": \"audio/wav\"}}, {\"text\": \""+prompt+"\"}]}]}";
 
-  size_t audioTotalSize = 44 + bytes_read;
-  size_t totalEncodedLen = getwavDataLength(wavData, audioTotalSize);
+  size_t wavSize = 44 + bytes_read;
+  size_t totalEncodedLen = getwavDataLength(wavData, wavSize);
   size_t contentLength = request1.length() + totalEncodedLen + request2.length();
 
   WiFiClientSecure client;  
@@ -211,8 +211,8 @@ String uploadwavDataToGemini(String apikey, String prompt, int seconds) {
 
     const size_t chunkSize = 960;
     size_t count = 0;
-    for (size_t i = 0; i < audioTotalSize; i += chunkSize) {
-      size_t len = (audioTotalSize - i > chunkSize) ? chunkSize : (audioTotalSize - i);
+    for (size_t i = 0; i < wavSize; i += chunkSize) {
+      size_t len = (wavSize - i > chunkSize) ? chunkSize : (wavSize - i);
     
       char* encodedChunk = (char*)malloc(base64_enc_len(len) + 1);
       if (!encodedChunk) {
