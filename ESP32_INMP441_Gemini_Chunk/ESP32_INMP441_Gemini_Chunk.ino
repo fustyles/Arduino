@@ -1,6 +1,6 @@
 /* 
 NodeMCU-32S + INMP441 I2S microphone + Gemini Audio understanding
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-2 10:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-2 10:30
 https://www.facebook.com/francefu
 
 Development Environment
@@ -29,7 +29,7 @@ char wifi_ssid[] = "xxxxx";
 char wifi_pass[] = "xxxxx";
 
 String geminiKey = "xxxxx";
-String geminiPrompt = "Please convert the audio message into text first. Based on the text content, determine whether it is related to motor control and reply in JSON format: {\"text\":\"The text content of the audio message\", \"angle\":\"The angle value of the motor control, if not related, leave it empty\", \"response\":\"The chat response to the audio message\"}. The maximum motor angle is 180, and the minimum is 0. Do not use Markdown syntax";
+String geminiPrompt = "Please convert the audio message into text first. Based on the text content, determine whether it is related to Servo motor control and reply in JSON format: {\"text\":\"The text content of the audio message\", \"angle\":\"The angle value of the motor control, if not related, leave it empty\", \"response\":\"The chat response to the audio message\"}. The maximum motor angle is 180, and the minimum is 0. Do not use Markdown syntax";
 //String geminiPrompt = "請先音訊轉成繁體中文文字，根據文字內容判斷是否與控制伺服馬達有關並以JSON格式回覆: {\"text\":\"音訊轉文字內容\", \"angle\":\"馬達控制的角度值，若無關則不填\", \"response\":\"音訊內容的聊天回應\"}。馬達角度最大值為180, 最小值為0。 不要使用Markdown語法";
 //String geminiPrompt = "Audio to Text.";
 
@@ -112,7 +112,7 @@ void writeWavHeader(uint8_t* buffer, uint32_t dataSize) {
   memcpy(buffer + 40, &dataSize, 4);
 }
 
-size_t getAudioBufferLength(uint8_t* audioBuffer, size_t audioTotalSize) {
+size_t getwavDataLength(uint8_t* wavData, size_t audioTotalSize) {
     const size_t chunkSize = 960;
     size_t count = 0;
     for (size_t i = 0; i < audioTotalSize; i += chunkSize) {
@@ -121,7 +121,7 @@ size_t getAudioBufferLength(uint8_t* audioBuffer, size_t audioTotalSize) {
       if (!encodedChunk) {
         return 0;
       }
-      base64_encode(encodedChunk, (char*)(audioBuffer + i), len);
+      base64_encode(encodedChunk, (char*)(wavData + i), len);
       encodedChunk[base64_enc_len(len)] = '\0';
       count+=strlen(encodedChunk);
       free(encodedChunk);
@@ -129,7 +129,7 @@ size_t getAudioBufferLength(uint8_t* audioBuffer, size_t audioTotalSize) {
     return count;
 }
 
-String uploadAudioBufferToGemini(String apikey, String prompt, int seconds) {
+String uploadwavDataToGemini(String apikey, String prompt, int seconds) {
   uint8_t* audioData; 
   int BUFFER_BYTE_SIZE = SAMPLE_RATE * seconds * SAMPLE_BITS / 8;
          
@@ -168,22 +168,22 @@ String uploadAudioBufferToGemini(String apikey, String prompt, int seconds) {
     Serial.println("The recording is too short and may not be readable.");
   }
 
-  uint8_t* audioBuffer;
+  uint8_t* wavData;
   if (!psramFound()) {
-    Serial.println("PSRAM not found, fallback to normal malloc for audioBuffer.");
-    audioBuffer = (uint8_t*)malloc(44 + bytes_read);
+    Serial.println("PSRAM not found, fallback to normal malloc for wavData.");
+    wavData = (uint8_t*)malloc(44 + bytes_read);
   } else {
-    Serial.println("audioBuffer allocated in PSRAM.");    
-    audioBuffer = (uint8_t*)heap_caps_malloc(44 + bytes_read, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    Serial.println("wavData allocated in PSRAM.");    
+    wavData = (uint8_t*)heap_caps_malloc(44 + bytes_read, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
   }
-  if (audioBuffer == NULL) {
-    Serial.println("audioBuffer alloc failed!");
+  if (wavData == NULL) {
+    Serial.println("wavData alloc failed!");
     free(audioData);
-    return "audioBuffer alloc failed!";
+    return "wavData alloc failed!";
   }
 
-  writeWavHeader(audioBuffer, bytes_read);
-  memcpy(audioBuffer + 44, audioData, bytes_read);
+  writeWavHeader(wavData, bytes_read);
+  memcpy(wavData + 44, audioData, bytes_read);
   free(audioData);
     
   prompt.replace("\"", "\\\"");
@@ -191,7 +191,7 @@ String uploadAudioBufferToGemini(String apikey, String prompt, int seconds) {
   String request2 = "\", \"mime_type\": \"audio/wav\"}}, {\"text\": \""+prompt+"\"}]}]}";
 
   size_t audioTotalSize = 44 + bytes_read;
-  size_t totalEncodedLen = getAudioBufferLength(audioBuffer, audioTotalSize);
+  size_t totalEncodedLen = getwavDataLength(wavData, audioTotalSize);
   size_t contentLength = request1.length() + totalEncodedLen + request2.length();
 
   WiFiClientSecure client;  
@@ -220,7 +220,7 @@ String uploadAudioBufferToGemini(String apikey, String prompt, int seconds) {
         return "Memory allocation failed (encodedChunk).";
       }
     
-      base64_encode(encodedChunk, (char*)(audioBuffer + i), len);
+      base64_encode(encodedChunk, (char*)(wavData + i), len);
       encodedChunk[base64_enc_len(len)] = '\0';
     
       client.write((const uint8_t*)encodedChunk, strlen(encodedChunk));
@@ -260,7 +260,7 @@ String uploadAudioBufferToGemini(String apikey, String prompt, int seconds) {
        if (Feedback.length()>0) break;
     }
     client.stop();  
-    free(audioBuffer);
+    free(wavData);
     Serial.println();
     
     JsonObject obj;
@@ -275,7 +275,7 @@ String uploadAudioBufferToGemini(String apikey, String prompt, int seconds) {
     return getText;
   }
   else {
-    free(audioBuffer);    
+    free(wavData);    
     return "Connected to generativelanguage.googleapis.com failed.";
   }
 }
@@ -292,7 +292,7 @@ void setup() {
 
 void loop() {
   if (digitalRead(pinButton)==1) {
-    String response = uploadAudioBufferToGemini(geminiKey, geminiPrompt, 5);    //Recording for 5 seconds
+    String response = uploadwavDataToGemini(geminiKey, geminiPrompt, 5);    //Recording for 5 seconds
     Serial.println(response); 
   }
 }
