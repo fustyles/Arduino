@@ -296,6 +296,3 @@ void loop() {
     Serial.println(response); 
   }
 }
-
-
-
