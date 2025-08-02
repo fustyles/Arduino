@@ -1,6 +1,6 @@
 /* 
 NodeMCU-32S + INMP441 I2S microphone + Gemini Audio understanding
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-2 11:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-2 14:30
 https://www.facebook.com/francefu
 
 Development Environment
@@ -30,12 +30,15 @@ char wifi_pass[] = "xxxxx";
 
 String geminiKey = "xxxxx";
 //String geminiPrompt = "Audio to Text.";
-String geminiPrompt = "Please convert the audio message into text first. Based on the text content, determine whether it is related to Servo motor control and reply in JSON format: {\"text\":\"The text content of the audio message\", \"angle\":\"Motor control angle value. If not, fill in -1\", \"response\":\"Chat response based on audio content\"}. The maximum motor angle is 180, and the minimum is 0. Do not use Markdown syntax";
-//String geminiPrompt = "請先將音訊轉成繁體中文文字，根據文字內容判斷是否與控制伺服馬達有關，並以JSON格式回覆: {\"text\":\"音訊轉文字內容\", \"angle\":\"馬達控制的角度值，若無關則填-1\", \"response\":\"依音訊內容聊天回應\"}。馬達角度最大值為180, 最小值為0。 不要使用Markdown語法";
+String geminiPrompt = "First, convert the audio into Traditional Chinese text. Based on the text content, determine whether it is related to controlling a device, and respond in JSON format: {\"text\":\"transcribed text content\", \"devices\": [{\"servoAngle\":\"servo motor control angle value; use -1 if unrelated\"}], \"response\":\"chat response based on the audio content\"}. The maximum angle value for the motor is 180, and the minimum is 0. Do not use Markdown syntax.";
+String geminiPrompt = "請先將音訊轉成繁體中文文字，根據文字內容判斷是否與控制裝置有關，並以JSON格式回覆: {\"text\":\"音訊轉文字內容\", \"devices\": [{\"servoAngle\":\"伺服馬達控制的角度值，若無關則填-1\"}], \"response\":\"依音訊內容聊天回應\"}。馬達角度最大值為180, 最小值為0。 不要使用Markdown語法";
 
 int pinButton = 12;
 
 // INMP441 I2S:  SD --> IO13, VDD --> 3V3, GND --> GND, L/R --> GND, WS --> IO15, SCK --> IO2
+#define I2S_WS            15
+#define I2S_SD            13
+#define I2S_SCK           2
 #define I2S_WS            15
 #define I2S_SD            13
 #define I2S_SCK           2
@@ -297,6 +300,3 @@ void loop() {
     Serial.println(response); 
   }
 }
-
-
-
