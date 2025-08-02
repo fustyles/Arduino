@@ -129,7 +129,7 @@ size_t getWavDataLength(uint8_t* wavData, size_t wavSize) {
     return count;
 }
 
-String uploadwavDataToGemini(String apikey, String prompt, int seconds) {
+String uploadWavDataToGemini(String apikey, String prompt, int seconds) {
   uint8_t* audioData; 
   int BUFFER_BYTE_SIZE = SAMPLE_RATE * seconds * SAMPLE_BITS / 8;
          
@@ -291,8 +291,9 @@ void setup() {
 
 void loop() {
   if (digitalRead(pinButton)==1) {
-    String response = uploadwavDataToGemini(geminiKey, geminiPrompt, 5);    //Recording for 5 seconds
+    String response = uploadWavDataToGemini(geminiKey, geminiPrompt, 5);    //Recording for 5 seconds
     Serial.println(response); 
   }
 }
+
 
