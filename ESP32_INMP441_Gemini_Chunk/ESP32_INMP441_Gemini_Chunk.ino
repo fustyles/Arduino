@@ -137,8 +137,8 @@ String uploadwavDataToGemini(String apikey, String prompt, int seconds) {
     Serial.println("PSRAM not found, fallback to normal calloc for audioData.");
     audioData = (uint8_t*)calloc(BUFFER_BYTE_SIZE, 1);
   } else {
+    Serial.println("audioData allocated in PSRAM.");    
     audioData = (uint8_t*)heap_caps_calloc(BUFFER_BYTE_SIZE, 1, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
-    Serial.println("audioData allocated in PSRAM.");
   }
 
   if (audioData == NULL) {
@@ -296,5 +296,6 @@ void loop() {
     Serial.println(response); 
   }
 }
+
 
 
