@@ -1,6 +1,6 @@
 /* 
 NodeMCU-32S + INMP441 I2S microphone + Gemini Audio understanding
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-2 10:50
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-2 11:00
 https://www.facebook.com/francefu
 
 Development Environment
@@ -191,8 +191,8 @@ String uploadwavDataToGemini(String apikey, String prompt, int seconds) {
   String request2 = "\", \"mime_type\": \"audio/wav\"}}, {\"text\": \""+prompt+"\"}]}]}";
 
   size_t wavSize = 44 + bytes_read;
-  size_t totalEncodedLen = getWavDataLength(wavData, wavSize);
-  size_t contentLength = request1.length() + totalEncodedLen + request2.length();
+  size_t wavEncodedLength = getWavDataLength(wavData, wavSize);
+  size_t contentLength = request1.length() + wavEncodedLength + request2.length();
 
   WiFiClientSecure client;  
   client.setInsecure();
@@ -260,7 +260,7 @@ String uploadwavDataToGemini(String apikey, String prompt, int seconds) {
        }
        if (Feedback.length()>0) break;
     }
-    client.stop();  
+    client.stop(); 
     Serial.println();
     
     JsonObject obj;
@@ -295,4 +295,3 @@ void loop() {
     Serial.println(response); 
   }
 }
-
