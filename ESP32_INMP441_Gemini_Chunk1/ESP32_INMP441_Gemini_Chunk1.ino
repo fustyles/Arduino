@@ -1,10 +1,10 @@
 /* 
-NodeMCU-32S + INMP441 I2S microphone + Gemini Audio understanding
+ESP32 (PSRAM) + INMP441 I2S microphone + Gemini Audio understanding
 
 The ESP32 (PSRAM) is connected to an INMP441 I2S microphone to record audio and upload it to Gemini for understanding the audio content.
 Maximum recording time in seconds. You can interrupt the recording by pressing the button again.
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-3 23:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-4 00:20
 https://www.facebook.com/francefu
 
 Development Environment
@@ -34,8 +34,8 @@ char wifi_pass[] = "xxxxx";
 
 String geminiKey = "xxxxx";
 //String geminiPrompt = "Audio to Text.";
-String geminiPrompt = "First, convert the audio into text. Based on the text content, determine whether it is related to controlling a device, and respond with JSON data without using Markdown syntax: {\"text\":\"transcribed text content\", \"devices\": [{\"servoAngle\": servo motor control angle value (use the number -1 if unrelated. The maximum servo angle is the number 180, and the minimum is the number 0.)}], \"response\":\"chat response based on the audio content\"}";
-//String geminiPrompt = "請先將音訊轉成繁體中文文字，根據文字內容判斷是否與控制裝置有關，並以JSON格式資料但不加上Markdown語法回覆: {\"text\":\"音訊轉文字內容\", \"devices\": [{\"servoAngle\":伺服馬達控制的角度值 (若無關則填數字-1。伺服馬達角度最大值為數字180, 最小值為數字0。)}], \"response\":\"依音訊內容聊天回應\"}";
+//String geminiPrompt = "First, convert the audio into text. Based on the text content, determine whether it is related to controlling a device, and respond with JSON data without using Markdown syntax: {\"text\":\"transcribed text content\", \"devices\": [{\"servoAngle\": servo motor control angle value (use the number -1 if unrelated. The maximum servo angle is the number 180, and the minimum is the number 0.)}], \"response\":\"chat response based on the audio content\"}";
+String geminiPrompt = "請先將音訊轉成繁體中文文字，根據文字內容判斷是否與控制裝置有關，並以JSON格式資料但不加上Markdown語法回覆: {\"text\":\"音訊轉文字內容\", \"devices\": [{\"servoAngle\":伺服馬達控制的角度值 (若無關則填數字-1。伺服馬達角度最大值為數字180, 最小值為數字0。)}], \"response\":\"依音訊內容聊天回應\"}";
 
 int pinButton = 12;
 
@@ -49,7 +49,10 @@ int pinButton = 12;
 #define CHUNK_SIZE        1024
 #define RECORD_SECONDS    20    // Maximum recording time in seconds. You can interrupt the recording by pressing the button again. 
 int MAX_BUFFER_SIZE = SAMPLE_RATE * RECORD_SECONDS * SAMPLE_BITS / 8;
+
 uint8_t* audioData;
+uint8_t* wavData;
+size_t wavSize = 0;
 
 void initWiFi() {
   for (int i = 0; i < 2; i++) {
@@ -120,7 +123,7 @@ void writeWavHeader(uint8_t* buffer, uint32_t dataSize) {
   memcpy(buffer + 40, &dataSize, 4);
 }
 
-size_t getWavDataLength(uint8_t* wavData, size_t wavSize) {
+size_t getWavDataLength() {
     const size_t chunkSize = 960;
     size_t count = 0;
     for (size_t i = 0; i < wavSize; i += chunkSize) {
@@ -137,12 +140,12 @@ size_t getWavDataLength(uint8_t* wavData, size_t wavSize) {
     return count;
 }
 
-String uploadWavDataToGemini(String apikey, String prompt, uint8_t* wavData, size_t wavSize) {
+String uploadWavDataToGemini(String apikey, String prompt) {
   prompt.replace("\"", "\\\"");
   String requestHead = "{\"contents\": [{\"role\": \"user\", \"parts\": [{\"inline_data\": {\"data\": \"";
   String requestTail = "\", \"mime_type\": \"audio/wav\"}}, {\"text\": \""+prompt+"\"}]}]}";
     
-  size_t wavEncodedLength = getWavDataLength(wavData, wavSize);
+  size_t wavEncodedLength = getWavDataLength();
   size_t contentLength = requestHead.length() + wavEncodedLength + requestTail.length();
 
   WiFiClientSecure client;  
@@ -246,7 +249,7 @@ void loop() {
   static unsigned long startMillis = 0;
 
   if (digitalRead(pinButton) == 1 && !isRecording) {
-    delay(500);
+    delay(1000);
 
     Serial.println("Start recording...");
     isRecording = true;
@@ -283,7 +286,6 @@ void loop() {
       }
     }
 
-    uint8_t* wavData;
     if (!psramFound()) {
       wavData = (uint8_t*)malloc(44 + totalBytesRead);
     } else {
@@ -298,16 +300,16 @@ void loop() {
 
     writeWavHeader(wavData, totalBytesRead);
     memcpy(wavData + 44, audioData, totalBytesRead);
+    wavSize = totalBytesRead+44;
 
     free(audioData);
     Serial.println("WAV data ready.");
     
     //delay(1000);
 
-    String response = uploadWavDataToGemini(geminiKey, geminiPrompt, wavData, totalBytesRead+44);
+    String response = uploadWavDataToGemini(geminiKey, geminiPrompt);
     Serial.println(response);
 
     free(wavData);     
   }
 }
-
