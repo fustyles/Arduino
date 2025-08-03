@@ -47,8 +47,8 @@ int pinButton = 12;
 #define SAMPLE_RATE       16000
 #define SAMPLE_BITS       16
 #define CHUNK_SIZE        1024
-#define RECORD_SECONDS    20    // Maximum recording time in seconds. You can interrupt the recording by pressing the button again. 
-int MAX_BUFFER_SIZE = SAMPLE_RATE * RECORD_SECONDS * SAMPLE_BITS / 8;
+#define MAX_RECORD_TIME   20    // Maximum recording time in seconds. You can interrupt the recording by pressing the button again. 
+int MAX_BUFFER_SIZE = SAMPLE_RATE * MAX_RECORD_TIME * SAMPLE_BITS / 8;
 
 uint8_t* audioData;
 uint8_t* wavData;
@@ -275,7 +275,7 @@ void loop() {
       i2s_read(I2S_NUM_0, audioData + totalBytesRead, bytesToRead, &bytesRead, portMAX_DELAY);
       totalBytesRead += bytesRead;
 
-      if (millis() - startMillis > RECORD_SECONDS * 1000 || digitalRead(pinButton) == 1) {
+      if (millis() - startMillis > MAX_RECORD_TIME * 1000 || digitalRead(pinButton) == 1) {
         Serial.println("Recording stopped.");
         isRecording = false;
       }
@@ -313,3 +313,4 @@ void loop() {
     free(wavData);     
   }
 }
+
