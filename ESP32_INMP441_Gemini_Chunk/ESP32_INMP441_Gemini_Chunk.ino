@@ -64,7 +64,7 @@ void initWiFi() {
   }
 }
 
-void i2sInitial() {
+void initI2S() {
   i2s_config_t i2s_config = {
     .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),
     .sample_rate = SAMPLE_RATE,
@@ -286,7 +286,7 @@ void setup() {
 
   initWiFi();
   
-  i2sInitial(); 
+  initI2S(); 
 
   pinMode(pinButton, INPUT_PULLUP); 
 }
@@ -297,6 +297,7 @@ void loop() {
     Serial.println(response); 
   }
 }
+
 
 
 
