@@ -256,8 +256,7 @@ int calculateRMS(int16_t* samples, int count) {
 
 void updatePreBuffer(uint8_t* data, size_t len) {
   // 太長就只保留最後 preBufferSize bytes
-  if (len >= preBufferSize) {
-Serial.println(1);    
+  if (len >= preBufferSize) {    
     memcpy(preBuffer, data + (len - preBufferSize), preBufferSize);
     preBufferOffset = preBufferSize;
     return;
@@ -380,4 +379,5 @@ void loop() {
 
   delay(5); // 避免阻塞 CPU
 }
+
 
