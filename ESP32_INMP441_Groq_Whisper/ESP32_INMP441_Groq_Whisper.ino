@@ -1,5 +1,6 @@
 /* 
-NodeMCU-32S + INMP441 I2S microphone + Groq Whisper
+ESP32 (PSRAM) + INMP441 I2S microphone + Groq Whisper(STT)
+
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-3 20:30
 https://www.facebook.com/francefu
 
@@ -10,6 +11,11 @@ Arduino core for the ESP32 1.0.6
 Arduino IDE Settings:
 ESP32 Wrover Module
 Huge APP (3MB No OTA/1MB SPIFFS)
+
+INMP441 I2S:  
+SD --> IO13, VDD --> 3V3, GND --> GND, L/R --> GND, WS --> IO15, SCK --> IO2
+
+Button --> IO12
 */
 
 #include <esp_heap_caps.h>
@@ -241,4 +247,5 @@ void loop() {
     Serial.println(response); 
   }
 }
+
 
