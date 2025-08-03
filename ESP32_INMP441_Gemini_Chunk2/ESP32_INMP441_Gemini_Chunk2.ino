@@ -1,6 +1,9 @@
 /* 
 ESP32 (PSRAM) + INMP441 I2S microphone + Gemini Audio understanding
 
+The ESP32 (PSRAM) is connected to an INMP441 I2S microphone to record audio and upload it to Gemini for understanding the audio content.
+Automatically detects sound input and starts recording. If there is no sound for three seconds, recording stops.
+
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-4 02:00
 https://www.facebook.com/francefu
 
@@ -12,13 +15,8 @@ Arduino IDE Settings:
 ESP32 Wrover Module
 Huge APP (3MB No OTA/1MB SPIFFS)
 
-The ESP32 (PSRAM) is connected to an INMP441 I2S microphone to record audio and upload it to Gemini for understanding the audio content.
-Automatically detects sound input and starts recording. If there is no sound for three seconds, recording stops.
-
 INMP441 I2S:  
 SD --> IO13, VDD --> 3V3, GND --> GND, L/R --> GND, WS --> IO15, SCK --> IO2
-
-Button --> IO12
 
 Gemini API Key
 https://aistudio.google.com/app/apikey
@@ -42,7 +40,6 @@ String geminiKey = "xxxxx";
 String geminiPrompt = "First, convert the audio into text. Based on the text content, determine whether it is related to controlling devices, and respond with JSON data without using Markdown syntax: {\"text\":\"transcribed text content\", \"devices\": [{\"servoAngle\": servo motor control angle value (use the number -1 if unrelated. The maximum servo angle is the number 180, and the minimum is the number 0.)}], \"response\":\"chat response based on the audio content\"}";
 //String geminiPrompt = "請先將音訊轉成繁體中文文字，根據文字內容判斷是否與控制裝置有關，並以JSON格式資料但不加上Markdown語法回覆: {\"text\":\"音訊轉文字內容\", \"devices\": [{\"servoAngle\":伺服馬達控制的角度值 (若無關則填數字-1。伺服馬達角度最大值為數字180, 最小值為數字0。)}], \"response\":\"依音訊內容聊天回應\"}";
 
-// INMP441 I2S:  SD --> IO13, VDD --> 3V3, GND --> GND, L/R --> GND, WS --> IO15, SCK --> IO2
 #define I2S_WS            15
 #define I2S_SD            13
 #define I2S_SCK           2
@@ -383,6 +380,7 @@ void loop() {
 
   delay(5); // 避免阻塞 CPU
 }
+
 
 
 
