@@ -1,10 +1,6 @@
 /* 
 ESP32 (PSRAM) + INMP441 I2S microphone + Gemini Audio understanding
 
-The ESP32 (PSRAM) is connected to an INMP441 I2S microphone to record audio and upload it to Gemini for understanding the audio content.
-Automatically detects sound input and starts recording. If there is no sound for three seconds, recording stops.
-
-
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-4 02:00
 https://www.facebook.com/francefu
 
@@ -15,6 +11,14 @@ Arduino core for the ESP32 1.0.6
 Arduino IDE Settings:
 ESP32 Wrover Module
 Huge APP (3MB No OTA/1MB SPIFFS)
+
+The ESP32 (PSRAM) is connected to an INMP441 I2S microphone to record audio and upload it to Gemini for understanding the audio content.
+Automatically detects sound input and starts recording. If there is no sound for three seconds, recording stops.
+
+INMP441 I2S:  
+SD --> IO13, VDD --> 3V3, GND --> GND, L/R --> GND, WS --> IO15, SCK --> IO2
+
+Button --> IO12
 
 Gemini API Key
 https://aistudio.google.com/app/apikey
@@ -379,5 +383,6 @@ void loop() {
 
   delay(5); // 避免阻塞 CPU
 }
+
 
 
