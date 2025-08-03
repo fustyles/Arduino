@@ -304,9 +304,10 @@ void loop() {
     
     //delay(1000);
 
-    String response = uploadWavDataToGemini(geminiKey, geminiPrompt, wavData, totalBytesRead+44);    //Recording for 5 seconds
+    String response = uploadWavDataToGemini(geminiKey, geminiPrompt, wavData, totalBytesRead+44);
     Serial.println(response);
 
     free(wavData);     
   }
 }
+
