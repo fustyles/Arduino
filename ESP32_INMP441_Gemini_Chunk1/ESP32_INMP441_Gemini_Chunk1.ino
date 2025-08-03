@@ -44,7 +44,6 @@ String geminiPrompt = "請先將音訊轉成繁體中文文字，根據文字內
 
 int pinButton = 12;
 
-// INMP441 I2S:  SD --> IO13, VDD --> 3V3, GND --> GND, L/R --> GND, WS --> IO15, SCK --> IO2
 #define I2S_WS            15
 #define I2S_SD            13
 #define I2S_SCK           2
@@ -318,6 +317,7 @@ void loop() {
     free(wavData);     
   }
 }
+
 
 
 
