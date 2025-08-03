@@ -15,6 +15,11 @@ Arduino IDE Settings:
 ESP32 Wrover Module
 Huge APP (3MB No OTA/1MB SPIFFS)
 
+INMP441 I2S:  
+SD --> IO13, VDD --> 3V3, GND --> GND, L/R --> GND, WS --> IO15, SCK --> IO2
+
+Button --> IO12
+
 Gemini API Key
 https://aistudio.google.com/app/apikey
 
@@ -313,6 +318,7 @@ void loop() {
     free(wavData);     
   }
 }
+
 
 
 
