@@ -1,5 +1,6 @@
 /* 
 ESP32 (PSRAM) + INMP441 I2S microphone + Gemini Audio understanding
+
 The ESP32 (PSRAM) is connected to an INMP441 I2S microphone to record audio and upload it to Gemini for understanding the audio content.
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-2 14:50
@@ -299,6 +300,7 @@ void loop() {
     Serial.println(response); 
   }
 }
+
 
 
 
