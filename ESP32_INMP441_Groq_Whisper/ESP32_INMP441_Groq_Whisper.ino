@@ -1,6 +1,6 @@
 /* 
 NodeMCU-32S + INMP441 I2S microphone + Groq Whisper
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-3 19:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-3 20:30
 https://www.facebook.com/francefu
 
 Development Environment
@@ -16,7 +16,6 @@ Huge APP (3MB No OTA/1MB SPIFFS)
 #include "driver/i2s.h"
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
-#include "Base64.h"
 #include <ArduinoJson.h>
 
 char wifi_ssid[] = "xxxxx";
@@ -242,3 +241,4 @@ void loop() {
     Serial.println(response); 
   }
 }
+
