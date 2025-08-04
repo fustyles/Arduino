@@ -32,18 +32,22 @@ https://ai.google.dev/gemini-api/docs/audio
 #include "Base64.h"
 #include <ArduinoJson.h>
 
+// WiFi credentials
 char wifi_ssid[] = "xxxxx";
 char wifi_pass[] = "xxxxx";
 
+// Gemini API Key and prompt
 String geminiKey = "xxxxx";
 //String geminiPrompt = "Audio to Text.";
 String geminiPrompt = "First, convert the audio into text. Based on the text content, determine whether it is related to controlling devices, and respond with JSON data without using Markdown syntax: {\"text\":\"transcribed text content\", \"devices\": [{\"servoAngle\": servo motor control angle value (use the number -1 if unrelated. The maximum servo angle is the number 180, and the minimum is the number 0.)}], \"response\":\"chat response based on the audio content\"}";
 //String geminiPrompt = "請先將音訊轉成繁體中文文字，根據文字內容判斷是否與控制裝置有關，並以JSON格式資料但不加上Markdown語法回覆: {\"text\":\"音訊轉文字內容\", \"devices\": [{\"servoAngle\":伺服馬達控制的角度值 (若無關則填數字-1。伺服馬達角度最大值為數字180, 最小值為數字0。)}], \"response\":\"依音訊內容聊天回應\"}";
 
+// I2S microphone pin definitions
 #define I2S_WS            15
 #define I2S_SD            13
 #define I2S_SCK           2
 
+// Audio settings
 #define SAMPLE_RATE       16000
 #define SAMPLE_BITS       16
 #define CHANNEL_NUM       1
@@ -53,20 +57,24 @@ String geminiPrompt = "First, convert the audio into text. Based on the text con
 #define SILENCE_TIMEOUT   3000
 #define PREBUFFER_SECONDS 1
 
+// Buffer sizes
 int maxBufferSize = SAMPLE_RATE * MAX_RECORD_TIME * SAMPLE_BITS / 8;
 int preBufferSize = SAMPLE_RATE * PREBUFFER_SECONDS * SAMPLE_BITS / 8;
 uint8_t* preBuffer;
 int preBufferOffset = 0;
 
+// Audio buffers
 uint8_t* audioData;
 uint8_t* wavData;
 size_t wavSize = 0;
 
+// Recording state tracking
 bool isRecording = false;
 unsigned long startMillis = 0;
 unsigned long lastLoudMillis = 0;
 size_t totalBytesRead = 0;
 
+// Initialize WiFi connection
 void initWiFi() {
   for (int i = 0; i < 2; i++) {
     WiFi.begin(wifi_ssid, wifi_pass);
@@ -88,6 +96,7 @@ void initWiFi() {
   }
 }
 
+// Initialize I2S microphone
 void initI2S() {
   i2s_config_t i2s_config = {
     .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),
@@ -112,6 +121,7 @@ void initI2S() {
   i2s_set_pin(I2S_NUM_0, &pin_config);  
 }
 
+// Write WAV file header to buffer
 void writeWavHeader(uint8_t* buffer, uint32_t dataSize) {
   uint32_t chunkSize = dataSize + 36;
   uint32_t sampleRate = SAMPLE_RATE;
@@ -136,6 +146,7 @@ void writeWavHeader(uint8_t* buffer, uint32_t dataSize) {
   memcpy(buffer + 40, &dataSize, 4);
 }
 
+// Calculate the Base64 encoded length of the full WAV file
 size_t getWavDataLength() {
     const size_t chunkSize = 960;
     size_t count = 0;
@@ -153,6 +164,7 @@ size_t getWavDataLength() {
     return count;
 }
 
+// Upload WAV data to Gemini and receive transcribed response
 String uploadWavDataToGemini(String apikey, String prompt) {
   prompt.replace("\"", "\\\"");
   String requestHead = "{\"contents\": [{\"role\": \"user\", \"parts\": [{\"inline_data\": {\"data\": \"";
@@ -247,6 +259,7 @@ String uploadWavDataToGemini(String apikey, String prompt) {
   }
 }
 
+// Calculate Root Mean Square (RMS) value from audio samples (used to detect loudness)
 int calculateRMS(int16_t* samples, int count) {
   long sum = 0;
   for (int i = 0; i < count; i++) {
@@ -255,20 +268,21 @@ int calculateRMS(int16_t* samples, int count) {
   return sqrt((float)sum / count);
 }
 
+// Update the pre-buffer with recent audio data to retain last 1 second before trigger
 void updatePreBuffer(uint8_t* data, size_t len) {
-  // 太長就只保留最後 preBufferSize bytes
+  // If new data is too long, just keep the last preBufferSize bytes
   if (len >= preBufferSize) {    
     memcpy(preBuffer, data + (len - preBufferSize), preBufferSize);
     preBufferOffset = preBufferSize;
     return;
   }
 
-  // 若空間足夠，直接加到後面
+  // If space available, append to end
   if (preBufferOffset + len <= preBufferSize) {  
     memcpy(preBuffer + preBufferOffset, data, len);
     preBufferOffset += len;
   } else {   
-    // 滾動：把舊的往前推
+    // Shift old data to make room (rolling buffer)
     int shiftSize = len;
     memmove(preBuffer, preBuffer + shiftSize, preBufferSize - shiftSize);
     memcpy(preBuffer + (preBufferSize - shiftSize), data, shiftSize);
@@ -283,6 +297,7 @@ void setup() {
   
   initI2S();
 
+  // Allocate memory for pre-buffer (PSRAM preferred)
   if (!psramFound()) {
     preBuffer = (uint8_t*)malloc(preBufferSize);
   } else {
@@ -290,22 +305,24 @@ void setup() {
   }   
 }
 
+// Main loop: Continuously monitor audio input and trigger recording when sound is detected
 void loop() {
   size_t bytesRead = 0;
   uint8_t sampleBuffer[CHUNK_SIZE];
 
-  // 讀取一段音訊
+  // Read a chunk of audio data from I2S
   i2s_read(I2S_NUM_0, sampleBuffer, CHUNK_SIZE, &bytesRead, portMAX_DELAY);
-  //計算音量  
+  // Calculate loudness of the current audio sample (RMS)
   int rms = calculateRMS((int16_t*)sampleBuffer, bytesRead / 2);
-  // 更新前緩衝（保持最後1秒音訊）
+  // Continuously update pre-buffer with recent audio
   updatePreBuffer(sampleBuffer, bytesRead);
 
-  // ----- 偵測觸發 -----
+  // ---- Triggered Recording Start ----
   if (!isRecording) {
-    if (rms > THRESHOLD_RMS) {
+    if (rms > THRESHOLD_RMS) {  // Detect loud sound to trigger recording
       Serial.println("Detected sound, start recording.");
 
+      // Allocate audio buffer for full recording duration
       if (!psramFound()) {
         audioData = (uint8_t*)calloc(maxBufferSize, 1);
       } else {
@@ -316,34 +333,35 @@ void loop() {
         return;
       }
 
-      // 將前緩衝資料拷貝進來
+      // Copy pre-buffered audio before trigger into recording buffer
       memcpy(audioData, preBuffer, preBufferOffset);
       totalBytesRead = preBufferOffset;
 
-      // 將當前這一段也加入錄音中
+      // Add current sample to audio buffer
       if (totalBytesRead + bytesRead <= maxBufferSize) {
         memcpy(audioData + totalBytesRead, sampleBuffer, bytesRead);
         totalBytesRead += bytesRead;
       }
 
       isRecording = true;
-      startMillis = millis();
-      lastLoudMillis = millis();
+      startMillis = millis();         // Start timing the recording
+      lastLoudMillis = millis();      // Mark latest sound detected
     }
 
-  // ----- 錄音中 -----
+  // ---- During Recording ----
   } else {
+    // Add current audio chunk to recording buffer
     if (totalBytesRead + bytesRead <= maxBufferSize) {
       memcpy(audioData + totalBytesRead, sampleBuffer, bytesRead);
       totalBytesRead += bytesRead;
     }
 
-    // 更新最後有聲音的時間
+    // Update last loud moment if sound continues
     if (rms > THRESHOLD_RMS) {
       lastLoudMillis = millis();
     }
 
-    // 檢查錄音結束條件
+    // Check end condition: timeout, silence, or buffer full
     bool timeoutReached = (millis() - startMillis > MAX_RECORD_TIME * 1000);
     bool silenceTooLong = (millis() - lastLoudMillis > SILENCE_TIMEOUT);
     bool bufferFull = (totalBytesRead >= maxBufferSize);
@@ -351,26 +369,29 @@ void loop() {
     if (timeoutReached || silenceTooLong || bufferFull) {
       Serial.println("Stopping recording.");
 
+      // Allocate memory for WAV data
       if (!psramFound()) {
         wavData = (uint8_t*)malloc(44 + totalBytesRead);
       } else {
         wavData = (uint8_t*)heap_caps_malloc(44 + totalBytesRead, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
       }
 
+      // If allocation successful, finalize WAV and upload
       if (wavData) {
-        writeWavHeader(wavData, totalBytesRead);
-        memcpy(wavData + 44, audioData, totalBytesRead);
+        writeWavHeader(wavData, totalBytesRead);  // Write WAV header
+        memcpy(wavData + 44, audioData, totalBytesRead); // Append audio
         wavSize = totalBytesRead + 44;
         Serial.printf("WAV complete, total = %d bytes (including prebuffer)\n", wavSize);
     
         String response = uploadWavDataToGemini(geminiKey, geminiPrompt);
         Serial.println(response);
 
-        free(wavData);
+        free(wavData);  // Free WAV buffer
       } else {
         Serial.println("Failed to allocate wavData.");
       }
 
+      // Cleanup and reset state
       free(audioData);
       isRecording = false;
       totalBytesRead = 0;
@@ -378,8 +399,9 @@ void loop() {
     }
   }
 
-  delay(5); // 避免阻塞 CPU
+  delay(5);  // Short delay to reduce CPU load
 }
+
 
 
 
