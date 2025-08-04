@@ -47,21 +47,21 @@ String geminiPrompt = "First, convert the audio into text. Based on the text con
 #define I2S_SD            13
 #define I2S_SCK           2
 
-// Audio settings
-#define SAMPLE_RATE       16000
-#define SAMPLE_BITS       16
-#define CHANNEL_NUM       1
-#define MAX_RECORD_TIME   20
-#define CHUNK_SIZE        1024
-#define THRESHOLD_RMS     3000
-#define SILENCE_TIMEOUT   3000
-#define PREBUFFER_SECONDS 1
+// Define recording parameters and thresholds
+#define SAMPLE_RATE       16000   // Sampling rate in Hz (samples per second)
+#define SAMPLE_BITS       16      // Bits per sample (audio resolution)
+#define CHANNEL_NUM       1       // Mono channel input
+#define MAX_RECORD_TIME   20      // Maximum recording time in seconds
+#define CHUNK_SIZE        1024    // Size of each audio read chunk in bytes
+#define THRESHOLD_RMS     3000    // RMS threshold to trigger recording (sound detection)
+#define SILENCE_TIMEOUT   3000    // Stop recording if silence persists (in ms)
+#define PREBUFFER_SECONDS 1       // Amount of audio (in seconds) to retain before sound trigger
 
-// Buffer sizes
-int maxBufferSize = SAMPLE_RATE * MAX_RECORD_TIME * SAMPLE_BITS / 8;
-int preBufferSize = SAMPLE_RATE * PREBUFFER_SECONDS * SAMPLE_BITS / 8;
-uint8_t* preBuffer;
-int preBufferOffset = 0;
+// Calculate buffer sizes based on sampling parameters
+int maxBufferSize = SAMPLE_RATE * MAX_RECORD_TIME * SAMPLE_BITS / 8;  // Total size for recording buffer (in bytes)
+int preBufferSize = SAMPLE_RATE * PREBUFFER_SECONDS * SAMPLE_BITS / 8;  // Size of pre-trigger buffer (in bytes)
+uint8_t* preBuffer;          // Pointer to pre-buffer memory
+int preBufferOffset = 0;     // Offset to track how much data is filled in pre-buffer
 
 // Audio buffers
 uint8_t* audioData;
@@ -69,10 +69,10 @@ uint8_t* wavData;
 size_t wavSize = 0;
 
 // Recording state tracking
-bool isRecording = false;
-unsigned long startMillis = 0;
-unsigned long lastLoudMillis = 0;
-size_t totalBytesRead = 0;
+bool isRecording = false;           // Flag to indicate if recording is active
+unsigned long startMillis = 0;      // Timestamp when recording started
+unsigned long lastLoudMillis = 0;   // Timestamp of last detected loud sound
+size_t totalBytesRead = 0;          // Total number of bytes recorded so far
 
 // Initialize WiFi connection
 void initWiFi() {
@@ -99,15 +99,15 @@ void initWiFi() {
 // Initialize I2S microphone
 void initI2S() {
   i2s_config_t i2s_config = {
-    .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),
-    .sample_rate = SAMPLE_RATE,
-    .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
-    .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
-    .communication_format = I2S_COMM_FORMAT_I2S,
-    .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
-    .dma_buf_count = 4,
-    .dma_buf_len = 1024,
-    .use_apll = true
+    .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX), // Required: Set ESP32 as I2S master and receiver to capture data from microphone
+    .sample_rate = SAMPLE_RATE,                          // Required: Must match the microphone's supported sampling rate
+    .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,        // Required: INMP441 outputs 16-bit audio samples
+    .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,         // Required: INMP441 uses only the left audio channel for mono output
+    .communication_format = I2S_COMM_FORMAT_I2S,         // Required: Standard I2S communication format used by INMP441
+    .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,            // Optional: Interrupt priority level (level 1 is standard)
+    .dma_buf_count = 4,                                  // Optional but recommended: Number of DMA buffers used for streaming
+    .dma_buf_len = 1024,                                 // Optional but recommended: Length of each DMA buffer in samples
+    .use_apll = true                                     // Optional: Enable APLL for higher clock precision (depends on ESP32 board)
   };
 
   i2s_pin_config_t pin_config = {
@@ -401,8 +401,3 @@ void loop() {
 
   delay(5);  // Short delay to reduce CPU load
 }
-
-
-
-
-
