@@ -2,7 +2,7 @@
 ESP32 (PSRAM) + INMP441 I2S microphone + Gemini Audio understanding
 
 The ESP32 (PSRAM) is connected to an INMP441 I2S microphone to record audio and upload it to Gemini for understanding the audio content.
-The maximum recording time is 20 seconds, but you can control the recording time using the buttons.
+The maximum recording time is 20 seconds, but you can control the recording time using the button.
 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-4 00:20
 https://www.facebook.com/francefu
@@ -317,3 +317,4 @@ void loop() {
     free(wavData);     
   }
 }
+
