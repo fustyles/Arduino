@@ -1,6 +1,8 @@
 /* 
 ESP32 (PSRAM) + INMP441 I2S microphone + Groq Whisper(STT)
 
+The ESP32 (with PSRAM) is connected to an INMP441 I2S microphone to record audio and upload it to Whisper for transcription into text.
+
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-3 20:30
 https://www.facebook.com/francefu
 
@@ -249,6 +251,7 @@ void loop() {
     Serial.println(response); 
   }
 }
+
 
 
 
