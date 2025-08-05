@@ -16,6 +16,9 @@ INMP441 I2S:
 SD --> IO13, VDD --> 3V3, GND --> GND, L/R --> GND, WS --> IO15, SCK --> IO2
 
 Button --> IO12
+
+Groq API Key
+https://console.groq.com/keys
 */
 
 #include <esp_heap_caps.h>
@@ -246,6 +249,7 @@ void loop() {
     Serial.println(response); 
   }
 }
+
 
 
 
