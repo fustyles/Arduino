@@ -4,7 +4,7 @@ ESP32 (PSRAM) + INMP441 I2S microphone + Gemini Audio understanding
 The ESP32 (PSRAM) is connected to an INMP441 I2S microphone to record audio and upload it to Gemini for understanding the audio content.
 Automatically detects sound input and starts recording. If there is no sound for three seconds, recording stops.
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-4 02:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-13 00:00
 https://www.facebook.com/francefu
 
 Development Environment
@@ -290,6 +290,30 @@ void updatePreBuffer(uint8_t* data, size_t len) {
   } 
 }
 
+void getResponseData(String jsonResponse) {
+  Serial.println(jsonResponse);
+    
+  JsonObject jsonObject;
+  DynamicJsonDocument jsonObject_doc(2048);
+  JsonArray deviceArray;
+  DynamicJsonDocument deviceArray_doc(1024);
+  JsonObject deviceItem;
+  DynamicJsonDocument deviceItem_doc(1024);  
+  
+  deserializeJson(jsonObject_doc, jsonResponse);
+  jsonObject = jsonObject_doc.as<JsonObject>();
+  Serial.println("User: "+jsonObject["text"].as<String>());
+  Serial.println("Gemini: "+jsonObject["response"].as<String>());
+
+  deviceArray = jsonObject["devices"].as<JsonArray>();
+  for (int i = 0; i <= deviceArray.size() - 1; i++) {
+    deviceItem = deviceArray[i];
+    if (deviceItem["servoAngle"].as<String>()) {
+      Serial.println("Servo angle: "+deviceItem["servoAngle"].as<String>());
+    }
+  }
+}
+
 void setup() {
   Serial.begin(115200);
 
@@ -401,3 +425,4 @@ void loop() {
 
   delay(5);  // Short delay to reduce CPU load
 }
+
