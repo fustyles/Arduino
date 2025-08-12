@@ -12,7 +12,10 @@ Arduino IDE Settings:
 ESP32 Wrover Module
 Huge APP (3MB No OTA/1MB SPIFFS)
 
-ESP32-audioI2S v2.0.0
+MAX98357A I2S: 
+LRC --> IO26, BCLK --> IO27, DIN --> IO25, GAIN --> GND, GND --> GND, VIN --> 5V
+
+ESP32-audioI2S v2.0.0 (old version)
 https://github.com/schreibfaul1/ESP32-audioI2S/releases/tag/2.0.6
 
 //Fix these two sections of code in Audio.cpp
@@ -31,7 +34,7 @@ if(InBuff.bufferFilled() < maxFrameSize && f_stream && !f_webFileDataComplete){
 
 if(f_stream && !availableBytes && !f_webFileAudioComplete){
     loopCnt++;
-    if(loopCnt > 10000) {              // wait several seconds
+    if(loopCnt > 10000) {
         loopCnt = 0;
         if(audio_info) audio_info("Stream lost");
         m_f_running = false;
@@ -166,4 +169,5 @@ String urlencode(String str) {
   }
   return encoded;
 }
+
 
