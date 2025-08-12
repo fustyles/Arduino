@@ -23,7 +23,7 @@ SD --> IO13, VDD --> 3V3, GND --> GND, L/R --> GND, WS --> IO15, SCK --> IO2
 MAX98357A I2S:  (I2S_NUM_0) 
 LRC --> IO26, BCLK --> IO27, DIN --> IO25, GAIN --> GND, GND --> GND, VIN --> 5V
 
-ESP32-audioI2S v2.0.0
+ESP32-audioI2S v2.0.0 (old version)
 https://github.com/schreibfaul1/ESP32-audioI2S/releases/tag/2.0.6
 
 //Fix these two sections of code in Audio.cpp
@@ -530,4 +530,5 @@ void loop() {
     }
   }
 }
+
 
