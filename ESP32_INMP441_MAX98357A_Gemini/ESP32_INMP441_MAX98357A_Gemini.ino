@@ -82,7 +82,7 @@ Audio audio_play;
 #define I2S_BCLK      27  // Bit Clock
 #define I2S_LRC       26  // Left/Right Clock (Word Select)
 
-String speakText = "";
+String speakText = "";  // Text to speech
 
 // I2S microphone pin definitions
 #define I2S_WS            15
@@ -525,4 +525,5 @@ void loop() {
     }
   }
 }
+
 
