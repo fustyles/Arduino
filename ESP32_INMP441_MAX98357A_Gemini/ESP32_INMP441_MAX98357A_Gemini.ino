@@ -420,8 +420,11 @@ void loop() {
                       + urlencode(speakText) +
                       "&tl=zh-TW&client=tw-ob";    
       speakText = "";
+        
+      // Clear the I2S DMA buffer to remove any residual audio data
       i2s_zero_dma_buffer(I2S_NUM_1);
-      i2s_start(I2S_NUM_1); 
+      // Restart the I2S peripheral to resume audio capture
+      i2s_start(I2S_NUM_1);
             
       // Start playing audio from the given URL
       audio_play.connecttohost(ttsUrl.c_str()); 
@@ -525,5 +528,6 @@ void loop() {
     }
   }
 }
+
 
 
