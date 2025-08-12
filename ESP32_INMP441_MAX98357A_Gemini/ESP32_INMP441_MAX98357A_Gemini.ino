@@ -415,6 +415,7 @@ void loop() {
   
   // When not playing audio, request new Google TTS audio
   if (!audio_play.isRunning()) {
+      
     if (speakText!="") {    
       String ttsUrl = "https://translate.google.com/translate_tts?ie=UTF-8&q=" 
                       + urlencode(speakText) +
@@ -428,6 +429,7 @@ void loop() {
             
       // Start playing audio from the given URL
       audio_play.connecttohost(ttsUrl.c_str()); 
+        
     } else {
       
         size_t bytesRead = 0;
@@ -528,6 +530,7 @@ void loop() {
     }
   }
 }
+
 
 
 
