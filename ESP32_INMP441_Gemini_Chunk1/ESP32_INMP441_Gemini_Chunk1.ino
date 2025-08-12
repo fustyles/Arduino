@@ -158,7 +158,7 @@ String uploadWavDataToGemini(String apikey, String prompt) {
   if (client.connect("generativelanguage.googleapis.com", 443)) {
     Serial.println("Connection successful");
     client.println("POST /v1beta/models/gemini-2.0-flash:generateContent?key=" + apikey + " HTTP/1.1");
-    client.println("Connection: close");
+    client.println("Connection: Keep-Alive");
     client.println("Host: generativelanguage.googleapis.com");
     client.println("Content-Type: application/json; charset=utf-8");
     client.println("Content-Length: " + String(contentLength));
@@ -341,6 +341,7 @@ void loop() {
     free(wavData);     
   }
 }
+
 
 
 
