@@ -1,4 +1,5 @@
 /* 
+Gemini AIoT Voice Assistant
 ESP32 (PSRAM) + INMP441 I2S microphone + MAX98357A I2S (DAC) + Gemini Audio understanding
 
 The ESP32 (PSRAM) is connected to an INMP441 I2S microphone to record audio and upload it to Gemini for understanding the audio content.
@@ -524,3 +525,4 @@ void loop() {
     }
   }
 }
+
