@@ -292,7 +292,8 @@ void updatePreBuffer(uint8_t* data, size_t len) {
 
 void getResponseData(String jsonResponse) {
   Serial.println(jsonResponse);
-    
+  if (jsonResponse.indexOf("{")==-1) return;
+  
   JsonObject jsonObject;
   DynamicJsonDocument jsonObject_doc(2048);
   JsonArray deviceArray;
@@ -425,5 +426,6 @@ void loop() {
 
   delay(5);  // Short delay to reduce CPU load
 }
+
 
 
