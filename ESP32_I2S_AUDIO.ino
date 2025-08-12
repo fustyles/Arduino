@@ -31,7 +31,7 @@ if(InBuff.bufferFilled() < maxFrameSize && f_stream && !f_webFileDataComplete){
 
 if(f_stream && !availableBytes && !f_webFileAudioComplete){
     loopCnt++;
-    if(loopCnt > 200000) {              // wait several seconds
+    if(loopCnt > 10000) {              // wait several seconds
         loopCnt = 0;
         if(audio_info) audio_info("Stream lost");
         m_f_running = false;
@@ -166,3 +166,4 @@ String urlencode(String str) {
   }
   return encoded;
 }
+
