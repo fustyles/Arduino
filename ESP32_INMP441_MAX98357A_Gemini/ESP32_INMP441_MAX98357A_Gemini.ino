@@ -5,7 +5,7 @@ The ESP32 (PSRAM) is connected to an INMP441 I2S microphone to record audio and 
 Automatically detects sound input and starts recording. If there is no sound for three seconds, recording stops. 
 Play the Gemini’s reply through a speaker by converting it to an MP3 file using Google TTS.
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-13 12:20
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-13 14:00
 https://www.facebook.com/francefu
 
 Development Environment
@@ -347,29 +347,20 @@ void getResponseData(String jsonResponse) {
 
 // Function to URL-encode a string for HTTP requests
 String urlencode(String str) {
-  String encoded = "";
-  char c;
-  char code0, code1;
-  
-  for (int i = 0; i < str.length(); i++) {
-    c = str.charAt(i);
-    
-    if (isalnum(c)) {
-      // Keep alphanumeric characters as-is
-      encoded += c;
+  const char *msg = str.c_str();
+  const char *hex = "0123456789ABCDEF";
+  String encodedMsg = "";
+  while (*msg != '\0') {
+    if (('a' <= *msg && *msg <= 'z') || ('A' <= *msg && *msg <= 'Z') || ('0' <= *msg && *msg <= '9') || *msg == '-' || *msg == '_' || *msg == '.' || *msg == '~') {
+      encodedMsg += *msg;
     } else {
-      // Convert special characters to %xx format
-      code1 = (c & 0xf) + '0';
-      if ((c & 0xf) > 9) code1 = (c & 0xf) - 10 + 'A';
-      c = (c >> 4) & 0xf;
-      code0 = c + '0';
-      if (c > 9) code0 = c - 10 + 'A';
-      encoded += '%';
-      encoded += code0;
-      encoded += code1;
+      encodedMsg += '%';
+      encodedMsg += hex[(unsigned char)*msg >> 4];
+      encodedMsg += hex[*msg & 0xf];
     }
+    msg++;
   }
-  return encoded;
+  return encodedMsg;
 }
 
 void setup() {
@@ -402,7 +393,8 @@ void loop() {
   
   // When not playing audio, request new Google TTS audio
   if (!audio_play.isRunning()) {
-    if (speakText!="") {    
+    if (speakText!="") {  
+        
       String ttsUrl = "https://translate.google.com/translate_tts?ie=UTF-8&q=" 
                       + urlencode(speakText) +
                       "&tl=zh-TW&client=tw-ob";    
@@ -413,10 +405,11 @@ void loop() {
 
       // Restart the I2S peripheral to resume audio capture
       i2s_start(I2S_NUM_1);
-            
+   
       // Start playing audio from the given URL
       //Serial.println("Connect to Google TTS");      
       audio_play.connecttohost(ttsUrl.c_str()); 
+      
     } else {
       
         size_t bytesRead = 0;
@@ -513,11 +506,7 @@ void loop() {
       
         delay(5);  // Short delay to reduce CPU load
 
-      
     }
   }
 }
-
-
-
 
