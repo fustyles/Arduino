@@ -1,5 +1,6 @@
 /* 
-ESP32 (PSRAM) + INMP441 I2S microphone + MAX98357A I2S (DAC) + Gemini Audio understanding
+ESP32 (PSRAM) AIoT Voice assistant
+INMP441 I2S microphone --> Gemini Audio understanding --> Google TTS --> MAX98357A I2S (DAC)
 
 The ESP32 (PSRAM) is connected to an INMP441 I2S microphone to record audio and upload it to Gemini for understanding the audio content.
 Automatically detects sound input and starts recording. If there is no sound for three seconds, recording stops. 
@@ -523,3 +524,4 @@ void loop() {
     }
   }
 }
+
