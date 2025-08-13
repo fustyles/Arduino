@@ -285,7 +285,10 @@ String uploadWavDataToGemini(String apikey, String prompt, int seconds) {
 
 void getResponseData(String jsonResponse) {
   Serial.println(jsonResponse);
-  if (jsonResponse.indexOf("{")==-1) return;
+  if (jsonResponse.indexOf("{")!=0) {
+    Serial.println("JsonObject data format error");
+    return;
+  }
   
   JsonObject jsonObject;
   DynamicJsonDocument jsonObject_doc(2048);
@@ -324,6 +327,7 @@ void loop() {
     Serial.println(response); 
   }
 }
+
 
 
 
