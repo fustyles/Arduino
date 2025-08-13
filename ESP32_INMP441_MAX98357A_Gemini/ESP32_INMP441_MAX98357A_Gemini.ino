@@ -1,12 +1,11 @@
 /* 
-Gemini AIoT Voice Assistant
 ESP32 (PSRAM) + INMP441 I2S microphone + MAX98357A I2S (DAC) + Gemini Audio understanding
 
 The ESP32 (PSRAM) is connected to an INMP441 I2S microphone to record audio and upload it to Gemini for understanding the audio content.
 Automatically detects sound input and starts recording. If there is no sound for three seconds, recording stops. 
 Play the Gemini’s reply through a speaker by converting it to an MP3 file using Google TTS.
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-13 02:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-13 12:20
 https://www.facebook.com/francefu
 
 Development Environment
@@ -17,38 +16,14 @@ Arduino IDE Settings:
 ESP32 Wrover Module
 Huge APP (3MB No OTA/1MB SPIFFS)
 
-INMP441 I2S:  (I2S_NUM_1)
+INMP441 I2S:  
 SD --> IO13, VDD --> 3V3, GND --> GND, L/R --> GND, WS --> IO15, SCK --> IO2
 
-MAX98357A I2S:  (I2S_NUM_0) 
+MAX98357A I2S:  
 LRC --> IO26, BCLK --> IO27, DIN --> IO25, GAIN --> GND, GND --> GND, VIN --> 5V
 
-ESP32-audioI2S v2.0.0 (old version)
-https://github.com/schreibfaul1/ESP32-audioI2S/releases/tag/2.0.6
-
-//Fix these two sections of code in Audio.cpp
-
-if(InBuff.bufferFilled() < maxFrameSize && f_stream && !f_webFileDataComplete){
-    static uint8_t cnt_slow = 0;
-    cnt_slow ++;
-    if(f_tmr_1s) {
-        if(cnt_slow > 25 && audio_info) audio_info("slow stream, dropouts are possible");
-        f_tmr_1s = false;
-        cnt_slow = 0;
-        m_f_running = false;
-        return;
-    }
-}
-
-if(f_stream && !availableBytes && !f_webFileAudioComplete){
-    loopCnt++;
-    if(loopCnt > 10000) {
-        loopCnt = 0;
-        if(audio_info) audio_info("Stream lost");
-        m_f_running = false;
-        return;
-    }
-}
+ESP32-audioI2S v2.0.0 (Revised version) 
+https://github.com/fustyles/Arduino/blob/master/ESP32_INMP441_MAX98357A_Gemini/ESP32-audioI2S-fix.zip
 
 Gemini API Key
 https://aistudio.google.com/app/apikey
@@ -69,11 +44,13 @@ https://ai.google.dev/gemini-api/docs/audio
 char wifi_ssid[] = "xxxxx";
 char wifi_pass[] = "xxxxx";
 
-// Gemini API Key and prompt
+// Gemini API Key
 String geminiKey = "xxxxx";
-//String geminiPrompt = "Audio to Text.";
+
+// Gemini prompt
 String geminiPrompt = "First, convert the audio into text. Based on the text content, determine whether it is related to controlling devices, and respond with JSON data without using Markdown syntax: {\"text\":\"transcribed text content\", \"devices\": [{\"servoAngle\": servo motor control angle value (use the number -1 if unrelated. The maximum servo angle is the number 180, and the minimum is the number 0.)}], \"response\":\"chat response based on the audio content\"}";
 //String geminiPrompt = "請先將音訊轉成繁體中文文字，根據文字內容判斷是否與控制裝置有關，並以JSON格式資料但不加上Markdown語法回覆: {\"text\":\"音訊轉文字內容\", \"devices\": [{\"servoAngle\":伺服馬達控制的角度值 (若無關則填數字-1。伺服馬達角度最大值為數字180, 最小值為數字0。)}], \"response\":\"依音訊內容聊天回應\"}";
+//String geminiPrompt = "Audio to Text.";
 
 Audio audio_play;
 
@@ -82,7 +59,7 @@ Audio audio_play;
 #define I2S_BCLK      27  // Bit Clock
 #define I2S_LRC       26  // Left/Right Clock (Word Select)
 
-String speakText = "";  // Text to speech
+String speakText = "";
 
 // I2S microphone pin definitions
 #define I2S_WS            15
@@ -152,15 +129,19 @@ void initI2S() {
     .use_apll = true                                     // Optional: Enable APLL for higher clock precision (depends on ESP32 board)
   };
 
+  // Set I2S pin configuration
   i2s_pin_config_t pin_config = {
-    .bck_io_num = I2S_SCK,
-    .ws_io_num = I2S_WS,
-    .data_out_num = I2S_PIN_NO_CHANGE,
-    .data_in_num = I2S_SD
+      .bck_io_num = I2S_SCK,             // Bit clock pin
+      .ws_io_num = I2S_WS,               // Word select (LR clock) pin
+      .data_out_num = I2S_PIN_NO_CHANGE, // No data output
+      .data_in_num = I2S_SD              // Data input pin
   };
-
-  i2s_driver_install(I2S_NUM_1, &i2s_config, 0, NULL);
-  i2s_set_pin(I2S_NUM_1, &pin_config);  
+  
+  // Install I2S driver
+  i2s_driver_install(I2S_NUM_1, &i2s_config, 0, NULL); 
+  
+  // Apply pin configuration to I2S
+  i2s_set_pin(I2S_NUM_1, &pin_config);
 }
 
 // Write WAV file header to buffer
@@ -332,6 +313,9 @@ void updatePreBuffer(uint8_t* data, size_t len) {
   } 
 }
 
+void audio_info(const char *info){
+    //Serial.println(info);
+}
 
 void getResponseData(String jsonResponse) {
   Serial.println(jsonResponse);
@@ -418,21 +402,17 @@ void loop() {
   
   // When not playing audio, request new Google TTS audio
   if (!audio_play.isRunning()) {
-      
     if (speakText!="") {    
       String ttsUrl = "https://translate.google.com/translate_tts?ie=UTF-8&q=" 
                       + urlencode(speakText) +
                       "&tl=zh-TW&client=tw-ob";    
       speakText = "";
-        
-      // Clear the I2S DMA buffer to remove any residual audio data
       i2s_zero_dma_buffer(I2S_NUM_1);
-      // Restart the I2S peripheral to resume audio capture
-      i2s_start(I2S_NUM_1);
+      i2s_start(I2S_NUM_1); 
             
       // Start playing audio from the given URL
+      //Serial.println("Connect to Google TTS");      
       audio_play.connecttohost(ttsUrl.c_str()); 
-        
     } else {
       
         size_t bytesRead = 0;
@@ -533,6 +513,3 @@ void loop() {
     }
   }
 }
-
-
-
