@@ -314,7 +314,7 @@ void updatePreBuffer(uint8_t* data, size_t len) {
 }
 
 void audio_info(const char *info){
-    //Serial.println(info);
+    //Serial.println(info);  // Debug mode
 }
 
 void getResponseData(String jsonResponse) {
@@ -513,3 +513,4 @@ void loop() {
     }
   }
 }
+
