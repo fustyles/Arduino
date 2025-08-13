@@ -16,10 +16,10 @@ Arduino IDE Settings:
 ESP32 Wrover Module
 Huge APP (3MB No OTA/1MB SPIFFS)
 
-INMP441 I2S:  
+INMP441 I2S:  (I2S_NUM_1)
 SD --> IO13, VDD --> 3V3, GND --> GND, L/R --> GND, WS --> IO15, SCK --> IO2
 
-MAX98357A I2S:  
+MAX98357A I2S:  (I2S_NUM_0)
 LRC --> IO26, BCLK --> IO27, DIN --> IO25, GAIN --> GND, GND --> GND, VIN --> 5V
 
 ESP32-audioI2S v2.0.0 (Revised version) 
@@ -517,6 +517,7 @@ void loop() {
     }
   }
 }
+
 
 
 
