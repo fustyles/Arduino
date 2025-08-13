@@ -1,7 +1,7 @@
 /* 
 ESP32 (PSRAM) + I2S AUDIO OUTPUT
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-12 02:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-13 17:00
 https://www.facebook.com/francefu
 
 Development Environment
@@ -23,8 +23,8 @@ https://github.com/fustyles/Arduino/blob/master/ESP32_INMP441_MAX98357A_Gemini/E
 #include "Audio.h"
 
 // WiFi credentials
-char wifi_ssid[] = "teacher";       // Your WiFi SSID
-char wifi_pass[] = "12345678"; // Your WiFi Password
+char wifi_ssid[] = "xxxxx";       // Your WiFi SSID
+char wifi_pass[] = "xxxxx"; // Your WiFi Password
 
 Audio audio_play;
 
@@ -86,7 +86,8 @@ void loop() {
                     "&tl=zh-TW&client=tw-ob";    
 
     // Start playing audio from the given URL
-    audio_play.connecttohost(ttsUrl.c_str()); 
+    if (!audio_play.connecttohost(ttsUrl.c_str()))
+      audio_play.connecttohost(ttsUrl.c_str());  
   }
 }
 
@@ -136,7 +137,3 @@ String urlencode(String str) {
   }
   return encodedMsg;
 }
-
-
-
-
