@@ -15,32 +15,8 @@ Huge APP (3MB No OTA/1MB SPIFFS)
 MAX98357A I2S: 
 LRC --> IO26, BCLK --> IO27, DIN --> IO25, GAIN --> GND, GND --> GND, VIN --> 5V
 
-ESP32-audioI2S v2.0.0 (old version)
-https://github.com/schreibfaul1/ESP32-audioI2S/releases/tag/2.0.6
-
-//Fix these two sections of code in Audio.cpp
-
-if(InBuff.bufferFilled() < maxFrameSize && f_stream && !f_webFileDataComplete){
-    static uint8_t cnt_slow = 0;
-    cnt_slow ++;
-    if(f_tmr_1s) {
-        if(cnt_slow > 25 && audio_info) audio_info("slow stream, dropouts are possible");
-        f_tmr_1s = false;
-        cnt_slow = 0;
-        m_f_running = false;
-        return;
-    }
-}
-
-if(f_stream && !availableBytes && !f_webFileAudioComplete){
-    loopCnt++;
-    if(loopCnt > 10000) {
-        loopCnt = 0;
-        if(audio_info) audio_info("Stream lost");
-        m_f_running = false;
-        return;
-    }
-}
+ESP32-audioI2S v2.0.0
+https://github.com/fustyles/Arduino/blob/master/ESP32_INMP441_MAX98357A_Gemini/ESP32-audioI2S-fix.zip
 */
 
 #include <WiFi.h>
@@ -169,5 +145,6 @@ String urlencode(String str) {
   }
   return encoded;
 }
+
 
 
