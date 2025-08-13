@@ -5,7 +5,7 @@ The ESP32 (PSRAM) is connected to an INMP441 I2S microphone to record audio and 
 Automatically detects sound input and starts recording. If there is no sound for three seconds, recording stops. 
 Play the Gemini’s reply through a speaker by converting it to an MP3 file using Google TTS.
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-13 14:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-13 14:30
 https://www.facebook.com/francefu
 
 Development Environment
@@ -336,6 +336,8 @@ void getResponseData(String jsonResponse) {
   Serial.println("User: "+jsonObject["text"].as<String>());
   Serial.println("Gemini: "+jsonObject["response"].as<String>());
   speakText = jsonObject["response"].as<String>();
+  speakText.replace("\r", " ");
+  speakText.replace("\n", " ");
   deviceArray = jsonObject["devices"].as<JsonArray>();
   for (int i = 0; i <= deviceArray.size() - 1; i++) {
     deviceItem = deviceArray[i];
@@ -400,10 +402,12 @@ void loop() {
                       "&tl=zh-TW&client=tw-ob";    
       speakText = "";
       
-      // Clear the I2S DMA buffer to remove any residual audio data
+      // Clear the I2S DMA buffer
+      i2s_zero_dma_buffer(I2S_NUM_0);     
       i2s_zero_dma_buffer(I2S_NUM_1);
 
-      // Restart the I2S peripheral to resume audio capture
+      // Restart the I2S peripheral
+      i2s_start(I2S_NUM_0);      
       i2s_start(I2S_NUM_1);
    
       // Start playing audio from the given URL
@@ -490,14 +494,24 @@ void loop() {
           
               String response = uploadWavDataToGemini(geminiKey, geminiPrompt);
               getResponseData(response);
-      
-              free(wavData);  // Free WAV buffer
+
+              if (!psramFound()) {
+                free(wavData);  // Free WAV buffer                
+              } else {      
+                heap_caps_free(wavData);  // Free WAV buffer
+              }
+              wavData = NULL;               
             } else {
               Serial.println("Failed to allocate wavData.");
             }
       
             // Cleanup and reset state
-            free(audioData);
+            if (!psramFound()) {
+              free(audioData);  // Free audioData buffer                
+            } else {      
+              heap_caps_free(audioData);  // Free audioData buffer
+            }
+            audioData = NULL;                        
             isRecording = false;
             totalBytesRead = 0;
             preBufferOffset = 0;
@@ -509,4 +523,3 @@ void loop() {
     }
   }
 }
-
