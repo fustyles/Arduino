@@ -5,7 +5,7 @@ The ESP32 (PSRAM) is connected to an INMP441 I2S microphone to record audio and 
 Automatically detects sound input and starts recording. If there is no sound for three seconds, recording stops. 
 Play the Gemini’s reply through a speaker by converting it to an MP3 file using Google TTS.
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-13 14:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-13 15:00
 https://www.facebook.com/francefu
 
 Development Environment
@@ -48,8 +48,8 @@ char wifi_pass[] = "xxxxx";
 String geminiKey = "xxxxx";
 
 // Gemini prompt
-String geminiPrompt = "First, convert the audio into text. Based on the text content, determine whether it is related to controlling devices, and respond with JSON data without using Markdown syntax: {\"text\":\"transcribed text content\", \"devices\": [{\"servoAngle\": servo motor control angle value (use the number -1 if unrelated. The maximum servo angle is the number 180, and the minimum is the number 0.)}], \"response\":\"chat response based on the audio content\"}";
-//String geminiPrompt = "請先將音訊轉成繁體中文文字，根據文字內容判斷是否與控制裝置有關，並以JSON格式資料但不加上Markdown語法回覆: {\"text\":\"音訊轉文字內容\", \"devices\": [{\"servoAngle\":伺服馬達控制的角度值 (若無關則填數字-1。伺服馬達角度最大值為數字180, 最小值為數字0。)}], \"response\":\"依音訊內容聊天回應\"}";
+String geminiPrompt = "First, convert the audio into text. Based on the text content, determine whether it is related to controlling devices, and respond with JSON data without using Markdown syntax: {\"text\":\"transcribed text content\", \"devices\": [{\"servoAngle\": servo motor control angle value (use the number -1 if unrelated. The maximum servo angle is the number 180, and the minimum is the number 0.)}], \"response\":\"Based on the audio, respond with a chat message of 100 characters or less\"}";
+//String geminiPrompt = "請先將音訊轉成繁體中文文字，根據文字內容判斷是否與控制裝置有關，並以JSON格式資料但不加上Markdown語法回覆: {\"text\":\"音訊轉文字內容\", \"devices\": [{\"servoAngle\":伺服馬達控制的角度值 (若無關則填數字-1。伺服馬達角度最大值為數字180, 最小值為數字0。)}], \"response\":\"依音訊內容聊天回應100字以內的內容\"}";
 //String geminiPrompt = "Audio to Text.";
 
 Audio audio_play;
@@ -338,6 +338,7 @@ void getResponseData(String jsonResponse) {
   speakText = jsonObject["response"].as<String>();
   speakText.replace("\r", " ");
   speakText.replace("\n", " ");
+
   deviceArray = jsonObject["devices"].as<JsonArray>();
   for (int i = 0; i <= deviceArray.size() - 1; i++) {
     deviceItem = deviceArray[i];
@@ -523,3 +524,4 @@ void loop() {
     }
   }
 }
+
