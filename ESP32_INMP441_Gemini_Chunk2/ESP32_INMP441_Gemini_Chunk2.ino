@@ -4,7 +4,7 @@ ESP32 (PSRAM) + INMP441 I2S microphone + Gemini Audio understanding
 The ESP32 (PSRAM) is connected to an INMP441 I2S microphone to record audio and upload it to Gemini for understanding the audio content.
 Automatically detects sound input and starts recording. If there is no sound for three seconds, recording stops.
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-13 00:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-13 17:00
 https://www.facebook.com/francefu
 
 Development Environment
@@ -36,11 +36,13 @@ https://ai.google.dev/gemini-api/docs/audio
 char wifi_ssid[] = "xxxxx";
 char wifi_pass[] = "xxxxx";
 
-// Gemini API Key and prompt
+// Gemini API Key
 String geminiKey = "xxxxx";
+
+// Gemini prompt
+//String geminiPrompt = "First, convert the audio into text. Based on the text content, determine whether it is related to controlling devices, and respond with JSON data without using Markdown syntax: {\"text\":\"transcribed text content\", \"devices\": [{\"servoAngle\": servo motor control angle value (use the number -1 if unrelated. The maximum servo angle is the number 180, and the minimum is the number 0.)}], \"response\":\"Based on the audio, respond with a chat message of 100 characters or less\"}";
+String geminiPrompt = "請先將音訊轉成繁體中文文字，根據文字內容判斷是否與控制裝置有關，並以JSON格式資料但不加上Markdown語法回覆: {\"text\":\"音訊轉文字內容\", \"devices\": [{\"servoAngle\":伺服馬達控制的角度值 (若無關則填數字-1。伺服馬達角度最大值為數字180, 最小值為數字0。)}], \"response\":\"依音訊內容聊天，簡短回應100字以內的內容\"}";
 //String geminiPrompt = "Audio to Text.";
-String geminiPrompt = "First, convert the audio into text. Based on the text content, determine whether it is related to controlling devices, and respond with JSON data without using Markdown syntax: {\"text\":\"transcribed text content\", \"devices\": [{\"servoAngle\": servo motor control angle value (use the number -1 if unrelated. The maximum servo angle is the number 180, and the minimum is the number 0.)}], \"response\":\"chat response based on the audio content\"}";
-//String geminiPrompt = "請先將音訊轉成繁體中文文字，根據文字內容判斷是否與控制裝置有關，並以JSON格式資料但不加上Markdown語法回覆: {\"text\":\"音訊轉文字內容\", \"devices\": [{\"servoAngle\":伺服馬達控制的角度值 (若無關則填數字-1。伺服馬達角度最大值為數字180, 最小值為數字0。)}], \"response\":\"依音訊內容聊天回應\"}";
 
 // I2S microphone pin definitions
 #define I2S_WS            15
@@ -413,14 +415,24 @@ void loop() {
     
         String response = uploadWavDataToGemini(geminiKey, geminiPrompt);
         Serial.println(response);
-
-        free(wavData);  // Free WAV buffer
+        
+        if (!psramFound()) {
+          free(wavData);  // Free WAV buffer                
+        } else {      
+          heap_caps_free(wavData);  // Free WAV buffer
+        }
+        wavData = NULL;
       } else {
         Serial.println("Failed to allocate wavData.");
       }
 
       // Cleanup and reset state
-      free(audioData);
+      if (!psramFound()) {
+        free(audioData);  // Free audioData buffer                
+      } else {      
+        heap_caps_free(audioData);  // Free audioData buffer
+      }
+      audioData = NULL;
       isRecording = false;
       totalBytesRead = 0;
       preBufferOffset = 0;
@@ -429,7 +441,3 @@ void loop() {
 
   delay(5);  // Short delay to reduce CPU load
 }
-
-
-
-
