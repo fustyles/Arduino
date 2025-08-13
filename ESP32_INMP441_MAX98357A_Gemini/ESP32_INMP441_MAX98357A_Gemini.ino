@@ -403,12 +403,10 @@ void loop() {
                       "&tl=zh-TW&client=tw-ob";    
       speakText = "";
       
-      // Clear the I2S DMA buffer
-      i2s_zero_dma_buffer(I2S_NUM_0);     
+      // Clear the I2S DMA buffer    
       i2s_zero_dma_buffer(I2S_NUM_1);
 
       // Restart the I2S peripheral
-      i2s_start(I2S_NUM_0);      
       i2s_start(I2S_NUM_1);
    
       // Start playing audio from the given URL
@@ -524,4 +522,5 @@ void loop() {
     }
   }
 }
+
 
