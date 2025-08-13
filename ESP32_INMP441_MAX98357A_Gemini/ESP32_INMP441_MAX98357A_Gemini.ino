@@ -5,7 +5,7 @@ The ESP32 (PSRAM) is connected to an INMP441 I2S microphone to record audio and 
 Automatically detects sound input and starts recording. If there is no sound for three seconds, recording stops. 
 Play the Gemini’s reply through a speaker by converting it to an MP3 file using Google TTS.
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-13 16:30
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-13 17:00
 https://www.facebook.com/francefu
 
 Development Environment
@@ -411,7 +411,8 @@ void loop() {
    
       // Start playing audio from the given URL
       //Serial.println("Connect to Google TTS");      
-      audio_play.connecttohost(ttsUrl.c_str()); 
+      if (!audio_play.connecttohost(ttsUrl.c_str()))
+        audio_play.connecttohost(ttsUrl.c_str()); 
       
     } else {
       
@@ -522,4 +523,3 @@ void loop() {
     }
   }
 }
-
