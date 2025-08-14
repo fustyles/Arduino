@@ -53,6 +53,8 @@ String geminiPrompt = "First, convert the audio into text. Based on the text con
 //String geminiPrompt = "請先將音訊轉成繁體中文文字，根據文字內容判斷是否與控制裝置有關，並以JSON格式資料但不加上Markdown語法回覆: {\"text\":\"音訊轉文字內容\", \"devices\": [{\"servoAngle\":伺服馬達控制的角度值 (若無關則填數字-1。伺服馬達角度最大值為數字180, 最小值為數字0。)}], \"response\":\"依音訊內容聊天，簡短回應100字以內的內容\"}";
 //String geminiPrompt = "Audio to Text.";
 
+String googlettsLanguageCode = "zh-TW";
+
 Audio audio_play;
 
 // I2S pins for MAX98357A connection
@@ -399,9 +401,7 @@ void loop() {
   if (!audio_play.isRunning()) {
     if (speakText!="") {  
         
-      String ttsUrl = "https://translate.google.com/translate_tts?ie=UTF-8&q=" 
-                      + urlencode(speakText) +
-                      "&tl=zh-TW&client=tw-ob";    
+      String ttsUrl = "https://translate.google.com/translate_tts?ie=UTF-8&q=" + urlencode(speakText) + "&tl=" + googlettsLanguageCode + "&client=tw-ob";    
       speakText = "";
       
       // Clear the I2S DMA buffer to remove any residual audio data    
@@ -524,4 +524,5 @@ void loop() {
     }
   }
 }
+
 
