@@ -56,14 +56,14 @@ String geminiPrompt = "First, convert the audio into text. Based on the text con
 // Google TTS Language Codes: https://developers.google.com/workspace/admin/directory/v1/languages
 String googlettsLanguageCode = "zh-TW";  
 
+String speakText = "";  // Converts text into spoken audio
+
 Audio audio_play;
 
 // I2S pins for MAX98357A connection
 #define I2S_DOUT      25  // Data Out (DIN on MAX98357A)
 #define I2S_BCLK      27  // Bit Clock
 #define I2S_LRC       26  // Left/Right Clock (Word Select)
-
-String speakText = "";  // Converts text into spoken audio
 
 // I2S microphone pin definitions
 #define I2S_WS            15
@@ -525,4 +525,5 @@ void loop() {
     }
   }
 }
+
 
