@@ -6,7 +6,7 @@ The ESP32 (PSRAM) is connected to an INMP441 I2S microphone to record audio and 
 Automatically detects sound input and starts recording. If there is no sound for three seconds, recording stops. 
 Play the Gemini’s reply through a speaker by converting it to an MP3 file using Google TTS.
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-13 17:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-14 13:30
 https://www.facebook.com/francefu
 
 Development Environment
@@ -49,8 +49,8 @@ char wifi_pass[] = "xxxxx";
 String geminiKey = "xxxxx";
 
 // Gemini prompt
-String geminiPrompt = "First, convert the audio into text. Based on the text content, determine whether it is related to controlling devices, and respond with JSON data without using Markdown syntax: {\"text\":\"transcribed text content\", \"devices\": [{\"servoAngle\": servo motor control angle value (use the number -1 if unrelated. The maximum servo angle is the number 180, and the minimum is the number 0.)}], \"response\":\"Based on the audio, respond with a chat message of 100 characters or less\"}";
-//String geminiPrompt = "請先將音訊轉成繁體中文文字，根據文字內容判斷是否與控制裝置有關，並以JSON格式資料但不加上Markdown語法回覆: {\"text\":\"音訊轉文字內容\", \"devices\": [{\"servoAngle\":伺服馬達控制的角度值 (若無關則填數字-1。伺服馬達角度最大值為數字180, 最小值為數字0。)}], \"response\":\"依音訊內容聊天，簡短回應100字以內的內容\"}";
+//String geminiPrompt = "First, convert the audio into text. Based on the text content, determine whether it is related to controlling devices, and respond with JSON data without using Markdown syntax: {\"text\":\"transcribed text content\", \"devices\": [{\"servoAngle\": servo motor control angle value (use the number -1 if unrelated. The maximum servo angle is the number 180, and the minimum is the number 0.)}], \"response\":\"Based on the audio, respond with a chat message of 100 characters or less\"}";
+String geminiPrompt = "請先將音訊轉成繁體中文文字，根據文字內容判斷是否與控制裝置有關，並以JSON格式資料但不加上Markdown語法回覆: {\"text\":\"音訊轉文字內容\", \"devices\": [{\"servoAngle\":伺服馬達控制的角度值 (若無關則填數字-1。伺服馬達角度最大值為數字180, 最小值為數字0。)}], \"response\":\"依音訊內容聊天，簡短回應100字以內的內容\"}";
 //String geminiPrompt = "Audio to Text.";
 
 // Google TTS Language Codes: https://developers.google.com/workspace/admin/directory/v1/languages
@@ -174,7 +174,7 @@ void writeWavHeader(uint8_t* buffer, uint32_t dataSize) {
 }
 
 // Calculate the Base64 encoded length of the full WAV file
-size_t getWavDataLength() {
+size_t getWavEncodedLength() {
     const size_t chunkSize = 960;
     size_t count = 0;
     for (size_t i = 0; i < wavSize; i += chunkSize) {
@@ -197,16 +197,16 @@ String uploadWavDataToGemini(String apikey, String prompt) {
   String requestHead = "{\"contents\": [{\"role\": \"user\", \"parts\": [{\"inline_data\": {\"data\": \"";
   String requestTail = "\", \"mime_type\": \"audio/wav\"}}, {\"text\": \""+prompt+"\"}]}]}";
     
-  size_t wavEncodedLength = getWavDataLength();
+  size_t wavEncodedLength = getWavEncodedLength();
   size_t contentLength = requestHead.length() + wavEncodedLength + requestTail.length();
 
   WiFiClientSecure client;  
   client.setInsecure();
-  //Serial.println("Connect to generativelanguage.googleapis.com");
+  Serial.println("Connect to generativelanguage.googleapis.com...");
   if (client.connect("generativelanguage.googleapis.com", 443)) {
     //Serial.println("Connection successful");
     client.println("POST /v1beta/models/gemini-2.0-flash:generateContent?key=" + apikey + " HTTP/1.1");
-    client.println("Connection: close");
+    client.println("Connection: keep-alive");
     client.println("Host: generativelanguage.googleapis.com");
     client.println("Content-Type: application/json; charset=utf-8");
     client.println("Content-Length: " + String(contentLength));
@@ -244,7 +244,7 @@ String uploadWavDataToGemini(String apikey, String prompt) {
     boolean state = false;
     boolean headState = false;
     while ((startTime + waitTime) > millis()) {
-      Serial.print(".");
+      //Serial.print(".");
       delay(100);
       while (client.available()) {
           char c = client.read();
@@ -412,7 +412,7 @@ void loop() {
       i2s_start(I2S_NUM_1);
    
       // Start playing audio from the given URL
-      //Serial.println("Connect to Google TTS");      
+      Serial.println("Connect to Google TTS...");      
       if (!audio_play.connecttohost(ttsUrl.c_str()))
         audio_play.connecttohost(ttsUrl.c_str()); 
       
@@ -525,6 +525,3 @@ void loop() {
     }
   }
 }
-
-
-
