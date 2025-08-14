@@ -346,10 +346,11 @@ void getResponseData(String jsonResponse) {
   deviceArray = jsonObject["devices"].as<JsonArray>();
   for (int i = 0; i <= deviceArray.size() - 1; i++) {
     deviceItem = deviceArray[i];
-    if (deviceItem["servoAngle"].as<String>()) {
+    if (deviceItem["servoAngle"]) {
       Serial.println("Servo angle: "+deviceItem["servoAngle"].as<String>());
     }
   }
+  Serial.println();  
 }
 
 // Function to URL-encode a string for HTTP requests
@@ -525,5 +526,6 @@ void loop() {
     }
   }
 }
+
 
 
