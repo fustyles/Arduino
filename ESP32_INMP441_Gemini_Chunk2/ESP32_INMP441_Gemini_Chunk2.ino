@@ -318,6 +318,7 @@ void getResponseData(String jsonResponse) {
       Serial.println("Servo angle: "+deviceItem["servoAngle"].as<String>());
     }
   }
+  Serial.println();   
 }
 
 void setup() {
@@ -441,4 +442,5 @@ void loop() {
 
   delay(5);  // Short delay to reduce CPU load
 }
+
 
