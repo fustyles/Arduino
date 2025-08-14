@@ -1,7 +1,7 @@
 /* 
 ESP32 (PSRAM) + I2S AUDIO OUTPUT
 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-13 17:00
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2025-8-14 13:00
 https://www.facebook.com/francefu
 
 Development Environment
@@ -25,6 +25,9 @@ https://github.com/fustyles/Arduino/blob/master/ESP32_INMP441_MAX98357A_Gemini/E
 // WiFi credentials
 char wifi_ssid[] = "xxxxx";       // Your WiFi SSID
 char wifi_pass[] = "xxxxx"; // Your WiFi Password
+
+// Google TTS Language Codes: https://developers.google.com/workspace/admin/directory/v1/languages
+String googlettsLanguageCode = "zh-TW"; 
 
 Audio audio_play;
 
@@ -81,9 +84,7 @@ void loop() {
   // When not playing audio, request new Google TTS audio
   if (!audio_play.isRunning()) {
     count++;
-    String ttsUrl = "https://translate.google.com/translate_tts?ie=UTF-8&q=" 
-                    + urlencode(String(count)) +
-                    "&tl=zh-TW&client=tw-ob";    
+    String ttsUrl = "https://translate.google.com/translate_tts?ie=UTF-8&q=" + urlencode(String(count)) + "&tl=" + googlettsLanguageCode + "&client=tw-ob";    
 
     // Start playing audio from the given URL
     if (!audio_play.connecttohost(ttsUrl.c_str()))
@@ -137,3 +138,4 @@ String urlencode(String str) {
   }
   return encodedMsg;
 }
+
