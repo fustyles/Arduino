@@ -149,7 +149,7 @@ void writeWavHeader(uint8_t* buffer, uint32_t dataSize) {
 }
 
 // Calculate the Base64 encoded length of the full WAV file
-size_t getWavDataLength() {
+size_t getWavEncodedLength() {
     const size_t chunkSize = 960;
     size_t count = 0;
     for (size_t i = 0; i < wavSize; i += chunkSize) {
@@ -172,7 +172,7 @@ String uploadWavDataToGemini(String apikey, String prompt) {
   String requestHead = "{\"contents\": [{\"role\": \"user\", \"parts\": [{\"inline_data\": {\"data\": \"";
   String requestTail = "\", \"mime_type\": \"audio/wav\"}}, {\"text\": \""+prompt+"\"}]}]}";
     
-  size_t wavEncodedLength = getWavDataLength();
+  size_t wavEncodedLength = getWavEncodedLength();
   size_t contentLength = requestHead.length() + wavEncodedLength + requestTail.length();
 
   WiFiClientSecure client;  
@@ -442,6 +442,7 @@ void loop() {
 
   delay(5);  // Short delay to reduce CPU load
 }
+
 
 
 
