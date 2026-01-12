@@ -180,7 +180,7 @@ String uploadWavDataToGemini(String apikey, String prompt) {
   Serial.println("Connect to generativelanguage.googleapis.com");
   if (client.connect("generativelanguage.googleapis.com", 443)) {
     Serial.println("Connection successful");
-    client.println("POST /v1beta/models/gemini-2.0-flash:generateContent?key=" + apikey + " HTTP/1.1");
+    client.println("POST /v1beta/models/gemini-2.5-flash:generateContent?key=" + apikey + " HTTP/1.1");
     client.println("Connection: keep-alive");
     client.println("Host: generativelanguage.googleapis.com");
     client.println("Content-Type: application/json; charset=utf-8");
@@ -442,6 +442,7 @@ void loop() {
 
   delay(5);  // Short delay to reduce CPU load
 }
+
 
 
 
