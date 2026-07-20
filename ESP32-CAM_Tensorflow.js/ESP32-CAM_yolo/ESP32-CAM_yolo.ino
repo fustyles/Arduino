@@ -823,8 +823,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
     
         async function DetectImage() {
           var imgW = ShowImage.naturalWidth;
-          var imgH = ShowImage.naturalHeight;          
-          console.log(imgW + ", " + imgH);
+          var imgH = ShowImage.naturalHeight;       
           
           ShowImage.style.width = imgW + 'px';
           ShowImage.style.height = imgH + 'px';
