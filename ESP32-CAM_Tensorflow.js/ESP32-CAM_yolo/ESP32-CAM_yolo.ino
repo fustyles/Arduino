@@ -1,4 +1,7 @@
 /*
+Author : ChungYi Fu (Kaohsiung, Taiwan)  2026-7-20 00:00
+https://www.facebook.com/francefu
+
 =====================================================================
  ESP32-CAM Live Video Streaming + YOLO Object Detection (Browser-side Inference)
 =====================================================================
@@ -13,10 +16,6 @@
  Supported Model(s):
  YOLOv8n / YOLOv9n / YOLOv11n (must be converted to TensorFlow.js
  Graph Model format before use)
-
- 
-Author : ChungYi Fu (Kaohsiung, Taiwan)  2026-7-20 00:00
-https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
 http://192.168.xxx.xxx:81/stream   //取得串流影像       <img src="http://192.168.xxx.xxx:81/stream">
