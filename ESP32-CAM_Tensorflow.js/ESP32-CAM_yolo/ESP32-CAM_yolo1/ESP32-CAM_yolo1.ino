@@ -22,57 +22,57 @@ https://www.facebook.com/francefu
  compatible YOLO-format models such as YOLOv9n/YOLOv11n) can also be
  used by changing the "Model Path" field.
 
-首頁
+Home page:
 http://APIP
 http://STAIP
 
-自訂指令格式 :  
+Custom command format:
 http://APIP?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 http://STAIP?cmd=P1;P2;P3;P4;P5;P6;P7;P8;P9
 
-預設AP端IP： 192.168.4.1
+Default AP-side IP: 192.168.4.1
 http://192.168.xxx.xxx?ip
 http://192.168.xxx.xxx?mac
 http://192.168.xxx.xxx?restart
 http://192.168.xxx.xxx?digitalwrite=pin;value
 http://192.168.xxx.xxx?analogwrite=pin;value
-http://192.168.xxx.xxx?flash=value        //value= 0~255 閃光燈
-http://192.168.xxx.xxx?getstill                 //取得視訊影像
-http://192.168.xxx.xxx?framesize=size     //size= 10 UXGA|9 SXGA|8 XGA|7 SVGA|6 VGA|5 CIF|4 QVGA|3 HQVGA|0 QQVGA 改變影像解析度
+http://192.168.xxx.xxx?flash=value        //value = 0~255, flash LED brightness
+http://192.168.xxx.xxx?getstill                 //capture a still image
+http://192.168.xxx.xxx?framesize=size     //size = 10 UXGA|9 SXGA|8 XGA|7 SVGA|6 VGA|5 CIF|4 QVGA|3 HQVGA|0 QQVGA, changes the frame resolution
 http://192.168.xxx.xxx?quality=value    // value = 10 to 63
 http://192.168.xxx.xxx?brightness=value    // value = -2 to 2
 http://192.168.xxx.xxx?contrast=value    // value = -2 to 2 
 http://192.168.xxx.xxx?serial=P1;P2;P3;P4;P5;P6;P7;P8;P9
 
-查詢Client端IP：
-查詢IP：http://192.168.4.1/?ip
-重設網路：http://192.168.4.1/?resetwifi=ssid;password
+Query the client's IP:
+Query IP: http://192.168.4.1/?ip
+Reset network: http://192.168.4.1/?resetwifi=ssid;password
 */
 
-//輸入Wi-Fi帳密
-const char* ssid     = "xxxxxxxxxx";   //Wi-Fi帳號
-const char* password = "xxxxxxxxxx";   //Wi-Fi密碼
+//Enter Wi-Fi credentials
+const char* ssid     = "xxxxxxxxxx";   //Wi-Fi SSID
+const char* password = "xxxxxxxxxx";   //Wi-Fi password
 
-//輸入AP端連線帳號密碼
+//Enter AP-mode connection credentials
 const char* apssid = "ESP32-CAM";
-const char* appassword = "12345678";    //AP端密碼至少要八個字元以上
+const char* appassword = "12345678";    //AP-side password must be at least 8 characters
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
-#include "esp_camera.h"         //視訊
-#include "soc/soc.h"            //用於電源不穩不重開機
-#include "soc/rtc_cntl_reg.h"   //用於電源不穩不重開機
+#include "esp_camera.h"         //camera driver
+#include "soc/soc.h"            //used to prevent reboot on unstable power
+#include "soc/rtc_cntl_reg.h"   //used to prevent reboot on unstable power
 
-String Feedback="";   //回傳客戶端訊息
-//指令參數值
+String Feedback="";   //message returned to the client
+//command parameter values
 String Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";
-//指令拆解狀態值
+//command parsing state values
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
 //            or another board which has PSRAM enabled
 
-//安可信ESP32-CAM模組腳位設定
+//AI-Thinker ESP32-CAM module pin definitions
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -102,7 +102,7 @@ void ExecuteCommand()
     Serial.println("");
   }
 
-  //自訂指令區
+  //Custom command section
   if (cmd=="your cmd") {
     // You can do anything.
     // Feedback="<font color=\"red\">Hello World</font>";
@@ -138,7 +138,7 @@ void ExecuteCommand()
     digitalWrite(P1.toInt(), P2.toInt());
   }   
   else if (cmd=="analogwrite") {
-    if (P1="4") {
+    if (P1=="4") {
       ledcAttachPin(4, 4);  
       ledcSetup(4, 5000, 8);   
       ledcWrite(4,P2.toInt());  
@@ -158,23 +158,23 @@ void ExecuteCommand()
   }  
   else if (cmd=="framesize") { 
     sensor_t * s = esp_camera_sensor_get();  
-    if (P1=="0")
+    if (P1=="QQVGA")
       s->set_framesize(s, FRAMESIZE_QQVGA);
-    else if (P1=="3")
+    else if (P1=="HQVGA")
       s->set_framesize(s, FRAMESIZE_HQVGA);
-    else if (P1=="4")
+    else if (P1=="QVGA")
       s->set_framesize(s, FRAMESIZE_QVGA);
-    else if (P1=="5")
+    else if (P1=="CIF")
       s->set_framesize(s, FRAMESIZE_CIF);
-    else if (P1=="6")
+    else if (P1=="VGA")
       s->set_framesize(s, FRAMESIZE_VGA);  
-    else if (P1=="7")
+    else if (P1=="SVGA")
       s->set_framesize(s, FRAMESIZE_SVGA);
-    else if (P1=="8")
+    else if (P1=="XGA")
       s->set_framesize(s, FRAMESIZE_XGA);
-    else if (P1=="9")
+    else if (P1=="SXGA")
       s->set_framesize(s, FRAMESIZE_SXGA);
-    else if (P1=="10")
+    else if (P1=="UXGA")
       s->set_framesize(s, FRAMESIZE_UXGA);           
     else 
       s->set_framesize(s, FRAMESIZE_QVGA);     
@@ -206,13 +206,13 @@ void ExecuteCommand()
 }
 
 void setup() {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //關閉電源不穩就重開機的設定
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //disable brown-out detector reset on unstable power
   
   Serial.begin(115200);
-  Serial.setDebugOutput(true);  //開啟診斷輸出
+  Serial.setDebugOutput(true);  //enable debug output
   Serial.println();
 
-  //視訊組態設定
+  //Camera configuration
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
@@ -255,18 +255,18 @@ void setup() {
 
   //drop down frame size for higher initial frame rate
   sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_QVGA);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA  設定初始化影像解析度
+  s->set_framesize(s, FRAMESIZE_QVGA);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA  sets the initial frame resolution
   
-  //閃光燈
+  //Flash LED
   ledcAttachPin(4, 4);  
   ledcSetup(4, 5000, 8);    
   
   WiFi.mode(WIFI_AP_STA);
   
-  //指定Client端靜態IP
+  //Assign a static IP to the client
   //WiFi.config(IPAddress(192, 168, 201, 100), IPAddress(192, 168, 201, 2), IPAddress(255, 255, 255, 0));
 
-  WiFi.begin(ssid, password);    //執行網路連線
+  WiFi.begin(ssid, password);    //connect to the network
 
   delay(1000);
   Serial.println("");
@@ -277,16 +277,16 @@ void setup() {
   while (WiFi.status() != WL_CONNECTED) 
   {
       delay(500);
-      if ((StartTime+10000) < millis()) break;    //等待10秒連線
+      if ((StartTime+10000) < millis()) break;    //wait up to 10 seconds to connect
   } 
 
-  if (WiFi.status() == WL_CONNECTED) {    //若連線成功
-    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //設定SSID顯示客戶端IP         
+  if (WiFi.status() == WL_CONNECTED) {    //if the connection succeeded
+    WiFi.softAP((WiFi.localIP().toString()+"_"+(String)apssid).c_str(), appassword);   //set the SSID to show the client's IP         
     Serial.println("");
     Serial.println("STAIP address: ");
     Serial.println(WiFi.localIP());  
 
-    for (int i=0;i<5;i++) {   //若連上WIFI設定閃光燈快速閃爍
+    for (int i=0;i<5;i++) {   //blink the flash LED quickly if Wi-Fi connected
       ledcWrite(4,10);
       delay(200);
       ledcWrite(4,0);
@@ -296,7 +296,7 @@ void setup() {
   else {
     WiFi.softAP((WiFi.softAPIP().toString()+"_"+(String)apssid).c_str(), appassword);         
 
-    for (int i=0;i<2;i++) {    //若連不上WIFI設定閃光燈慢速閃爍
+    for (int i=0;i<2;i++) {    //blink the flash LED slowly if Wi-Fi failed to connect
       ledcWrite(4,10);
       delay(1000);
       ledcWrite(4,0);
@@ -304,7 +304,7 @@ void setup() {
     }
   }     
 
-  //指定AP端IP    
+  //Assign a static IP to the AP side
   //WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0)); 
   Serial.println("");
   Serial.println("APIP address: ");
@@ -316,7 +316,7 @@ void setup() {
   server.begin();          
 }
 
-//自訂網頁首頁管理介面
+//Custom home-page management UI
 static const char PROGMEM INDEX_HTML[] = R"rawliteral(
   <!DOCTYPE html>
   <head>
@@ -508,14 +508,23 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       var imgW = ShowImage.naturalWidth;
       var imgH = ShowImage.naturalHeight;
       
+      ShowImage.width = imgW;
+      ShowImage.height = imgH;
       ShowImage.style.width = imgW + 'px';
       ShowImage.style.height = imgH + 'px';
       canvas.setAttribute("width", imgW);
       canvas.setAttribute("height", imgH);
       canvas.style.width = imgW + "px";
-      canvas.style.height = imgH + "px";
-  
-      context.drawImage(ShowImage, 0, 0, imgW, imgH);
+      canvas.style.height = imgH + "px";      
+      
+      if (mirrorimage.value==1) {
+        context.translate((canvas.width + imgW) / 2, 0);
+        context.scale(-1, 1);
+        context.drawImage(ShowImage, 0, 0, imgW, imgH);
+        context.setTransform(1, 0, 0, 1, 0, 0);
+      }
+      else
+        context.drawImage(ShowImage,0,0,imgW,imgH);
 
       try {
         var threshold = Number(scoreLimit.value);
@@ -624,13 +633,13 @@ void loop() {
       if (client.available()) {
         char c = client.read();             
         
-        getCommand(c);   //將緩衝區取得的字元拆解出指令參數
+        getCommand(c);   //parse the character read from the buffer into command parameters
                 
         if (c == '\n') {
           if (currentLine.length() == 0) {    
             
             if (cmd=="getstill") {
-              //回傳JPEG格式影像
+              //Return the image in JPEG format
               camera_fb_t * fb = NULL;
               fb = esp_camera_fb_get();  
               if(!fb) {
@@ -668,7 +677,7 @@ void loop() {
               digitalWrite(4, LOW);               
             }
             else {
-              //回傳HTML首頁或Feedback
+              //Return the HTML home page or the Feedback message
               client.println("HTTP/1.1 200 OK");
               client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
               client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
@@ -702,7 +711,7 @@ void loop() {
         }
 
         if ((currentLine.indexOf("/?")!=-1)&&(currentLine.indexOf(" HTTP")!=-1)) {
-          if (Command.indexOf("stop")!=-1) {  //若指令中含關鍵字stop立即斷線 -> http://192.168.xxx.xxx/?cmd=aaa;bbb;ccc;stop
+          if (Command.indexOf("stop")!=-1) {  //if the command contains the keyword "stop", disconnect immediately -> http://192.168.xxx.xxx/?cmd=aaa;bbb;ccc;stop
             client.println();
             client.println();
             client.stop();
@@ -718,7 +727,7 @@ void loop() {
   }
 }
 
-//拆解命令字串置入變數
+//Parse the command string and store it into variables
 void getCommand(char c)
 {
   if (c=='?') ReceiveState=1;
