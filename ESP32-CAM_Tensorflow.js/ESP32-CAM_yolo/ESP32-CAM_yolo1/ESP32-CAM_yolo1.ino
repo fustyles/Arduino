@@ -1,7 +1,26 @@
 /*
-ESP32-CAM 機械學習 (tfjs teachablemachine)
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2026-07-20 20:00
 https://www.facebook.com/francefu
+
+=====================================================================
+ ESP32-CAM Snapshot Capture + Browser-side Object Detection (TensorFlow.js)
+=====================================================================
+ Description:
+ The ESP32-CAM hosts a single web page that lets the user configure
+ and control the camera (resolution, flash, brightness, contrast,
+ mirroring, rotation) and issue simple query-string commands
+ (e.g. ?cmd=P1;P2;...; ?digitalwrite=; ?flash=; etc.).
+ Object detection is performed client-side: the browser periodically
+ requests a still image from the camera, then runs it through a
+ TensorFlow.js Graph Model to detect objects and draw bounding boxes.
+
+ Supported Model(s):
+ Any TensorFlow.js Graph Model with YOLO-style output
+ (post-processing includes non-max suppression). The model path is
+ user-configurable in the web UI; it defaults to a YOLOv8n web model,
+ but a Graph Model exported from Google Teachable Machine (or other
+ compatible YOLO-format models such as YOLOv9n/YOLOv11n) can also be
+ used by changing the "Model Path" field.
 
 首頁
 http://APIP
