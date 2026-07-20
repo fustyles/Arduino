@@ -660,7 +660,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
             </div>
         </section>
         <br>
-        <div id="result" style="color:red"><div>
+        <div id="result" style="color:red"></div>
         
         <script>
           document.addEventListener('DOMContentLoaded', function (event) {
