@@ -387,7 +387,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     </td>
   </tr>  
   </table>
-  <div id="result" style="color:red"><div>
+  <div id="result" style="color:red"></div>
   </body>
   </html> 
   
