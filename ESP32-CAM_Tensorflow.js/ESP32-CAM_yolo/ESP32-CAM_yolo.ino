@@ -1,8 +1,21 @@
 /*
+=====================================================================
+ ESP32-CAM Live Video Streaming + YOLO Object Detection (Browser-side Inference)
+=====================================================================
+ Description:
+ The ESP32-CAM provides web services for video streaming (/stream),
+ single-frame capture (/capture), status query (/status), and
+ custom command control (/control) over Wi-Fi. Object detection
+ itself is performed in the browser using TensorFlow.js, which loads
+ a YOLO model and runs real-time inference on the streamed video,
+ drawing bounding boxes on detected objects.
+
+ Supported Model(s):
+ YOLOv8n / YOLOv9n / YOLOv11n (must be converted to TensorFlow.js
+ Graph Model format before use)
+
+ 
 Author : ChungYi Fu (Kaohsiung, Taiwan)  2026-7-20 00:00
-
-Model: yolov8n、yolov9n、yolov11n for tfjs
-
 https://www.facebook.com/francefu
 
 http://192.168.xxx.xxx             //網頁首頁管理介面
