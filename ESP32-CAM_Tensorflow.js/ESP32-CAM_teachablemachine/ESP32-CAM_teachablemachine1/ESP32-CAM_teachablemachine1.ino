@@ -139,23 +139,23 @@ void ExecuteCommand()
   }  
   else if (cmd=="framesize") { 
     sensor_t * s = esp_camera_sensor_get();  
-    if (P1=="0")
+    if (P1=="QQVGA")
       s->set_framesize(s, FRAMESIZE_QQVGA);
-    else if (P1=="3")
+    else if (P1=="HQVGA")
       s->set_framesize(s, FRAMESIZE_HQVGA);
-    else if (P1=="4")
+    else if (P1=="QVGA")
       s->set_framesize(s, FRAMESIZE_QVGA);
-    else if (P1=="5")
+    else if (P1=="CIF")
       s->set_framesize(s, FRAMESIZE_CIF);
-    else if (P1=="6")
+    else if (P1=="VGA")
       s->set_framesize(s, FRAMESIZE_VGA);  
-    else if (P1=="7")
+    else if (P1=="SVGA")
       s->set_framesize(s, FRAMESIZE_SVGA);
-    else if (P1=="8")
+    else if (P1=="XGA")
       s->set_framesize(s, FRAMESIZE_XGA);
-    else if (P1=="9")
+    else if (P1=="SXGA")
       s->set_framesize(s, FRAMESIZE_SXGA);
-    else if (P1=="10")
+    else if (P1=="UXGA")
       s->set_framesize(s, FRAMESIZE_UXGA);           
     else 
       s->set_framesize(s, FRAMESIZE_QVGA);     
