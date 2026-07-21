@@ -370,7 +370,7 @@ void ExecuteCommand() {
   } else if (cmd=="framesize") {
     int val = P1.toInt();
     sensor_t * s = esp_camera_sensor_get(); 
-    s->set_framesize(s, (framesize_t)val);    
+    s->set_framesize(s, (framesize_t)val);      
   } else if (cmd=="quality") { //畫質
     sensor_t * s = esp_camera_sensor_get();
     s->set_quality(s, P1.toInt());     
@@ -852,7 +852,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
                 
         <script>
         //法蘭斯影像辨識
-        const aiView = document.getElementById('stream')
+        const ShowImage = document.getElementById('stream')
         const aiStill = document.getElementById('get-still')
         const canvas = document.getElementById('canvas')     
         var context = canvas.getContext("2d");  
@@ -883,9 +883,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
         })   
         
         async function DetectImage() {  //執行人臉辨識
-          canvas.setAttribute("width", aiView.width);
-          canvas.setAttribute("height", aiView.height); 
-          context.drawImage(aiView,0,0,canvas.width,canvas.height);
+		
+          ShowImage.width = ShowImage.naturalWidth;
+          ShowImage.height = ShowImage.naturalHeight;			
+          canvas.setAttribute("width", ShowImage.width);
+          canvas.setAttribute("height", ShowImage.height);
+          canvas.style.width = ShowImage.width + "px";
+          canvas.style.height = ShowImage.height + "px";
+		  
+          context.drawImage(ShowImage,0,0,canvas.width,canvas.height);
           if (!chkResult.checked) message.innerHTML = "";
                       
           if (!labeledFaceDescriptors) {
@@ -947,7 +953,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
           )
         }        
         
-        aiView.onload = function (event) {
+        ShowImage.onload = function (event) {
           try { 
             document.createEvent("TouchEvent");
             setTimeout(function(){DetectImage();},250);

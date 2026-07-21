@@ -1099,7 +1099,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
         <script>
         //法蘭斯影像辨識
         const ip = document.getElementById('ip');
-        const aiView = document.getElementById('stream');
+        const ShowImage = document.getElementById('stream');
         const aiStill = document.getElementById('get-still')
         const canvas = document.getElementById('canvas');     
         var context = canvas.getContext("2d");  
@@ -1117,7 +1117,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
         var maxValue = 0;
         
         async function DetectImage() {
-          holistic.send({image: aiView}).then(res => {
+          holistic.send({image: ShowImage}).then(res => {
             message.innerHTML = "";
             aiStill.click();
           }); 
@@ -1201,7 +1201,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
         
         holistic.onResults(onResults);  
         
-        aiView.onload = function (event) {
+        ShowImage.onload = function (event) {
           DetectImage();
         }
 

@@ -802,7 +802,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
 
     var ip = document.getElementById('ip');
     var link = document.getElementById('link');
-    const aiView = document.getElementById('stream');
+    const ShowImage = document.getElementById('stream');
     const aiStill = document.getElementById('get-still')
     const canvas = document.getElementById('canvas');     
     var context = canvas.getContext("2d");  
@@ -828,7 +828,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
       
     async function DetectImage() {
       message.innerHTML = "";
-      holistic.send({image: aiView}).then(res => {
+      holistic.send({image: ShowImage}).then(res => {
       setTimeout(function(){aiStill.click();},100);   //若無法取得畫面可能是硬體效能不足，可改此行程式碼，依硬體效能變更等待時間毫秒數 
       }); 
     }
@@ -1046,7 +1046,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
     
     holistic.onResults(onResults);  
     
-    aiView.onload = function (event) {
+    ShowImage.onload = function (event) {
       DetectImage();
     }
 

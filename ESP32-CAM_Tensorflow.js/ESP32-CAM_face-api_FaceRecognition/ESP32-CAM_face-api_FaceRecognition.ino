@@ -1083,7 +1083,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
                 
         <script>
         //法蘭斯影像辨識
-        const aiView = document.getElementById('stream')
+        const ShowImage = document.getElementById('stream')
         const aiStill = document.getElementById('get-still')
         const canvas = document.getElementById('canvas')     
         var context = canvas.getContext("2d");  
@@ -1113,9 +1113,15 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
         })  
         
         async function DetectImage() {
-          canvas.setAttribute("width", aiView.width);
-          canvas.setAttribute("height", aiView.height); 
-          context.drawImage(aiView,0,0,canvas.width,canvas.height);
+			
+          ShowImage.width = ShowImage.naturalWidth;
+          ShowImage.height = ShowImage.naturalHeight;			
+          canvas.setAttribute("width", ShowImage.width);
+          canvas.setAttribute("height", ShowImage.height);
+          canvas.style.width = ShowImage.width + "px";
+          canvas.style.height = ShowImage.height + "px";
+		  
+          context.drawImage(ShowImage,0,0,canvas.width,canvas.height);
           if (!chkResult.checked) message.innerHTML = "";
                       
           if (!labeledFaceDescriptors) {
@@ -1177,7 +1183,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
           )
         }        
         
-        aiView.onload = function (event) {
+        ShowImage.onload = function (event) {
           try { 
             document.createEvent("TouchEvent");
             setTimeout(function(){DetectImage();},250);

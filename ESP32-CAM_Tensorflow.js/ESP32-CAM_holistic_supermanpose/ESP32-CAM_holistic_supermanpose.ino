@@ -1105,7 +1105,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
         <script>
     //法蘭斯影像辨識
     const ip = document.getElementById('ip');
-    const aiView = document.getElementById('stream');
+    const ShowImage = document.getElementById('stream');
     const aiStill = document.getElementById('get-still')
     const canvas = document.getElementById('canvas');     
     var context = canvas.getContext("2d");  
@@ -1123,7 +1123,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
     var query_last = "";
     
     async function DetectImage() {
-      holistic.send({image: aiView}).then(res => {
+      holistic.send({image: ShowImage}).then(res => {
       message.innerHTML = "";
       setTimeout(function(){aiStill.click();},100);   //若無法取得畫面可能是硬體效能不足，可改此行程式碼，依硬體效能變更等待時間毫秒數 
       }); 
@@ -1211,7 +1211,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
     
     holistic.onResults(onResults);  
     
-    aiView.onload = function (event) {
+    ShowImage.onload = function (event) {
       DetectImage();
     }
 
