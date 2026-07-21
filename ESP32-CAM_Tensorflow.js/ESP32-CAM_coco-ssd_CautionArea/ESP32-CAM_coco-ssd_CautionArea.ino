@@ -769,8 +769,14 @@ static const char index_HorizontalLine_html[] PROGMEM = R"rawliteral(
           }
      
           function DetectImage() {
+			  
+            ShowImage.width = ShowImage.naturalWidth;
+            ShowImage.height = ShowImage.naturalHeight;			
             canvas.setAttribute("width", ShowImage.width);
             canvas.setAttribute("height", ShowImage.height);
+            canvas.style.width = ShowImage.width + "px";
+            canvas.style.height = ShowImage.height + "px";
+			
             context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height); 
                        
             Model.detect(canvas).then(Predictions => {    
@@ -1375,8 +1381,14 @@ static const char index_VerticalLine_html[] PROGMEM = R"rawliteral(
           }
      
           function DetectImage() {
+			  
+            ShowImage.width = ShowImage.naturalWidth;
+            ShowImage.height = ShowImage.naturalHeight;			
             canvas.setAttribute("width", ShowImage.width);
             canvas.setAttribute("height", ShowImage.height);
+            canvas.style.width = ShowImage.width + "px";
+            canvas.style.height = ShowImage.height + "px";
+			
             context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height); 
                        
             Model.detect(canvas).then(Predictions => {    
@@ -1987,8 +1999,14 @@ static const char index_Rect_html[] PROGMEM = R"rawliteral(
           }
      
           function DetectImage() {
+			  
+            ShowImage.width = ShowImage.naturalWidth;
+            ShowImage.height = ShowImage.naturalHeight;			
             canvas.setAttribute("width", ShowImage.width);
             canvas.setAttribute("height", ShowImage.height);
+            canvas.style.width = ShowImage.width + "px";
+            canvas.style.height = ShowImage.height + "px";
+			
             context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height); 
             
             if (touchState == false) {

@@ -1072,11 +1072,11 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
             </div>
         </section>
         Result：<input type="checkbox" id="chkResult">
-        <div id="result" style="color:red"><div>
+        <div id="result" style="color:red"></div>
                 
         <script>
         //法蘭斯影像辨識
-        const aiView = document.getElementById('stream')
+        const ShowImage = document.getElementById('stream')
         const aiStill = document.getElementById('get-still')
         const canvas = document.getElementById('canvas')     
         var context = canvas.getContext("2d");  
@@ -1099,7 +1099,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
         }
         
         function detectImage() {          
-          Model.segment(aiView)
+          Model.segment(ShowImage)
             .then(
               ({legend,height,width,segmentationMap}) => {
                  if (chkResult.checked) result.innerHTML = JSON.stringify(legend);
@@ -1133,7 +1133,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
           aiStill.click();
         }
           
-        aiView.onload = function (event) {
+        ShowImage.onload = function (event) {
           if (Model) {
             try { 
               document.createEvent("TouchEvent");

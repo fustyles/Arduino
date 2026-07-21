@@ -868,8 +868,14 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       
       function DetectImage() {
         Model.detect(ShowImage).then(Predictions => {
+			
+          ShowImage.width = ShowImage.naturalWidth;
+          ShowImage.height = ShowImage.naturalHeight;			
           canvas.setAttribute("width", ShowImage.width);
-          canvas.setAttribute("height", ShowImage.height);      
+          canvas.setAttribute("height", ShowImage.height);
+          canvas.style.width = ShowImage.width + "px";
+          canvas.style.height = ShowImage.height + "px"; 
+		  
           context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height); 
           var s = (ShowImage.width>ShowImage.height)?ShowImage.width:ShowImage.height;
           

@@ -1069,11 +1069,11 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
             </div>
         </section>
         Result：<input type="checkbox" id="chkResult" checked>
-        <div id="result" style="color:red"><div>
+        <div id="result" style="color:red"></div>
                 
         <script>
         //法蘭斯影像辨識
-        const aiView = document.getElementById('stream')
+        const ShowImage = document.getElementById('stream')
         const aiStill = document.getElementById('get-still')
         const canvas = document.getElementById('canvas')     
         var context = canvas.getContext("2d");  

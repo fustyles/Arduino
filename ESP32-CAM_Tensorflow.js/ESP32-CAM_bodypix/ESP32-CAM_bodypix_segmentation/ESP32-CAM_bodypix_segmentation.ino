@@ -1074,11 +1074,11 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
             </div>
         </section>
         Result：<input type="checkbox" id="chkResult">
-        <div id="result" style="color:red"><div>
+        <div id="result" style="color:red"></div>
                 
         <script>
         //法蘭斯影像辨識
-        const aiView = document.getElementById('stream')
+        const ShowImage = document.getElementById('stream')
         const aiStill = document.getElementById('get-still')
         const canvas = document.getElementById('canvas')     
         var context = canvas.getContext("2d");  
@@ -1135,20 +1135,20 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
             segmentationThreshold = 0.75;
           }
            
-          Model.estimatePersonSegmentation(aiView, outputStride, segmentationThreshold).then(segmentation => {
+          Model.estimatePersonSegmentation(ShowImage, outputStride, segmentationThreshold).then(segmentation => {
             //console.log(segmentation);
             if (chkResult.checked) result.innerHTML = JSON.stringify(segmentation);
         
             const backgroundBlurAmount = 5;
             const edgeBlurAmount = 3;
             const flipHorizontal = false;
-            bodyPix.drawBokehEffect(canvas, aiView, segmentation, backgroundBlurAmount, edgeBlurAmount, flipHorizontal);
+            bodyPix.drawBokehEffect(canvas, ShowImage, segmentation, backgroundBlurAmount, edgeBlurAmount, flipHorizontal);
           
             aiStill.click();
           });  
         }
           
-        aiView.onload = function (event) {
+        ShowImage.onload = function (event) {
           if (Model) {
             try { 
               document.createEvent("TouchEvent");

@@ -1201,7 +1201,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 
 
           //法蘭斯影像辨識
-          const aiView = document.getElementById('stream');
+          const ShowImage = document.getElementById('stream');
           const aiStill = document.getElementById('get-still')
           const canvas = document.getElementById('canvas');     
           var context = canvas.getContext("2d");
@@ -1222,27 +1222,33 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 
           detectState.onclick = () => {
             if (detectState.checked == true) {
-              aiView.style.display = "none";
+              ShowImage.style.display = "none";
               canvas.style.display = "block";
               aiStill.click();
             } else {
-              aiView.style.display = "block";
+              ShowImage.style.display = "block";
               canvas.style.display = "none";
             }
           }
             
           function stopDetection() {
             detectState.checked = false;
-            aiView.style.display = "block";
+            ShowImage.style.display = "block";
             canvas.style.display = "none";           
             message.innerHTML = "";
           }
 
-          aiView.onload = function (event) {
+          ShowImage.onload = function (event) {
             if (detectState.checked == false) return;   
-            canvas.setAttribute("width", aiView.width);
-            canvas.setAttribute("height", aiView.height);
-            context.drawImage(aiView, 0, 0, aiView.width, aiView.height);
+			
+            ShowImage.width = ShowImage.naturalWidth;
+            ShowImage.height = ShowImage.naturalHeight;			
+            canvas.setAttribute("width", ShowImage.width);
+            canvas.setAttribute("height", ShowImage.height);
+            canvas.style.width = ShowImage.width + "px";
+            canvas.style.height = ShowImage.height + "px";
+			  
+            context.drawImage(ShowImage, 0, 0, ShowImage.width, ShowImage.height);
             if (Model)          
               DetectImage();      
           }  

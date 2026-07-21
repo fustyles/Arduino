@@ -1076,11 +1076,11 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
             </div>
         </section>
         Result：<input type="checkbox" id="chkResult">
-        <div id="result" style="color:red"><div>
+        <div id="result" style="color:red"></div>
                 
         <script>
         //法蘭斯影像辨識
-        const aiView = document.getElementById('stream')
+        const ShowImage = document.getElementById('stream')
         const aiStill = document.getElementById('get-still')
         const canvas = document.getElementById('canvas')     
         var context = canvas.getContext("2d");  
@@ -1102,7 +1102,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
         function detectImage() {          
           if (!chkResult.checked) result.innerHTML = "";
 
-          Model.segmentMultiPersonParts(aiView, {
+          Model.segmentMultiPersonParts(ShowImage, {
             flipHorizontal: false,
             internalResolution: 'medium',
             segmentationThreshold: 0.7,
@@ -1121,7 +1121,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
               const maskBlurAmount = 0;
               const flipHorizontal = false;
               const pixelCellWidth = 10.0;
-              bodyPix.drawPixelatedMask(canvas, aiView, coloredPartImage, opacity, maskBlurAmount, flipHorizontal, pixelCellWidth);
+              bodyPix.drawPixelatedMask(canvas, ShowImage, coloredPartImage, opacity, maskBlurAmount, flipHorizontal, pixelCellWidth);
               drawPoses(partSegmentation, flipHorizontal, context);
             }
             catch (e){
@@ -1200,7 +1200,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
           }
         }          
               
-        aiView.onload = function (event) {
+        ShowImage.onload = function (event) {
           if (Model) {
             try { 
               document.createEvent("TouchEvent");

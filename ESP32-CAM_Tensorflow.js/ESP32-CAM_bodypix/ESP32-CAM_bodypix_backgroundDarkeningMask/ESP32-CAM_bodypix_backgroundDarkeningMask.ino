@@ -1074,11 +1074,11 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
             </div>
         </section>
         Result：<input type="checkbox" id="chkResult">
-        <div id="result" style="color:red"><div>
+        <div id="result" style="color:red"></div>
                 
         <script>
         //法蘭斯影像辨識
-        const aiView = document.getElementById('stream')
+        const ShowImage = document.getElementById('stream')
         const aiStill = document.getElementById('get-still')
         const canvas = document.getElementById('canvas')     
         var context = canvas.getContext("2d");  
@@ -1135,7 +1135,7 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
             segmentationThreshold = 0.75;
           }
            
-          Model.estimatePersonSegmentation(aiView, outputStride, segmentationThreshold).then(segmentation => {
+          Model.estimatePersonSegmentation(ShowImage, outputStride, segmentationThreshold).then(segmentation => {
             //console.log(segmentation);
             if (chkResult.checked) result.innerHTML = JSON.stringify(segmentation);
         
@@ -1144,13 +1144,13 @@ static const char PROGMEM index_ov2640_html_gz[] = R"rawliteral(
             const opacity = 0.8;
             const maskBlurAmount = 3;
             const flipHorizontal = false;
-            bodyPix.drawMask(canvas, aiView, backgroundDarkeningMask, opacity, maskBlurAmount, flipHorizontal);
+            bodyPix.drawMask(canvas, ShowImage, backgroundDarkeningMask, opacity, maskBlurAmount, flipHorizontal);
             
             aiStill.click();
           });  
         }
           
-        aiView.onload = function (event) {
+        ShowImage.onload = function (event) {
           if (Model) {
             try { 
               document.createEvent("TouchEvent");
