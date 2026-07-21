@@ -139,27 +139,37 @@ void ExecuteCommand()
   }  
   else if (cmd=="framesize") { 
     sensor_t * s = esp_camera_sensor_get();  
-    if (P1=="QQVGA")
+    if (P1=="96X96")
+      s->set_framesize(s, FRAMESIZE_96X96);
+    else if (P1=="QQVGA")
       s->set_framesize(s, FRAMESIZE_QQVGA);
+    else if (P1=="QCIF")
+      s->set_framesize(s, FRAMESIZE_QCIF);
     else if (P1=="HQVGA")
       s->set_framesize(s, FRAMESIZE_HQVGA);
+    else if (P1=="240X240")
+      s->set_framesize(s, FRAMESIZE_240X240);
     else if (P1=="QVGA")
       s->set_framesize(s, FRAMESIZE_QVGA);
     else if (P1=="CIF")
       s->set_framesize(s, FRAMESIZE_CIF);
+    else if (P1=="HVGA")
+      s->set_framesize(s, FRAMESIZE_HVGA);
     else if (P1=="VGA")
-      s->set_framesize(s, FRAMESIZE_VGA);  
+      s->set_framesize(s, FRAMESIZE_VGA);
     else if (P1=="SVGA")
       s->set_framesize(s, FRAMESIZE_SVGA);
     else if (P1=="XGA")
       s->set_framesize(s, FRAMESIZE_XGA);
+    else if (P1=="HD")
+      s->set_framesize(s, FRAMESIZE_HD);
     else if (P1=="SXGA")
       s->set_framesize(s, FRAMESIZE_SXGA);
     else if (P1=="UXGA")
-      s->set_framesize(s, FRAMESIZE_UXGA);           
+      s->set_framesize(s, FRAMESIZE_UXGA);
     else 
-      s->set_framesize(s, FRAMESIZE_QVGA);     
-  }
+      s->set_framesize(s, FRAMESIZE_QVGA); 
+  }	
   else if (cmd=="quality") { 
     sensor_t * s = esp_camera_sensor_get();
     int val = P1.toInt(); 
@@ -347,16 +357,21 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     <td>Resolution</td> 
     <td colspan="2">
       <select id="framesize">
-        <option value="UXGA">UXGA(1600x1200)</option>
-        <option value="SXGA">SXGA(1280x1024)</option>
-        <option value="XGA">XGA(1024x768)</option>
-        <option value="SVGA">SVGA(800x600)</option>
-        <option value="VGA">VGA(640x480)</option>
-        <option value="CIF">CIF(400x296)</option>
-        <option value="QVGA" selected="selected">QVGA(320x240)</option>
-        <option value="HQVGA">HQVGA(240x176)</option>
-        <option value="QQVGA">QQVGA(160x120)</option>
-      </select> 
+        <option value="96X96">FRAMESIZE_96X96 (96x96)</option>
+        <option value="QQVGA">FRAMESIZE_QQVGA (160x120)</option>
+        <option value="QCIF">FRAMESIZE_QCIF (176x144)</option>
+        <option value="HQVGA">FRAMESIZE_HQVGA (240x176)</option>
+        <option value="240X240">FRAMESIZE_240X240 (240x240)</option>
+        <option value="QVGA" selected="selected">FRAMESIZE_QVGA (320x240)</option>
+        <option value="CIF">FRAMESIZE_CIF (400x296)</option>
+        <option value="HVGA">FRAMESIZE_HVGA (480x320)</option>
+        <option value="VGA">FRAMESIZE_VGA (640x480)</option>
+        <option value="SVGA">FRAMESIZE_SVGA (800x600)</option>
+        <option value="XGA">FRAMESIZE_XGA (1024x768)</option>
+        <option value="HD">FRAMESIZE_HD (1280x720)</option>
+        <option value="SXGA">FRAMESIZE_SXGA (1280x1024)</option>
+        <option value="UXGA">FRAMESIZE_UXGA (1600x1200)</option>
+      </select>
     </td>
   </tr>    
   <tr>
@@ -448,9 +463,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
     
     ShowImage.onload = function (event) {
       clearInterval(myTimer);
-      restartCount=0;      
-      canvas.setAttribute("width", ShowImage.width);
-      canvas.setAttribute("height", ShowImage.height);
+      restartCount=0;   
+	  
+	  ShowImage.width = ShowImage.naturalWidth;
+	  ShowImage.height = ShowImage.naturalHeight;			
+	  canvas.setAttribute("width", ShowImage.width);
+	  canvas.setAttribute("height", ShowImage.height);
+	  canvas.style.width = ShowImage.width + "px";
+	  canvas.style.height = ShowImage.height + "px";
+	  
       canvas.style.display = "block";
       
       if (mirrorimage.value==1) {
@@ -488,8 +509,13 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
       var maxClassName = "";
       var maxProbability = "";
     
-      canvas.setAttribute("width", ShowImage.width);
-      canvas.setAttribute("height", ShowImage.height);
+	  ShowImage.width = ShowImage.naturalWidth;
+	  ShowImage.height = ShowImage.naturalHeight;			
+	  canvas.setAttribute("width", ShowImage.width);
+	  canvas.setAttribute("height", ShowImage.height);
+	  canvas.style.width = ShowImage.width + "px";
+	  canvas.style.height = ShowImage.height + "px";
+	  
       context.drawImage(ShowImage, 0, 0, ShowImage.width, ShowImage.height); 
        
       if (kind.value=="image")

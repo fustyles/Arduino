@@ -904,8 +904,14 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!doctype html>
     }
     
     async function DetectImage() {
-      canvas.setAttribute("width", ShowImage.width);
-      canvas.setAttribute("height", ShowImage.height);
+		
+	  ShowImage.width = ShowImage.naturalWidth;
+	  ShowImage.height = ShowImage.naturalHeight;			
+	  canvas.setAttribute("width", ShowImage.width);
+	  canvas.setAttribute("height", ShowImage.height);
+	  canvas.style.width = ShowImage.width + "px";
+	  canvas.style.height = ShowImage.height + "px";
+	  
       var mirrorimage = Number(document.getElementById("mirrorimage").value);
       if (mirrorimage==1) {
         context.translate((canvas.width + ShowImage.width) / 2, 0);

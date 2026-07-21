@@ -852,8 +852,14 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
           }  
           
           async function DetectImage() {
+			  
+            ShowImage.width = ShowImage.naturalWidth;
+            ShowImage.height = ShowImage.naturalHeight;			
             canvas.setAttribute("width", ShowImage.width);
             canvas.setAttribute("height", ShowImage.height);
+            canvas.style.width = ShowImage.width + "px";
+            canvas.style.height = ShowImage.height + "px";
+			
             context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height);
                         
             await Model.estimatePoses(canvas, {flipHorizontal: false, decodingMethod: 'multi-person', maxPoseDetections: 5, scoreThreshold: 0.5, nmsRadius: 20}).then(pose => {
